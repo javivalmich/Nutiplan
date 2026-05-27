@@ -5604,7 +5604,9 @@ function _sbToLocalPlan(r) {
     weekNum:         r.week_num,
     extras:          r.extras || {},
     weekWarnings:    r.week_warnings,
-    weekScore:       r.week_score,
+    weekScore:       r.week_score != null
+                     ? r.week_score
+                     : (PDB.getPlans(r.uid).find(p => p.id === r.id)?.weekScore ?? null),
     created_at:      typeof r.created_at === "number" ? r.created_at : new Date(r.created_at).getTime(),
     updated_at:      typeof r.updated_at === "number" ? r.updated_at : new Date(r.updated_at).getTime(),
   };
@@ -7734,10 +7736,10 @@ function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanUpdated 
         <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,zIndex:30}} onClick={()=>setNavOpen(false)}>
           <div style={{position:"absolute",top:64,right:12,width:260,maxWidth:320,background:THEME.bgCard2,borderRadius:14,border:"1px solid #30363d",overflow:"hidden",boxShadow:"0 8px 32px rgba(0,0,0,0.4)",animation:"slideDown 0.2s ease"}} onClick={function(e){e.stopPropagation();}}>
             {/* Plan warnings */}
-            {((plan.weekWarnings&&plan.weekWarnings.length>0)||(plan.weekProblems&&plan.weekProblems.length>0)||(plan.weekScore!==undefined))&&(
+            {((plan.weekWarnings&&plan.weekWarnings.length>0)||(plan.weekProblems&&plan.weekProblems.length>0)||(Number.isFinite(plan.weekScore)))&&(
               <div style={{padding:"12px 16px",borderBottom:"1px solid #30363d"}}>
                 <div style={{fontSize:10,color:THEME.textMuted,letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:8}}>Estado del plan</div>
-                {plan.weekScore!==undefined&&(<div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}><span style={{fontSize:12,color:THEME.textPrimary}}>Variedad</span><span style={{fontSize:12,fontWeight:700,color:plan.weekScore>=80?THEME.colorSuccess:plan.weekScore>=60?THEME.colorWarning:THEME.colorError}}>{plan.weekScore}/100</span></div>)}
+                {Number.isFinite(plan.weekScore)&&(<div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}><span style={{fontSize:12,color:THEME.textPrimary}}>Variedad</span><span style={{fontSize:12,fontWeight:700,color:plan.weekScore>=80?THEME.colorSuccess:plan.weekScore>=60?THEME.colorWarning:THEME.colorError}}>{plan.weekScore}/100</span></div>)}
                 {(plan.weekProblems||[]).map(function(w,i){return <div key={"p"+i} style={{fontSize:11,color:THEME.colorError,padding:"2px 0",lineHeight:1.4}}>{w}</div>;})}
                 {(plan.weekWarnings||[]).filter(function(w){ return !w.startsWith("[AJUSTE]"); }).map(function(w,i){return <div key={"w"+i} style={{fontSize:11,color:THEME.colorWarning,padding:"2px 0",lineHeight:1.4}}>{w}</div>;})}
                 {!isNutriPlan&&((plan.weekProblems&&plan.weekProblems.length>0)||(plan.weekWarnings&&plan.weekWarnings.length>0))&&(

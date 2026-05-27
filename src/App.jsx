@@ -6559,6 +6559,7 @@ function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanUpdated 
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting,      setDeleting]      = useState(false);
   const prevPlanId = useRef(null);
+  const dayShakeSnapshotRef = useRef({});
 
   // Is this plan locked (created by nutritionist)?
   const isNutriPlan = activePlanMeta && activePlanMeta.created_by === "nutritionist";
@@ -7233,77 +7234,69 @@ function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanUpdated 
   // Recalcula REALMENTE las porciones del día según el nuevo estado del batido.
   // Comportamiento honesto: ON → meals reducidas + ShakeCard / OFF → meals completas.
   // Reversible: OFF→ON→OFF produce cantidades idénticas (mismo _spec + mismos factors).
-  const regenerateDayPortions=(dayIdx)=>{
-    if(isNutriPlan) return;
-    const currentDay = plan&&plan.days&&plan.days[dayIdx];
-    if(!currentDay) return;
+  const regenerateDayPortions = (dayIdx) => {
+    if (isNutriPlan) return;
+    const currentDay = plan && plan.days && plan.days[dayIdx];
+    if (!currentDay) return;
     trackUserAction("toggleDayShake");
 
-    const globalEnabled = !!(profile.extras&&profile.extras.proteinShake&&profile.extras.proteinShake.enabled);
-    const currentOverride = currentDay.shakeEnabled; // true | false | undefined
+    const globalEnabled = !!(
+      profile.extras &&
+      profile.extras.proteinShake &&
+      profile.extras.proteinShake.enabled
+    );
+    const currentOverride = currentDay.shakeEnabled;
 
-    // Calcular nuevo override per-día
     let newOverride;
-    if(currentOverride === undefined) {
+    if (currentOverride === undefined) {
       newOverride = !globalEnabled;
     } else {
       newOverride = !currentOverride;
     }
 
-    // effectiveShake con el nuevo override
     const effectiveShake =
       (globalEnabled && newOverride !== false) ||
       (!globalEnabled && newOverride === true);
 
-    // PASO 1 — Detectar snapshot existente (write-once guard)
-    const hasOriginalSnapshot = !!currentDay._originalMeals;
-
-    // PASO 2 — Capturar meals actuales (write-once: si ya existe, no tocar)
-    const originalMeals = hasOriginalSnapshot
-      ? currentDay._originalMeals
-      : JSON.parse(JSON.stringify(currentDay.meals));
+    const hasSnapshot =
+      !!dayShakeSnapshotRef.current[dayIdx];
 
     console.log("[toggleShake] effectiveShake:", effectiveShake);
-    console.log("[toggleShake] hasOriginalSnapshot:", hasOriginalSnapshot);
+    console.log("[toggleShake] hasSnapshot:", hasSnapshot);
 
-    // PASO 3 — RESTAURACIÓN DIRECTA si existe snapshot
-    if(hasOriginalSnapshot) {
-      console.log("[toggleShake] restoring snapshot:", true);
+    if (hasSnapshot) {
+      // Restaurar snapshot exacto — sin recomputar
+      const snapshot = dayShakeSnapshotRef.current[dayIdx];
+      delete dayShakeSnapshotRef.current[dayIdx];
+      console.log("[toggleShake] restoring snapshot, day", dayIdx);
       const newPlan = JSON.parse(JSON.stringify(plan));
-      newPlan.days[dayIdx] = Object.assign(
-        {},
-        currentDay,
-        {
-          meals: JSON.parse(JSON.stringify(originalMeals)),
-          shakeEnabled: newOverride,
-          _originalMeals: undefined
-        }
-      );
+      newPlan.days[dayIdx] = Object.assign({}, currentDay, {
+        meals: JSON.parse(JSON.stringify(snapshot)),
+        shakeEnabled: newOverride,
+      });
       traceSetPlan("user", plan, newPlan);
       setPlan(newPlan);
       saveData(profile, newPlan, weekNum, extras);
-      PDB.updateActivePlan(currentUser.id, {days: newPlan.days});
+      PDB.updateActivePlan(currentUser.id, { days: newPlan.days });
       return;
     }
 
-    // PASO 4 — REBUILD primera vez en esta dirección (sin snapshot previo)
-    console.log("[toggleShake] rebuilding:", effectiveShake);
-    console.log("[toggleShake] snapshotCreated:", true);
-    const rebuiltDay = rebuildDayMeals(dayIdx, currentDay.meals, effectiveShake);
+    // Primer toggle: guardar snapshot + rebuild
+    dayShakeSnapshotRef.current[dayIdx] =
+      JSON.parse(JSON.stringify(currentDay.meals));
+    console.log("[toggleShake] snapshot saved, day", dayIdx);
 
-    const newPlan = JSON.parse(JSON.stringify(plan));
-    newPlan.days[dayIdx] = Object.assign(
-      {},
-      rebuiltDay,
-      {
-        shakeEnabled: newOverride,
-        _originalMeals: originalMeals
-      }
+    const rebuiltDay = rebuildDayMeals(
+      dayIdx, currentDay.meals, effectiveShake
     );
+    const newPlan = JSON.parse(JSON.stringify(plan));
+    newPlan.days[dayIdx] = Object.assign({}, rebuiltDay, {
+      shakeEnabled: newOverride,
+    });
     traceSetPlan("user", plan, newPlan);
     setPlan(newPlan);
     saveData(profile, newPlan, weekNum, extras);
-    PDB.updateActivePlan(currentUser.id, {days: newPlan.days});
+    PDB.updateActivePlan(currentUser.id, { days: newPlan.days });
   };
 
   const SEMANTIC_OPTIONS=[
@@ -7780,9 +7773,6 @@ function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanUpdated 
                 {Number.isFinite(plan.weekScore)&&(<div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}><span style={{fontSize:12,color:THEME.textPrimary}}>Variedad</span><span style={{fontSize:12,fontWeight:700,color:plan.weekScore>=80?THEME.colorSuccess:plan.weekScore>=60?THEME.colorWarning:THEME.colorError}}>{plan.weekScore}/100</span></div>)}
                 {(plan.weekProblems||[]).map(function(w,i){return <div key={"p"+i} style={{fontSize:11,color:THEME.colorError,padding:"2px 0",lineHeight:1.4}}>{w}</div>;})}
                 {(plan.weekWarnings||[]).filter(function(w){ return !w.startsWith("[AJUSTE]"); }).map(function(w,i){return <div key={"w"+i} style={{fontSize:11,color:THEME.colorWarning,padding:"2px 0",lineHeight:1.4}}>{w}</div>;})}
-                {!isNutriPlan&&((plan.weekProblems&&plan.weekProblems.length>0)||(plan.weekWarnings&&plan.weekWarnings.length>0))&&(
-                  <button onClick={function(){handleRegenerate();}} style={{marginTop:8,width:"100%",padding:"7px",borderRadius:7,border:"none",background:THEME.accent,color:THEME.bgPage,fontFamily:sans,fontSize:12,fontWeight:700,cursor:"pointer"}}>🔄 Regenerar plan</button>
-                )}
               </div>
             )}
             {!isNutriPlan&&(

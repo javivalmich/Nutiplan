@@ -5102,8 +5102,8 @@ function getDefaultAlts(meal) {
 // This implementation uses the Supabase REST API directly via fetch —
 // zero external dependencies, fully self-contained.
 
-const SUPABASE_URL   = "https://evjdfyuacvtelcfvetua.supabase.co";
-const SUPABASE_KEY   = "sb_publishable_sWiNzifD8Ki2TdxSGinrGg_5ZMeGbeC";
+const SUPABASE_URL   = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_KEY   = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // ─── SDB — Async Supabase layer ────────────────────────────────────────────
 // This is the ONLY place that talks to Supabase.

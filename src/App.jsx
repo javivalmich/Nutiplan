@@ -6559,7 +6559,6 @@ function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanUpdated 
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting,      setDeleting]      = useState(false);
   const prevPlanId = useRef(null);
-  const dayShakeSnapshotRef = useRef({});
 
   // Is this plan locked (created by nutritionist)?
   const isNutriPlan = activePlanMeta && activePlanMeta.created_by === "nutritionist";
@@ -7234,70 +7233,77 @@ function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanUpdated 
   // Recalcula REALMENTE las porciones del día según el nuevo estado del batido.
   // Comportamiento honesto: ON → meals reducidas + ShakeCard / OFF → meals completas.
   // Reversible: OFF→ON→OFF produce cantidades idénticas (mismo _spec + mismos factors).
-  const regenerateDayPortions = (dayIdx) => {
-    if (isNutriPlan) return;
-    const currentDay = plan && plan.days && plan.days[dayIdx];
-    if (!currentDay) return;
+  const regenerateDayPortions=(dayIdx)=>{
+    if(isNutriPlan) return;
+    const currentDay = plan&&plan.days&&plan.days[dayIdx];
+    if(!currentDay) return;
     trackUserAction("toggleDayShake");
 
-    const globalEnabled = !!(
-      profile.extras &&
-      profile.extras.proteinShake &&
-      profile.extras.proteinShake.enabled
-    );
-    const currentOverride = currentDay.shakeEnabled;
+    const globalEnabled = !!(profile.extras&&profile.extras.proteinShake&&profile.extras.proteinShake.enabled);
+    const currentOverride = currentDay.shakeEnabled; // true | false | undefined
 
+    // Calcular nuevo override per-día
     let newOverride;
-    if (currentOverride === undefined) {
+    if(currentOverride === undefined) {
       newOverride = !globalEnabled;
     } else {
       newOverride = !currentOverride;
     }
 
+    // effectiveShake con el nuevo override
     const effectiveShake =
       (globalEnabled && newOverride !== false) ||
       (!globalEnabled && newOverride === true);
 
-    // ── Snapshot en ref (no en el plan — no toca persistencia) ──
-    const hasSnapshot = !!dayShakeSnapshotRef.current[dayIdx];
+    // PASO 1 — Detectar snapshot existente (write-once guard)
+    const hasOriginalSnapshot = !!currentDay._originalMeals;
+
+    // PASO 2 — Capturar meals actuales (write-once: si ya existe, no tocar)
+    const originalMeals = hasOriginalSnapshot
+      ? currentDay._originalMeals
+      : JSON.parse(JSON.stringify(currentDay.meals));
 
     console.log("[toggleShake] effectiveShake:", effectiveShake);
-    console.log("[toggleShake] hasSnapshot:", hasSnapshot);
+    console.log("[toggleShake] hasOriginalSnapshot:", hasOriginalSnapshot);
 
-    // ── RESTAURACIÓN: existe snapshot → devolver estado original ──
-    if (hasSnapshot) {
-      const snapshot = dayShakeSnapshotRef.current[dayIdx];
-      delete dayShakeSnapshotRef.current[dayIdx];
-      console.log("[toggleShake] restoring snapshot for day", dayIdx);
-
+    // PASO 3 — RESTAURACIÓN DIRECTA si existe snapshot
+    if(hasOriginalSnapshot) {
+      console.log("[toggleShake] restoring snapshot:", true);
       const newPlan = JSON.parse(JSON.stringify(plan));
-      newPlan.days[dayIdx] = Object.assign({}, currentDay, {
-        meals: JSON.parse(JSON.stringify(snapshot)),
-        shakeEnabled: newOverride,
-      });
+      newPlan.days[dayIdx] = Object.assign(
+        {},
+        currentDay,
+        {
+          meals: JSON.parse(JSON.stringify(originalMeals)),
+          shakeEnabled: newOverride,
+          _originalMeals: undefined
+        }
+      );
       traceSetPlan("user", plan, newPlan);
       setPlan(newPlan);
       saveData(profile, newPlan, weekNum, extras);
-      PDB.updateActivePlan(currentUser.id, { days: newPlan.days });
+      PDB.updateActivePlan(currentUser.id, {days: newPlan.days});
       return;
     }
 
-    // ── PRIMER TOGGLE: guardar snapshot + rebuild ──
-    dayShakeSnapshotRef.current[dayIdx] =
-      JSON.parse(JSON.stringify(currentDay.meals));
-    console.log("[toggleShake] snapshot created for day", dayIdx);
+    // PASO 4 — REBUILD primera vez en esta dirección (sin snapshot previo)
+    console.log("[toggleShake] rebuilding:", effectiveShake);
+    console.log("[toggleShake] snapshotCreated:", true);
+    const rebuiltDay = rebuildDayMeals(dayIdx, currentDay.meals, effectiveShake);
 
-    const rebuiltDay = rebuildDayMeals(
-      dayIdx, currentDay.meals, effectiveShake
-    );
     const newPlan = JSON.parse(JSON.stringify(plan));
-    newPlan.days[dayIdx] = Object.assign({}, rebuiltDay, {
-      shakeEnabled: newOverride,
-    });
+    newPlan.days[dayIdx] = Object.assign(
+      {},
+      rebuiltDay,
+      {
+        shakeEnabled: newOverride,
+        _originalMeals: originalMeals
+      }
+    );
     traceSetPlan("user", plan, newPlan);
     setPlan(newPlan);
     saveData(profile, newPlan, weekNum, extras);
-    PDB.updateActivePlan(currentUser.id, { days: newPlan.days });
+    PDB.updateActivePlan(currentUser.id, {days: newPlan.days});
   };
 
   const SEMANTIC_OPTIONS=[

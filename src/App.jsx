@@ -5541,6 +5541,32 @@ const SDB = {
     }
     return null;
   },
+
+  // ── Nutritionist applications ──────────────────────────────────────────────
+  submitNutriApplication: async (userId, data) => {
+    const { error } = await SDB._rest("/nutritionist_applications", {
+      method: "POST",
+      headers: { "Prefer": "return=minimal" },
+      body: JSON.stringify({
+        user_id:        userId,
+        full_name:      data.full_name,
+        license_number: data.license_number,
+        specialty:      data.specialty,
+        phone:          data.phone,
+        dni:            data.dni,
+      }),
+    });
+    if (error) return { error };
+    return { ok: true };
+  },
+
+  getNutriApplicationStatus: async (userId) => {
+    const { data } = await SDB._rest(
+      `/nutritionist_applications?user_id=eq.${userId}&order=submitted_at.desc&limit=1`
+    );
+    const status = data?.[0]?.status ?? null;
+    return status; // 'pending' | 'approved' | 'rejected' | null
+  },
 };
 
 // ─── Shape converters ─────────────────────────────────────────────────────
@@ -6127,10 +6153,17 @@ function AuthView({ onLogin }) {
   const [loading,      setLoading]      = useState(false);
   const [showPass,     setShowPass]     = useState(false);
   const [confirmEmail, setConfirmEmail] = useState(false); // email confirmation pending
+  const [applicationState, setApplicationState] = useState('none'); // 'none'|'submitted'|'pending'|'rejected'
+  const [fullName,       setFullName]       = useState('');
+  const [licenseNumber,  setLicenseNumber]  = useState('');
+  const [specialty,      setSpecialty]      = useState('');
+  const [phone,          setPhone]          = useState('');
+  const [dni,            setDni]            = useState('');
 
   const inp = { width:"100%", boxSizing:"border-box", padding:"11px 14px", borderRadius:8, border:"1.5px solid "+Dk.border, background:Dk.card2, color:Dk.text, fontFamily:sans, fontSize:14, outline:"none" };
 
-  const goTab = (t) => { setTab(t); setError(""); setInfo(""); setConfirmEmail(false); };
+  const goTab = (t) => { setTab(t); setError(""); setInfo(""); setConfirmEmail(false); setApplicationState('none'); };
+  const resetState = () => { setApplicationState('none'); setError(""); };
 
   // ── Recuperación de contraseña ─────────────────────────────────────────
   const handleForgot = async () => {
@@ -6163,11 +6196,60 @@ function AuthView({ onLogin }) {
           setConfirmEmail(true);
           setLoading(false); return;
         }
+        if (u.role === 'user') {
+          const appStatus = await SDB.getNutriApplicationStatus(u.id);
+          if (appStatus === 'pending')  { setApplicationState('pending');  setLoading(false); return; }
+          if (appStatus === 'rejected') { setApplicationState('rejected'); setLoading(false); return; }
+          // 'approved' or null → continue normal login flow
+        }
         await SyncEngine.pullFromCloud(u.id);
         await SyncEngine.migrateExistingData();
         onLogin(u);
       } else {
         if (!email.trim() || pass.length < 6) { setError("Completa todos los campos (mínimo 6 caracteres)."); setLoading(false); return; }
+
+        if (role === 'nutritionist') {
+          // Validate professional fields
+          const dniRegex = /^[0-9]{8}[A-Za-z]$/;
+          if (!fullName.trim())           { setError("El nombre completo es obligatorio."); setLoading(false); return; }
+          if (!licenseNumber.trim())      { setError("El número de colegiado es obligatorio."); setLoading(false); return; }
+          if (!specialty.trim())          { setError("La especialidad es obligatoria."); setLoading(false); return; }
+          if (!phone.trim())              { setError("El teléfono es obligatorio."); setLoading(false); return; }
+          if (!dniRegex.test(dni.trim())) { setError("DNI inválido — debe tener 8 dígitos y una letra (ej: 12345678A)."); setLoading(false); return; }
+
+          // Create account always as role='user'
+          const res = await PDB.createUser(email.trim(), pass, 'user');
+          if (res.error) {
+            if (res.error === "CONFIRM_EMAIL") { setConfirmEmail(true); setLoading(false); return; }
+            const errMap = {
+              "User already registered":     "Este email ya está registrado. Intenta iniciar sesión.",
+              "Email already registered":    "Este email ya está registrado.",
+              "Password should be at least": "La contraseña debe tener al menos 6 caracteres.",
+              "session_expired":             "Tu sesión expiró. Vuelve a iniciar sesión.",
+            };
+            const mapped = Object.entries(errMap).find(([k]) => String(res.error).includes(k));
+            setError(mapped ? mapped[1] : (res.error || "Error al crear cuenta."));
+            setLoading(false); return;
+          }
+
+          // Submit verification application — NOT onLogin
+          const appRes = await SDB.submitNutriApplication(res.user.id, {
+            full_name:      fullName.trim(),
+            license_number: licenseNumber.trim(),
+            specialty:      specialty.trim(),
+            phone:          phone.trim(),
+            dni:            dni.trim(),
+          });
+          if (appRes.error) {
+            setError("Error enviando la solicitud. Intenta iniciar sesión para consultar el estado.");
+            setLoading(false); return;
+          }
+
+          setApplicationState('submitted');
+          setLoading(false); return;
+        }
+
+        // Normal user registration (role === 'user')
         const res = await PDB.createUser(email.trim(), pass, role);
         if (res.error) {
           if (res.error === "CONFIRM_EMAIL") {
@@ -6232,8 +6314,47 @@ function AuthView({ onLogin }) {
 
         <div style={{background:Dk.card, border:"1px solid "+Dk.border, borderRadius:16, padding:"22px 18px"}}>
 
+          {/* ── Nutritionist application state screens ── */}
+          {applicationState !== 'none' && (
+            <div style={{display:"flex", flexDirection:"column", gap:14}}>
+              {applicationState === 'submitted' && (
+                <div style={{display:"flex", flexDirection:"column", gap:14}}>
+                  <div style={{padding:"14px 16px", borderRadius:10, background:THEME.successBg18, border:"1px solid #16a34a44", color:THEME.colorSuccess, fontSize:14, lineHeight:1.6}}>
+                    ✅ Solicitud enviada correctamente. El equipo la revisará en 1–3 días hábiles.
+                  </div>
+                  <button onClick={() => goTab('login')} style={{padding:"10px", borderRadius:10, border:"none", background:Dk.card2, color:Dk.muted, fontFamily:sans, fontSize:13, cursor:"pointer"}}>
+                    ← Volver al inicio de sesión
+                  </button>
+                </div>
+              )}
+              {applicationState === 'pending' && (
+                <div style={{display:"flex", flexDirection:"column", gap:14}}>
+                  <div style={{padding:"14px 16px", borderRadius:10, background:THEME.accentBg18, border:"1px solid "+THEME.accent+"44", color:THEME.accent, fontSize:14, lineHeight:1.6}}>
+                    🕐 Solicitud en revisión. El equipo está verificando tus credenciales.
+                  </div>
+                  <button onClick={() => goTab('login')} style={{padding:"10px", borderRadius:10, border:"none", background:Dk.card2, color:Dk.muted, fontFamily:sans, fontSize:13, cursor:"pointer"}}>
+                    ← Volver al inicio de sesión
+                  </button>
+                </div>
+              )}
+              {applicationState === 'rejected' && (
+                <div style={{display:"flex", flexDirection:"column", gap:14}}>
+                  <div style={{padding:"14px 16px", borderRadius:10, background:THEME.errorBg18, border:"1px solid #e05a5a44", color:THEME.colorError2, fontSize:14, lineHeight:1.6}}>
+                    ❌ Solicitud rechazada. Contacta con soporte para más información.
+                  </div>
+                  <button onClick={resetState} style={{padding:"10px", borderRadius:10, border:"none", background:Dk.card2, color:Dk.muted, fontFamily:sans, fontSize:13, cursor:"pointer"}}>
+                    ↩ Volver al formulario
+                  </button>
+                  <button onClick={() => goTab('login')} style={{padding:"10px", borderRadius:10, border:"none", background:Dk.card2, color:Dk.muted, fontFamily:sans, fontSize:13, cursor:"pointer"}}>
+                    ← Volver al inicio de sesión
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* ── Tab selector (oculto en forgot) ── */}
-          {tab !== "forgot" && (
+          {tab !== "forgot" && applicationState === 'none' && (
             <div style={{display:"flex", gap:4, marginBottom:20, background:Dk.card2, borderRadius:10, padding:4}}>
               {[["login","Iniciar sesión"],["register","Registrarse"]].map(([t,l]) => (
                 <button key={t} onClick={() => goTab(t)} style={{flex:1, padding:"8px", borderRadius:7, border:"none", background:tab===t?THEME.accent:"transparent", color:tab===t?THEME.bgPage:Dk.muted, fontFamily:sans, fontSize:13, fontWeight:700, cursor:"pointer"}}>{l}</button>
@@ -6242,7 +6363,7 @@ function AuthView({ onLogin }) {
           )}
 
           {/* ── Forgot password ── */}
-          {tab === "forgot" && (
+          {tab === "forgot" && applicationState === 'none' && (
             <div>
               <button onClick={() => goTab("login")} style={{background:"none", border:"none", color:Dk.muted, cursor:"pointer", fontFamily:sans, fontSize:13, display:"flex", alignItems:"center", gap:4, padding:"0 0 16px", marginBottom:4}}>
                 ← Volver al login
@@ -6263,7 +6384,7 @@ function AuthView({ onLogin }) {
           )}
 
           {/* ── Confirm email pending ── */}
-          {confirmEmail && (
+          {confirmEmail && applicationState === 'none' && (
             <div style={{display:"flex", flexDirection:"column", gap:14}}>
               <div style={{padding:"14px 16px", borderRadius:10, background:THEME.successBg18, border:"1px solid #16a34a44", color:THEME.colorSuccess, fontSize:14, lineHeight:1.6}}>
                 Revisa tu bandeja de entrada y confirma tu email antes de continuar.
@@ -6275,7 +6396,7 @@ function AuthView({ onLogin }) {
           )}
 
           {/* ── Login / Register form ── */}
-          {tab !== "forgot" && !confirmEmail && (
+          {tab !== "forgot" && !confirmEmail && applicationState === 'none' && (
             <div style={{display:"flex", flexDirection:"column", gap:10}}>
               <input type="email" placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} onKeyDown={e=>e.key==="Enter"&&handleSubmit()} style={inp}/>
               <div style={{position:"relative"}}>
@@ -6321,6 +6442,17 @@ function AuthView({ onLogin }) {
                       )}
                     </div>
                   )}
+                  {role === "nutritionist" && (
+                    <div style={{display:"flex", flexDirection:"column", gap:8}}>
+                      <div style={{fontSize:11, color:Dk.muted, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:4}}>Datos profesionales</div>
+                      <input type="text" placeholder="Nombre completo" value={fullName} onChange={e=>setFullName(e.target.value)} style={inp}/>
+                      <input type="text" placeholder="Número de colegiado / licencia" value={licenseNumber} onChange={e=>setLicenseNumber(e.target.value)} style={inp}/>
+                      <input type="text" placeholder="Especialidad" value={specialty} onChange={e=>setSpecialty(e.target.value)} style={inp}/>
+                      <input type="tel" placeholder="Teléfono" value={phone} onChange={e=>setPhone(e.target.value)} style={inp}/>
+                      <input type="text" placeholder="DNI (ej: 12345678A)" value={dni} onChange={e=>setDni(e.target.value)} style={inp}/>
+                      <div style={{fontSize:11, color:Dk.muted, lineHeight:1.5}}>Tu solicitud será revisada en 1–3 días hábiles. Recibirás acceso cuando sea aprobada.</div>
+                    </div>
+                  )}
                 </>
               )}
 
@@ -6340,7 +6472,7 @@ function AuthView({ onLogin }) {
           )}
 
           {/* Demo accounts — solo en login */}
-          {tab === "login" && (
+          {tab === "login" && applicationState === 'none' && (
             <div style={{marginTop:18, paddingTop:14, borderTop:"1px solid "+Dk.border}}>
               <div style={{fontSize:11, color:Dk.muted, textAlign:"center", marginBottom:8}}>Cuentas demo (contraseña: demo123)</div>
               <div style={{display:"flex", flexDirection:"column", gap:5}}>

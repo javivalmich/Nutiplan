@@ -9355,7 +9355,8 @@ export default function PlatformNutricional() {
       setActivePlan(prev => {
         const noChange =
           (prev?.id ?? null) === (localFresh?.id ?? null) &&
-          (prev?.created_at ?? 0) === (localFresh?.created_at ?? 0);
+          (prev?.created_at ?? 0) === (localFresh?.created_at ?? 0) &&
+          (prev?.created_by ?? '') === (localFresh?.created_by ?? '');
         if (!noChange) {
           __TRACE.event("activePlan", "poll:localStorage", prev, localFresh);
         }

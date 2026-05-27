@@ -7255,13 +7255,51 @@ function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanUpdated 
       (globalEnabled && newOverride !== false) ||
       (!globalEnabled && newOverride === true);
 
-    // Recomponer las meals del día desde sus _spec con el shakeFactor correcto
+    // PASO 1 — Detectar snapshot existente (write-once guard)
+    const hasOriginalSnapshot = !!currentDay._originalMeals;
+
+    // PASO 2 — Capturar meals actuales (write-once: si ya existe, no tocar)
+    const originalMeals = hasOriginalSnapshot
+      ? currentDay._originalMeals
+      : JSON.parse(JSON.stringify(currentDay.meals));
+
+    console.log("[toggleShake] effectiveShake:", effectiveShake);
+    console.log("[toggleShake] hasOriginalSnapshot:", hasOriginalSnapshot);
+
+    // PASO 3 — RESTAURACIÓN DIRECTA si existe snapshot
+    if(hasOriginalSnapshot) {
+      console.log("[toggleShake] restoring snapshot:", true);
+      const newPlan = JSON.parse(JSON.stringify(plan));
+      newPlan.days[dayIdx] = Object.assign(
+        {},
+        currentDay,
+        {
+          meals: JSON.parse(JSON.stringify(originalMeals)),
+          shakeEnabled: newOverride,
+          _originalMeals: undefined
+        }
+      );
+      traceSetPlan("user", plan, newPlan);
+      setPlan(newPlan);
+      saveData(profile, newPlan, weekNum, extras);
+      PDB.updateActivePlan(currentUser.id, {days: newPlan.days});
+      return;
+    }
+
+    // PASO 4 — REBUILD primera vez en esta dirección (sin snapshot previo)
+    console.log("[toggleShake] rebuilding:", effectiveShake);
+    console.log("[toggleShake] snapshotCreated:", true);
     const rebuiltDay = rebuildDayMeals(dayIdx, currentDay.meals, effectiveShake);
 
-    // Merge no destructivo: meals recalculadas + override persistido
     const newPlan = JSON.parse(JSON.stringify(plan));
-    newPlan.days[dayIdx] = Object.assign({}, rebuiltDay, {shakeEnabled: newOverride});
-
+    newPlan.days[dayIdx] = Object.assign(
+      {},
+      rebuiltDay,
+      {
+        shakeEnabled: newOverride,
+        _originalMeals: originalMeals
+      }
+    );
     traceSetPlan("user", plan, newPlan);
     setPlan(newPlan);
     saveData(profile, newPlan, weekNum, extras);
@@ -7745,6 +7783,11 @@ function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanUpdated 
                 {!isNutriPlan&&((plan.weekProblems&&plan.weekProblems.length>0)||(plan.weekWarnings&&plan.weekWarnings.length>0))&&(
                   <button onClick={function(){handleRegenerate();}} style={{marginTop:8,width:"100%",padding:"7px",borderRadius:7,border:"none",background:THEME.accent,color:THEME.bgPage,fontFamily:sans,fontSize:12,fontWeight:700,cursor:"pointer"}}>🔄 Regenerar plan</button>
                 )}
+              </div>
+            )}
+            {!isNutriPlan&&(
+              <div style={{padding:"12px 16px",borderBottom:"1px solid #30363d"}}>
+                <button onClick={function(){handleRegenerate();setNavOpen(false);}} style={{width:"100%",padding:"10px",borderRadius:8,border:"none",background:THEME.accent,color:THEME.bgPage,fontFamily:sans,fontSize:13,fontWeight:700,cursor:"pointer"}}>🔄 Regenerar plan</button>
               </div>
             )}
             {[

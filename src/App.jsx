@@ -6310,7 +6310,11 @@ function AuthView({ onLogin }) {
     }
   });
   const [rememberMe, setRememberMe] = useState(true);
-  const [pass,       setPass]       = useState("");
+  const [pass,       setPass]       = useState(() => {
+    try {
+      return localStorage.getItem("np_remembered_pass") || "";
+    } catch(e) { return ""; }
+  });
   const [role,       setRole]       = useState("user");
   const [nutriEmail, setNutriEmail] = useState("");
   const [error,        setError]        = useState("");
@@ -6392,7 +6396,13 @@ function AuthView({ onLogin }) {
             const normalizedEmail = email.trim().toLowerCase();
             if (normalizedEmail) {
               localStorage.setItem("np_remembered_email", normalizedEmail);
+              localStorage.setItem("np_remembered_pass", pass);
             }
+          } catch(e) {}
+        } else {
+          try {
+            localStorage.removeItem("np_remembered_email");
+            localStorage.removeItem("np_remembered_pass");
           } catch(e) {}
         }
         onLogin(u);
@@ -6998,6 +7008,11 @@ const _hashStr = (s) => {
 
 const DEFAULT_PROFILE={gender:"female",age:30,date_of_birth:"",weight:65,height:165,activity:"moderate",goal:"fatLossGeneral",mealsPerDay:3,trainingDays:[],intolerances:[],eliminatedFoods:[],hambre:"media",experiencia:"intermedio",tiempoCocina:"normal",kcalAdjust:0,extras:{proteinShake:{enabled:false,scoops:1,kcalPerScoop:120,proteinPerScoop:24,timing:"post_entreno"}}};
 
+const getCurrentWeekdayIndex = () => {
+  const day = new Date().getDay(); // 0=domingo
+  return day === 0 ? 6 : day - 1; // lunes=0, domingo=6
+};
+
 function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanUpdated }) {
   __PERF.render("OriginalPlanApp");  // PERF
   // EMOJI FIX: use emoji-safe stacks defined at module level
@@ -7011,7 +7026,7 @@ function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanUpdated 
   const [plan,setPlan]           =useState(null);
   const [weekNum,setWeekNum]     =useState(null);
   const [profile,setProfile]     =useState(DEFAULT_PROFILE);
-  const [activeDay,setActiveDay] =useState(0);
+  const [activeDay,setActiveDay] =useState(() => getCurrentWeekdayIndex());
   const [activeTab,setActiveTab] =useState("plan");
   const [foodInput,setFoodInput] =useState("");
   const [navOpen,setNavOpen]     =useState(false);

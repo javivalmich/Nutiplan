@@ -7019,7 +7019,8 @@ function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanUpdated 
   const sans = SANS_EMOJI;
   const serif= SERIF_EMOJI;
   const Dk={bg:THEME.bgPage,card:THEME.bgCard,card2:THEME.bgCard2,border:THEME.borderDark,text:THEME.textPrimary,muted:THEME.textMuted,accent:THEME.accent,accentLight:"#f5c060"};
-  const isAdmin = currentUser?.email === 'javivalmich@gmail.com';
+  const isAdmin = currentUser?.email === 'javivalmich@gmail.com'
+    || currentUser?.role === 'admin';
 
   const [loading,setLoading]     =useState(true);
   const [step,setStep]           =useState(0);

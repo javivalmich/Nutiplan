@@ -5568,12 +5568,13 @@ const SDB = {
       method: "POST",
       headers: { "Prefer": "return=minimal" },
       body: JSON.stringify({
-        user_id:        userId,
-        full_name:      data.full_name,
-        license_number: data.license_number,
-        specialty:      data.specialty,
-        phone:          data.phone,
-        dni:            data.dni,
+        user_id:          userId,
+        full_name:        data.full_name,
+        license_number:   data.license_number,
+        specialty:        data.specialty,
+        phone:            data.phone,
+        dni:              data.dni,
+        dni_document_url: data.dni_document_url || null,
       }),
     });
     if (error) return { error };
@@ -5648,6 +5649,79 @@ const SDB = {
     });
     if (error) return { error };
     return { ok: true, data };
+  },
+
+  // ── DNI Document Storage ──────────────────────────────────────────────────
+  uploadDniDocument: async (userId, file) => {
+    const ext  = file.type.includes("pdf") ? "pdf" : "jpg";
+    const path = `${userId}/dni.${ext}`;
+    try {
+      const r = await Promise.race([
+        fetch(`${SUPABASE_URL}/storage/v1/object/nutritionist-docs/${path}`, {
+          method:  "POST",
+          headers: {
+            "Authorization": "Bearer " + SDB._token,
+            "Content-Type":  file.type,
+          },
+          body: file,
+        }),
+        SDB._timeout(30000),
+      ]);
+      if (!r.ok) {
+        const txt = await r.text();
+        return { error: txt };
+      }
+      return { ok: true, url: `${SUPABASE_URL}/storage/v1/object/nutritionist-docs/${path}` };
+    } catch(e) {
+      return { error: e.message };
+    }
+  },
+
+  getDniDocumentUrl: async (userId, dniDocumentUrl) => {
+    let path;
+    if (dniDocumentUrl) {
+      const marker = "/nutritionist-docs/";
+      const idx = dniDocumentUrl.indexOf(marker);
+      path = idx >= 0 ? dniDocumentUrl.slice(idx + marker.length) : `${userId}/dni.jpg`;
+    } else {
+      path = `${userId}/dni.jpg`;
+    }
+    try {
+      const r = await Promise.race([
+        fetch(`${SUPABASE_URL}/storage/v1/object/sign/nutritionist-docs/${path}`, {
+          method:  "POST",
+          headers: SDB._h({}),
+          body:    JSON.stringify({ expiresIn: 60 }),
+        }),
+        SDB._timeout(10000),
+      ]);
+      const txt  = await r.text();
+      const body = txt ? JSON.parse(txt) : null;
+      if (!r.ok) return { error: body };
+      const rel = body?.signedURL || body?.signedUrl || "";
+      const signedUrl = rel.startsWith("http") ? rel : `${SUPABASE_URL}/storage/v1${rel}`;
+      return { ok: true, signedUrl };
+    } catch(e) {
+      return { error: e.message };
+    }
+  },
+
+  adminPromoteToAdmin: async (userId) => {
+    const { error } = await SDB._rest("/rpc/promote_to_admin", {
+      method: "POST",
+      body:   JSON.stringify({ target_id: userId }),
+    });
+    if (error) return { error };
+    return { ok: true };
+  },
+
+  adminDemoteFromAdmin: async (userId) => {
+    const { error } = await SDB._rest("/rpc/demote_from_admin", {
+      method: "POST",
+      body:   JSON.stringify({ target_id: userId }),
+    });
+    if (error) return { error };
+    return { ok: true };
   },
 };
 
@@ -6250,11 +6324,29 @@ function AuthView({ onLogin }) {
   const [specialty,      setSpecialty]      = useState('');
   const [phone,          setPhone]          = useState('');
   const [dni,            setDni]            = useState('');
+  const [dniFile,        setDniFile]        = useState(null);
+  const [dniFileError,   setDniFileError]   = useState("");
 
   const inp = { width:"100%", boxSizing:"border-box", padding:"11px 14px", borderRadius:8, border:"1.5px solid "+Dk.border, background:Dk.card2, color:Dk.text, fontFamily:sans, fontSize:14, outline:"none" };
 
   const goTab = (t) => { setTab(t); setError(""); setInfo(""); setConfirmEmail(false); setApplicationState('none'); };
   const resetState = () => { setApplicationState('none'); setError(""); };
+
+  // ── Validación de archivo DNI ──────────────────────────────────────────
+  const handleDniFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!["image/jpeg", "application/pdf"].includes(file.type)) {
+      setDniFileError("Solo se aceptan archivos JPG o PDF");
+      setDniFile(null); return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setDniFileError("El archivo no puede superar 5MB");
+      setDniFile(null); return;
+    }
+    setDniFile(file);
+    setDniFileError("");
+  };
 
   // ── Recuperación de contraseña ─────────────────────────────────────────
   const handleForgot = async () => {
@@ -6315,6 +6407,7 @@ function AuthView({ onLogin }) {
           if (!specialty.trim())          { setError("La especialidad es obligatoria."); setLoading(false); return; }
           if (!phone.trim())              { setError("El teléfono es obligatorio."); setLoading(false); return; }
           if (!dniRegex.test(dni.trim())) { setError("DNI inválido — debe tener 8 dígitos y una letra (ej: 12345678A)."); setLoading(false); return; }
+          if (!dniFile) { setError("El documento DNI es obligatorio."); setLoading(false); return; }
 
           // Create account always as role='user'
           const res = await PDB.createUser(email.trim(), pass, 'user');
@@ -6331,12 +6424,19 @@ function AuthView({ onLogin }) {
             setLoading(false); return;
           }
 
+          const uploadRes = await SDB.uploadDniDocument(res.user.id, dniFile);
+          if (uploadRes.error) {
+            setError("Error subiendo el documento. Inténtalo de nuevo.");
+            setLoading(false); return;
+          }
+
           const appRes = await SDB.submitNutriApplication(res.user.id, {
-            full_name:      fullName.trim(),
-            license_number: licenseNumber.trim(),
-            specialty:      specialty.trim(),
-            phone:          phone.trim(),
-            dni:            dni.trim(),
+            full_name:        fullName.trim(),
+            license_number:   licenseNumber.trim(),
+            specialty:        specialty.trim(),
+            phone:            phone.trim(),
+            dni:              dni.trim(),
+            dni_document_url: uploadRes.url,
           });
           if (appRes.error) {
             setError("Error enviando la solicitud. Intenta iniciar sesión para consultar el estado.");
@@ -6560,6 +6660,16 @@ function AuthView({ onLogin }) {
                       <input type="text" placeholder="Especialidad" value={specialty} onChange={e=>setSpecialty(e.target.value)} style={inp}/>
                       <input type="tel" placeholder="Teléfono" value={phone} onChange={e=>setPhone(e.target.value)} style={inp}/>
                       <input type="text" placeholder="DNI (ej: 12345678A)" value={dni} onChange={e=>setDni(e.target.value)} style={inp}/>
+                      <div>
+                        <div style={{fontSize:11, color:Dk.muted, marginBottom:4}}>Documento DNI (JPG o PDF, máx 5MB) *</div>
+                        <input
+                          type="file"
+                          accept=".jpg,.jpeg,.pdf"
+                          onChange={handleDniFileChange}
+                          style={{...inp, padding:"8px"}}
+                        />
+                        {dniFileError && <div style={{padding:"6px 8px", borderRadius:6, background:THEME.errorBg18, border:"1px solid #e05a5a44", color:THEME.colorError2, fontSize:12, marginTop:4}}>{dniFileError}</div>}
+                      </div>
                       <div style={{fontSize:11, color:Dk.muted, lineHeight:1.5}}>Tu solicitud será revisada en 1–3 días hábiles. Recibirás acceso cuando sea aprobada.</div>
                     </div>
                   )}
@@ -6614,6 +6724,9 @@ const AdminPanel = ({ currentUser }) => {
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [actionLoading,setActionLoading]= useState({}); // { [id]: true }
   const [error,        setError]        = useState(null);
+  const [appErrors,    setAppErrors]    = useState({});
+
+  const isSuperAdmin = currentUser.email === 'javivalmich@gmail.com';
 
   const loadApplications = async () => {
     setLoadingApps(true);
@@ -6664,6 +6777,18 @@ const AdminPanel = ({ currentUser }) => {
 
   const handleSetActive = (userId, active) => withAction(userId + "_active", async () => {
     const res = await SDB.adminSetUserActive(userId, active);
+    if (res.error) throw new Error(JSON.stringify(res.error));
+    await loadUsers();
+  });
+
+  const handlePromote = (userId) => withAction(userId + "_promote", async () => {
+    const res = await SDB.adminPromoteToAdmin(userId);
+    if (res.error) throw new Error(JSON.stringify(res.error));
+    await loadUsers();
+  });
+
+  const handleDemote = (userId) => withAction(userId + "_demote", async () => {
+    const res = await SDB.adminDemoteFromAdmin(userId);
     if (res.error) throw new Error(JSON.stringify(res.error));
     await loadUsers();
   });
@@ -6732,6 +6857,28 @@ const AdminPanel = ({ currentUser }) => {
                     </div>
                   ))}
                 </div>
+                {app.dni_document_url && (
+                  <div style={{ marginBottom: 8 }}>
+                    <button
+                      disabled={busy}
+                      onClick={async () => {
+                        setAppErrors(prev => ({ ...prev, [app.id]: null }));
+                        const res = await SDB.getDniDocumentUrl(app.user_id, app.dni_document_url);
+                        if (res.error) {
+                          setAppErrors(prev => ({ ...prev, [app.id]: "Error abriendo el documento DNI." }));
+                        } else {
+                          window.open(res.signedUrl, "_blank");
+                        }
+                      }}
+                      style={{ ...btnBase, background: Dk.card2, color: Dk.text, border: "1px solid " + Dk.border }}
+                    >
+                      📄 Ver DNI
+                    </button>
+                    {appErrors[app.id] && (
+                      <div style={{ fontSize: 11, color: THEME.colorError2, marginTop: 4 }}>{appErrors[app.id]}</div>
+                    )}
+                  </div>
+                )}
                 {isPending && (
                   <div style={{ display: "flex", gap: 8 }}>
                     <button disabled={busy} onClick={() => handleApprove(app.id)} style={{ ...btnBase, background: THEME.colorSuccessDark, color: "#fff", flex: 1 }}>
@@ -6756,13 +6903,22 @@ const AdminPanel = ({ currentUser }) => {
             <div style={{ color: Dk.muted, fontSize: 13, padding: "12px 0" }}>No hay usuarios.</div>
           )}
           {users.filter(u => u.id !== currentUser.id).map(u => {
-            const busyRole   = !!actionLoading[u.id + "_role"];
-            const busyActive = !!actionLoading[u.id + "_active"];
-            const busy       = busyRole || busyActive;
+            const busyRole    = !!actionLoading[u.id + "_role"];
+            const busyActive  = !!actionLoading[u.id + "_active"];
+            const busyPromote = !!actionLoading[u.id + "_promote"];
+            const busyDemote  = !!actionLoading[u.id + "_demote"];
+            const busy        = busyRole || busyActive || busyPromote || busyDemote;
+            const isAdminUser = u.role === 'admin';
+            const isSuperAdminUser = u.email === 'javivalmich@gmail.com';
+
             return (
               <div key={u.id} style={{ ...cardStyle, opacity: busy ? 0.6 : 1 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: Dk.text, wordBreak: "break-all" }}>{u.email}</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: Dk.text, wordBreak: "break-all" }}>
+                    {u.email}
+                    {isSuperAdminUser && <span style={{ marginLeft: 6, fontSize: 10, color: THEME.colorPurpleLight, fontWeight: 700 }}>⭐ super_admin</span>}
+                    {isAdminUser && !isSuperAdminUser && <span style={{ marginLeft: 6, fontSize: 10, color: Dk.accent, fontWeight: 700 }}>🔑 admin</span>}
+                  </div>
                   <span style={{
                     fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 99, marginLeft: 8, flexShrink: 0,
                     background: u.is_active ? THEME.successBg18 : THEME.errorBg18,
@@ -6772,24 +6928,50 @@ const AdminPanel = ({ currentUser }) => {
                 <div style={{ fontSize: 11, color: Dk.muted, marginBottom: 10 }}>
                   Registro: {u.created_at ? new Date(u.created_at).toLocaleDateString("es-ES") : "—"}
                 </div>
-                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                  <select
-                    value={u.role}
-                    disabled={busy}
-                    onChange={e => handleSetRole(u.id, e.target.value)}
-                    style={{ flex: 1, padding: "7px 10px", borderRadius: 8, border: "1px solid " + Dk.border, background: Dk.card2, color: Dk.text, fontFamily: sans, fontSize: 12, cursor: "pointer" }}
-                  >
-                    <option value="user">user</option>
-                    <option value="nutritionist">nutritionist</option>
-                  </select>
-                  <button
-                    disabled={busy}
-                    onClick={() => handleSetActive(u.id, !u.is_active)}
-                    style={{ ...btnBase, background: u.is_active ? THEME.colorErrorDark : THEME.colorSuccessDark, color: "#fff", whiteSpace: "nowrap" }}
-                  >
-                    {busyActive ? "…" : u.is_active ? "Desactivar" : "Activar"}
-                  </button>
-                </div>
+
+                {/* Admin / super_admin row: only super_admin sees the demote button */}
+                {(isAdminUser || isSuperAdminUser) ? (
+                  isSuperAdmin && !isSuperAdminUser && (
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <button
+                        disabled={busy}
+                        onClick={() => handleDemote(u.id)}
+                        style={{ ...btnBase, background: THEME.colorErrorDark, color: "#fff" }}
+                      >
+                        {busyDemote ? "…" : "✕ Quitar admin"}
+                      </button>
+                    </div>
+                  )
+                ) : (
+                  /* user / nutritionist row */
+                  <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                    <select
+                      value={u.role}
+                      disabled={busy}
+                      onChange={e => handleSetRole(u.id, e.target.value)}
+                      style={{ flex: 1, minWidth: 120, padding: "7px 10px", borderRadius: 8, border: "1px solid " + Dk.border, background: Dk.card2, color: Dk.text, fontFamily: sans, fontSize: 12, cursor: "pointer" }}
+                    >
+                      <option value="user">user</option>
+                      <option value="nutritionist">nutritionist</option>
+                    </select>
+                    <button
+                      disabled={busy}
+                      onClick={() => handleSetActive(u.id, !u.is_active)}
+                      style={{ ...btnBase, background: u.is_active ? THEME.colorErrorDark : THEME.colorSuccessDark, color: "#fff", whiteSpace: "nowrap" }}
+                    >
+                      {busyActive ? "…" : u.is_active ? "Desactivar" : "Activar"}
+                    </button>
+                    {isSuperAdmin && (
+                      <button
+                        disabled={busy}
+                        onClick={() => handlePromote(u.id)}
+                        style={{ ...btnBase, background: Dk.accent, color: "#fff", whiteSpace: "nowrap" }}
+                      >
+                        {busyPromote ? "…" : "⭐ Admin"}
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
             );
           })}

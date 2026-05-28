@@ -5196,7 +5196,27 @@ const SDB = {
       const { r: rt, u: uid } = JSON.parse(raw);
       if (!rt) return false;
       const { data, error } = await SDB._auth("/token?grant_type=refresh_token", { refresh_token: rt });
-      if (error || !data?.access_token) { SDB._clearTokens(); return false; }
+      if (error || !data?.access_token) {
+        // Solo borrar tokens cuando Supabase
+        // rechaza explícitamente el refresh token.
+        // Errores transitorios/red/offline NO deben
+        // destruir la sesión persistida.
+        const isAuthError =
+          (typeof error === "string" &&
+            error.includes("invalid_grant")) ||
+          (typeof error === "object" &&
+            (
+              error?.error === "invalid_grant" ||
+              error?.message?.includes?.("invalid_grant")
+            )) ||
+          (data?.error === "invalid_grant");
+
+        if (isAuthError) {
+          SDB._clearTokens();
+        }
+
+        return false;
+      }
       SDB._saveTokens(data.access_token, data.refresh_token, data.user?.id || uid);
       return true;
     } catch(e) { return false; }
@@ -6146,7 +6166,14 @@ function AuthView({ onLogin }) {
 
   const [tab,        setTab]        = useState("login"); // "login" | "register" | "forgot"
   const [regMode,    setRegMode]    = useState("auto");
-  const [email,      setEmail]      = useState("");
+  const [email,      setEmail]      = useState(() => {
+    try {
+      return localStorage.getItem("np_remembered_email") || "";
+    } catch(e) {
+      return "";
+    }
+  });
+  const [rememberMe, setRememberMe] = useState(true);
   const [pass,       setPass]       = useState("");
   const [role,       setRole]       = useState("user");
   const [nutriEmail, setNutriEmail] = useState("");
@@ -6206,6 +6233,14 @@ function AuthView({ onLogin }) {
         }
         await SyncEngine.pullFromCloud(u.id);
         await SyncEngine.migrateExistingData();
+        if (rememberMe && tab === "login") {
+          try {
+            const normalizedEmail = email.trim().toLowerCase();
+            if (normalizedEmail) {
+              localStorage.setItem("np_remembered_email", normalizedEmail);
+            }
+          } catch(e) {}
+        }
         onLogin(u);
       } else {
         if (!email.trim() || pass.length < 6) { setError("Completa todos los campos (mínimo 6 caracteres)."); setLoading(false); return; }
@@ -6234,7 +6269,6 @@ function AuthView({ onLogin }) {
             setLoading(false); return;
           }
 
-          // Submit verification application — NOT onLogin
           const appRes = await SDB.submitNutriApplication(res.user.id, {
             full_name:      fullName.trim(),
             license_number: licenseNumber.trim(),
@@ -6407,6 +6441,18 @@ function AuthView({ onLogin }) {
                   {showPass ? <EyeOffIcon/> : <EyeIcon/>}
                 </button>
               </div>
+
+              {tab === "login" && (
+                <label style={{display:"flex", alignItems:"center", gap:8, cursor:"pointer", userSelect:"none"}}>
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={e => setRememberMe(e.target.checked)}
+                    style={{accentColor: THEME.accent, width:15, height:15, cursor:"pointer", flexShrink:0}}
+                  />
+                  <span style={{fontSize:13, color:Dk.muted, fontFamily:sans}}>Recuérdame</span>
+                </label>
+              )}
 
               {tab === "register" && (
                 <>
@@ -7265,7 +7311,6 @@ function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanUpdated 
     console.log("[toggleShake] hasSnapshot:", hasSnapshot);
 
     if (hasSnapshot) {
-      // Restaurar snapshot exacto — sin recomputar
       const snapshot = dayShakeSnapshotRef.current[dayIdx];
       delete dayShakeSnapshotRef.current[dayIdx];
       console.log("[toggleShake] restoring snapshot, day", dayIdx);
@@ -7281,7 +7326,6 @@ function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanUpdated 
       return;
     }
 
-    // Primer toggle: guardar snapshot + rebuild
     dayShakeSnapshotRef.current[dayIdx] =
       JSON.parse(JSON.stringify(currentDay.meals));
     console.log("[toggleShake] snapshot saved, day", dayIdx);
@@ -7290,7 +7334,15 @@ function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanUpdated 
       dayIdx, currentDay.meals, effectiveShake
     );
     const newPlan = JSON.parse(JSON.stringify(plan));
+    // Preservar slotNote de las meals originales —
+    // composeMeal no lo replica, se pierde en el rebuild.
+    const _mergedMeals = rebuiltDay.meals.map(function(meal, i) {
+      var orig = currentDay.meals && currentDay.meals[i];
+      if (!meal || !orig || !orig.slotNote) return meal;
+      return Object.assign({}, meal, {slotNote: orig.slotNote});
+    });
     newPlan.days[dayIdx] = Object.assign({}, rebuiltDay, {
+      meals: _mergedMeals,
       shakeEnabled: newOverride,
     });
     traceSetPlan("user", plan, newPlan);

@@ -378,6 +378,8 @@ function addWeekProgress(uid, weekNum, {peso, pesoInicial, adherencia, energia, 
 }
 
 
+const INVITATIONS_KEY = "pf_invitations";
+
 const PDB = {
   _g: k => {
     try {
@@ -572,6 +574,10 @@ const PDB = {
     SyncEngine.push(() => SDB.insertCheckin(uid, nc));
     return nc;
   },
+
+  // INVITATIONS (local only — no sync, no broadcast)
+  getInvitations:  () => PDB._g(INVITATIONS_KEY) || [],
+  saveInvitations: (arr) => PDB._s(INVITATIONS_KEY, arr),
 
   // ── Local-only user creation (sync, no Supabase) ────────────────────────
   // Used by seedDemo and offline fallback only.

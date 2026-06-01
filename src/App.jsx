@@ -788,7 +788,7 @@ function AuthView({ onLogin }) {
           const nutr = PDB.getUserByEmail(nutriEmail.trim());
           if (!nutr || nutr.role !== "nutritionist") {
             setError("No se encontró ningún nutricionista con ese email.");
-            PDB._saveUsers(PDB.getUsers().filter(u => u.id !== res.user.id));
+            PDB.deleteUserLocal(res.user.id);
             setLoading(false); return;
           }
           PDB.assignClient(nutr.id, res.user.id);

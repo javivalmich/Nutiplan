@@ -1872,7 +1872,7 @@ function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanUpdated 
         SDB._rest(`/checkins?uid=eq.${uid}`,    { method: "DELETE" }),
       ]);
       clearData(uid);
-      PDB._savePlans(uid, []);
+      PDB.clearPlans(uid);
       setPlan(null); setProfile(DEFAULT_PROFILE); setStep(0);
       if (onPlanUpdated) onPlanUpdated();
     } catch(e) {

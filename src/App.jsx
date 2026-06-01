@@ -3547,10 +3547,9 @@ async function copyToClipboard(text) {
 }
 
 // PDB layer — localStorage store for invitations (offline / fallback)
-const INVITATIONS_KEY = "pf_invitations";
 const InvitationStore = {
-  _all: () => PDB._g(INVITATIONS_KEY) || [],
-  _save: (arr) => PDB._s(INVITATIONS_KEY, arr),
+  _all: () => PDB.getInvitations(),
+  _save: (arr) => PDB.saveInvitations(arr),
 
   create: (ownerUid, planId) => {
     let token;

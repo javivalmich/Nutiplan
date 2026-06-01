@@ -432,6 +432,9 @@ const PDB = {
   // USERS
   getUsers: () => PDB._g("pf_users") || [],
   _saveUsers: u => PDB._s("pf_users", u),
+  // Removes a user by id from local storage only. No Supabase side-effect.
+  // Used as a rollback when post-registration validation fails after a partial local write.
+  deleteUserLocal: id => PDB._saveUsers(PDB.getUsers().filter(u => u.id !== id)),
   // SUPABASE: createUser is now async — caller must await it
   createUser: async (email, pass, role) => {
     // 1. Try Supabase sign-up
@@ -491,6 +494,10 @@ const PDB = {
   },
   getUserById: id => PDB.getUsers().find(u => u.id===id) || null,
   getUserByEmail: email => PDB.getUsers().find(u => u.email.toLowerCase()===email.toLowerCase()) || null,
+  // Reads the client profile stored under "pf_profile_<cid>" by saveData().
+  // This key is distinct from SK(uid) ("pf_user_data_<cid>"); do not substitute loadData().
+  // Read-only; no side-effects.
+  getClientProfile: cid => PDB._g("pf_profile_" + cid),
 
   // SESSION
   getSession: () => PDB._g("pf_session"),
@@ -535,6 +542,10 @@ const PDB = {
     // SUPABASE: mirror active plan to cloud async (fire-and-forget)
     if (active) SyncEngine.push(() => SDB.upsertPlan({ ...active, uid }));
   },
+  // Clears all local plans for uid without triggering SyncEngine.push.
+  // Delegates to _savePlans(uid, []): empty array → no active plan → push guard is false.
+  // Broadcast (PLAN_UPDATED) still fires. Call only after the caller has deleted from Supabase.
+  clearPlans: uid => PDB._savePlans(uid, []),
   getActivePlan: uid => (PDB.getPlans(uid)).find(p => p.is_active) || null,
   addPlan: (uid, planData) => {
     const plans = PDB.getPlans(uid).map(p => ({...p, is_active:false}));

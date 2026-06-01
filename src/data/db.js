@@ -602,6 +602,38 @@ const PDB = {
   },
 };
 
+PDB.removePatient = async function (nutritionistId, clientId, systemPlan) {
+  // 1. Remove assignment from localStorage
+  const asgns = PDB.getAssignments().filter(
+    a => !(a.nid === nutritionistId && a.cid === clientId)
+  );
+  PDB._saveAsgn(asgns);
+
+  // 2. Mirror deletion to Supabase
+  await SDB.deleteAssignment(clientId, nutritionistId).catch(e =>
+    console.warn("[removePatient] Supabase delete failed:", e.message)
+  );
+
+  // 3. Guard: no profile → no plan to regenerate (mirrors original early-return)
+  if (!systemPlan) {
+    console.info("[removePatient] No profile found for client — plan not regenerated");
+    return { ok: true, newPlan: null };
+  }
+
+  // 4. Deactivate the nutritionist plan
+  const plans = PDB.getPlans(clientId).map(p => ({ ...p, is_active: false }));
+  try { localStorage.setItem("pf_plans_" + clientId, JSON.stringify(plans)); } catch(e) {}
+
+  // 6. Save the new auto plan for the client
+  PDB.addPlan(clientId, systemPlan);
+
+  // 7. Broadcast so the client's tab updates immediately
+  _bcPost({ type: "PLAN_UPDATED", uid: clientId, ts: Date.now() });
+
+  console.info("[removePatient] Done — client", clientId, "now has system plan");
+  return { ok: true, newPlan: systemPlan };
+};
+
 export {
   PDB, SyncEngine,
   loadData, saveData, clearData,

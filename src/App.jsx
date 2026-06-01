@@ -3804,53 +3804,33 @@ function extractMenuNames(plan) {
 // Removes the nutritionist→client link and regenerates an auto system plan
 // for the client. The client's account and all their data remain intact.
 async function removePatient(nutritionistId, clientId) {
-  // 1. Remove assignment from localStorage
-  const asgns = PDB.getAssignments().filter(
-    a => !(a.nid === nutritionistId && a.cid === clientId)
-  );
-  PDB._saveAsgn(asgns);
+  // (P) Read client profile — active-plan profile takes priority, stored profile as fallback
+  const activePlan = PDB.getActivePlan(clientId);
+  const clientProf = activePlan?.profile || PDB.getClientProfile(clientId);
 
-  // 2. Mirror deletion to Supabase
-  await SDB.deleteAssignment(clientId, nutritionistId).catch(e =>
-    console.warn("[removePatient] Supabase delete failed:", e.message)
-  );
-
-  // 3. Get client's active plan — we need their profile to rebuild
-  const activePlan  = PDB.getActivePlan(clientId);
-  const clientProf  = activePlan?.profile || PDB._g("pf_profile_" + clientId);
-  if (!clientProf) {
-    console.info("[removePatient] No profile found for client — plan not regenerated");
-    return { ok: true, newPlan: null };
+  // (P) Build system plan if profile is available; null triggers the early-return guard in PDB
+  let systemPlan = null;
+  if (clientProf) {
+    const tdee  = calcTDEE(clientProf.gender, clientProf.age, clientProf.weight,
+                            clientProf.height, clientProf.activity);
+    const kcal  = calcTarget(tdee, clientProf.goal, clientProf.kcalAdjust || 0);
+    const built = __PERF.time("buildPlan:removePatient", () => buildPlan(clientProf, kcal, {month:new Date().getMonth(),pastProteins:getPastProteinFrequency(loadMealMemory(clientId)),freeFormPool:FREEFORM_POOL,saveMealMemory:(wk,L,D)=>saveMealMemory(clientId,wk,L,D),weekNumber:getWeekNumber(),perf:__PERF}));  // PERF
+    const wk    = getWeekNumber();
+    systemPlan = {
+      created_by:      "system",
+      nutritionist_id: null,
+      strategy:        built.strategy,
+      calories:        kcal,
+      profile:         clientProf,
+      days:            JSON.parse(JSON.stringify(built.days)),
+      weekNum:         wk,
+      extras:          {},
+    };
   }
 
-  // 4. Deactivate the nutritionist plan
-  const plans = PDB.getPlans(clientId).map(p => ({ ...p, is_active: false }));
-  try { localStorage.setItem("pf_plans_" + clientId, JSON.stringify(plans)); } catch(e) {}
-
-  // 5. Generate a new system plan for the client
-  const tdee     = calcTDEE(clientProf.gender, clientProf.age, clientProf.weight,
-                             clientProf.height, clientProf.activity);
-  const kcal     = calcTarget(tdee, clientProf.goal, clientProf.kcalAdjust || 0);
-  const newPlan  = __PERF.time("buildPlan:removePatient", () => buildPlan(clientProf, kcal, {month:new Date().getMonth(),pastProteins:getPastProteinFrequency(loadMealMemory(clientId)),freeFormPool:FREEFORM_POOL,saveMealMemory:(wk,L,D)=>saveMealMemory(clientId,wk,L,D),weekNumber:getWeekNumber(),perf:__PERF}));  // PERF
-  const wk       = getWeekNumber();
-
-  // 6. Save the new auto plan for the client
-  PDB.addPlan(clientId, {
-    created_by: "system",
-    nutritionist_id: null,
-    strategy:   newPlan.strategy,
-    calories:   kcal,
-    profile:    clientProf,
-    days:       JSON.parse(JSON.stringify(newPlan.days)),
-    weekNum:    wk,
-    extras:     {},
-  });
-
-  // 7. Broadcast so the client's tab updates immediately
-  _bcPost({ type: "PLAN_UPDATED", uid: clientId, ts: Date.now() });
-
-  console.info("[removePatient] Done — client", clientId, "now has system plan");
-  return { ok: true, newPlan };
+  // (D) All data operations delegated to PDB.removePatient
+  const { ok, newPlan } = await PDB.removePatient(nutritionistId, clientId, systemPlan);
+  return { ok, newPlan };
 }
 
 // ── useSyncStatus — tiny hook for the sync indicator dot ─────────────────

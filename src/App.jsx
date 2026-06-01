@@ -3116,7 +3116,7 @@ function NutritionistDashboard({ currentUser, onLogout }) {
     const asgns = PDB.getClientsOf(currentUser.id);
     setClients(asgns.map(a => {
       const user    = PDB.getUserById(a.cid);
-      const profile = PDB._g("pf_profile_"+ a.cid) || null; // stored by OriginalPlanApp via saveData
+      const profile = PDB.getClientProfile(a.cid) || null; // stored by OriginalPlanApp via saveData
       const plan    = PDB.getActivePlan(a.cid);
       const checkins= PDB.getCheckins(a.cid);
       return { a, user, profile, plan, checkins };
@@ -3190,7 +3190,7 @@ function NutritionistDashboard({ currentUser, onLogout }) {
     //    directly from PDB (synchronous read) and update sel immediately
     //    so client_detail renders the saved plan without needing a second render.
     const freshPlan    = PDB.getActivePlan(editPlan.clientId);
-    const freshProfile = PDB._g("pf_profile_"+editPlan.clientId) || freshPlan?.profile || editPlan.profile;
+    const freshProfile = PDB.getClientProfile(editPlan.clientId) || freshPlan?.profile || editPlan.profile;
     const freshClient  = {
       user:    PDB.getUserById(editPlan.clientId) || (sel && sel.user),
       plan:    freshPlan,

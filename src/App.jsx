@@ -3608,8 +3608,8 @@ const InvitationStore = {
       return { ok:false, errorCode:"empty", errorMsg:"El código debe tener 6 caracteres." };
     }
 
-    console.info("[INVITE_VALIDATE] token:", clean, "uid:", SDB._uid, "online:", !!SDB._token);
-    __TRACE.log("invitation:validate:start", { tokenInput: token, tokenClean: clean, hasSdbToken: !!SDB._token, sdbUid: SDB._uid });
+    console.info("[INVITE_VALIDATE] token:", clean, "uid:", SDB.getUid(), "online:", !!SDB._token);
+    __TRACE.log("invitation:validate:start", { tokenInput: token, tokenClean: clean, hasSdbToken: !!SDB._token, sdbUid: SDB.getUid() });
 
     // 1. Online path — transactional: validate + claim + fetch plan in one RPC.
     //    redeem_invitation_and_get_plan devuelve SETOF jsonb (siempre 1 fila):
@@ -3617,7 +3617,7 @@ const InvitationStore = {
     //      { success:false, reason:"TOKEN_*" } → razón explícita del fallo
     if (SDB._token) {
       console.info("[INVITE_REDEEM] calling redeem_invitation_and_get_plan");
-      const { data, error } = await SDB.redeemInvitation(clean, SDB._uid);
+      const { data, error } = await SDB.redeemInvitation(clean, SDB.getUid());
       __TRACE.log("invitation:rpc:response", {
         dataLen: Array.isArray(data) ? data.length : typeof data,
         error,
@@ -3685,7 +3685,7 @@ const InvitationStore = {
       const plan    = _sbToLocalPlan(planRow);
 
       const all = InvitationStore._all().map(i =>
-        i.token === clean ? { ...i, usedBy: SDB._uid, usedAt: Date.now() } : i
+        i.token === clean ? { ...i, usedBy: SDB.getUid(), usedAt: Date.now() } : i
       );
       InvitationStore._save(all);
       console.info("[INVITE_REDEEM] claimed — planId:", planId);

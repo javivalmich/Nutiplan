@@ -1864,12 +1864,12 @@ function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanUpdated 
     try {
       const uid = currentUser.id;
       await Promise.allSettled([
-        SDB._rest(`/user_data?uid=eq.${uid}`,   { method: "DELETE" }),
-        SDB._rest(`/preferences?uid=eq.${uid}`, { method: "DELETE" }),
-        SDB._rest(`/progress?uid=eq.${uid}`,    { method: "DELETE" }),
-        SDB._rest(`/meal_memory?uid=eq.${uid}`, { method: "DELETE" }),
-        SDB._rest(`/plans?uid=eq.${uid}`,       { method: "DELETE" }),
-        SDB._rest(`/checkins?uid=eq.${uid}`,    { method: "DELETE" }),
+        SDB.deleteUserData(uid),
+        SDB.deletePreferences(uid),
+        SDB.deleteProgress(uid),
+        SDB.deleteMealMemory(uid),
+        SDB.deletePlans(uid),
+        SDB.deleteCheckins(uid),
       ]);
       clearData(uid);
       PDB.clearPlans(uid);
@@ -1889,18 +1889,18 @@ function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanUpdated 
     try {
       const uid = currentUser.id;
       await Promise.allSettled([
-        SDB._rest(`/user_data?uid=eq.${uid}`,   { method: "DELETE" }),
-        SDB._rest(`/preferences?uid=eq.${uid}`, { method: "DELETE" }),
-        SDB._rest(`/progress?uid=eq.${uid}`,    { method: "DELETE" }),
-        SDB._rest(`/meal_memory?uid=eq.${uid}`, { method: "DELETE" }),
-        SDB._rest(`/plans?uid=eq.${uid}`,       { method: "DELETE" }),
-        SDB._rest(`/checkins?uid=eq.${uid}`,    { method: "DELETE" }),
+        SDB.deleteUserData(uid),
+        SDB.deletePreferences(uid),
+        SDB.deleteProgress(uid),
+        SDB.deleteMealMemory(uid),
+        SDB.deletePlans(uid),
+        SDB.deleteCheckins(uid),
       ]);
       // Requiere Edge Function "delete-user" en Supabase que:
       // 1. Borre datos de tablas por user_id
       // 2. Elimine el usuario auth usando service_role key
       try {
-        await SDB._rest("/functions/v1/delete-user", { method: "POST", body: JSON.stringify({ uid }) });
+        await SDB.deleteAccount(uid);
       } catch(efErr) {
         console.error("[handleDeleteAccount] Edge Function no disponible:", efErr);
       }

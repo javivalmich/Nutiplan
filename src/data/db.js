@@ -49,8 +49,11 @@ const SyncEngine = {
   _q:    [],     // pending { fn, retries } ops
   _busy: false,
   _online: typeof navigator !== "undefined" ? navigator.onLine : true,
+  _initialized: false,
 
   init() {
+    if (SyncEngine._initialized) return;
+    SyncEngine._initialized = true;
     if (typeof window === "undefined") return;
     window.addEventListener("online",  () => { SyncEngine._online = true;  SyncEngine._drain(); });
     window.addEventListener("offline", () => { SyncEngine._online = false; });

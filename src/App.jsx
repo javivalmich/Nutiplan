@@ -1685,16 +1685,12 @@ function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanUpdated 
 
     const token = InvitationStore.create(currentUser.id, activePlanMeta.id);
 
-    const { error } = await SDB._rest("/plan_invitations", {
-      method: "POST",
-      headers: { "Prefer": "resolution=merge-duplicates,return=minimal" },
-      body: JSON.stringify({
-        token:      token,
-        owner_uid:  currentUser.id,
-        plan_id:    activePlanMeta.id,
-        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-      }),
-    });
+    const { error } = await SDB.createInvitation(
+      token,
+      currentUser.id,
+      activePlanMeta.id,
+      new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    );
 
     setInviteCreating(false);
 
@@ -3568,16 +3564,12 @@ const InvitationStore = {
     };
     InvitationStore._save([...InvitationStore._all(), inv]);
     // Mirror to Supabase async
-    SyncEngine.push(() => SDB._rest("/plan_invitations", {
-      method: "POST",
-      headers: { "Prefer": "resolution=merge-duplicates,return=minimal" },
-      body: JSON.stringify({
-        token:      inv.token,
-        owner_uid:  inv.ownerUid,
-        plan_id:    inv.planId,
-        expires_at: new Date(inv.expiresAt).toISOString(),
-      }),
-    }));
+    SyncEngine.push(() => SDB.createInvitation(
+      inv.token,
+      inv.ownerUid,
+      inv.planId,
+      new Date(inv.expiresAt).toISOString(),
+    ));
     return token;
   },
 
@@ -3625,10 +3617,7 @@ const InvitationStore = {
     //      { success:false, reason:"TOKEN_*" } → razón explícita del fallo
     if (SDB._token) {
       console.info("[INVITE_REDEEM] calling redeem_invitation_and_get_plan");
-      const { data, error } = await SDB._rest("/rpc/redeem_invitation_and_get_plan", {
-        method: "POST",
-        body: JSON.stringify({ p_token: clean, p_requester_id: SDB._uid }),
-      });
+      const { data, error } = await SDB.redeemInvitation(clean, SDB._uid);
       __TRACE.log("invitation:rpc:response", {
         dataLen: Array.isArray(data) ? data.length : typeof data,
         error,
@@ -3729,13 +3718,7 @@ const InvitationStore = {
     );
     InvitationStore._save(all);
     // Mirror to Supabase only if RPC wasn't already used (offline recovery)
-    SyncEngine.push(() => SDB._rest(
-      `/plan_invitations?token=eq.${clean}`,
-      { method: "PATCH",
-        headers: { "Prefer": "return=minimal" },
-        body: JSON.stringify({ used_by: claimantUid, used_at: new Date().toISOString() }),
-      }
-    ));
+    SyncEngine.push(() => SDB.markInvitationUsed(clean, claimantUid));
   },
 };
 

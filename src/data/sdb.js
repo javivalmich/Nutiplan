@@ -625,6 +625,58 @@ export const SDB = {
     if (error) return { error };
     return { ok: true };
   },
+
+  // ── Per-table DELETE helpers (reset / account deletion) ────────────────────
+  // 1:1 wrappers over the _rest calls in App.jsx:1867-1872.
+  // No guard on _token — call sites do not have one.
+  deleteUserData:    uid => SDB._rest(`/user_data?uid=eq.${uid}`,   { method: "DELETE" }),
+  deletePreferences: uid => SDB._rest(`/preferences?uid=eq.${uid}`, { method: "DELETE" }),
+  deleteProgress:    uid => SDB._rest(`/progress?uid=eq.${uid}`,    { method: "DELETE" }),
+  deletePlans:       uid => SDB._rest(`/plans?uid=eq.${uid}`,       { method: "DELETE" }),
+  deleteMealMemory:  uid => SDB._rest(`/meal_memory?uid=eq.${uid}`, { method: "DELETE" }),
+  deleteCheckins:    uid => SDB._rest(`/checkins?uid=eq.${uid}`,    { method: "DELETE" }),
+
+  // ── Account removal via Edge Function (App.jsx:1903) ─────────────────────
+  deleteAccount: uid => SDB._rest("/functions/v1/delete-user", {
+    method: "POST",
+    body: JSON.stringify({ uid }),
+  }),
+
+  // ── Invitations (App.jsx:1688, 3628, 3732) ───────────────────────────────
+  createInvitation: (token, ownerUid, planId, expiresAt) =>
+    SDB._rest("/plan_invitations", {
+      method: "POST",
+      headers: { "Prefer": "resolution=merge-duplicates,return=minimal" },
+      body: JSON.stringify({
+        token,
+        owner_uid:  ownerUid,
+        plan_id:    planId,
+        expires_at: expiresAt,
+      }),
+    }),
+
+  redeemInvitation: (pToken, requesterId) =>
+    SDB._rest("/rpc/redeem_invitation_and_get_plan", {
+      method: "POST",
+      body: JSON.stringify({ p_token: pToken, p_requester_id: requesterId }),
+    }),
+
+  markInvitationUsed: (token, usedBy) =>
+    SDB._rest(`/plan_invitations?token=eq.${token}`, {
+      method: "PATCH",
+      headers: { "Prefer": "return=minimal" },
+      body: JSON.stringify({ used_by: usedBy, used_at: new Date().toISOString() }),
+    }),
+
+  // ── Internal state accessors (App.jsx:3630, 3882-3885) ───────────────────
+  getUid: () => SDB._uid,
+
+  withTemporaryToken: (token, fn) => {
+    const prev = SDB._token;
+    SDB._token = token;
+    try { return fn(); }
+    finally { SDB._token = prev; }
+  },
 };
 
 // ─── Shape converters ─────────────────────────────────────────────────────

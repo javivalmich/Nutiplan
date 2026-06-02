@@ -269,6 +269,8 @@ const SyncEngine = {
       console.warn("[SyncEngine] pushToCloud error:", e);
     }
   },
+
+  pendingCount: () => SyncEngine._q.length,
 };
 
 // Kick off SyncEngine event listeners as soon as the module loads

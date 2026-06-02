@@ -3821,7 +3821,7 @@ function useSyncStatus() {
   useEffect(() => {
     const check = () => {
       if (!navigator.onLine)         return setStatus("offline");
-      if (SyncEngine._q.length > 0) return setStatus("pending");
+      if (SyncEngine.pendingCount() > 0) return setStatus("pending");
       setStatus("synced");
     };
     check();

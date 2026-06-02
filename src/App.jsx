@@ -3862,10 +3862,9 @@ function ResetPasswordView({ token, onDone }) {
     if (newPass.length < 8) { setError("La contraseña debe tener al menos 8 caracteres."); return; }
     if (newPass !== confirmPass) { setError("Las contraseñas no coinciden."); return; }
     setLoading(true);
-    const prevToken = SDB._token;
-    SDB._token = token;
-    const { ok, error: sbErr } = await SDB.updatePassword(newPass);
-    SDB._token = prevToken;
+    const { ok, error: sbErr } = await SDB.withTemporaryToken(token, () => {
+      return SDB.updatePassword(newPass);
+    });
     setLoading(false);
     if (!ok) { setError(sbErr || "No se pudo actualizar la contraseña. El enlace puede haber caducado."); return; }
     setSuccess(true);

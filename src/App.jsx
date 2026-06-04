@@ -3,6 +3,7 @@ import {
   FREEFORM_COMBOS,
   loadFreeFormCombos
 } from "./data/FREEFORM_COMBOS";
+import { FREEFORM_POOL } from "./data/freeformPool.js";
 import {
   ACT_MULT, GOAL_ADJ, PROTEIN_FACTOR, FAT_FACTOR,
   simpleHash, _hashStr,
@@ -142,13 +143,6 @@ function useFonts() {
 
 
 
-var FREEFORM_POOL_RESULT = loadFreeFormCombos(
-  FREEFORM_COMBOS,
-  validateFreeFormPool,
-  { strict: true, healthRatioMin: 0.8 }
-);
-
-var FREEFORM_POOL = FREEFORM_POOL_RESULT.pool;
 
 
 

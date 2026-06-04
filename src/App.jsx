@@ -53,7 +53,8 @@ import {
   NUTIPLAN_LOGO,
   SANS_EMOJI,
   SERIF_EMOJI,
-  EMOJI_FONTS
+  EMOJI_FONTS,
+  AD_SLOTS,
 } from "./ui/constants";
 import { EyeIcon, EyeOffIcon } from "./ui/common/Icons";
 import { ResetPasswordView } from "./ui/views/ResetPasswordView.jsx";
@@ -76,16 +77,6 @@ if (typeof window !== "undefined") {
 
 
 
-// ── Placement constants ───────────────────────────────────────────────────
-// Replace slot IDs with real ones from your AdSense dashboard.
-// Using "0000000000" as a safe placeholder — AdSense ignores invalid slots
-// gracefully (renders blank, no errors in production).
-const AD_SLOTS = {
-  planFooter:       "9418362030",  // below user plan content (plan tab)
-  progressFooter:   "6346081374",  // below progress section
-  numerosFooter:    "2545831920",  // below numbers/macros section (footer)
-  nutriDashboard:   "5612795652",  // nutritionist clients list bottom
-};
 
 function useFonts() {
   useEffect(() => {

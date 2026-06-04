@@ -219,3 +219,14 @@ export const EMOJI_FONTS = ",'Apple Color Emoji','Segoe UI Emoji','Noto Color Em
 export const SANS_EMOJI  = "'DM Sans',system-ui,sans-serif" + EMOJI_FONTS;
 export const SERIF_EMOJI = "'Playfair Display',Georgia,serif" + EMOJI_FONTS;
 
+// ── Placement constants ───────────────────────────────────────────────────
+// Replace slot IDs with real ones from your AdSense dashboard.
+// Using "0000000000" as a safe placeholder — AdSense ignores invalid slots
+// gracefully (renders blank, no errors in production).
+export const AD_SLOTS = {
+  planFooter:       "9418362030",  // below user plan content (plan tab)
+  progressFooter:   "6346081374",  // below progress section
+  numerosFooter:    "2545831920",  // below numbers/macros section (footer)
+  nutriDashboard:   "5612795652",  // nutritionist clients list bottom
+};
+

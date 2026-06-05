@@ -16,6 +16,7 @@ import {
   buildPlan,
 } from "./engine/index.js";
 import { SUPABASE_URL, SUPABASE_KEY, SDB, _sbToLocalPlan } from "./data/sdb.js";
+import { supabase, syncRealtimeAuth } from "./data/supabaseClient.js";
 import {
   __PERF,
   __TRACE,
@@ -288,136 +289,93 @@ export default function PlatformNutricional() {
   }, [user]);
 
   // ── SYNC: Supabase Realtime (instant, cross-device) ───────────────────────
-  // Subscribes to INSERT/UPDATE on plans table filtered by uid.
-  // When nutritionist saves a plan on any device, this fires in ~200ms.
-  // Falls back gracefully if Supabase is unreachable.
+  // Subscribes to INSERT/UPDATE on plans table filtered by uid via the
+  // official @supabase/supabase-js Realtime SDK. Auth is kept in sync with
+  // the JWT stored in SDB via syncRealtimeAuth (called on every token change).
   useEffect(() => {
     __PERF.count("effect:realtime-ws");  // PERF
     if (!user || user.role !== "user" || !SDB._token) return;
-    let ws = null;
-    let heartbeat = null;
-    let closed = false;
 
-    const connect = () => {
+    // Ensure the Realtime socket uses the current JWT before subscribing.
+    syncRealtimeAuth(SDB._token);
+
+    const handler = (payload) => {
+      const __t0 = __PERF.mark();  // PERF
       try {
-        // Supabase Realtime WebSocket endpoint
-        const wsUrl = SUPABASE_URL.replace("https://", "wss://")
-          .replace("/rest/v1", "") + "/realtime/v1/websocket"
-          + "?apikey=" + SUPABASE_KEY + "&vsn=1.0.0";
+        const eventType = payload.eventType;
+        // Realtime fires on INSERT (new plan) or UPDATE (plan edited)
+        if (eventType === "INSERT" || eventType === "UPDATE") {
+          const record = payload.new;
+          if (record && record.uid === user.id && record.is_active) {
+            // Convert Supabase row to local shape and merge
+            const fresh = _sbToLocalPlan(record);
+            __TRACE.log("realtime:incoming", { event: eventType, planId: fresh?.id, created_at: fresh?.created_at });
 
-        ws = new WebSocket(wsUrl);
-
-        ws.onopen = () => {
-          // Join the plans channel filtered by this user's uid
-          ws.send(JSON.stringify({
-            topic: "realtime:public:plans:uid=eq." + user.id,
-            event: "phx_join",
-            payload: { access_token: SDB._token },
-            ref: "1",
-          }));
-          // Heartbeat every 25s to keep the connection alive
-          heartbeat = setInterval(() => {
-            if (ws.readyState === WebSocket.OPEN) {
-              ws.send(JSON.stringify({ topic:"phoenix", event:"heartbeat", payload:{}, ref:"hb" }));
+            // BUG FIX (P0 race): ignore echo of our own writes.
+            // Supabase Realtime delivers the event back to the originating
+            // client. Without this guard, every saveToPDB → SDB.upsert →
+            // realtime broadcast → setActivePlan → hydration effect →
+            // setPlan cycle re-renders the entire PlanView, remounting all
+            // MealCard children mid-interaction. That remount is the root
+            // cause of "click on alternative does nothing".
+            //
+            // Strategy (two-layer):
+            //   1) PRIMARY: ignore if this plan id is in our local
+            //      "recently authored" set (__NP_AUTHORED_IDS). This is
+            //      populated by every local PDB._savePlans for ~10s.
+            //      Handles the first-plan case where currentTs=0.
+            //   2) FALLBACK: created_at must be strictly newer than
+            //      what we already show. Handles the case of stale
+            //      authored-id sets.
+            const freshTs   = fresh?.created_at || 0;
+            // FIX 1: usar activePlanRef.current en lugar de activePlan del closure.
+            // El effect depende solo de [user], así que activePlan quedaría congelado
+            // al valor del momento del login. El ref se actualiza con cada setActivePlan.
+            const currentTs = (activePlanRef.current?.created_at) || 0;
+            const isOwnEcho = __NP_AUTHORED_IDS.has(fresh?.id);
+            if (isOwnEcho) {
+              __TRACE.log("realtime:ignored-echo-by-id", { planId: fresh?.id });
+              __PERF.count("realtime:echo-skipped-id");
+              return;
             }
-          }, 25000);
-        };
-
-        ws.onmessage = (e) => {
-          const __t0 = __PERF.mark();  // PERF
-          try {
-            const msg = JSON.parse(e.data);
-            // Realtime fires on INSERT (new plan) or UPDATE (plan edited)
-            if (msg.event === "INSERT" || msg.event === "UPDATE") {
-              const record = msg.payload?.record;
-              if (record && record.uid === user.id && record.is_active) {
-                // Convert Supabase row to local shape and merge
-                const fresh = _sbToLocalPlan(record);
-                __TRACE.log("realtime:incoming", { event: msg.event, planId: fresh?.id, created_at: fresh?.created_at });
-
-                // BUG FIX (P0 race): ignore echo of our own writes.
-                // Supabase Realtime delivers the event back to the originating
-                // client. Without this guard, every saveToPDB → SDB.upsert →
-                // realtime broadcast → setActivePlan → hydration effect →
-                // setPlan cycle re-renders the entire PlanView, remounting all
-                // MealCard children mid-interaction. That remount is the root
-                // cause of "click on alternative does nothing".
-                //
-                // Strategy (two-layer):
-                //   1) PRIMARY: ignore if this plan id is in our local
-                //      "recently authored" set (__NP_AUTHORED_IDS). This is
-                //      populated by every local PDB._savePlans for ~10s.
-                //      Handles the first-plan case where currentTs=0.
-                //   2) FALLBACK: created_at must be strictly newer than
-                //      what we already show. Handles the case of stale
-                //      authored-id sets.
-                const freshTs   = fresh?.created_at || 0;
-                // FIX 1: usar activePlanRef.current en lugar de activePlan del closure.
-                // El effect depende solo de [user], así que activePlan quedaría congelado
-                // al valor del momento del login. El ref se actualiza con cada setActivePlan.
-                const currentTs = (activePlanRef.current?.created_at) || 0;
-                const isOwnEcho = __NP_AUTHORED_IDS.has(fresh?.id);
-                if (isOwnEcho) {
-                  __TRACE.log("realtime:ignored-echo-by-id", { planId: fresh?.id });
-                  __PERF.count("realtime:echo-skipped-id");
-                  return;
-                }
-                if (freshTs <= currentTs) {
-                  __TRACE.log("realtime:ignored-echo", { freshTs, currentTs });
-                  __PERF.count("realtime:echo-skipped");
-                  return; // don't write — it's our own change coming back
-                }
-
-                // Guard: stale por updated_at + bloqueo si overwrite tras acción usuario
-                const _wsGuard = traceSetPlan("realtime", activePlanRef.current, fresh);
-                if (!_wsGuard.accept || _checkPostActionOverwrite("realtime", activePlanRef.current, fresh)) {
-                  __PERF.count("realtime:shouldAccept-rejected");
-                  return;
-                }
-
-                // Update localStorage so offline mode stays current
-                const plans = PDB.getPlans(user.id).map(p => ({...p, is_active: false}));
-                const merged = [...plans.filter(p => p.id !== fresh.id), {...fresh, is_active: true}];
-                try { localStorage.setItem("pf_plans_"+user.id, JSON.stringify(merged)); } catch(_) {}
-                // Update React state
-                __TRACE.event("activePlan", "realtime:ws", activePlan, fresh);
-                setActivePlan(fresh);
-                setRefreshKey(k => k + 1);
-                // Broadcast to other tabs on this device
-                _bcPost({ type:"PLAN_UPDATED", uid: user.id, ts: Date.now() });
-                __PERF.count("realtime:plan-applied");  // PERF — útil para detectar storms
-              }
+            if (freshTs <= currentTs) {
+              __TRACE.log("realtime:ignored-echo", { freshTs, currentTs });
+              __PERF.count("realtime:echo-skipped");
+              return; // don't write — it's our own change coming back
             }
-          } catch(_) {}
-          __PERF.measure("realtime:onmessage", __t0);  // PERF
-        };
 
-        ws.onerror = () => {};
-        ws.onclose = () => {
-          clearInterval(heartbeat);
-          heartbeat = null;
-          // FIX (stability P0): re-check `closed` INSIDE the setTimeout callback,
-          // not just before scheduling. If logout happens during the 5s wait,
-          // the effect cleanup sets closed=true but the pending timeout would
-          // still fire connect() and open a zombie WS that nobody closes.
-          if (!closed) {
-            setTimeout(() => {
-              if (!closed) connect();
-            }, 5000);
+            // Guard: stale por updated_at + bloqueo si overwrite tras acción usuario
+            const _wsGuard = traceSetPlan("realtime", activePlanRef.current, fresh);
+            if (!_wsGuard.accept || _checkPostActionOverwrite("realtime", activePlanRef.current, fresh)) {
+              __PERF.count("realtime:shouldAccept-rejected");
+              return;
+            }
+
+            // Update localStorage so offline mode stays current
+            const plans = PDB.getPlans(user.id).map(p => ({...p, is_active: false}));
+            const merged = [...plans.filter(p => p.id !== fresh.id), {...fresh, is_active: true}];
+            try { localStorage.setItem("pf_plans_"+user.id, JSON.stringify(merged)); } catch(_) {}
+            // Update React state
+            __TRACE.event("activePlan", "realtime:ws", activePlanRef.current, fresh);
+            setActivePlan(fresh);
+            setRefreshKey(prev => prev + 1);
+            // Broadcast to other tabs on this device
+            _bcPost({ type:"PLAN_UPDATED", uid: user.id, ts: Date.now() });
+            __PERF.count("realtime:plan-applied");  // PERF — útil para detectar storms
           }
-        };
-      } catch(e) {
-        // WebSocket not available or blocked — silent fallback to polling
-        console.warn("[Realtime] WebSocket unavailable, using poll fallback");
-      }
+        }
+      } catch(_) {}
+      __PERF.measure("realtime:onmessage", __t0);  // PERF
     };
 
-    connect();
-    return () => {
-      closed = true;
-      clearInterval(heartbeat);
-      if (ws) { try { ws.close(); } catch(_) {} }
-    };
+    const channel = supabase
+      .channel("plans-" + user.id)
+      .on("postgres_changes",
+          { event: "*", schema: "public", table: "plans", filter: "uid=eq." + user.id },
+          handler)
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, [user]);
 
   // ── SYNC: storage event — catches cross-tab changes on browsers without BC ──

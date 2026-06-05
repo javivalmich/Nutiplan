@@ -7,6 +7,8 @@
 export const SUPABASE_URL   = import.meta.env.VITE_SUPABASE_URL;
 export const SUPABASE_KEY   = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+import { syncRealtimeAuth } from "./supabaseClient.js";
+
 // ─── SDB — Async Supabase layer ────────────────────────────────────────────
 // This is the ONLY place that talks to Supabase.
 // Components NEVER call SDB directly — they call PDB (synchronous, localStorage).
@@ -82,11 +84,13 @@ export const SDB = {
   // ── Session persistence ───────────────────────────────────────────────────
   _saveTokens: (access, refresh, uid) => {
     SDB._token = access; SDB._refresh = refresh; SDB._uid = uid;
+    syncRealtimeAuth(access);
     // Store refresh token in its own key (never mixed with user data)
     try { localStorage.setItem("pf_sb_rt", JSON.stringify({ r: refresh, u: uid })); } catch(e) {}
   },
   _clearTokens: () => {
     SDB._token = null; SDB._refresh = null; SDB._uid = null;
+    syncRealtimeAuth(null);
     try { localStorage.removeItem("pf_sb_rt"); } catch(e) {}
   },
 

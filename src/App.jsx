@@ -161,14 +161,6 @@ function useFonts() {
 
 
 
-// extractMenuNames — mantenida por compatibilidad (ya no usada en el flujo principal)
-function extractMenuNames(plan) {
-  if (!plan?.days) return [];
-  return plan.days.map(day => ({
-    name:  day.name,
-    meals: (day.meals || []).map(m => ({ slot: m.slot, name: m.p1, alts: (m.alt || []).slice(0, 2) })),
-  }));
-}
 
 
 // ── useSyncStatus — tiny hook for the sync indicator dot ─────────────────

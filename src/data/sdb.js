@@ -7,6 +7,8 @@
 export const SUPABASE_URL   = import.meta.env.VITE_SUPABASE_URL;
 export const SUPABASE_KEY   = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+import { syncRealtimeAuth } from "./supabaseClient.js";
+
 // ─── SDB — Async Supabase layer ────────────────────────────────────────────
 // This is the ONLY place that talks to Supabase.
 // Components NEVER call SDB directly — they call PDB (synchronous, localStorage).
@@ -82,11 +84,13 @@ export const SDB = {
   // ── Session persistence ───────────────────────────────────────────────────
   _saveTokens: (access, refresh, uid) => {
     SDB._token = access; SDB._refresh = refresh; SDB._uid = uid;
+    syncRealtimeAuth(access);
     // Store refresh token in its own key (never mixed with user data)
     try { localStorage.setItem("pf_sb_rt", JSON.stringify({ r: refresh, u: uid })); } catch(e) {}
   },
   _clearTokens: () => {
     SDB._token = null; SDB._refresh = null; SDB._uid = null;
+    syncRealtimeAuth(null);
     try { localStorage.removeItem("pf_sb_rt"); } catch(e) {}
   },
 
@@ -327,22 +331,10 @@ export const SDB = {
 
   // ── Preferences ──────────────────────────────────────────────────────────
   getPreferences: async (uid) => {
-    const { data } = await SDB._rest(`/preferences?uid=eq.${uid}&limit=1`);
-    if (!data?.[0]) return null;
-    const r = data[0];
-    return {
-      gender:        r.gender,
-      age:           r.age,
-      weight:        r.weight_kg,
-      height:        r.height_cm,
-      activity:      r.activity_level,
-      goal:          r.goal,
-      kcalAdjust:    r.kcal_adjust   ?? 0,
-      intolerances:  r.intolerances  ?? [],
-      eliminatedFoods: r.eliminated_foods ?? [],
-      trainingDays:  r.training_days ?? [],
-      ...r.extra,
-    };
+    const { data: rows } = await SDB._rest(
+      `/preferences?uid=eq.${uid}&select=data&limit=1`
+    );
+    return rows?.[0]?.data ?? null;
   },
 
   upsertPreferences: async (uid, prof) => {
@@ -352,17 +344,18 @@ export const SDB = {
       headers: { "Prefer": "resolution=merge-duplicates,return=minimal" },
       body: JSON.stringify({
         uid,
-        gender:          prof.gender,
-        age:             prof.age,
-        weight_kg:       prof.weight,
-        height_cm:       prof.height,
-        activity_level:  prof.activity,
-        goal:            prof.goal,
-        kcal_adjust:     prof.kcalAdjust ?? 0,
-        intolerances:    prof.intolerances     ?? [],
-        eliminated_foods: prof.eliminatedFoods ?? [],
-        training_days:   prof.trainingDays     ?? [],
-        extra:           {},
+        data: {
+          gender:         prof.gender,
+          age:            prof.age,
+          weight:         prof.weight,
+          height:         prof.height,
+          activity:       prof.activity,
+          goal:           prof.goal,
+          kcalAdjust:     prof.kcalAdjust      ?? 0,
+          intolerances:   prof.intolerances    ?? [],
+          eliminatedFoods: prof.eliminatedFoods ?? [],
+          trainingDays:   prof.trainingDays    ?? [],
+        },
       }),
     });
   },

@@ -285,7 +285,7 @@ export const SDB = {
 
   upsertAssignment: async (a) => {
     if (!SDB._token) return;
-    await SDB._rest("/assignments", {
+    await SDB._rest("/assignments?on_conflict=nid,cid", {
       method: "POST",
       headers: { "Prefer": "resolution=merge-duplicates,return=minimal" },
       body: JSON.stringify({ id: a.id, nid: a.nid, cid: a.cid, created_at: new Date(a.createdAt || Date.now()).toISOString() }),

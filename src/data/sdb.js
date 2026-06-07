@@ -316,16 +316,33 @@ export const SDB = {
 
   // ── User data (profile, progress, meal_memory) ───────────────────────────
   getUserData: async (uid, key) => {
-    const { data } = await SDB._rest(`/user_data?uid=eq.${uid}&key=eq.${key}&select=value`);
-    return data?.[0]?.value ?? null;
+    const { data: rows } = await SDB._rest(
+      `/user_data?uid=eq.${uid}&select=data&limit=1`
+    );
+    return rows?.[0]?.data?.[key] ?? null;
   },
 
   setUserData: async (uid, key, value) => {
     if (!SDB._token) return;
+
+    const { data: rows } = await SDB._rest(
+      `/user_data?uid=eq.${uid}&select=data&limit=1`
+    );
+
+    const current = rows?.[0]?.data || {};
+
     await SDB._rest("/user_data", {
       method: "POST",
-      headers: { "Prefer": "resolution=merge-duplicates,return=minimal" },
-      body: JSON.stringify({ uid, key, value, updated_at: new Date().toISOString() }),
+      headers: {
+        "Prefer": "resolution=merge-duplicates,return=minimal"
+      },
+      body: JSON.stringify({
+        uid,
+        data: {
+          ...current,
+          [key]: value
+        }
+      }),
     });
   },
 

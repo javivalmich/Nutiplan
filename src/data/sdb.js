@@ -401,29 +401,31 @@ export const SDB = {
 
   // ── Meal Memory ───────────────────────────────────────────────────────────
   getMealMemory: async (uid) => {
-    const { data } = await SDB._rest(
-      `/meal_memory?uid=eq.${uid}&order=week_num.desc&limit=3`
+    const { data: rows } = await SDB._rest(
+      `/meal_memory?uid=eq.${uid}&select=week_num,data&order=week_num.desc&limit=3`
     );
-    return (data || []).map(r => ({
+    return (rows || []).map(r => ({
       week: r.week_num,
-      L:    r.lunch_proteins  || [],
-      D:    r.dinner_proteins || [],
+      L:    r.data?.lunch_proteins  || [],
+      D:    r.data?.dinner_proteins,
     }));
   },
 
   upsertMealMemory: async (uid, weekNum, L, D, extraData = {}) => {
     if (!SDB._token) return;
-    await SDB._rest("/meal_memory", {
+    await SDB._rest("/meal_memory?on_conflict=uid,week_num", {
       method: "POST",
       headers: { "Prefer": "resolution=merge-duplicates,return=minimal" },
       body: JSON.stringify({
         uid,
-        week_num:        weekNum,
-        lunch_proteins:  L || [],
-        dinner_proteins: D || [],
-        food_likes:      extraData.foodLikes    || {},
-        food_dislikes:   extraData.foodDislikes || {},
-        fail_patterns:   extraData.failPatterns || [],
+        week_num: weekNum,
+        data: {
+          lunch_proteins:  L || [],
+          dinner_proteins: D,
+          food_likes:      extraData.foodLikes    || {},
+          food_dislikes:   extraData.foodDislikes || {},
+          fail_patterns:   extraData.failPatterns || [],
+        },
       }),
     });
   },

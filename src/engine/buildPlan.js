@@ -23,6 +23,7 @@ export function buildPlan(profile, targetKcal, opts = {}) {
   // -- Controlled impurity points ---------------------------------------------
   const _month        = opts.month        ?? new Date().getMonth();
   const _pastProteins = opts.pastProteins ?? {};
+  const _rnd          = opts.rng          ?? Math.random;
   // ---------------------------------------------------------------------------
 
   // Ensure extras.proteinShake exists — safe for old profiles without it.
@@ -2034,7 +2035,7 @@ export function buildPlan(profile, targetKcal, opts = {}) {
       return 1 / Math.pow(Math.max(0, c.score - minScore) + 1, 1.4);
     });
     var totalW = weights.reduce(function(s,w){ return s+w; }, 0);
-    var rand   = Math.random() * totalW;
+    var rand   = _rnd() * totalW;
     var chosen = candidates[0].m;
     var cumul  = 0;
     for(var i=0; i<candidates.length; i++){
@@ -2147,7 +2148,7 @@ export function buildPlan(profile, targetKcal, opts = {}) {
   // Esto evita que el usuario detecte el patrón y hace la semana más humana.
   // El día wildcard se elige al azar entre Martes y Jueves (días "planos").
   var WILDCARD_DAYS = ["Martes","Miércoles","Jueves"];
-  var wildcardDay = WILDCARD_DAYS[Math.floor(Math.random() * WILDCARD_DAYS.length)];
+  var wildcardDay = WILDCARD_DAYS[Math.floor(_rnd() * WILDCARD_DAYS.length)];
   // Con tiempoCocina:"poco", el wildcard no es en día laboral intenso (L/V)
   // Solo 1 wildcard por semana — desactivable si simpleMode activo
   var useWildcard = !isSimple;
@@ -2172,10 +2173,10 @@ export function buildPlan(profile, targetKcal, opts = {}) {
   // (en vez de ser penalizado). Simula "me apetece de nuevo esto".
 
   var HUMAN_PATTERNS = {
-    tuesdayRoutine:  !isSimple && Math.random() < 0.30,  // 30% chance
+    tuesdayRoutine:  !isSimple && _rnd() < 0.30,  // 30% chance
     fridayFatigue:   tiempoCocina !== "mucho",            // siempre si no es chef
     sundayComfort:   true,                                // siempre
-    belovedRepeat:   !isSimple && Math.random() < 0.20,  // 20% chance
+    belovedRepeat:   !isSimple && _rnd() < 0.20,  // 20% chance
   };
 
   var weekSlots = WEEK_SLOTS[strategy] || WEEK_SLOTS.mantenimiento_equilibrado;

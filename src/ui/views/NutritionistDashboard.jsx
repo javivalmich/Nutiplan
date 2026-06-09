@@ -22,9 +22,7 @@ export function NutritionistDashboard({ currentUser, onLogout }) {
   const [loadingClients, setLoadingClients] = useState(true);
   const [sel, setSel]     = useState(null); // selected client data
   const [clientTab, setClientTab] = useState("plan");
-  const [addEmail, setAddEmail] = useState("");
-  const [addError, setAddError] = useState("");
-  // Server-side client search (additive — legacy flow untouched)
+  // Server-side client search
   const [searchQuery, setSearchQuery]     = useState("");
   const [searchResults, setSearchResults] = useState(null); // null = idle, [] = no results
   const [searchLoading, setSearchLoading] = useState(false);
@@ -76,14 +74,6 @@ export function NutritionistDashboard({ currentUser, onLogout }) {
     return () => _bc.removeEventListener("message", onMsg);
   }, [refresh]);
 
-  const handleAddClient = () => {
-    setAddError("");
-    const u = PDB.getUserByEmail(addEmail.trim());
-    if (!u || u.role !== "user") { setAddError("No existe ningún usuario con ese email."); return; }
-    if (clients.find(c => c.user.id === u.id)) { setAddError("Este cliente ya está asignado."); return; }
-    PDB.assignClient(currentUser.id, u.id);
-    setAddEmail(""); refresh();
-  };
 
   const handleOpenPlanEditor = (c) => {
     if (!c.profile) { alert("El cliente no ha configurado su perfil todavía."); return; }
@@ -184,17 +174,7 @@ export function NutritionistDashboard({ currentUser, onLogout }) {
       </div>
 
       <div style={{maxWidth:600, margin:"0 auto", padding:"16px 14px"}}>
-        <div style={{background:Dk.card, borderRadius:14, padding:16, border:"1px solid "+Dk.border, marginBottom:16}}>
-          <div style={{fontSize:12, color:Dk.muted, marginBottom:10, fontWeight:600}}>Añadir cliente por email</div>
-          <div style={{display:"flex", gap:8}}>
-            <input value={addEmail} onChange={e=>{setAddEmail(e.target.value);setAddError("");}} onKeyDown={e=>e.key==="Enter"&&handleAddClient()} placeholder="email@cliente.com" style={{flex:1, padding:"9px 12px", borderRadius:8, border:"1px solid "+Dk.border, background:Dk.card2, color:Dk.text, fontFamily:sans, fontSize:13, outline:"none", minWidth:0}}/>
-            <button onClick={handleAddClient} style={{padding:"9px 16px", borderRadius:8, background:Dk.accent, color:THEME.bgPage, border:"none", fontFamily:sans, fontSize:13, fontWeight:700, cursor:"pointer", flexShrink:0}}>Asignar</button>
-          </div>
-          {addError && <div style={{fontSize:12, color:THEME.colorError2, marginTop:6}}>{addError}</div>}
-          <div style={{fontSize:11, color:Dk.muted, marginTop:8}}>💡 También puedes compartir tu email con clientes para que se registren vinculados a ti.</div>
-        </div>
-
-        {/* ── Búsqueda server-side (additive) ─────────────────────────────── */}
+        {/* ── Búsqueda server-side ─────────────────────────────────────────── */}
         <div style={{background:Dk.card, borderRadius:14, padding:16, border:"1px solid "+Dk.border, marginBottom:16}}>
           <div style={{fontSize:12, color:Dk.muted, marginBottom:10, fontWeight:600}}>Buscar cliente por nombre o email</div>
           <div style={{display:"flex", gap:8}}>

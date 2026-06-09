@@ -118,22 +118,30 @@ export function NutritionistDashboard({ currentUser, onLogout }) {
     // 3. Broadcast to user's tab(s) instantly
     _bcPost({ type:"PLAN_UPDATED", uid: editPlan.clientId, ts: Date.now() });
 
-    // 4. BUG FIX: refresh() updates `clients` state but `sel` stays stale
-    //    because React state updates are async. We derive the fresh client
-    //    directly from PDB (synchronous read) and update sel immediately
-    //    so client_detail renders the saved plan without needing a second render.
+    // 4. Optimistic update from PDB local (sync, plan is here immediately).
+    //    refresh() is async and reads SDB — SDB won't have the plan yet (push
+    //    is fire-and-forget). Patching sel + clients from PDB avoids the stale
+    //    display; the async reconcile from SDB happens on the next natural
+    //    refresh (mount / BroadcastChannel), by which time the push has landed.
     const freshPlan    = PDB.getActivePlan(editPlan.clientId);
     const freshProfile = PDB.getClientProfile(editPlan.clientId) || freshPlan?.profile || editPlan.profile;
     const freshClient  = {
-      user:    PDB.getUserById(editPlan.clientId) || (sel && sel.user),
-      plan:    freshPlan,
-      profile: freshProfile,
-      asgn:    sel && sel.asgn,
+      a:        sel?.a,                               // preserves status (2E)
+      user:     sel?.user || PDB.getUserById(editPlan.clientId),
+      plan:     freshPlan,
+      profile:  freshProfile,
+      checkins: [],
     };
     setSel(freshClient);
+    setClients(prev => {
+      const i = prev.findIndex(c => c.user?.id === editPlan.clientId);
+      if (i === -1) return [...prev, freshClient];
+      const next = [...prev]; next[i] = freshClient; return next;
+    });
 
     setSaving(false);
-    refresh();            // also updates `clients` list for the sidebar
+    // refresh() intentionally NOT called here — calling it would clobber the
+    // optimistic patch with stale SDB data (push hasn't landed yet).
     setView("client_detail");
   };
 

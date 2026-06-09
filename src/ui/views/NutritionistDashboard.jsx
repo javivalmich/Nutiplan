@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { __PERF, _bcGet, _bcPost, _bc, getWeekNumber } from "../../data/runtime.js";
 import { PDB, loadMealMemory, saveMealMemory } from "../../data/db.js";
+import { SDB } from "../../data/sdb.js";
 import { FREEFORM_POOL } from "../../data/freeformPool.js";
 import { buildPlan, calcTDEE, calcTarget, getPastProteinFrequency } from "../../engine/index.js";
 import { THEME, STRATEGIES, GOAL_LABELS, NUTIPLAN_LOGO, SANS_EMOJI, SERIF_EMOJI, AD_SLOTS } from "../constants";
@@ -18,6 +19,7 @@ export function NutritionistDashboard({ currentUser, onLogout }) {
 
   const [view, setView]   = useState("clients"); // "clients" | "client_detail" | "plan_editor"
   const [clients, setClients] = useState([]);
+  const [loadingClients, setLoadingClients] = useState(true);
   const [sel, setSel]     = useState(null); // selected client data
   const [clientTab, setClientTab] = useState("plan");
   const [addEmail, setAddEmail] = useState("");
@@ -28,15 +30,30 @@ export function NutritionistDashboard({ currentUser, onLogout }) {
   const [editMeal, setEditMeal] = useState(null); // {dayIdx, mealIdx}
   const [saving, setSaving]     = useState(false);
 
-  const refresh = useCallback(() => {
-    const asgns = PDB.getClientsOf(currentUser.id);
-    setClients(asgns.map(a => {
-      const user    = PDB.getUserById(a.cid);
-      const profile = PDB.getClientProfile(a.cid) || null; // stored by OriginalPlanApp via saveData
-      const plan    = PDB.getActivePlan(a.cid);
-      const checkins= PDB.getCheckins(a.cid);
-      return { a, user, profile, plan, checkins };
-    }).filter(c => c.user));
+  const refresh = useCallback(async () => {
+    setLoadingClients(true);
+    try {
+      // N+1 known cost: getUserData + getActivePlan per active client.
+      // Batching would require a new SDB contract (RESERVED); acceptable for now.
+      const asgns      = await SDB.getAssignmentsForNutritionist(currentUser.id);
+      const identities = await SDB.getClientsProfiles(currentUser.id);
+      const identityMap = Object.fromEntries(identities.map(p => [p.id, p]));
+      const rows = await Promise.all(asgns.map(async a => {
+        const identity = identityMap[a.cid];
+        if (!identity) return null;
+        const user = { id: identity.id, email: identity.email, display_name: identity.display_name };
+        const [profile, plan] = await Promise.all([
+          SDB.getUserData(a.cid, "profile"),
+          SDB.getActivePlan(a.cid),
+        ]);
+        return { a, user, profile: profile || null, plan, checkins: [] };
+      }));
+      setClients(rows.filter(c => c && c.user));
+    } catch(e) {
+      console.warn("[NutritionistDashboard] refresh error:", e.message);
+    } finally {
+      setLoadingClients(false);
+    }
   }, [currentUser.id]);
 
   useEffect(() => { refresh(); }, [refresh]);
@@ -162,10 +179,11 @@ export function NutritionistDashboard({ currentUser, onLogout }) {
           <div style={{fontSize:11, color:Dk.muted, marginTop:8}}>💡 También puedes compartir tu email con clientes para que se registren vinculados a ti.</div>
         </div>
 
-        {clients.length === 0
+        {loadingClients
+          ? <div style={{textAlign:"center", padding:"40px 0", color:Dk.muted}}>Cargando clientes…</div>
+          : clients.length === 0
           ? <div style={{textAlign:"center", padding:"40px 0", color:Dk.muted}}><div style={{fontSize:40, marginBottom:12}}>👥</div><div>Sin clientes asignados aún.</div></div>
           : clients.map((c, i) => {
-              const lastCi = c.checkins.slice(-1)[0];
               return (
                 <div key={i} onClick={()=>{setSel(c);setClientTab("plan");setView("client_detail");}} style={{background:Dk.card, borderRadius:14, padding:16, border:"1px solid "+Dk.border, marginBottom:10, cursor:"pointer", animation:"fi 0.3s ease"}}>
                   <div style={{display:"flex", alignItems:"center", gap:12}}>
@@ -178,7 +196,6 @@ export function NutritionistDashboard({ currentUser, onLogout }) {
                       <div style={{fontSize:10, padding:"3px 8px", borderRadius:99, background:c.plan?(c.plan.created_by==="nutritionist"?"#7c3aed22":THEME.accentBg22):"#e05a5a22", color:c.plan?(c.plan.created_by==="nutritionist"?THEME.colorPurpleLight:Dk.accent):THEME.colorError2, fontWeight:700}}>
                         {c.plan ? (c.plan.created_by==="nutritionist"?"🔒 Manual":"🤖 Auto") : "Sin plan"}
                       </div>
-                      {lastCi && <div style={{fontSize:9, color:Dk.muted, marginTop:3}}>Check-in hace {Math.round((Date.now()-lastCi.created_at)/86400000)}d</div>}
                     </div>
                   </div>
                 </div>

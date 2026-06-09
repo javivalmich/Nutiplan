@@ -28,6 +28,9 @@ export function NutritionistDashboard({ currentUser, onLogout }) {
   const [searchQuery, setSearchQuery]     = useState("");
   const [searchResults, setSearchResults] = useState(null); // null = idle, [] = no results
   const [searchLoading, setSearchLoading] = useState(false);
+  const [requestingId, setRequestingId]   = useState(null);   // cid currently in-flight
+  const [requestedIds, setRequestedIds]   = useState({});     // { [cid]: true } after success
+  const [requestErrors, setRequestErrors] = useState({});     // { [cid]: "message" }
   // Plan editor state
   const [editPlan, setEditPlan] = useState(null); // { days, strategy, calories, profile }
   const [editDay, setEditDay]   = useState(0);
@@ -224,15 +227,48 @@ export function NutritionistDashboard({ currentUser, onLogout }) {
             searchResults.length === 0
               ? <div style={{fontSize:12, color:Dk.muted, marginTop:8}}>Sin resultados.</div>
               : <div style={{marginTop:10, display:"flex", flexDirection:"column", gap:6}}>
-                  {searchResults.map((r, i) => (
-                    <div key={i} style={{display:"flex", alignItems:"center", gap:10, padding:"8px 10px", borderRadius:8, background:Dk.card2, border:"1px solid "+Dk.border}}>
-                      <div style={{width:30, height:30, borderRadius:"50%", background:THEME.accentBg22, display:"flex", alignItems:"center", justifyContent:"center", fontSize:14, flexShrink:0}}>👤</div>
-                      <div style={{flex:1, minWidth:0}}>
-                        <div style={{fontSize:13, fontWeight:600, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap"}}>{r.display_name || r.email}</div>
-                        {r.display_name && <div style={{fontSize:11, color:Dk.muted, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap"}}>{r.email}</div>}
+                  {searchResults.map((r, i) => {
+                    const isRequesting = requestingId === r.id;
+                    const isDone       = !!requestedIds[r.id];
+                    const rowError     = requestErrors[r.id];
+                    const handleRequest = async () => {
+                      setRequestingId(r.id);
+                      setRequestErrors(prev => { const n = {...prev}; delete n[r.id]; return n; });
+                      const res = await SDB.requestAssignment(r.id);
+                      setRequestingId(null);
+                      if (res.error) {
+                        const msg = typeof res.error === "string" ? res.error
+                          : res.error?.message || res.error?.msg || JSON.stringify(res.error);
+                        const friendly =
+                          msg.includes("unauthorized")     ? "No autorizado."
+                          : msg.includes("not found")      ? "Cliente no encontrado."
+                          : msg.includes("already active") ? "Ya es tu cliente."
+                          : msg.includes("already pending")? "Solicitud ya enviada."
+                          : "Error al solicitar: " + msg;
+                        setRequestErrors(prev => ({...prev, [r.id]: friendly}));
+                      } else {
+                        setRequestedIds(prev => ({...prev, [r.id]: true}));
+                        refresh();
+                      }
+                    };
+                    return (
+                      <div key={i}>
+                        <div style={{display:"flex", alignItems:"center", gap:10, padding:"8px 10px", borderRadius:8, background:Dk.card2, border:"1px solid "+Dk.border}}>
+                          <div style={{width:30, height:30, borderRadius:"50%", background:THEME.accentBg22, display:"flex", alignItems:"center", justifyContent:"center", fontSize:14, flexShrink:0}}>👤</div>
+                          <div style={{flex:1, minWidth:0}}>
+                            <div style={{fontSize:13, fontWeight:600, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap"}}>{r.display_name || r.email}</div>
+                            {r.display_name && <div style={{fontSize:11, color:Dk.muted, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap"}}>{r.email}</div>}
+                          </div>
+                          <button
+                            disabled={isRequesting || isDone}
+                            onClick={handleRequest}
+                            style={{padding:"6px 12px", borderRadius:8, border:"none", background: isDone ? "#16a34a22" : Dk.accent, color: isDone ? "#16a34a" : THEME.bgPage, fontFamily:sans, fontSize:12, fontWeight:700, cursor: isRequesting || isDone ? "default" : "pointer", flexShrink:0, opacity: isRequesting ? 0.6 : 1}}
+                          >{isRequesting ? "Enviando…" : isDone ? "✓ Solicitado" : "Solicitar"}</button>
+                        </div>
+                        {rowError && <div style={{fontSize:11, color:THEME.colorError2, padding:"4px 10px 0"}}>{rowError}</div>}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
           )}
         </div>

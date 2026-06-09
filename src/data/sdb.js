@@ -288,13 +288,37 @@ export const SDB = {
     await SDB._rest("/assignments?on_conflict=nid,cid", {
       method: "POST",
       headers: { "Prefer": "resolution=merge-duplicates,return=minimal" },
-      body: JSON.stringify({ id: a.id, nid: a.nid, cid: a.cid, created_at: new Date(a.createdAt || Date.now()).toISOString() }),
+      body: JSON.stringify({ id: a.id, nid: a.nid, cid: a.cid, status: a.status || 'active', created_at: new Date(a.createdAt || Date.now()).toISOString() }),
     });
   },
 
   deleteAssignment: async (cid, nid) => {
     if (!SDB._token) return;
     await SDB._rest(`/assignments?cid=eq.${cid}&nid=eq.${nid}`, { method: "DELETE" });
+  },
+
+  findClient: async (search) => {
+    const { data, error } = await SDB._rest("/rpc/find_client", {
+      method: "POST", body: JSON.stringify({ p_search: search }),
+    });
+    if (error) return { error };
+    return { ok: true, data: data || [] };
+  },
+
+  requestAssignment: async (cid) => {
+    const { error } = await SDB._rest("/rpc/request_assignment", {
+      method: "POST", body: JSON.stringify({ p_cid: cid }),
+    });
+    if (error) return { error };
+    return { ok: true };
+  },
+
+  respondToAssignment: async (nid, accept) => {
+    const { error } = await SDB._rest("/rpc/respond_to_assignment", {
+      method: "POST", body: JSON.stringify({ p_nid: nid, p_accept: accept }),
+    });
+    if (error) return { error };
+    return { ok: true };
   },
 
   // ── Checkins ──────────────────────────────────────────────────────────────

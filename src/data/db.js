@@ -533,6 +533,28 @@ const PDB = {
   },
   removeAssignment: cid => PDB._saveAsgn(PDB.getAssignments().filter(a => a.cid !== cid)),
 
+  requestAssignment: async (nid, cid) => {
+    const result = await SDB.requestAssignment(cid);
+    if (result?.error) return { error: result.error };
+    let a = PDB.getAssignments().filter(x => x.cid !== cid);
+    a.push({ id: Date.now().toString(36), nid, cid, createdAt: Date.now(), status: "pending" });
+    PDB._saveAsgn(a);
+    return { ok: true };
+  },
+
+  respondToAssignment: async (nid, cid, accept) => {
+    const result = await SDB.respondToAssignment(nid, accept);
+    if (result?.error) return { error: result.error };
+    if (accept) {
+      PDB._saveAsgn(PDB.getAssignments().map(a =>
+        (a.nid === nid && a.cid === cid) ? { ...a, status: "active" } : a
+      ));
+    } else {
+      PDB._saveAsgn(PDB.getAssignments().filter(a => !(a.nid === nid && a.cid === cid)));
+    }
+    return { ok: true };
+  },
+
   // PLANS (versioned per user)
   getPlans: uid => PDB._g("pf_plans_"+uid) || [],
   _savePlans: (uid, plans) => {

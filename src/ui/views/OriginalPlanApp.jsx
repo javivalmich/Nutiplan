@@ -116,6 +116,8 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
   const [showProfile,   setShowProfile]   = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting,      setDeleting]      = useState(false);
+  const [pendingRequests, setPendingRequests] = useState([]);
+  const [requestLoading, setRequestLoading] = useState({});
   const prevPlanId = useRef(null);
   const dayShakeSnapshotRef = useRef({});
 
@@ -222,6 +224,19 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
     }
     prevPlanId.current = incoming;
   }, [activePlanMeta?.id]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const rows = await SDB.getPendingAssignmentsForClient(currentUser.id);
+        if (!cancelled) setPendingRequests(rows || []);
+      } catch {
+        if (!cancelled) setPendingRequests([]);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [currentUser.id]);
 
   const tdee       =calcTDEE(profile.gender,profile.age,profile.weight,profile.height,profile.activity);
   const targetKcal =calcTarget(tdee,profile.goal,profile.kcalAdjust||0);
@@ -868,6 +883,35 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
     {key:"diferente",emoji:"🎲", label:"Sorpréndeme"},
   ];
 
+  const handleAcceptRequest = async (request) => {
+    setRequestLoading(prev => ({ ...prev, [request.id]: true }));
+    try {
+      const result = await SDB.respondToAssignment(request.nid, true);
+      if (result?.ok) {
+        setPendingRequests(prev => prev.filter(r => r.id !== request.id));
+        setNutriFeedback({ type: "success", msg: (request.nutritionist?.display_name || request.nutritionist?.email || "Nutricionista") + " es ahora tu nutricionista." });
+      } else {
+        setNutriFeedback({ type: "warning", msg: "No se pudo aceptar la solicitud." });
+      }
+    } finally {
+      setRequestLoading(prev => ({ ...prev, [request.id]: false }));
+    }
+  };
+
+  const handleRejectRequest = async (request) => {
+    setRequestLoading(prev => ({ ...prev, [request.id]: true }));
+    try {
+      const result = await SDB.respondToAssignment(request.nid, false);
+      if (result?.ok) {
+        setPendingRequests(prev => prev.filter(r => r.id !== request.id));
+      } else {
+        setNutriFeedback({ type: "warning", msg: "No se pudo rechazar la solicitud." });
+      }
+    } finally {
+      setRequestLoading(prev => ({ ...prev, [request.id]: false }));
+    }
+  };
+
   if(loading) return (<div style={{background:Dk.bg,minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:sans,color:Dk.muted,fontSize:14}}>Cargando tu plan...</div>);
 
   // ── SETUP WIZARD ─────────────────────────────────────────────────────────
@@ -1361,6 +1405,24 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
 
         {activeTab==="plan"&&(
           <div style={{animation:"fi 0.3s ease"}}>
+            {/* Pending assignment requests */}
+            {pendingRequests.length > 0 && (
+              <div style={{marginBottom:12}}>
+                {pendingRequests.map(request => {
+                  const name = request.nutritionist?.display_name || request.nutritionist?.email || "Un nutricionista";
+                  const isLoading = !!requestLoading[request.id];
+                  return (
+                    <div key={request.id} style={{background:Dk.card,border:"1px solid "+Dk.border,borderRadius:12,padding:"12px 14px",marginBottom:8,animation:"fi 0.3s ease"}}>
+                      <div style={{fontSize:13,color:Dk.text,marginBottom:10,fontWeight:500}}>{name} quiere ser tu nutricionista.</div>
+                      <div style={{display:"flex",gap:8}}>
+                        <button disabled={isLoading} onClick={()=>handleAcceptRequest(request)} style={{flex:1,padding:"9px",borderRadius:8,border:"none",background:isLoading?Dk.muted:Dk.accent,color:THEME.bgPage,fontFamily:sans,fontSize:12,fontWeight:700,cursor:isLoading?"not-allowed":"pointer",opacity:isLoading?0.6:1}}>Aceptar</button>
+                        <button disabled={isLoading} onClick={()=>handleRejectRequest(request)} style={{flex:1,padding:"9px",borderRadius:8,border:"1px solid "+Dk.border,background:"transparent",color:isLoading?Dk.muted:Dk.text,fontFamily:sans,fontSize:12,fontWeight:600,cursor:isLoading?"not-allowed":"pointer",opacity:isLoading?0.6:1}}>Rechazar</button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
             {/* Nutricionista feedback */}
             {nutriFeedback&&(
               <div style={{background:nutriFeedback.type==="success"?THEME.bgSuccessLight:nutriFeedback.type==="warning"?"#fef9ec":"#eff6ff",border:"1px solid "+(nutriFeedback.type==="success"?THEME.colorSuccessLight:nutriFeedback.type==="warning"?"#fde68a":"#bfdbfe"),borderLeft:"4px solid "+(nutriFeedback.type==="success"?THEME.colorSuccessDark:nutriFeedback.type==="warning"?THEME.colorWarningAlt:"#2563eb"),borderRadius:10,padding:"12px 14px",marginBottom:12,animation:"fi 0.4s ease"}}>

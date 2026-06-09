@@ -321,6 +321,21 @@ export const SDB = {
     return { ok: true };
   },
 
+  getPendingAssignmentsForClient: async (cid) => {
+    // assignments_nid_fkey: verify FK name against PostgREST if this fails at runtime
+    const { data } = await SDB._rest(
+      `/assignments?cid=eq.${cid}&status=eq.pending&select=id,nid,cid,status,created_at,profiles!assignments_nid_fkey(id,email,display_name)`
+    );
+    return (data || []).map(r => ({
+      id: r.id,
+      nid: r.nid,
+      cid: r.cid,
+      status: r.status,
+      created_at: r.created_at,
+      nutritionist: r.profiles || null,
+    }));
+  },
+
   // ── Checkins ──────────────────────────────────────────────────────────────
   insertCheckin: async (uid, ci) => {
     if (!SDB._token) return;

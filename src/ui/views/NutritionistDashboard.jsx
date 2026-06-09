@@ -184,18 +184,31 @@ export function NutritionistDashboard({ currentUser, onLogout }) {
           : clients.length === 0
           ? <div style={{textAlign:"center", padding:"40px 0", color:Dk.muted}}><div style={{fontSize:40, marginBottom:12}}>👥</div><div>Sin clientes asignados aún.</div></div>
           : clients.map((c, i) => {
+              const status = c.a?.status || "active";
+              const isBlocked = status === "pending" || status === "rejected";
+              const STATUS_LABEL = { pending: "⏳ Pendiente", rejected: "❌ Rechazado" };
+              const STATUS_BG    = { pending: "#f59e0b22", rejected: "#ef444422" };
+              const STATUS_COLOR = { pending: "#f59e0b",   rejected: "#ef4444" };
               return (
                 <div key={i} onClick={()=>{setSel(c);setClientTab("plan");setView("client_detail");}} style={{background:Dk.card, borderRadius:14, padding:16, border:"1px solid "+Dk.border, marginBottom:10, cursor:"pointer", animation:"fi 0.3s ease"}}>
                   <div style={{display:"flex", alignItems:"center", gap:12}}>
                     <div style={{width:42, height:42, borderRadius:"50%", background:THEME.accentBg22, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontSize:20}}>👤</div>
                     <div style={{flex:1, minWidth:0}}>
                       <div style={{fontSize:14, fontWeight:700, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap"}}>{c.user.email}</div>
-                      {c.profile ? <div style={{fontSize:11, color:Dk.muted, marginTop:2}}>{GOAL_LABELS[c.profile.goal]} · {c.profile.weight}kg · {c.profile.age}a</div> : <div style={{fontSize:11, color:THEME.accent}}>Sin perfil aún</div>}
+                      {isBlocked
+                        ? <div style={{fontSize:11, color:STATUS_COLOR[status], marginTop:2}}>{STATUS_LABEL[status]}</div>
+                        : c.profile
+                          ? <div style={{fontSize:11, color:Dk.muted, marginTop:2}}>{GOAL_LABELS[c.profile.goal]} · {c.profile.weight}kg · {c.profile.age}a</div>
+                          : <div style={{fontSize:11, color:THEME.accent}}>Sin perfil aún</div>
+                      }
                     </div>
                     <div style={{textAlign:"right", flexShrink:0}}>
-                      <div style={{fontSize:10, padding:"3px 8px", borderRadius:99, background:c.plan?(c.plan.created_by==="nutritionist"?"#7c3aed22":THEME.accentBg22):"#e05a5a22", color:c.plan?(c.plan.created_by==="nutritionist"?THEME.colorPurpleLight:Dk.accent):THEME.colorError2, fontWeight:700}}>
-                        {c.plan ? (c.plan.created_by==="nutritionist"?"🔒 Manual":"🤖 Auto") : "Sin plan"}
-                      </div>
+                      {isBlocked
+                        ? <div style={{fontSize:10, padding:"3px 8px", borderRadius:99, background:STATUS_BG[status], color:STATUS_COLOR[status], fontWeight:700}}>{STATUS_LABEL[status]}</div>
+                        : <div style={{fontSize:10, padding:"3px 8px", borderRadius:99, background:c.plan?(c.plan.created_by==="nutritionist"?"#7c3aed22":THEME.accentBg22):"#e05a5a22", color:c.plan?(c.plan.created_by==="nutritionist"?THEME.colorPurpleLight:Dk.accent):THEME.colorError2, fontWeight:700}}>
+                            {c.plan ? (c.plan.created_by==="nutritionist"?"🔒 Manual":"🤖 Auto") : "Sin plan"}
+                          </div>
+                      }
                     </div>
                   </div>
                 </div>
@@ -223,14 +236,22 @@ export function NutritionistDashboard({ currentUser, onLogout }) {
     // handleSavePlan runs refresh(), the detail view sees the saved plan.
     // Falls back to sel if clients hasn't updated yet (first render).
     const c = clients.find(x => x.user?.id === sel.user?.id) || sel;
+    const detailStatus  = c.a?.status || "active";
+    const detailBlocked = detailStatus === "pending" || detailStatus === "rejected";
+    const D_LABEL = { pending: "⏳ Pendiente", rejected: "❌ Rechazado" };
+    const D_BG    = { pending: "#f59e0b22",   rejected: "#ef444422" };
+    const D_COLOR = { pending: "#f59e0b",     rejected: "#ef4444" };
     return (
       <div style={{background:Dk.bg, minHeight:"100vh", fontFamily:sans, color:Dk.text}}>
         <style>{`@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}`}</style>
         <div style={{padding:"14px 16px", borderBottom:"1px solid "+Dk.border, display:"flex", alignItems:"center", gap:12}}>
           <button onClick={()=>setView("clients")} style={{background:"none", border:"none", color:Dk.muted, fontSize:20, cursor:"pointer", padding:0}}>←</button>
           <div style={{flex:1, minWidth:0}}>
-            <h1 style={{fontFamily:serif, fontSize:17, margin:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap"}}>{c.user.email}</h1>
-            {c.profile && <p style={{color:Dk.muted, margin:0, fontSize:11}}>{GOAL_LABELS[c.profile.goal]} · {c.profile.weight}kg</p>}
+            <div style={{display:"flex", alignItems:"center", gap:8, flexWrap:"wrap"}}>
+              <h1 style={{fontFamily:serif, fontSize:17, margin:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap"}}>{c.user.email}</h1>
+              {detailBlocked && <span style={{fontSize:10, padding:"2px 7px", borderRadius:99, background:D_BG[detailStatus], color:D_COLOR[detailStatus], fontWeight:700, whiteSpace:"nowrap"}}>{D_LABEL[detailStatus]}</span>}
+            </div>
+            {!detailBlocked && c.profile && <p style={{color:Dk.muted, margin:0, fontSize:11}}>{GOAL_LABELS[c.profile.goal]} · {c.profile.weight}kg</p>}
           </div>
           <div style={{display:"flex",gap:6,flexShrink:0}}>
             <button onClick={()=>handleOpenPlanEditor(c)} style={{padding:"8px 14px",borderRadius:8,border:"none",background:Dk.accent,color:THEME.bgPage,fontFamily:sans,fontSize:12,fontWeight:700,cursor:"pointer"}}>
@@ -252,7 +273,9 @@ export function NutritionistDashboard({ currentUser, onLogout }) {
 
         <div style={{maxWidth:600, margin:"0 auto", padding:"16px 14px 100px", animation:"fi 0.3s ease"}}>
           {clientTab === "plan" && (
-            !c.plan
+            detailBlocked
+              ? <div style={{textAlign:"center", padding:"32px 0", color:D_COLOR[detailStatus]}}><div style={{fontSize:40}}>{detailStatus === "pending" ? "⏳" : "❌"}</div><div style={{marginTop:12}}>{detailStatus === "pending" ? "Solicitud pendiente de aceptación." : "Solicitud rechazada."}</div></div>
+              : !c.plan
               ? <div style={{textAlign:"center", padding:"32px 0", color:Dk.muted}}><div style={{fontSize:40}}>📋</div><div style={{marginTop:12, marginBottom:16}}>Sin plan activo</div>{c.profile && <button onClick={()=>handleOpenPlanEditor(c)} style={{padding:"11px 24px", borderRadius:10, border:"none", background:Dk.accent, color:THEME.bgPage, fontFamily:sans, fontSize:13, fontWeight:700, cursor:"pointer"}}>Crear plan →</button>}</div>
               : <>
                   <div style={{padding:"10px 14px", borderRadius:12, background:c.plan.created_by==="nutritionist"?THEME.purpleBg18:THEME.accentBg18, border:"1px solid "+(c.plan.created_by==="nutritionist"?"#7c3aed44":"#e8a04544"), marginBottom:12}}>
@@ -292,7 +315,9 @@ export function NutritionistDashboard({ currentUser, onLogout }) {
           )}
 
           {clientTab === "perfil" && (
-            !c.profile
+            detailBlocked
+              ? <div style={{textAlign:"center", padding:"32px 0", color:D_COLOR[detailStatus]}}><div style={{fontSize:40}}>{detailStatus === "pending" ? "⏳" : "❌"}</div><div style={{marginTop:12}}>{detailStatus === "pending" ? "Solicitud pendiente de aceptación." : "Solicitud rechazada."}</div></div>
+              : !c.profile
               ? <div style={{textAlign:"center", padding:"32px 0", color:Dk.muted}}><div style={{fontSize:40}}>👤</div><div style={{marginTop:12}}>Sin perfil configurado.</div></div>
               : <div style={{display:"flex", flexDirection:"column", gap:8}}>
                   {[["Género",c.profile.gender==="female"?"Mujer":"Hombre"],["Edad",c.profile.age+" años"],["Peso",c.profile.weight+" kg"],["Altura",c.profile.height+" cm"],["Objetivo",GOAL_LABELS[c.profile.goal]],["Actividad",c.profile.activity],["Comidas/día",c.profile.mealsPerDay],["TDEE","~"+calcTDEE(c.profile.gender,c.profile.age,c.profile.weight,c.profile.height,c.profile.activity)+" kcal"],["Objetivo kcal",calcTarget(calcTDEE(c.profile.gender,c.profile.age,c.profile.weight,c.profile.height,c.profile.activity),c.profile.goal,0)+" kcal"],["Intolerancias",(c.profile.intolerances||[]).join(", ")||"Ninguna"]].map(([k,v])=>(

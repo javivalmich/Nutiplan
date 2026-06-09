@@ -67,7 +67,7 @@ export function NutritionistDashboard({ currentUser, onLogout }) {
     const kcal = calcTarget(calcTDEE(c.profile.gender,c.profile.age,c.profile.weight,c.profile.height,c.profile.activity), c.profile.goal, 0);
     const generated = c.plan
       ? { days:[...c.plan.days], strategy:c.plan.strategy, weekWarnings:c.plan.weekWarnings, weekScore:c.plan.weekScore }
-      : __PERF.time("buildPlan:nutriEditor", () => buildPlan(c.profile, kcal, {month:new Date().getMonth(),pastProteins:getPastProteinFrequency(loadMealMemory(currentUser.id)),freeFormPool:FREEFORM_POOL,saveMealMemory:(wk,L,D)=>saveMealMemory(currentUser.id,wk,L,D),weekNumber:getWeekNumber(),perf:__PERF}));  // PERF
+      : __PERF.time("buildPlan:nutriEditor", () => buildPlan(c.profile, kcal, {month:new Date().getMonth(),pastProteins:getPastProteinFrequency(loadMealMemory(c.user.id)),freeFormPool:FREEFORM_POOL,saveMealMemory:(wk,L,D)=>saveMealMemory(c.user.id,wk,L,D),weekNumber:getWeekNumber(),perf:__PERF}));  // PERF
     setEditPlan({ days: JSON.parse(JSON.stringify(generated.days)), strategy: generated.strategy, calories: kcal, profile: c.profile, clientId: c.user.id, originalPlanMeta: c.plan });
     setEditDay(0); setEditMeal(null);
     setView("plan_editor"); setSel(c);

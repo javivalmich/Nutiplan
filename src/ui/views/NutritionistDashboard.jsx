@@ -24,6 +24,10 @@ export function NutritionistDashboard({ currentUser, onLogout }) {
   const [clientTab, setClientTab] = useState("plan");
   const [addEmail, setAddEmail] = useState("");
   const [addError, setAddError] = useState("");
+  // Server-side client search (additive — legacy flow untouched)
+  const [searchQuery, setSearchQuery]     = useState("");
+  const [searchResults, setSearchResults] = useState(null); // null = idle, [] = no results
+  const [searchLoading, setSearchLoading] = useState(false);
   // Plan editor state
   const [editPlan, setEditPlan] = useState(null); // { days, strategy, calories, profile }
   const [editDay, setEditDay]   = useState(0);
@@ -185,6 +189,52 @@ export function NutritionistDashboard({ currentUser, onLogout }) {
           </div>
           {addError && <div style={{fontSize:12, color:THEME.colorError2, marginTop:6}}>{addError}</div>}
           <div style={{fontSize:11, color:Dk.muted, marginTop:8}}>💡 También puedes compartir tu email con clientes para que se registren vinculados a ti.</div>
+        </div>
+
+        {/* ── Búsqueda server-side (additive) ─────────────────────────────── */}
+        <div style={{background:Dk.card, borderRadius:14, padding:16, border:"1px solid "+Dk.border, marginBottom:16}}>
+          <div style={{fontSize:12, color:Dk.muted, marginBottom:10, fontWeight:600}}>Buscar cliente por nombre o email</div>
+          <div style={{display:"flex", gap:8}}>
+            <input
+              value={searchQuery}
+              onChange={e => { setSearchQuery(e.target.value); if (!e.target.value.trim()) setSearchResults(null); }}
+              onKeyDown={async e => {
+                if (e.key !== "Enter" || !searchQuery.trim()) return;
+                setSearchLoading(true); setSearchResults(null);
+                const res = await SDB.findClient(searchQuery.trim());
+                setSearchLoading(false);
+                if (res.error) { setSearchResults([]); } else { setSearchResults(res.data || []); }
+              }}
+              placeholder="Nombre o email…"
+              style={{flex:1, padding:"9px 12px", borderRadius:8, border:"1px solid "+Dk.border, background:Dk.card2, color:Dk.text, fontFamily:sans, fontSize:13, outline:"none", minWidth:0}}
+            />
+            <button
+              onClick={async () => {
+                if (!searchQuery.trim()) return;
+                setSearchLoading(true); setSearchResults(null);
+                const res = await SDB.findClient(searchQuery.trim());
+                setSearchLoading(false);
+                if (res.error) { setSearchResults([]); } else { setSearchResults(res.data || []); }
+              }}
+              style={{padding:"9px 16px", borderRadius:8, background:Dk.card2, color:Dk.accent, border:"1px solid "+Dk.border, fontFamily:sans, fontSize:13, fontWeight:700, cursor:"pointer", flexShrink:0}}
+            >Buscar</button>
+          </div>
+          {searchLoading && <div style={{fontSize:12, color:Dk.muted, marginTop:8}}>Buscando…</div>}
+          {searchResults !== null && !searchLoading && (
+            searchResults.length === 0
+              ? <div style={{fontSize:12, color:Dk.muted, marginTop:8}}>Sin resultados.</div>
+              : <div style={{marginTop:10, display:"flex", flexDirection:"column", gap:6}}>
+                  {searchResults.map((r, i) => (
+                    <div key={i} style={{display:"flex", alignItems:"center", gap:10, padding:"8px 10px", borderRadius:8, background:Dk.card2, border:"1px solid "+Dk.border}}>
+                      <div style={{width:30, height:30, borderRadius:"50%", background:THEME.accentBg22, display:"flex", alignItems:"center", justifyContent:"center", fontSize:14, flexShrink:0}}>👤</div>
+                      <div style={{flex:1, minWidth:0}}>
+                        <div style={{fontSize:13, fontWeight:600, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap"}}>{r.display_name || r.email}</div>
+                        {r.display_name && <div style={{fontSize:11, color:Dk.muted, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap"}}>{r.email}</div>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+          )}
         </div>
 
         {loadingClients

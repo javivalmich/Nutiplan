@@ -1542,12 +1542,15 @@ export function buildPlan(profile, targetKcal, opts = {}) {
   // ── WEEKLY COHERENCE LIMITS ───────────────────────────────────────────────
   // Hard limits enforced across the whole week (tracked per-week, not per-day)
   var weeklyProteinCount = {}; // protein → count
+  var weeklyVegCount     = {}; // veggie → count (días-distintos aprox., ver recordMeal)
   var weeklyPlateCount   = {}; // plateType → count
   var weeklyCulinaryStyle= {}; // culinaryStyle → count
   var weeklyCuisineExp   = {}; // cuisineExperience → count ("comfort_caliente", "bowl_fresco" …)
   var weeklyTempFeel     = {}; // "caliente" / "frio" / "muy_caliente" → count
   // Hard caps: fish max 2/week across all fish species, ave (pollo+pavo+conejo) max 4/week total, etc.
   var WEEKLY_CAP = {pescado:2, marisco:1, legumbre:2, pasta:2, ternera:2, cerdo:2, ave:4};
+  // Cross-week penalty step per prior occurrence of the same primary veggie (m.veggie)
+  var WEEKLY_VEG_PEN_STEP = 3;
 
   // ── FREEFORM FREQUENCY TRACKING ────────────────────────────────────────────
   // Tracks usage of freeForm combos within the current ISO week.
@@ -1579,12 +1582,13 @@ export function buildPlan(profile, targetKcal, opts = {}) {
     return false;
   }
 
-  function recordMeal(protKey, ptKey, styleKey, cxp, tmp) {
+  function recordMeal(protKey, ptKey, styleKey, cxp, tmp, veggie) {
     weeklyProteinCount[protKey] = (weeklyProteinCount[protKey]||0) + 1;
     var fam = protFamily(protKey);
     if(fam !== protKey) {
       weeklyProteinCount[fam] = (weeklyProteinCount[fam]||0) + 1;
     }
+    if(veggie) weeklyVegCount[veggie] = (weeklyVegCount[veggie]||0) + 1;
     weeklyPlateCount[ptKey]     = (weeklyPlateCount[ptKey]||0)     + 1;
     if(styleKey) weeklyCulinaryStyle[styleKey] = (weeklyCulinaryStyle[styleKey]||0) + 1;
     if(cxp)      weeklyCuisineExp[cxp]         = (weeklyCuisineExp[cxp]||0)         + 1;
@@ -1801,6 +1805,13 @@ export function buildPlan(profile, targetKcal, opts = {}) {
         dayVeggiePen = 8;
       }
 
+      // 13b. Cross-week main veggie repetition — escalated penalty per prior count
+      // Targets the "verdura ×3 días" pattern (e.g. calabacín toda la semana)
+      var weeklyVegPen = 0;
+      if(m.veggie) {
+        weeklyVegPen = (weeklyVegCount[m.veggie] || 0) * WEEKLY_VEG_PEN_STEP;
+      }
+
       // 14. Culinary style over-representation this week
       // Prevents the week from being all "casero" or all "mediterraneo"
       // Cap: max 3 meals per style per week — soft penalty beyond 2
@@ -1871,7 +1882,7 @@ export function buildPlan(profile, targetKcal, opts = {}) {
 
       var score = protPen + platePen + countPen + denBonus + ptBonus + sacBonus + slotBonus +
                   familiarBonus + memPenalty + dayProtPen + daySaucePen + dayCookPen +
-                  dayVeggiePen + fishDayPen + stylePen + moodPen + apetenciaPen + cxpPen + tmpPen +
+                  dayVeggiePen + weeklyVegPen + fishDayPen + stylePen + moodPen + apetenciaPen + cxpPen + tmpPen +
                   seasonalBonus + sopaCremaPen + cookMethodRecencyPen;
 
       // ── freeForm v3.1 additive penalties (Prompt 2B) ───────────────
@@ -2340,7 +2351,7 @@ export function buildPlan(profile, targetKcal, opts = {}) {
       usedLCook.push(lPicked.cookM||"");
       if(lPicked.plateType==="sopa_crema" && lPicked.veggie) usedL.push("sopa:"+lPicked.veggie);
       usedLPlate.push(lPicked.plateType||"caliente_arroz");
-      recordMeal(lPicked.protein||"pollo", lPicked.plateType||"caliente_arroz", lPicked.culinaryStyle||null, lPicked.cuisineExperience||null, lPicked.tempFeel||null);
+      recordMeal(lPicked.protein||"pollo", lPicked.plateType||"caliente_arroz", lPicked.culinaryStyle||null, lPicked.cuisineExperience||null, lPicked.tempFeel||null, lPicked.veggie||null);
       recordDayCtx(lPicked);
       // ── freeForm frequency tracking (lunch) ──────────────────────
       if (lPicked._spec && lPicked._spec.freeForm === true) {
@@ -2383,7 +2394,7 @@ export function buildPlan(profile, targetKcal, opts = {}) {
       usedDCook.push(dPicked.cookM||"");
       if(dPicked.plateType==="sopa_crema" && dPicked.veggie) usedD.push("sopa:"+dPicked.veggie);
       usedDPlate.push(dPicked.plateType||"plancha_verdura");
-      recordMeal(dPicked.protein||"pavo", dPicked.plateType||"plancha_verdura", dPicked.culinaryStyle||null, dPicked.cuisineExperience||null, dPicked.tempFeel||null);
+      recordMeal(dPicked.protein||"pavo", dPicked.plateType||"plancha_verdura", dPicked.culinaryStyle||null, dPicked.cuisineExperience||null, dPicked.tempFeel||null, dPicked.veggie||null);
       recordDayCtx(dPicked);
       // ── freeForm frequency tracking (dinner) ─────────────────────
       if (dPicked._spec && dPicked._spec.freeForm === true) {

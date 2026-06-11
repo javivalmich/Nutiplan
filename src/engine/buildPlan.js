@@ -2027,6 +2027,21 @@ export function buildPlan(profile, targetKcal, opts = {}) {
              : 1;
     var candidates = scored.slice(0, topN);
 
+    // ── Stage 2a: controlled lunch-hint injection ───────────────────────────
+    // If the lunch slotHint protein survived the weekly CAP but was pruned out
+    // of the top-N, push it into candidates so it can still be picked.
+    var injectedHint = false;
+    var hintIdx = -1;
+    if (slotHint && slotHint.protein) {
+      for (var k = 0; k < scored.length; k++) {
+        if ((scored[k].m.protein || scored[k].m.type) === slotHint.protein) { hintIdx = k; break; }
+      }
+      if (hintIdx >= topN) {
+        candidates.push(scored[hintIdx]);
+        injectedHint = true;
+      }
+    }
+
     // Pesos: w = 1 / (score - min_score + 1)^1.4
     // El exponente 1.4 mantiene la calidad (el peor no tiene igual prob que el mejor)
     // pero da opciones reales al 2º, 3º y 4º candidato.
@@ -2060,20 +2075,18 @@ export function buildPlan(profile, targetKcal, opts = {}) {
       console.log("[smartPick TRACE]", __trace);
     }
     if(SMARTPICK_TRACE && slotHint && slotHint.protein) {
-      var __hintIdx = -1;
-      for(var __k=0; __k<scored.length; __k++){
-        if((scored[__k].m.protein||scored[__k].m.type) === slotHint.protein){
-          __hintIdx = __k;
-          break;
-        }
-      }
+      var hintCapBlocked = hintIdx === -1;
+      var hintPruned = hintIdx >= topN;
+      var hintInCandidates = (hintIdx >= 0 && hintIdx < topN) || injectedHint;
       console.log("[smartPick HINT TRACE]", {
         slotHintProtein: slotHint.protein,
         chosen: (chosen && (chosen.protein || chosen.type)) || null,
-        hintIdx: __hintIdx,
+        hintIdx: hintIdx,
         topN: topN,
-        hintInScored: __hintIdx >= 0,
-        hintPruned: __hintIdx >= 0 && __hintIdx >= topN
+        injectedHint: injectedHint,
+        hintInCandidates: hintInCandidates,
+        hintCapBlocked: hintCapBlocked,
+        hintPruned: hintPruned
       });
     }
     return chosen;

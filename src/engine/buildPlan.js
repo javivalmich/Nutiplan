@@ -1596,7 +1596,7 @@ export function buildPlan(profile, targetKcal, opts = {}) {
 
   // Observability toggle — set to true from the browser console to enable structured traces.
   // Has zero runtime cost when false.
-  var SMARTPICK_TRACE = false;
+  var SMARTPICK_TRACE = opts.trace === true;
 
   function smartPick(pool, usedProteins, usedPlateTypes, usedCookMethods, fallbackBuild, slotHint, dayCtx, mood) {
     // dayCtx = {sauces:[], cookMethods:[], veggies:[], proteins:[]} — used meals in this calendar day
@@ -2058,6 +2058,23 @@ export function buildPlan(profile, targetKcal, opts = {}) {
         __trace.reasonWinner = "unknown";
       }
       console.log("[smartPick TRACE]", __trace);
+    }
+    if(SMARTPICK_TRACE && slotHint && slotHint.protein) {
+      var __hintIdx = -1;
+      for(var __k=0; __k<scored.length; __k++){
+        if((scored[__k].m.protein||scored[__k].m.type) === slotHint.protein){
+          __hintIdx = __k;
+          break;
+        }
+      }
+      console.log("[smartPick HINT TRACE]", {
+        slotHintProtein: slotHint.protein,
+        chosen: (chosen && (chosen.protein || chosen.type)) || null,
+        hintIdx: __hintIdx,
+        topN: topN,
+        hintInScored: __hintIdx >= 0,
+        hintPruned: __hintIdx >= 0 && __hintIdx >= topN
+      });
     }
     return chosen;
   }

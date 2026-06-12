@@ -24,6 +24,7 @@ export function buildPlan(profile, targetKcal, opts = {}) {
   const _month        = opts.month        ?? new Date().getMonth();
   const _pastProteins = opts.pastProteins ?? {};
   const _rnd          = opts.rng          ?? Math.random;
+  const WEEKLY_SAUCE_PEN_STEP = opts.weeklySaucePenStep ?? 5;
   // ---------------------------------------------------------------------------
 
   // Ensure extras.proteinShake exists — safe for old profiles without it.
@@ -261,6 +262,12 @@ export function buildPlan(profile, targetKcal, opts = {}) {
     ajillo:         {label:"ajo, perejil y guindilla",    fat:"½ cda AOVE", familiar:true,  style:"casero"},
     romero_limon:   {label:"romero, limón y ajo",         fat:"½ cda AOVE", familiar:true,  style:"mediterraneo"},
   };
+
+  const sauceFamily = {
+    mostaza_miel: 'mostaza',
+    vinagreta: 'mostaza'
+  };
+  const famOf = (s) => sauceFamily[s] ?? s;
 
   // Cook method descriptions in Spanish
   const COOK_LABEL = {
@@ -1546,6 +1553,7 @@ export function buildPlan(profile, targetKcal, opts = {}) {
   var weeklyCulinaryStyle= {}; // culinaryStyle → count
   var weeklyCuisineExp   = {}; // cuisineExperience → count ("comfort_caliente", "bowl_fresco" …)
   var weeklyTempFeel     = {}; // "caliente" / "frio" / "muy_caliente" → count
+  var weeklySauceCount   = {}; // sauce family → count
   // Hard caps: fish max 2/week across all fish species, ave (pollo+pavo+conejo) max 4/week total, etc.
   var WEEKLY_CAP = {pescado:2, marisco:1, legumbre:2, pasta:2, ternera:2, cerdo:2, ave:4};
 
@@ -1579,7 +1587,7 @@ export function buildPlan(profile, targetKcal, opts = {}) {
     return false;
   }
 
-  function recordMeal(protKey, ptKey, styleKey, cxp, tmp) {
+  function recordMeal(protKey, ptKey, styleKey, cxp, tmp, sauce) {
     weeklyProteinCount[protKey] = (weeklyProteinCount[protKey]||0) + 1;
     var fam = protFamily(protKey);
     if(fam !== protKey) {
@@ -1589,6 +1597,10 @@ export function buildPlan(profile, targetKcal, opts = {}) {
     if(styleKey) weeklyCulinaryStyle[styleKey] = (weeklyCulinaryStyle[styleKey]||0) + 1;
     if(cxp)      weeklyCuisineExp[cxp]         = (weeklyCuisineExp[cxp]||0)         + 1;
     if(tmp)      weeklyTempFeel[tmp]            = (weeklyTempFeel[tmp]||0)            + 1;
+    if(typeof sauce === 'string' && sauce.length > 0) {
+      const f = famOf(sauce);
+      weeklySauceCount[f] = (weeklySauceCount[f] || 0) + 1;
+    }
   }
 
   // ── SMART PICKER (15-factor scoring) ─────────────────────────────────────
@@ -1787,6 +1799,14 @@ export function buildPlan(profile, targetKcal, opts = {}) {
         daySaucePen = 14; // avoids "al ajillo" twice in same day
       }
 
+      const _sFam = typeof m.sauce === 'string' ? famOf(m.sauce) : null;
+      const _wsc  = _sFam ? (weeklySauceCount[_sFam] || 0) : 0;
+      const weeklySaucePen =
+        (!_sFam || _wsc <= 1) ? 0 :
+        _wsc === 2 ? WEEKLY_SAUCE_PEN_STEP :
+        _wsc === 3 ? 3 * WEEKLY_SAUCE_PEN_STEP :
+        6 * WEEKLY_SAUCE_PEN_STEP;
+
       // 12. Same-day cooking method repetition — MODERATE penalty
       // e.g. two consecutive plancha meals on same day
       var dayCookPen = 0;
@@ -1870,7 +1890,7 @@ export function buildPlan(profile, targetKcal, opts = {}) {
       var sopaCremaPen = (m.plateType==="sopa_crema" && m.veggie && usedProteins.indexOf("sopa:"+m.veggie) > -1) ? 8 : 0;
 
       var score = protPen + platePen + countPen + denBonus + ptBonus + sacBonus + slotBonus +
-                  familiarBonus + memPenalty + dayProtPen + daySaucePen + dayCookPen +
+                  familiarBonus + memPenalty + dayProtPen + daySaucePen + weeklySaucePen + dayCookPen +
                   dayVeggiePen + fishDayPen + stylePen + moodPen + apetenciaPen + cxpPen + tmpPen +
                   seasonalBonus + sopaCremaPen + cookMethodRecencyPen;
 
@@ -2370,7 +2390,7 @@ export function buildPlan(profile, targetKcal, opts = {}) {
       usedLCook.push(lPicked.cookM||"");
       if(lPicked.plateType==="sopa_crema" && lPicked.veggie) usedL.push("sopa:"+lPicked.veggie);
       usedLPlate.push(lPicked.plateType||"caliente_arroz");
-      recordMeal(lPicked.protein||"pollo", lPicked.plateType||"caliente_arroz", lPicked.culinaryStyle||null, lPicked.cuisineExperience||null, lPicked.tempFeel||null);
+      recordMeal(lPicked.protein||"pollo", lPicked.plateType||"caliente_arroz", lPicked.culinaryStyle||null, lPicked.cuisineExperience||null, lPicked.tempFeel||null, lPicked.sauce);
       recordDayCtx(lPicked);
       // ── freeForm frequency tracking (lunch) ──────────────────────
       if (lPicked._spec && lPicked._spec.freeForm === true) {
@@ -2396,7 +2416,7 @@ export function buildPlan(profile, targetKcal, opts = {}) {
       dinner = composeMeal(td);
       usedD.push("pollo");
       usedDPlate.push("caliente_arroz");
-      recordMeal("pollo","caliente_arroz","casero");
+      recordMeal("pollo","caliente_arroz","casero",null,null,null);
       // training dinners don't add to dayCtx — they're overrides
     } else {
       var dPool = isSimple
@@ -2413,7 +2433,7 @@ export function buildPlan(profile, targetKcal, opts = {}) {
       usedDCook.push(dPicked.cookM||"");
       if(dPicked.plateType==="sopa_crema" && dPicked.veggie) usedD.push("sopa:"+dPicked.veggie);
       usedDPlate.push(dPicked.plateType||"plancha_verdura");
-      recordMeal(dPicked.protein||"pavo", dPicked.plateType||"plancha_verdura", dPicked.culinaryStyle||null, dPicked.cuisineExperience||null, dPicked.tempFeel||null);
+      recordMeal(dPicked.protein||"pavo", dPicked.plateType||"plancha_verdura", dPicked.culinaryStyle||null, dPicked.cuisineExperience||null, dPicked.tempFeel||null, dPicked.sauce);
       recordDayCtx(dPicked);
       // ── freeForm frequency tracking (dinner) ─────────────────────
       if (dPicked._spec && dPicked._spec.freeForm === true) {

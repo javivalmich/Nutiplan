@@ -14,11 +14,14 @@ App de menús diarios/semanales personalizados. El motor actual (`buildPlan.js`)
 6. **Determinismo:** misma seed → mismo plan, byte a byte, en ambos motores. `seed = hash(userId + weekNumber)`.
 
 ## Contrato de shape entre motores
-Ambos motores devuelven el mismo objeto para que la capa de producto no distinga quién generó:
-```
-{ days: [...], weekWarnings: [...], weekScore: <compat>, decisionLog?: [...] }
-```
-`decisionLog` es opcional y solo lo emite engine2. La capa de producto no debe romperse si falta.
+Ambos motores devuelven EXACTAMENTE estas claves (verificado en buildPlan.js:2780
+y en los call-sites de producto):
+{ days, strategy, weekWarnings, weekProblems, weekScore, decisionLog? }
+- strategy y weekProblems: consumidos por OriginalPlanApp.jsx y NutritionistDashboard.jsx.
+  engine2 DEBE emitirlos (aunque weekProblems vaya como []).
+- weekScore: campo de COMPATIBILIDAD de display. engine2 NO puntúa; su valor en engine2
+  se decide en Fase 7 (placeholder o derivado del contrato de reconcile). Allowlisted en el tripwire.
+- decisionLog: opcional, solo engine2.
 
 ## Contrato MemoryStore (interfaz, sin implementación de storage)
 ```

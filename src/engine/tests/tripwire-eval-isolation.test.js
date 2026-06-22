@@ -49,6 +49,33 @@ describe('tripwire — checker fixtures (pass/fail)', () => {
   });
 });
 
+// CONTROL POSITIVO end-to-end: ver justificacion en tripwire-no-score.test.js.
+// Aqui probamos que un import real a ../eval/ colado en src/engine2/ es
+// detectado por el MISMO escaneo recursivo que protege el directorio real.
+// Subdirectorio propio para evitar carreras con el otro archivo de tripwire
+// cuando vitest corre ambos test files en paralelo.
+describe('tripwire — autotest end-to-end (el escaneo real SI detecta una violacion real)', () => {
+  const selfTestDir = path.join(ENGINE2_ROOT, '__selftest_eval_isolation__');
+  const selfTestFile = path.join(selfTestDir, 'violation.js');
+
+  it('un import a ../eval/ colado en src/engine2/ es detectado por el escaneo real', () => {
+    fs.mkdirSync(selfTestDir, { recursive: true });
+    fs.writeFileSync(selfTestFile, "import { humanScore } from '../eval/humanScore.js';\n", 'utf8');
+    try {
+      const files = listJsFiles(selfTestDir);
+      const allViolations = [];
+      for (const file of files) {
+        const violations = checkEvalIsolationImports(fs.readFileSync(file, 'utf8'));
+        for (const v of violations) allViolations.push({ file, ...v });
+      }
+      expect(allViolations.length).toBeGreaterThan(0);
+      expect(allViolations.some((v) => v.file === selfTestFile)).toBe(true);
+    } finally {
+      fs.rmSync(selfTestDir, { recursive: true, force: true });
+    }
+  });
+});
+
 describe('tripwire — src/engine2/ real (incluyendo tests/)', () => {
   const files = listJsFiles(ENGINE2_ROOT);
 

@@ -89,6 +89,36 @@ describe('tripwire — checker fixtures (pass/fail)', () => {
   });
 });
 
+// CONTROL POSITIVO end-to-end: escribe un archivo violatorio de verdad bajo
+// src/engine2/, corre el MISMO escaneo recursivo que protege el directorio
+// real, y confirma que lo detecta. Sin esto, el tripwire podria pasar
+// solo porque engine2 esta vacio hoy — esto prueba que el cableado
+// (listJsFiles + checker sobre la ruta real) funciona, no solo la funcion
+// checker en aislamiento. Subdirectorio propio (no compartido con el otro
+// archivo de tripwire) para evitar carreras cuando vitest corre los test
+// files en paralelo. Limpieza garantizada en finally aunque la aserción falle.
+describe('tripwire — autotest end-to-end (el escaneo real SI detecta una violacion real)', () => {
+  const selfTestDir = path.join(ENGINE2_ROOT, '__selftest_no_score__');
+  const selfTestFile = path.join(selfTestDir, 'violation.js');
+
+  it('un archivo con "const score" colado en src/engine2/ es detectado por el escaneo real', () => {
+    fs.mkdirSync(selfTestDir, { recursive: true });
+    fs.writeFileSync(selfTestFile, 'export const score = computeFit(dish);\n', 'utf8');
+    try {
+      const files = listJsFiles(selfTestDir).filter((f) => !isUnderTestsDir(f));
+      const allViolations = [];
+      for (const file of files) {
+        const violations = checkNoScoreIdentifiers(fs.readFileSync(file, 'utf8'));
+        for (const v of violations) allViolations.push({ file, ...v });
+      }
+      expect(allViolations.length).toBeGreaterThan(0);
+      expect(allViolations.some((v) => v.file === selfTestFile && v.name === 'score')).toBe(true);
+    } finally {
+      fs.rmSync(selfTestDir, { recursive: true, force: true });
+    }
+  });
+});
+
 describe('tripwire — src/engine2/ real (excluyendo **/tests/**)', () => {
   const files = listJsFiles(ENGINE2_ROOT).filter((f) => !isUnderTestsDir(f));
 

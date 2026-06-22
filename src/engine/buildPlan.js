@@ -1612,12 +1612,18 @@ export function buildPlan(profile, targetKcal, opts = {}) {
   // Observability toggle — set to true from the browser console to enable structured traces.
   // Has zero runtime cost when false.
   var SMARTPICK_TRACE = opts.trace === true;
+  // QA traces (Fase 0): captura las mismas estructuras de __trace bajo opts.qaTrace,
+  // sin imprimir nada — se devuelven en result.qaTrace. Independiente de opts.trace:
+  // no cambia su comportamiento de console.log existente (consumido por analysis/*.mjs).
+  var QA_TRACE = opts.qaTrace === true;
+  var TRACE_ON = SMARTPICK_TRACE || QA_TRACE;
+  var __qaSmartPickTraces = QA_TRACE ? [] : null;
 
   function smartPick(pool, usedProteins, usedPlateTypes, usedCookMethods, fallbackBuild, slotHint, dayCtx, mood) {
     // dayCtx = {sauces:[], cookMethods:[], veggies:[], proteins:[]} — used meals in this calendar day
     if(!pool.length) {
-      if(SMARTPICK_TRACE) {
-        console.log("[smartPick TRACE]", {
+      if(TRACE_ON) {
+        var __emptyTrace = {
           slotHint: slotHint || null,
           mood: mood || null,
           candidateIds: [],
@@ -1626,14 +1632,16 @@ export function buildPlan(profile, targetKcal, opts = {}) {
           winnerId: "<fallback>",
           winnerScore: null,
           reasonWinner: "poolEmpty_fallbackBuild"
-        });
+        };
+        if(SMARTPICK_TRACE) console.log("[smartPick TRACE]", __emptyTrace);
+        if(QA_TRACE) __qaSmartPickTraces.push(__emptyTrace);
       }
       return fallbackBuild();
     }
     var pref = STRAT_PREF[strategy] || STRAT_PREF.mantenimiento_equilibrado;
     var dc = dayCtx || {sauces:[], cookMethods:[], veggies:[], proteins:[]};
 
-    if(SMARTPICK_TRACE) {
+    if(TRACE_ON) {
       var __trace = {
         slotHint: slotHint || null,
         mood: mood || null,
@@ -1650,7 +1658,7 @@ export function buildPlan(profile, targetKcal, opts = {}) {
 
     var eligible = pool.filter(function(m) {
       var passes = !exceedsWeeklyCap(m.protein || m.type, m.plateType || "");
-      if(SMARTPICK_TRACE && !passes) {
+      if(TRACE_ON && !passes) {
         __trace.hardFilteredOutIds.push({
           id: (m && (m.id || m.protein)) || "<no-id>",
           reason: "exceedsWeeklyCap",
@@ -1662,7 +1670,7 @@ export function buildPlan(profile, targetKcal, opts = {}) {
     });
     if(!eligible.length) {
       eligible = pool;
-      if(SMARTPICK_TRACE) {
+      if(TRACE_ON) {
         __trace.hardFilteredOutIds.push({
           id: "<fallback>",
           reason: "weeklyCapFallback_poolEmpty",
@@ -2019,7 +2027,7 @@ export function buildPlan(profile, targetKcal, opts = {}) {
       }
       // ── fin freeForm v3.1 additive penalties ──────────────────────
 
-      if(SMARTPICK_TRACE) {
+      if(TRACE_ON) {
         __trace.scored.push({
           id: (m && (m.id || m.protein)) || "<no-id>",
           score: typeof score !== "undefined" ? score : null,
@@ -2080,7 +2088,7 @@ export function buildPlan(profile, targetKcal, opts = {}) {
       cumul += weights[i];
       if(rand <= cumul){ chosen = candidates[i].m; break; }
     }
-    if(SMARTPICK_TRACE) {
+    if(TRACE_ON) {
       __trace.winnerId = (chosen && (chosen.id || chosen.protein)) || "<no-id>";
       var __winnerEntry = __trace.scored.find(function(s) {
         return s.id === __trace.winnerId;
@@ -2095,13 +2103,14 @@ export function buildPlan(profile, targetKcal, opts = {}) {
       } else {
         __trace.reasonWinner = "unknown";
       }
-      console.log("[smartPick TRACE]", __trace);
+      if(SMARTPICK_TRACE) console.log("[smartPick TRACE]", __trace);
+      if(QA_TRACE) __qaSmartPickTraces.push(__trace);
     }
-    if(SMARTPICK_TRACE && slotHint && slotHint.protein) {
+    if(TRACE_ON && slotHint && slotHint.protein) {
       var hintCapBlocked = hintIdx === -1;
       var hintPruned = hintIdx >= topN;
       var hintInCandidates = (hintIdx >= 0 && hintIdx < topN) || injectedHint;
-      console.log("[smartPick HINT TRACE]", {
+      var __hintTrace = {
         slotHintProtein: slotHint.protein,
         chosen: (chosen && (chosen.protein || chosen.type)) || null,
         hintIdx: hintIdx,
@@ -2110,7 +2119,9 @@ export function buildPlan(profile, targetKcal, opts = {}) {
         hintInCandidates: hintInCandidates,
         hintCapBlocked: hintCapBlocked,
         hintPruned: hintPruned
-      });
+      };
+      if(SMARTPICK_TRACE) console.log("[smartPick HINT TRACE]", __hintTrace);
+      if(QA_TRACE && __trace) __trace.hint = __hintTrace;
     }
     return chosen;
   }
@@ -2767,18 +2778,20 @@ export function buildPlan(profile, targetKcal, opts = {}) {
 
     var rawScore = 100 - deductions;
 
-    console.log("WEEK VALIDATION DEBUG", {
-      deductions,
-      rawScore,
-      weeklyCuisineExp,
-      weeklyProteinCount,
-      weeklyTempFeel
-    });
+    // QA trace (Fase 0): este payload solo se imprimía siempre por stdout.
+    // Ahora solo se construye y expone bajo opts.qaTrace — sin console.log.
+    var __qaWeekValidation = QA_TRACE ? {
+      deductions: deductions,
+      rawScore: rawScore,
+      weeklyCuisineExp: weeklyCuisineExp,
+      weeklyProteinCount: weeklyProteinCount,
+      weeklyTempFeel: weeklyTempFeel
+    } : null;
 
     var score = Number.isFinite(rawScore)
       ? Math.max(0, Math.min(100, rawScore))
       : 0;
-    return { warnings: warnings, problems: problems, score: score };
+    return { warnings: warnings, problems: problems, score: score, _qaWeekValidation: __qaWeekValidation };
   }
 
   // ── CALL validateWeek and return ─────────────────────────────────────────
@@ -2789,5 +2802,6 @@ export function buildPlan(profile, targetKcal, opts = {}) {
     weekWarnings: validation.warnings,
     weekProblems: validation.problems,
     weekScore:    validation.score,
+    ...(QA_TRACE ? { qaTrace: { weekValidation: validation._qaWeekValidation, smartPick: __qaSmartPickTraces } } : {}),
   };
 }

@@ -11,17 +11,7 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { buildPlan } from '../buildPlan.js';
-
-// mulberry32 — deterministic PRNG. seed → () => [0, 1)
-function mulberry32(seed) {
-  let s = seed >>> 0;
-  return function () {
-    s = (s + 0x6D2B79F5) >>> 0;
-    let t = Math.imul(s ^ (s >>> 15), 1 | s);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
+import { mulberry32 } from '../rng.js';
 
 const SEED = 123456;
 
@@ -90,5 +80,44 @@ describe('buildPlan — golden snapshot (seeded)', () => {
         { ...BASE_OPTS, saveMealMemory: vi.fn() },
       )
     ).not.toThrow();
+  });
+});
+
+// Sin opts.rng inyectado, buildPlan siembra _rnd con hash(userId+weekNumber)
+// (buildPlan.js:26). Estos tests cubren ese camino — sin pasar rng manual.
+function runSeeded(userId, weekNumber) {
+  return buildPlan(
+    JSON.parse(JSON.stringify(PROFILE)),
+    TARGET_KCAL,
+    { ...BASE_OPTS, weekNumber, userId, saveMealMemory: vi.fn() },
+  );
+}
+
+describe('buildPlan — seed determinista por defecto (sin opts.rng)', () => {
+  it('determinismo — mismo userId+weekNumber → days byte-idénticos (excluyendo day.id)', () => {
+    const a = serialiseDays(runSeeded('user-abc', 23).days);
+    const b = serialiseDays(runSeeded('user-abc', 23).days);
+    expect(JSON.stringify(b)).toBe(JSON.stringify(a));
+  });
+
+  it('sensibilidad — distinto userId → days distintos', () => {
+    const a = JSON.stringify(serialiseDays(runSeeded('user-abc', 23).days));
+    const b = JSON.stringify(serialiseDays(runSeeded('user-xyz', 23).days));
+    expect(b).not.toBe(a);
+  });
+
+  it('sensibilidad — distinto weekNumber → days distintos', () => {
+    const a = JSON.stringify(serialiseDays(runSeeded('user-abc', 23).days));
+    const b = JSON.stringify(serialiseDays(runSeeded('user-abc', 24).days));
+    expect(b).not.toBe(a);
+  });
+
+  it('opts.rng explícito sigue ganando sobre la seed por userId+weekNumber', () => {
+    const withRng = serialiseDays(run(SEED).days);
+    const withoutRng = serialiseDays(runSeeded('user-abc', 23).days);
+    // Distintos mecanismos de seed deben producir secuencias _rnd distintas
+    // (no es una igualdad garantizada, pero confirma que rng explícito no
+    // colapsa silenciosamente al mismo resultado que la seed por defecto).
+    expect(JSON.stringify(withRng)).not.toBe(JSON.stringify(withoutRng));
   });
 });

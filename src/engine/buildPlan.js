@@ -11,6 +11,7 @@
 
 import { computeStrategy, getMealRules, calcMacros } from './nutrition.js';
 import { _hashStr } from './hash.js';
+import { mulberry32 } from './rng.js';
 import { SEASONAL_FOODS } from '../seasonalFoods.js';
 
 export function buildPlan(profile, targetKcal, opts = {}) {
@@ -23,7 +24,9 @@ export function buildPlan(profile, targetKcal, opts = {}) {
   // -- Controlled impurity points ---------------------------------------------
   const _month        = opts.month        ?? new Date().getMonth();
   const _pastProteins = opts.pastProteins ?? {};
-  const _rnd          = opts.rng          ?? Math.random;
+  // Sin opts.rng: seed determinista = hash(userId + weekNumber) — misma seed,
+  // mismo plan byte a byte (excluyendo day.id, ver planSeed = Date.now() mas abajo).
+  const _rnd          = opts.rng          ?? mulberry32(_hashStr(String(opts.userId ?? 'anon') + ':' + (opts.weekNumber ?? 0)));
   const WEEKLY_SAUCE_PEN_STEP = opts.weeklySaucePenStep ?? 5;
   // ---------------------------------------------------------------------------
 
@@ -2241,6 +2244,9 @@ export function buildPlan(profile, targetKcal, opts = {}) {
   // Proteína base estimada por comida con proteinMult=1 (74kg, 3 comidas)
   var _PRE_PROT_BASE = 100; // g/día a mult 1.0
 
+  // NO-DETERMINISMO CONOCIDO (Fase 0, pendiente): planSeed solo alimenta day.id,
+  // no afecta el contenido del plan. Fuera de alcance de la seed determinista
+  // de _rnd — ver buildPlan.js:26. Tests excluyen day.id del snapshot por esto.
   const planSeed = Date.now();
   const days=dayNames.map(function(day, _dayIdx){
     var isSat=day==="Sábado";

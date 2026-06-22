@@ -192,7 +192,7 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
       }
       else if(pl && pr && wk !== currentWeek){
         const kcal = calcTarget(calcTDEE(pr.gender,pr.age,pr.weight,pr.height,pr.activity), pr.goal, pr.kcalAdjust||0);
-        const newPlan = __PERF.time("buildPlan:weekRollover", () => buildPlan(pr, kcal, {month:new Date().getMonth(),pastProteins:getPastProteinFrequency(loadMealMemory(_uid)),freeFormPool:FREEFORM_POOL,saveMealMemory:(wk,L,D)=>saveMealMemory(_uid,wk,L,D),weekNumber:getWeekNumber(),perf:__PERF}));  // PERF
+        const newPlan = __PERF.time("buildPlan:weekRollover", () => buildPlan(pr, kcal, {month:new Date().getMonth(),pastProteins:getPastProteinFrequency(loadMealMemory(_uid)),freeFormPool:FREEFORM_POOL,saveMealMemory:(wk,L,D)=>saveMealMemory(_uid,wk,L,D),weekNumber:getWeekNumber(),userId:_uid,perf:__PERF}));  // PERF
         __TRACE.event("plan", "hydration:weekRollover", plan, newPlan);
         setPlan(newPlan); setWeekNum(currentWeek); setExtras({});
         saveData(_uid, pr, newPlan, currentWeek, {});
@@ -331,7 +331,7 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
       __trace("yield complete, starting buildPlan");
       __TRACE.log("handleGenerate:yield-complete");
 
-      const newPlan = __PERF.time("buildPlan:handleGenerate", () => buildPlan(freshProfile, targetKcal, {month:new Date().getMonth(),pastProteins:getPastProteinFrequency(loadMealMemory(uid)),freeFormPool:FREEFORM_POOL,saveMealMemory:(wk,L,D)=>saveMealMemory(uid,wk,L,D),weekNumber:getWeekNumber(),perf:__PERF}));  // PERF
+      const newPlan = __PERF.time("buildPlan:handleGenerate", () => buildPlan(freshProfile, targetKcal, {month:new Date().getMonth(),pastProteins:getPastProteinFrequency(loadMealMemory(uid)),freeFormPool:FREEFORM_POOL,saveMealMemory:(wk,L,D)=>saveMealMemory(uid,wk,L,D),weekNumber:getWeekNumber(),userId:uid,perf:__PERF}));  // PERF
       __trace("buildPlan done", { days: newPlan?.days?.length, strategy: newPlan?.strategy });
 
       // Defensive: ensure buildPlan returned something usable. Without this,
@@ -402,7 +402,7 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
     setProfile(newProfile);
     var newKcal=calcTarget(tdee,newProfile.goal,newAdj);
     var wk=getWeekNumber();
-    var newPlan=__PERF.time("buildPlan:checkin", () => buildPlan(newProfile,newKcal, {month:new Date().getMonth(),pastProteins:getPastProteinFrequency(loadMealMemory(currentUser.id)),freeFormPool:FREEFORM_POOL,saveMealMemory:(wk,L,D)=>saveMealMemory(currentUser.id,wk,L,D),weekNumber:getWeekNumber(),perf:__PERF}));  // PERF
+    var newPlan=__PERF.time("buildPlan:checkin", () => buildPlan(newProfile,newKcal, {month:new Date().getMonth(),pastProteins:getPastProteinFrequency(loadMealMemory(currentUser.id)),freeFormPool:FREEFORM_POOL,saveMealMemory:(wk,L,D)=>saveMealMemory(currentUser.id,wk,L,D),weekNumber:getWeekNumber(),userId:currentUser.id,perf:__PERF}));  // PERF
     setPlan(newPlan); setWeekNum(wk); setExtras({}); setActiveDay(0);
     var pesoActualNum = parseFloat(checkin.pesoActual||"") || null;
     var prog = addWeekProgress(currentUser.id, wk, { peso:pesoActualNum, pesoInicial:pesoActualNum && progress.weeks.length===0 ? pesoActualNum : (progress.weeks[0]&&progress.weeks[0].pesoInicial) || pesoActualNum, adherencia:checkin.adherencia, energia:checkin.energia, hambre:checkin.hambre });
@@ -678,7 +678,7 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
   const handleRegenerate=()=>{
     if (isNutriPlan) { alert("🔒 Tu plan fue creado por tu nutricionista y no se puede regenerar automáticamente."); setNavOpen(false); return; }
     const wk=getWeekNumber();
-    const newPlan=__PERF.time("buildPlan:regenerate", () => buildPlan(profile,targetKcal, {month:new Date().getMonth(),pastProteins:getPastProteinFrequency(loadMealMemory(currentUser.id)),freeFormPool:FREEFORM_POOL,saveMealMemory:(wk,L,D)=>saveMealMemory(currentUser.id,wk,L,D),weekNumber:getWeekNumber(),perf:__PERF}));  // PERF
+    const newPlan=__PERF.time("buildPlan:regenerate", () => buildPlan(profile,targetKcal, {month:new Date().getMonth(),pastProteins:getPastProteinFrequency(loadMealMemory(currentUser.id)),freeFormPool:FREEFORM_POOL,saveMealMemory:(wk,L,D)=>saveMealMemory(currentUser.id,wk,L,D),weekNumber:getWeekNumber(),userId:currentUser.id,perf:__PERF}));  // PERF
     setPlan(newPlan); setWeekNum(wk); setActiveDay(0); setActiveTab("plan");
     saveData(currentUser.id,profile,newPlan,wk,{}); setExtras({}); setNavOpen(false);
     saveToPDB(profile, newPlan, wk, {}, "system");
@@ -754,7 +754,7 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
         excludeSpec: _excludeSpec
       }
     });
-    const rebuilt=__PERF.time("buildPlan:regenerateMeal", () => buildPlan(contextProfile, targetKcal, {month:new Date().getMonth(),pastProteins:getPastProteinFrequency(loadMealMemory(currentUser.id)),freeFormPool:FREEFORM_POOL,saveMealMemory:(wk,L,D)=>saveMealMemory(currentUser.id,wk,L,D),weekNumber:getWeekNumber(),perf:__PERF}));  // PERF
+    const rebuilt=__PERF.time("buildPlan:regenerateMeal", () => buildPlan(contextProfile, targetKcal, {month:new Date().getMonth(),pastProteins:getPastProteinFrequency(loadMealMemory(currentUser.id)),freeFormPool:FREEFORM_POOL,saveMealMemory:(wk,L,D)=>saveMealMemory(currentUser.id,wk,L,D),weekNumber:getWeekNumber(),userId:currentUser.id,perf:__PERF}));  // PERF
     if(rebuilt.days[dayIdx] && rebuilt.days[dayIdx].meals) {
       const newMeals=rebuilt.days[dayIdx].meals;
       const oldMeals=newPlan.days[dayIdx].meals;
@@ -797,7 +797,7 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
         shakeEnabledOverride: effectiveShake
       }
     };
-    const rebuilt = buildPlan(clonedProfile, targetKcal, {month:new Date().getMonth(),pastProteins:getPastProteinFrequency(loadMealMemory(currentUser.id)),freeFormPool:FREEFORM_POOL,saveMealMemory:(wk,L,D)=>saveMealMemory(currentUser.id,wk,L,D),weekNumber:getWeekNumber(),perf:__PERF});
+    const rebuilt = buildPlan(clonedProfile, targetKcal, {month:new Date().getMonth(),pastProteins:getPastProteinFrequency(loadMealMemory(currentUser.id)),freeFormPool:FREEFORM_POOL,saveMealMemory:(wk,L,D)=>saveMealMemory(currentUser.id,wk,L,D),weekNumber:getWeekNumber(),userId:currentUser.id,perf:__PERF});
     return rebuilt.days[dayIdx];
   };
 

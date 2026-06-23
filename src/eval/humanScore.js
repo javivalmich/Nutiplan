@@ -12,8 +12,13 @@
 // devuelve un escalar agregado ni un score global — solo el objeto completo,
 // con claves estables y orden determinista (apto para snapshot).
 
+import { computeRepeticionSalsa, computeRepeticionTecnica } from './metrics/repetition.js';
+
 export function humanScore(plan, { history } = {}) {
   return {
+    repeticionSalsa: computeRepeticionSalsa(plan),
+    repeticionTecnica: computeRepeticionTecnica(plan),
+
     // Multi-semana — fuera de scope en Fase 0.5 (decisión: Opción B). No se
     // genera memoria artificial, pastProteins ni semanas sintéticas.
     repeticionProteinaMismoDia: {

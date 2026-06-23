@@ -28,7 +28,9 @@ const PROFILE_DEFAULTS = {
 
 // ── Las 9 fixtures del baseline aprobado (6 estrategias + 3 extra en
 // mantenimiento_equilibrado) — userId/weekNumber propios, sin opts.rng.
-const FIXTURES = [
+// Exportadas para reutilizar en humanScore.baseline.test.js (Paso 6, Fase 0.5)
+// sin duplicar la lista.
+export const FIXTURES = [
   {
     name: 'fat_loss_general',
     expectedStrategy: 'fat_loss_general',
@@ -94,11 +96,11 @@ const FIXTURES = [
   },
 ];
 
-function buildProfile(overrides) {
+export function buildProfile(overrides) {
   return JSON.parse(JSON.stringify({ ...PROFILE_DEFAULTS, ...overrides }));
 }
 
-function runBaseline(fixture, extraOpts = {}) {
+export function runBaseline(fixture, extraOpts = {}) {
   return buildPlan(
     buildProfile(fixture.profile),
     TARGET_KCAL,

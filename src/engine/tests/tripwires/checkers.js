@@ -108,3 +108,42 @@ export function checkEvalIsolationImports(code) {
 
   return violations;
 }
+
+/**
+ * Tripwire inverso: analiza codigo fuente buscando imports/requires cuyo
+ * specifier apunte a src/engine/** o src/engine2/** (path relativo que
+ * contenga el segmento "engine/" o "engine2/"). src/eval/ no debe depender
+ * de ningun motor: humanScore solo lee el objeto `plan` ya construido.
+ *
+ * @param {string} code
+ * @returns {{source: string, line: number, column: number}[]}
+ */
+export function checkEvalEngineIsolationImports(code) {
+  const violations = [];
+  const ast = parse(code, { ecmaVersion: 'latest', sourceType: 'module', locations: true });
+
+  function isEngineSpecifier(spec) {
+    return typeof spec === 'string' && /(^|\/)engine2?\//.test(spec);
+  }
+
+  walkSimple(ast, {
+    ImportDeclaration(node) {
+      if (isEngineSpecifier(node.source.value)) {
+        violations.push({ source: node.source.value, line: node.loc.start.line, column: node.loc.start.column });
+      }
+    },
+    CallExpression(node) {
+      if (
+        node.callee.type === 'Identifier' &&
+        node.callee.name === 'require' &&
+        node.arguments[0] &&
+        node.arguments[0].type === 'Literal' &&
+        isEngineSpecifier(node.arguments[0].value)
+      ) {
+        violations.push({ source: node.arguments[0].value, line: node.loc.start.line, column: node.loc.start.column });
+      }
+    },
+  });
+
+  return violations;
+}

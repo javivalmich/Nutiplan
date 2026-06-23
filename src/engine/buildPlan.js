@@ -2231,16 +2231,11 @@ export function buildPlan(profile, targetKcal, opts = {}) {
   //
   // Patrón 3 — COMFORT DEL DOMINGO: el domingo se activa mood "familiar" con
   // extra bonus de cravingScore. No hay wildcard ese día.
-  //
-  // Patrón 4 — REPETICIÓN QUERIDA: si un plato tiene cravingScore alto y ya
-  // apareció esta semana, tiene un 20% de probabilidad de volver a aparecer
-  // (en vez de ser penalizado). Simula "me apetece de nuevo esto".
 
   var HUMAN_PATTERNS = {
     tuesdayRoutine:  !isSimple && _rnd() < 0.30,  // 30% chance
     fridayFatigue:   tiempoCocina !== "mucho",            // siempre si no es chef
     sundayComfort:   true,                                // siempre
-    belovedRepeat:   !isSimple && _rnd() < 0.20,  // 20% chance
   };
 
   var weekSlots = WEEK_SLOTS[strategy] || WEEK_SLOTS.mantenimiento_equilibrado;

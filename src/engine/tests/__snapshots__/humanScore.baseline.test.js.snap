@@ -24,30 +24,30 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > definic
   },
   "densidadDiaria": {
     "evidencias": [
-      "Lunes: densidad=1 (ligero)",
+      "Lunes: densidad=2 (intermedio)",
       "Martes: densidad=0 (ligero)",
-      "Miércoles: densidad=3 (denso)",
-      "Jueves: densidad=1 (ligero)",
-      "Viernes: densidad=1 (ligero)",
+      "Miércoles: densidad=1 (ligero)",
+      "Jueves: densidad=3 (denso)",
+      "Viernes: densidad=0 (ligero)",
       "Sábado: densidad=unknown (menos de 2 comidas legibles)",
-      "Domingo: densidad=1 (ligero)",
+      "Domingo: densidad=2 (intermedio)",
     ],
     "polarity": null,
     "status": "computed",
     "valor": {
       "Domingo": {
-        "classification": "ligero",
-        "density": 1,
+        "classification": "intermedio",
+        "density": 2,
         "status": "computed",
       },
       "Jueves": {
-        "classification": "ligero",
-        "density": 1,
+        "classification": "denso",
+        "density": 3,
         "status": "computed",
       },
       "Lunes": {
-        "classification": "ligero",
-        "density": 1,
+        "classification": "intermedio",
+        "density": 2,
         "status": "computed",
       },
       "Martes": {
@@ -56,8 +56,8 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > definic
         "status": "computed",
       },
       "Miércoles": {
-        "classification": "denso",
-        "density": 3,
+        "classification": "ligero",
+        "density": 1,
         "status": "computed",
       },
       "Sábado": {
@@ -67,24 +67,18 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > definic
       },
       "Viernes": {
         "classification": "ligero",
-        "density": 1,
+        "density": 0,
         "status": "computed",
       },
     },
   },
   "diaFacilTrasElaborado": {
     "evidencias": [
-      "Lunes (elaborado) → Martes (fácil): patrón de arco coherente",
       "Días excluidos de la comparación elaborado→fácil por datos insuficientes: Sábado",
     ],
     "polarity": "higher_is_better",
     "status": "computed",
-    "valor": [
-      {
-        "elaborado": "Lunes",
-        "facilDespues": "Martes",
-      },
-    ],
+    "valor": [],
   },
   "domingoReconfortante": {
     "evidencias": [
@@ -96,20 +90,24 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > definic
   },
   "platoCuchara": {
     "evidencias": [
-      "plato de cuchara (tmpl legumbre/sopa_crema) aparece 2 veces: jueves cena, domingo comida",
+      "plato de cuchara (tmpl legumbre/sopa_crema) aparece 3 veces: martes comida, viernes comida, viernes cena",
     ],
     "polarity": "lower_is_better",
     "status": "computed",
     "valor": {
-      "count": 2,
+      "count": 3,
       "ocurrencias": [
         {
-          "day": "Jueves",
-          "time": "Cena",
+          "day": "Martes",
+          "time": "Comida",
         },
         {
-          "day": "Domingo",
+          "day": "Viernes",
           "time": "Comida",
+        },
+        {
+          "day": "Viernes",
+          "time": "Cena",
         },
       ],
       "umbralDestacadaProvisional": 4,
@@ -125,11 +123,10 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > definic
   },
   "repeticionSalsa": {
     "evidencias": [
-      "pimenton_ajo aparece 3 veces: viernes comida, sábado cena, domingo cena",
-      "ajillo aparece 2 veces: miércoles comida, jueves comida",
-      "curry_ligero aparece 2 veces: martes cena, domingo comida",
-      "mostaza_miel aparece 2 veces: miércoles cena, viernes cena",
-      "provenzal aparece 2 veces: lunes comida, jueves cena",
+      "ajillo aparece 2 veces: lunes cena, viernes cena",
+      "curry_ligero aparece 2 veces: viernes comida, sábado cena",
+      "limon_hierbas aparece 2 veces: lunes comida, domingo comida",
+      "pimenton_ajo aparece 2 veces: miércoles cena, domingo cena",
     ],
     "polarity": "lower_is_better",
     "status": "computed",
@@ -137,32 +134,29 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > definic
       "conteos": {
         "ajillo": 2,
         "curry_ligero": 2,
-        "limon_hierbas": 1,
-        "mostaza_miel": 2,
-        "pimenton_ajo": 3,
-        "provenzal": 2,
+        "limon_hierbas": 2,
+        "mostaza_miel": 1,
+        "pimenton_ajo": 2,
+        "soja_jengibre": 1,
+        "tomate_casero": 1,
+        "vinagreta": 1,
       },
-      "repeticionesDestacadas": [
-        {
-          "count": 3,
-          "value": "pimenton_ajo",
-        },
-      ],
+      "repeticionesDestacadas": [],
       "umbralDestacadaProvisional": 3,
     },
   },
   "repeticionTecnica": {
     "evidencias": [
-      "horno aparece 4 veces: lunes comida, miércoles cena, viernes comida, domingo cena",
-      "plancha aparece 3 veces: martes comida, jueves cena, viernes cena",
-      "salteado aparece 3 veces: martes cena, miércoles comida, domingo comida",
+      "horno aparece 4 veces: lunes cena, miércoles comida, jueves cena, domingo cena",
+      "plancha aparece 3 veces: lunes comida, martes cena, viernes cena",
+      "salteado aparece 3 veces: jueves comida, viernes comida, sábado cena",
+      "crudo aparece 2 veces: martes comida, domingo comida",
     ],
     "polarity": "lower_is_better",
     "status": "computed",
     "valor": {
       "conteos": {
-        "crudo": 1,
-        "guisado": 1,
+        "crudo": 2,
         "horno": 4,
         "plancha": 3,
         "revuelto": 1,
@@ -218,33 +212,33 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > definic
   },
   "continuidadEntrenoHidrato": {
     "evidencias": [
-      "Lunes (entrenamiento) → cena no legible, excluido de la comparación",
-      "Miércoles (entrenamiento) → cena no legible, excluido de la comparación",
-      "Viernes (entrenamiento) → cena no legible, excluido de la comparación",
+      "Lunes (entrenamiento) → cena con hidrato (arroz)",
+      "Miércoles (entrenamiento) → cena con hidrato (boniato)",
+      "Viernes (entrenamiento) → cena con hidrato (patata)",
     ],
     "polarity": "higher_is_better",
     "status": "computed",
     "valor": {
-      "conHidrato": 0,
-      "deTotalComputados": 0,
+      "conHidrato": 3,
+      "deTotalComputados": 3,
       "detalle": [
         {
-          "carb": null,
+          "carb": "arroz",
           "day": "Lunes",
-          "status": "unknown",
-          "tieneHidrato": null,
+          "status": "computed",
+          "tieneHidrato": true,
         },
         {
-          "carb": null,
+          "carb": "boniato",
           "day": "Miércoles",
-          "status": "unknown",
-          "tieneHidrato": null,
+          "status": "computed",
+          "tieneHidrato": true,
         },
         {
-          "carb": null,
+          "carb": "patata",
           "day": "Viernes",
-          "status": "unknown",
-          "tieneHidrato": null,
+          "status": "computed",
+          "tieneHidrato": true,
         },
       ],
       "diasEntrenamiento": 3,
@@ -252,11 +246,11 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > definic
   },
   "densidadDiaria": {
     "evidencias": [
-      "Lunes: densidad=unknown (menos de 2 comidas legibles)",
+      "Lunes: densidad=1 (ligero)",
       "Martes: densidad=1 (ligero)",
-      "Miércoles: densidad=unknown (menos de 2 comidas legibles)",
+      "Miércoles: densidad=1 (ligero)",
       "Jueves: densidad=0 (ligero)",
-      "Viernes: densidad=unknown (menos de 2 comidas legibles)",
+      "Viernes: densidad=2 (intermedio)",
       "Sábado: densidad=unknown (menos de 2 comidas legibles)",
       "Domingo: densidad=0 (ligero)",
     ],
@@ -274,9 +268,9 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > definic
         "status": "computed",
       },
       "Lunes": {
-        "classification": null,
-        "density": null,
-        "status": "unknown",
+        "classification": "ligero",
+        "density": 1,
+        "status": "computed",
       },
       "Martes": {
         "classification": "ligero",
@@ -284,9 +278,9 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > definic
         "status": "computed",
       },
       "Miércoles": {
-        "classification": null,
-        "density": null,
-        "status": "unknown",
+        "classification": "ligero",
+        "density": 1,
+        "status": "computed",
       },
       "Sábado": {
         "classification": null,
@@ -294,19 +288,25 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > definic
         "status": "unknown",
       },
       "Viernes": {
-        "classification": null,
-        "density": null,
-        "status": "unknown",
+        "classification": "intermedio",
+        "density": 2,
+        "status": "computed",
       },
     },
   },
   "diaFacilTrasElaborado": {
     "evidencias": [
-      "Días excluidos de la comparación elaborado→fácil por datos insuficientes: Lunes, Miércoles, Viernes, Sábado",
+      "Miércoles (elaborado) → Jueves (fácil): patrón de arco coherente",
+      "Días excluidos de la comparación elaborado→fácil por datos insuficientes: Sábado",
     ],
     "polarity": "higher_is_better",
     "status": "computed",
-    "valor": [],
+    "valor": [
+      {
+        "elaborado": "Miércoles",
+        "facilDespues": "Jueves",
+      },
+    ],
   },
   "domingoReconfortante": {
     "evidencias": [
@@ -318,29 +318,24 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > definic
   },
   "platoCuchara": {
     "evidencias": [
-      "plato de cuchara (tmpl legumbre/sopa_crema) aparece 4 veces: lunes comida, viernes comida, domingo comida, domingo cena",
-      "umbral provisional de repetición destacada (>=4) alcanzado: 4 veces",
+      "plato de cuchara (tmpl legumbre/sopa_crema) aparece 3 veces: lunes comida, miércoles comida, domingo comida",
     ],
     "polarity": "lower_is_better",
     "status": "computed",
     "valor": {
-      "count": 4,
+      "count": 3,
       "ocurrencias": [
         {
           "day": "Lunes",
           "time": "Comida",
         },
         {
-          "day": "Viernes",
+          "day": "Miércoles",
           "time": "Comida",
         },
         {
           "day": "Domingo",
           "time": "Comida",
-        },
-        {
-          "day": "Domingo",
-          "time": "Cena",
         },
       ],
       "umbralDestacadaProvisional": 4,
@@ -356,18 +351,22 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > definic
   },
   "repeticionSalsa": {
     "evidencias": [
-      "limon_hierbas aparece 2 veces: lunes comida, jueves cena",
-      "vinagreta aparece 2 veces: martes cena, jueves comida",
+      "ajillo aparece 2 veces: martes comida, sábado cena",
+      "curry_ligero aparece 2 veces: miércoles comida, miércoles cena",
+      "pimenton_ajo aparece 2 veces: lunes cena, jueves cena",
+      "vinagreta aparece 2 veces: jueves comida, viernes comida",
     ],
     "polarity": "lower_is_better",
     "status": "computed",
     "valor": {
       "conteos": {
-        "curry_ligero": 1,
-        "limon_hierbas": 2,
+        "ajillo": 2,
+        "curry_ligero": 2,
+        "limon_hierbas": 1,
         "mostaza_miel": 1,
-        "pimenton_ajo": 1,
-        "soja_jengibre": 1,
+        "pimenton_ajo": 2,
+        "provenzal": 1,
+        "romero_limon": 1,
         "vinagreta": 2,
       },
       "repeticionesDestacadas": [],
@@ -376,22 +375,24 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > definic
   },
   "repeticionTecnica": {
     "evidencias": [
-      "plancha aparece 4 veces: lunes comida, martes cena, jueves comida, sábado cena",
-      "horno aparece 2 veces: miércoles comida, jueves cena",
+      "plancha aparece 6 veces: lunes cena, martes cena, miércoles cena, viernes comida, viernes cena, domingo cena",
+      "crudo aparece 2 veces: jueves comida, domingo comida",
+      "horno aparece 2 veces: martes comida, sábado cena",
     ],
     "polarity": "lower_is_better",
     "status": "computed",
     "valor": {
       "conteos": {
-        "crudo": 1,
+        "crudo": 2,
+        "guisado": 1,
         "horno": 2,
-        "plancha": 4,
+        "plancha": 6,
+        "revuelto": 1,
         "salteado": 1,
-        "tortilla": 1,
       },
       "repeticionesDestacadas": [
         {
-          "count": 4,
+          "count": 6,
           "value": "plancha",
         },
       ],
@@ -439,40 +440,40 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > fat_los
   },
   "densidadDiaria": {
     "evidencias": [
-      "Lunes: densidad=1 (ligero)",
-      "Martes: densidad=2 (intermedio)",
-      "Miércoles: densidad=2 (intermedio)",
-      "Jueves: densidad=0 (ligero)",
+      "Lunes: densidad=2 (intermedio)",
+      "Martes: densidad=1 (ligero)",
+      "Miércoles: densidad=3 (denso)",
+      "Jueves: densidad=2 (intermedio)",
       "Viernes: densidad=2 (intermedio)",
       "Sábado: densidad=unknown (menos de 2 comidas legibles)",
-      "Domingo: densidad=2 (intermedio)",
+      "Domingo: densidad=0 (ligero)",
     ],
     "polarity": null,
     "status": "computed",
     "valor": {
       "Domingo": {
-        "classification": "intermedio",
-        "density": 2,
-        "status": "computed",
-      },
-      "Jueves": {
         "classification": "ligero",
         "density": 0,
         "status": "computed",
       },
+      "Jueves": {
+        "classification": "intermedio",
+        "density": 2,
+        "status": "computed",
+      },
       "Lunes": {
+        "classification": "intermedio",
+        "density": 2,
+        "status": "computed",
+      },
+      "Martes": {
         "classification": "ligero",
         "density": 1,
         "status": "computed",
       },
-      "Martes": {
-        "classification": "intermedio",
-        "density": 2,
-        "status": "computed",
-      },
       "Miércoles": {
-        "classification": "intermedio",
-        "density": 2,
+        "classification": "denso",
+        "density": 3,
         "status": "computed",
       },
       "Sábado": {
@@ -511,7 +512,7 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > fat_los
   },
   "platoCuchara": {
     "evidencias": [
-      "plato de cuchara (tmpl legumbre/sopa_crema) aparece 3 veces: martes comida, jueves comida, viernes cena",
+      "plato de cuchara (tmpl legumbre/sopa_crema) aparece 3 veces: martes comida, martes cena, domingo comida",
     ],
     "polarity": "lower_is_better",
     "status": "computed",
@@ -523,12 +524,12 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > fat_los
           "time": "Comida",
         },
         {
-          "day": "Jueves",
-          "time": "Comida",
+          "day": "Martes",
+          "time": "Cena",
         },
         {
-          "day": "Viernes",
-          "time": "Cena",
+          "day": "Domingo",
+          "time": "Comida",
         },
       ],
       "umbralDestacadaProvisional": 4,
@@ -544,38 +545,34 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > fat_los
   },
   "repeticionSalsa": {
     "evidencias": [
-      "pimenton_ajo aparece 3 veces: lunes comida, viernes comida, domingo cena",
-      "ajillo aparece 2 veces: lunes cena, martes comida",
-      "romero_limon aparece 2 veces: martes cena, domingo comida",
-      "vinagreta aparece 2 veces: miércoles comida, jueves cena",
+      "ajillo aparece 2 veces: lunes cena, miércoles comida",
+      "curry_ligero aparece 2 veces: miércoles cena, domingo comida",
+      "limon_hierbas aparece 2 veces: lunes comida, jueves comida",
+      "mostaza_miel aparece 2 veces: jueves cena, viernes comida",
+      "pimenton_ajo aparece 2 veces: martes comida, viernes cena",
     ],
     "polarity": "lower_is_better",
     "status": "computed",
     "valor": {
       "conteos": {
         "ajillo": 2,
-        "curry_ligero": 1,
-        "mostaza_miel": 1,
-        "pimenton_ajo": 3,
+        "curry_ligero": 2,
+        "limon_hierbas": 2,
+        "mostaza_miel": 2,
+        "pimenton_ajo": 2,
         "provenzal": 1,
-        "romero_limon": 2,
-        "vinagreta": 2,
+        "vinagreta": 1,
       },
-      "repeticionesDestacadas": [
-        {
-          "count": 3,
-          "value": "pimenton_ajo",
-        },
-      ],
+      "repeticionesDestacadas": [],
       "umbralDestacadaProvisional": 3,
     },
   },
   "repeticionTecnica": {
     "evidencias": [
-      "plancha aparece 3 veces: lunes cena, sábado cena, domingo comida",
-      "salteado aparece 3 veces: martes comida, miércoles cena, viernes comida",
-      "crudo aparece 2 veces: miércoles comida, jueves cena",
-      "horno aparece 2 veces: lunes comida, martes cena",
+      "plancha aparece 5 veces: lunes comida, martes cena, jueves comida, viernes comida, domingo cena",
+      "crudo aparece 2 veces: miércoles comida, sábado cena",
+      "horno aparece 2 veces: lunes cena, jueves cena",
+      "salteado aparece 2 veces: miércoles cena, domingo comida",
     ],
     "polarity": "lower_is_better",
     "status": "computed",
@@ -584,18 +581,14 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > fat_los
         "crudo": 2,
         "guisado": 1,
         "horno": 2,
-        "plancha": 3,
-        "salteado": 3,
+        "plancha": 5,
+        "salteado": 2,
         "tortilla": 1,
       },
       "repeticionesDestacadas": [
         {
-          "count": 3,
+          "count": 5,
           "value": "plancha",
-        },
-        {
-          "count": 3,
-          "value": "salteado",
         },
       ],
       "umbralDestacadaProvisional": 3,
@@ -642,20 +635,20 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > manteni
   },
   "densidadDiaria": {
     "evidencias": [
-      "Lunes: densidad=1 (ligero)",
+      "Lunes: densidad=2 (intermedio)",
       "Martes: densidad=1 (ligero)",
       "Miércoles: densidad=2 (intermedio)",
       "Jueves: densidad=1 (ligero)",
-      "Viernes: densidad=2 (intermedio)",
+      "Viernes: densidad=3 (denso)",
       "Sábado: densidad=unknown (menos de 2 comidas legibles)",
-      "Domingo: densidad=1 (ligero)",
+      "Domingo: densidad=0 (ligero)",
     ],
     "polarity": null,
     "status": "computed",
     "valor": {
       "Domingo": {
         "classification": "ligero",
-        "density": 1,
+        "density": 0,
         "status": "computed",
       },
       "Jueves": {
@@ -664,8 +657,8 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > manteni
         "status": "computed",
       },
       "Lunes": {
-        "classification": "ligero",
-        "density": 1,
+        "classification": "intermedio",
+        "density": 2,
         "status": "computed",
       },
       "Martes": {
@@ -684,19 +677,25 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > manteni
         "status": "unknown",
       },
       "Viernes": {
-        "classification": "intermedio",
-        "density": 2,
+        "classification": "denso",
+        "density": 3,
         "status": "computed",
       },
     },
   },
   "diaFacilTrasElaborado": {
     "evidencias": [
+      "Martes (elaborado) → Miércoles (fácil): patrón de arco coherente",
       "Días excluidos de la comparación elaborado→fácil por datos insuficientes: Sábado",
     ],
     "polarity": "higher_is_better",
     "status": "computed",
-    "valor": [],
+    "valor": [
+      {
+        "elaborado": "Martes",
+        "facilDespues": "Miércoles",
+      },
+    ],
   },
   "domingoReconfortante": {
     "evidencias": [
@@ -708,7 +707,7 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > manteni
   },
   "platoCuchara": {
     "evidencias": [
-      "plato de cuchara (tmpl legumbre/sopa_crema) aparece 3 veces: jueves comida, sábado cena, domingo comida",
+      "plato de cuchara (tmpl legumbre/sopa_crema) aparece 3 veces: jueves comida, jueves cena, domingo comida",
     ],
     "polarity": "lower_is_better",
     "status": "computed",
@@ -720,7 +719,7 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > manteni
           "time": "Comida",
         },
         {
-          "day": "Sábado",
+          "day": "Jueves",
           "time": "Cena",
         },
         {
@@ -741,54 +740,64 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > manteni
   },
   "repeticionSalsa": {
     "evidencias": [
-      "ajillo aparece 2 veces: lunes cena, miércoles comida",
-      "curry_ligero aparece 2 veces: jueves comida, viernes cena",
-      "limon_hierbas aparece 2 veces: lunes comida, viernes comida",
-      "mostaza_miel aparece 2 veces: miércoles cena, domingo cena",
+      "ajillo aparece 3 veces: lunes cena, martes comida, sábado cena",
+      "limon_hierbas aparece 3 veces: lunes comida, martes cena, domingo cena",
+      "pimenton_ajo aparece 2 veces: jueves comida, viernes comida",
     ],
     "polarity": "lower_is_better",
     "status": "computed",
     "valor": {
       "conteos": {
-        "ajillo": 2,
-        "curry_ligero": 2,
-        "limon_hierbas": 2,
-        "mostaza_miel": 2,
-        "pimenton_ajo": 1,
+        "ajillo": 3,
+        "curry_ligero": 1,
+        "limon_hierbas": 3,
+        "pimenton_ajo": 2,
+        "romero_limon": 1,
         "soja_jengibre": 1,
-        "vinagreta": 1,
       },
-      "repeticionesDestacadas": [],
+      "repeticionesDestacadas": [
+        {
+          "count": 3,
+          "value": "ajillo",
+        },
+        {
+          "count": 3,
+          "value": "limon_hierbas",
+        },
+      ],
       "umbralDestacadaProvisional": 3,
     },
   },
   "repeticionTecnica": {
     "evidencias": [
-      "horno aparece 3 veces: miércoles cena, viernes comida, domingo cena",
-      "salteado aparece 3 veces: lunes cena, jueves comida, viernes cena",
-      "crudo aparece 2 veces: martes comida, domingo comida",
-      "guisado aparece 2 veces: miércoles comida, sábado cena",
-      "plancha aparece 2 veces: lunes comida, martes cena",
+      "crudo aparece 3 veces: miércoles comida, jueves cena, domingo comida",
+      "horno aparece 3 veces: lunes cena, martes comida, domingo cena",
+      "plancha aparece 3 veces: lunes comida, martes cena, viernes cena",
+      "salteado aparece 2 veces: miércoles cena, viernes comida",
     ],
     "polarity": "lower_is_better",
     "status": "computed",
     "valor": {
       "conteos": {
-        "crudo": 2,
-        "guisado": 2,
+        "crudo": 3,
+        "guisado": 1,
         "horno": 3,
-        "plancha": 2,
-        "salteado": 3,
-        "tortilla": 1,
+        "plancha": 3,
+        "revuelto": 1,
+        "salteado": 2,
       },
       "repeticionesDestacadas": [
+        {
+          "count": 3,
+          "value": "crudo",
+        },
         {
           "count": 3,
           "value": "horno",
         },
         {
           "count": 3,
-          "value": "salteado",
+          "value": "plancha",
         },
       ],
       "umbralDestacadaProvisional": 3,
@@ -835,20 +844,20 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > manteni
   },
   "densidadDiaria": {
     "evidencias": [
-      "Lunes: densidad=1 (ligero)",
-      "Martes: densidad=1 (ligero)",
-      "Miércoles: densidad=2 (intermedio)",
+      "Lunes: densidad=2 (intermedio)",
+      "Martes: densidad=2 (intermedio)",
+      "Miércoles: densidad=1 (ligero)",
       "Jueves: densidad=2 (intermedio)",
-      "Viernes: densidad=1 (ligero)",
+      "Viernes: densidad=0 (ligero)",
       "Sábado: densidad=unknown (menos de 2 comidas legibles)",
-      "Domingo: densidad=2 (intermedio)",
+      "Domingo: densidad=1 (ligero)",
     ],
     "polarity": null,
     "status": "computed",
     "valor": {
       "Domingo": {
-        "classification": "intermedio",
-        "density": 2,
+        "classification": "ligero",
+        "density": 1,
         "status": "computed",
       },
       "Jueves": {
@@ -857,18 +866,18 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > manteni
         "status": "computed",
       },
       "Lunes": {
-        "classification": "ligero",
-        "density": 1,
+        "classification": "intermedio",
+        "density": 2,
         "status": "computed",
       },
       "Martes": {
-        "classification": "ligero",
-        "density": 1,
+        "classification": "intermedio",
+        "density": 2,
         "status": "computed",
       },
       "Miércoles": {
-        "classification": "intermedio",
-        "density": 2,
+        "classification": "ligero",
+        "density": 1,
         "status": "computed",
       },
       "Sábado": {
@@ -878,7 +887,7 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > manteni
       },
       "Viernes": {
         "classification": "ligero",
-        "density": 1,
+        "density": 0,
         "status": "computed",
       },
     },
@@ -912,19 +921,28 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > manteni
   },
   "platoCuchara": {
     "evidencias": [
-      "plato de cuchara (tmpl legumbre/sopa_crema) aparece 3 veces: lunes cena, jueves comida, domingo cena",
+      "plato de cuchara (tmpl legumbre/sopa_crema) aparece 5 veces: miércoles comida, viernes comida, viernes cena, domingo comida, domingo cena",
+      "umbral provisional de repetición destacada (>=4) alcanzado: 5 veces",
     ],
     "polarity": "lower_is_better",
     "status": "computed",
     "valor": {
-      "count": 3,
+      "count": 5,
       "ocurrencias": [
         {
-          "day": "Lunes",
+          "day": "Miércoles",
+          "time": "Comida",
+        },
+        {
+          "day": "Viernes",
+          "time": "Comida",
+        },
+        {
+          "day": "Viernes",
           "time": "Cena",
         },
         {
-          "day": "Jueves",
+          "day": "Domingo",
           "time": "Comida",
         },
         {
@@ -945,53 +963,57 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > manteni
   },
   "repeticionSalsa": {
     "evidencias": [
-      "ajillo aparece 2 veces: jueves comida, viernes comida",
-      "curry_ligero aparece 2 veces: martes cena, viernes cena",
-      "pimenton_ajo aparece 2 veces: lunes comida, domingo comida",
-      "romero_limon aparece 2 veces: miércoles comida, jueves cena",
+      "limon_hierbas aparece 3 veces: martes comida, miércoles cena, sábado cena",
+      "curry_ligero aparece 2 veces: miércoles comida, jueves cena",
+      "mostaza_miel aparece 2 veces: lunes cena, jueves comida",
+      "pimenton_ajo aparece 2 veces: lunes comida, martes cena",
     ],
     "polarity": "lower_is_better",
     "status": "computed",
     "valor": {
       "conteos": {
-        "ajillo": 2,
+        "ajillo": 1,
         "curry_ligero": 2,
-        "limon_hierbas": 1,
-        "mostaza_miel": 1,
+        "limon_hierbas": 3,
+        "mostaza_miel": 2,
         "pimenton_ajo": 2,
-        "romero_limon": 2,
-        "vinagreta": 1,
       },
-      "repeticionesDestacadas": [],
+      "repeticionesDestacadas": [
+        {
+          "count": 3,
+          "value": "limon_hierbas",
+        },
+      ],
       "umbralDestacadaProvisional": 3,
     },
   },
   "repeticionTecnica": {
     "evidencias": [
-      "plancha aparece 3 veces: miércoles comida, jueves cena, sábado cena",
-      "salteado aparece 3 veces: martes cena, viernes cena, domingo comida",
-      "crudo aparece 2 veces: lunes cena, martes comida",
+      "crudo aparece 3 veces: martes comida, viernes comida, domingo cena",
+      "plancha aparece 3 veces: lunes cena, jueves comida, sábado cena",
+      "guisado aparece 2 veces: viernes cena, domingo comida",
       "horno aparece 2 veces: lunes comida, miércoles cena",
+      "salteado aparece 2 veces: miércoles comida, jueves cena",
     ],
     "polarity": "lower_is_better",
     "status": "computed",
     "valor": {
       "conteos": {
-        "crudo": 2,
-        "guisado": 1,
+        "crudo": 3,
+        "guisado": 2,
         "horno": 2,
         "plancha": 3,
-        "revuelto": 1,
-        "salteado": 3,
+        "salteado": 2,
+        "tortilla": 1,
       },
       "repeticionesDestacadas": [
         {
           "count": 3,
-          "value": "plancha",
+          "value": "crudo",
         },
         {
           "count": 3,
-          "value": "salteado",
+          "value": "plancha",
         },
       ],
       "umbralDestacadaProvisional": 3,
@@ -1159,9 +1181,9 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > manteni
   },
   "repeticionTecnica": {
     "evidencias": [
-      "horno aparece 3 veces: lunes cena, jueves comida, viernes cena",
+      "plancha aparece 3 veces: martes comida, viernes comida, viernes cena",
       "crudo aparece 2 veces: lunes comida, domingo comida",
-      "plancha aparece 2 veces: martes comida, viernes comida",
+      "horno aparece 2 veces: lunes cena, jueves comida",
       "salteado aparece 2 veces: miércoles comida, jueves cena",
     ],
     "polarity": "lower_is_better",
@@ -1170,8 +1192,8 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > manteni
       "conteos": {
         "crudo": 2,
         "guisado": 1,
-        "horno": 3,
-        "plancha": 2,
+        "horno": 2,
+        "plancha": 3,
         "revuelto": 1,
         "salteado": 2,
         "tortilla": 1,
@@ -1179,7 +1201,7 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > manteni
       "repeticionesDestacadas": [
         {
           "count": 3,
-          "value": "horno",
+          "value": "plancha",
         },
       ],
       "umbralDestacadaProvisional": 3,
@@ -1218,33 +1240,33 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > manteni
   },
   "continuidadEntrenoHidrato": {
     "evidencias": [
-      "Lunes (entrenamiento) → cena no legible, excluido de la comparación",
-      "Miércoles (entrenamiento) → cena no legible, excluido de la comparación",
-      "Viernes (entrenamiento) → cena no legible, excluido de la comparación",
+      "Lunes (entrenamiento) → cena con hidrato (arroz)",
+      "Miércoles (entrenamiento) → cena con hidrato (boniato)",
+      "Viernes (entrenamiento) → cena con hidrato (patata)",
     ],
     "polarity": "higher_is_better",
     "status": "computed",
     "valor": {
-      "conHidrato": 0,
-      "deTotalComputados": 0,
+      "conHidrato": 3,
+      "deTotalComputados": 3,
       "detalle": [
         {
-          "carb": null,
+          "carb": "arroz",
           "day": "Lunes",
-          "status": "unknown",
-          "tieneHidrato": null,
+          "status": "computed",
+          "tieneHidrato": true,
         },
         {
-          "carb": null,
+          "carb": "boniato",
           "day": "Miércoles",
-          "status": "unknown",
-          "tieneHidrato": null,
+          "status": "computed",
+          "tieneHidrato": true,
         },
         {
-          "carb": null,
+          "carb": "patata",
           "day": "Viernes",
-          "status": "unknown",
-          "tieneHidrato": null,
+          "status": "computed",
+          "tieneHidrato": true,
         },
       ],
       "diasEntrenamiento": 3,
@@ -1252,31 +1274,31 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > manteni
   },
   "densidadDiaria": {
     "evidencias": [
-      "Lunes: densidad=unknown (menos de 2 comidas legibles)",
+      "Lunes: densidad=2 (intermedio)",
       "Martes: densidad=1 (ligero)",
-      "Miércoles: densidad=unknown (menos de 2 comidas legibles)",
-      "Jueves: densidad=1 (ligero)",
-      "Viernes: densidad=unknown (menos de 2 comidas legibles)",
+      "Miércoles: densidad=2 (intermedio)",
+      "Jueves: densidad=0 (ligero)",
+      "Viernes: densidad=2 (intermedio)",
       "Sábado: densidad=unknown (menos de 2 comidas legibles)",
-      "Domingo: densidad=2 (intermedio)",
+      "Domingo: densidad=0 (ligero)",
     ],
     "polarity": null,
     "status": "computed",
     "valor": {
       "Domingo": {
-        "classification": "intermedio",
-        "density": 2,
+        "classification": "ligero",
+        "density": 0,
         "status": "computed",
       },
       "Jueves": {
         "classification": "ligero",
-        "density": 1,
+        "density": 0,
         "status": "computed",
       },
       "Lunes": {
-        "classification": null,
-        "density": null,
-        "status": "unknown",
+        "classification": "intermedio",
+        "density": 2,
+        "status": "computed",
       },
       "Martes": {
         "classification": "ligero",
@@ -1284,9 +1306,9 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > manteni
         "status": "computed",
       },
       "Miércoles": {
-        "classification": null,
-        "density": null,
-        "status": "unknown",
+        "classification": "intermedio",
+        "density": 2,
+        "status": "computed",
       },
       "Sábado": {
         "classification": null,
@@ -1294,19 +1316,25 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > manteni
         "status": "unknown",
       },
       "Viernes": {
-        "classification": null,
-        "density": null,
-        "status": "unknown",
+        "classification": "intermedio",
+        "density": 2,
+        "status": "computed",
       },
     },
   },
   "diaFacilTrasElaborado": {
     "evidencias": [
-      "Días excluidos de la comparación elaborado→fácil por datos insuficientes: Lunes, Miércoles, Viernes, Sábado",
+      "Lunes (elaborado) → Martes (fácil): patrón de arco coherente",
+      "Días excluidos de la comparación elaborado→fácil por datos insuficientes: Sábado",
     ],
     "polarity": "higher_is_better",
     "status": "computed",
-    "valor": [],
+    "valor": [
+      {
+        "elaborado": "Lunes",
+        "facilDespues": "Martes",
+      },
+    ],
   },
   "domingoReconfortante": {
     "evidencias": [
@@ -1318,19 +1346,23 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > manteni
   },
   "platoCuchara": {
     "evidencias": [
-      "plato de cuchara (tmpl legumbre/sopa_crema) aparece 2 veces: jueves comida, jueves cena",
+      "plato de cuchara (tmpl legumbre/sopa_crema) aparece 3 veces: jueves comida, domingo comida, domingo cena",
     ],
     "polarity": "lower_is_better",
     "status": "computed",
     "valor": {
-      "count": 2,
+      "count": 3,
       "ocurrencias": [
         {
           "day": "Jueves",
           "time": "Comida",
         },
         {
-          "day": "Jueves",
+          "day": "Domingo",
+          "time": "Comida",
+        },
+        {
+          "day": "Domingo",
           "time": "Cena",
         },
       ],
@@ -1347,19 +1379,22 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > manteni
   },
   "repeticionSalsa": {
     "evidencias": [
-      "limon_hierbas aparece 2 veces: miércoles comida, jueves comida",
-      "mostaza_miel aparece 2 veces: martes cena, domingo comida",
-      "pimenton_ajo aparece 2 veces: lunes comida, sábado cena",
+      "ajillo aparece 2 veces: martes cena, domingo comida",
+      "curry_ligero aparece 2 veces: miércoles cena, jueves comida",
+      "pimenton_ajo aparece 2 veces: lunes cena, sábado cena",
     ],
     "polarity": "lower_is_better",
     "status": "computed",
     "valor": {
       "conteos": {
-        "limon_hierbas": 2,
-        "mostaza_miel": 2,
+        "ajillo": 2,
+        "curry_ligero": 2,
+        "limon_hierbas": 1,
+        "mostaza_miel": 1,
         "pimenton_ajo": 2,
+        "provenzal": 1,
         "romero_limon": 1,
-        "tomate_casero": 1,
+        "soja_jengibre": 1,
         "vinagreta": 1,
       },
       "repeticionesDestacadas": [],
@@ -1368,23 +1403,23 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > manteni
   },
   "repeticionTecnica": {
     "evidencias": [
-      "plancha aparece 4 veces: martes cena, miércoles comida, domingo comida, domingo cena",
-      "crudo aparece 2 veces: martes comida, jueves cena",
+      "plancha aparece 6 veces: lunes cena, martes comida, miércoles cena, jueves cena, viernes comida, viernes cena",
+      "horno aparece 2 veces: lunes comida, martes cena",
     ],
     "polarity": "lower_is_better",
     "status": "computed",
     "valor": {
       "conteos": {
-        "crudo": 2,
+        "crudo": 1,
         "guisado": 1,
-        "horno": 1,
-        "plancha": 4,
-        "revuelto": 1,
+        "horno": 2,
+        "plancha": 6,
         "salteado": 1,
+        "tortilla": 1,
       },
       "repeticionesDestacadas": [
         {
-          "count": 4,
+          "count": 6,
           "value": "plancha",
         },
       ],
@@ -1424,40 +1459,40 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > volumen
   },
   "continuidadEntrenoHidrato": {
     "evidencias": [
-      "Lunes (entrenamiento) → cena no legible, excluido de la comparación",
-      "Martes (entrenamiento) → cena no legible, excluido de la comparación",
-      "Jueves (entrenamiento) → cena no legible, excluido de la comparación",
-      "Viernes (entrenamiento) → cena no legible, excluido de la comparación",
+      "Lunes (entrenamiento) → cena con hidrato (arroz)",
+      "Martes (entrenamiento) → cena con hidrato (patata)",
+      "Jueves (entrenamiento) → cena con hidrato (arroz)",
+      "Viernes (entrenamiento) → cena con hidrato (patata)",
     ],
     "polarity": "higher_is_better",
     "status": "computed",
     "valor": {
-      "conHidrato": 0,
-      "deTotalComputados": 0,
+      "conHidrato": 4,
+      "deTotalComputados": 4,
       "detalle": [
         {
-          "carb": null,
+          "carb": "arroz",
           "day": "Lunes",
-          "status": "unknown",
-          "tieneHidrato": null,
+          "status": "computed",
+          "tieneHidrato": true,
         },
         {
-          "carb": null,
+          "carb": "patata",
           "day": "Martes",
-          "status": "unknown",
-          "tieneHidrato": null,
+          "status": "computed",
+          "tieneHidrato": true,
         },
         {
-          "carb": null,
+          "carb": "arroz",
           "day": "Jueves",
-          "status": "unknown",
-          "tieneHidrato": null,
+          "status": "computed",
+          "tieneHidrato": true,
         },
         {
-          "carb": null,
+          "carb": "patata",
           "day": "Viernes",
-          "status": "unknown",
-          "tieneHidrato": null,
+          "status": "computed",
+          "tieneHidrato": true,
         },
       ],
       "diasEntrenamiento": 4,
@@ -1465,11 +1500,11 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > volumen
   },
   "densidadDiaria": {
     "evidencias": [
-      "Lunes: densidad=unknown (menos de 2 comidas legibles)",
-      "Martes: densidad=unknown (menos de 2 comidas legibles)",
-      "Miércoles: densidad=2 (intermedio)",
-      "Jueves: densidad=unknown (menos de 2 comidas legibles)",
-      "Viernes: densidad=unknown (menos de 2 comidas legibles)",
+      "Lunes: densidad=3 (denso)",
+      "Martes: densidad=2 (intermedio)",
+      "Miércoles: densidad=1 (ligero)",
+      "Jueves: densidad=3 (denso)",
+      "Viernes: densidad=1 (ligero)",
       "Sábado: densidad=unknown (menos de 2 comidas legibles)",
       "Domingo: densidad=2 (intermedio)",
     ],
@@ -1482,23 +1517,23 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > volumen
         "status": "computed",
       },
       "Jueves": {
-        "classification": null,
-        "density": null,
-        "status": "unknown",
+        "classification": "denso",
+        "density": 3,
+        "status": "computed",
       },
       "Lunes": {
-        "classification": null,
-        "density": null,
-        "status": "unknown",
+        "classification": "denso",
+        "density": 3,
+        "status": "computed",
       },
       "Martes": {
-        "classification": null,
-        "density": null,
-        "status": "unknown",
-      },
-      "Miércoles": {
         "classification": "intermedio",
         "density": 2,
+        "status": "computed",
+      },
+      "Miércoles": {
+        "classification": "ligero",
+        "density": 1,
         "status": "computed",
       },
       "Sábado": {
@@ -1507,15 +1542,15 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > volumen
         "status": "unknown",
       },
       "Viernes": {
-        "classification": null,
-        "density": null,
-        "status": "unknown",
+        "classification": "ligero",
+        "density": 1,
+        "status": "computed",
       },
     },
   },
   "diaFacilTrasElaborado": {
     "evidencias": [
-      "Días excluidos de la comparación elaborado→fácil por datos insuficientes: Lunes, Martes, Jueves, Viernes, Sábado",
+      "Días excluidos de la comparación elaborado→fácil por datos insuficientes: Sábado",
     ],
     "polarity": "higher_is_better",
     "status": "computed",
@@ -1560,42 +1595,58 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > volumen
   },
   "repeticionSalsa": {
     "evidencias": [
-      "ajillo aparece 2 veces: lunes comida, miércoles cena",
-      "pimenton_ajo aparece 2 veces: viernes comida, domingo comida",
+      "pimenton_ajo aparece 3 veces: lunes cena, jueves cena, domingo comida",
+      "romero_limon aparece 3 veces: martes cena, miércoles comida, viernes cena",
+      "tomate_casero aparece 2 veces: lunes comida, jueves comida",
     ],
     "polarity": "lower_is_better",
     "status": "computed",
     "valor": {
       "conteos": {
-        "ajillo": 2,
-        "limon_hierbas": 1,
-        "pimenton_ajo": 2,
-        "romero_limon": 1,
+        "ajillo": 1,
+        "mostaza_miel": 1,
+        "pimenton_ajo": 3,
+        "romero_limon": 3,
         "soja_jengibre": 1,
-        "tomate_casero": 1,
+        "tomate_casero": 2,
+        "vinagreta": 1,
       },
-      "repeticionesDestacadas": [],
+      "repeticionesDestacadas": [
+        {
+          "count": 3,
+          "value": "pimenton_ajo",
+        },
+        {
+          "count": 3,
+          "value": "romero_limon",
+        },
+      ],
       "umbralDestacadaProvisional": 3,
     },
   },
   "repeticionTecnica": {
     "evidencias": [
-      "horno aparece 2 veces: martes comida, miércoles cena",
-      "plancha aparece 2 veces: miércoles comida, sábado cena",
+      "plancha aparece 6 veces: lunes cena, martes cena, miércoles cena, jueves cena, viernes comida, viernes cena",
+      "crudo aparece 2 veces: martes comida, domingo cena",
+      "horno aparece 2 veces: miércoles comida, sábado cena",
       "salteado aparece 2 veces: lunes comida, jueves comida",
     ],
     "polarity": "lower_is_better",
     "status": "computed",
     "valor": {
       "conteos": {
-        "crudo": 1,
+        "crudo": 2,
         "guisado": 1,
         "horno": 2,
-        "plancha": 2,
+        "plancha": 6,
         "salteado": 2,
-        "tortilla": 1,
       },
-      "repeticionesDestacadas": [],
+      "repeticionesDestacadas": [
+        {
+          "count": 6,
+          "value": "plancha",
+        },
+      ],
       "umbralDestacadaProvisional": 3,
     },
   },
@@ -1632,26 +1683,26 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > volumen
   },
   "continuidadEntrenoHidrato": {
     "evidencias": [
-      "Lunes (entrenamiento) → cena no legible, excluido de la comparación",
-      "Jueves (entrenamiento) → cena no legible, excluido de la comparación",
+      "Lunes (entrenamiento) → cena con hidrato (arroz)",
+      "Jueves (entrenamiento) → cena con hidrato (arroz)",
     ],
     "polarity": "higher_is_better",
     "status": "computed",
     "valor": {
-      "conHidrato": 0,
-      "deTotalComputados": 0,
+      "conHidrato": 2,
+      "deTotalComputados": 2,
       "detalle": [
         {
-          "carb": null,
+          "carb": "arroz",
           "day": "Lunes",
-          "status": "unknown",
-          "tieneHidrato": null,
+          "status": "computed",
+          "tieneHidrato": true,
         },
         {
-          "carb": null,
+          "carb": "arroz",
           "day": "Jueves",
-          "status": "unknown",
-          "tieneHidrato": null,
+          "status": "computed",
+          "tieneHidrato": true,
         },
       ],
       "diasEntrenamiento": 2,
@@ -1659,11 +1710,11 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > volumen
   },
   "densidadDiaria": {
     "evidencias": [
-      "Lunes: densidad=unknown (menos de 2 comidas legibles)",
+      "Lunes: densidad=3 (denso)",
       "Martes: densidad=3 (denso)",
       "Miércoles: densidad=2 (intermedio)",
-      "Jueves: densidad=unknown (menos de 2 comidas legibles)",
-      "Viernes: densidad=2 (intermedio)",
+      "Jueves: densidad=2 (intermedio)",
+      "Viernes: densidad=1 (ligero)",
       "Sábado: densidad=unknown (menos de 2 comidas legibles)",
       "Domingo: densidad=1 (ligero)",
     ],
@@ -1676,14 +1727,14 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > volumen
         "status": "computed",
       },
       "Jueves": {
-        "classification": null,
-        "density": null,
-        "status": "unknown",
+        "classification": "intermedio",
+        "density": 2,
+        "status": "computed",
       },
       "Lunes": {
-        "classification": null,
-        "density": null,
-        "status": "unknown",
+        "classification": "denso",
+        "density": 3,
+        "status": "computed",
       },
       "Martes": {
         "classification": "denso",
@@ -1701,23 +1752,23 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > volumen
         "status": "unknown",
       },
       "Viernes": {
-        "classification": "intermedio",
-        "density": 2,
+        "classification": "ligero",
+        "density": 1,
         "status": "computed",
       },
     },
   },
   "diaFacilTrasElaborado": {
     "evidencias": [
-      "Martes (elaborado) → Miércoles (fácil): patrón de arco coherente",
-      "Días excluidos de la comparación elaborado→fácil por datos insuficientes: Lunes, Jueves, Sábado",
+      "Miércoles (elaborado) → Jueves (fácil): patrón de arco coherente",
+      "Días excluidos de la comparación elaborado→fácil por datos insuficientes: Sábado",
     ],
     "polarity": "higher_is_better",
     "status": "computed",
     "valor": [
       {
-        "elaborado": "Martes",
-        "facilDespues": "Miércoles",
+        "elaborado": "Miércoles",
+        "facilDespues": "Jueves",
       },
     ],
   },
@@ -1731,7 +1782,7 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > volumen
   },
   "platoCuchara": {
     "evidencias": [
-      "plato de cuchara (tmpl legumbre/sopa_crema) aparece 2 veces: viernes comida, sábado cena",
+      "plato de cuchara (tmpl legumbre/sopa_crema) aparece 2 veces: viernes comida, domingo comida",
     ],
     "polarity": "lower_is_better",
     "status": "computed",
@@ -1743,8 +1794,8 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > volumen
           "time": "Comida",
         },
         {
-          "day": "Sábado",
-          "time": "Cena",
+          "day": "Domingo",
+          "time": "Comida",
         },
       ],
       "umbralDestacadaProvisional": 4,
@@ -1760,51 +1811,57 @@ exports[`humanScore — integración sobre las 9 fixtures del baseline > volumen
   },
   "repeticionSalsa": {
     "evidencias": [
-      "ajillo aparece 2 veces: viernes comida, sábado cena",
-      "pimenton_ajo aparece 2 veces: lunes comida, miércoles cena",
+      "pimenton_ajo aparece 3 veces: lunes cena, jueves cena, viernes cena",
+      "ajillo aparece 2 veces: lunes comida, martes comida",
+      "curry_ligero aparece 2 veces: jueves comida, viernes comida",
+      "mostaza_miel aparece 2 veces: miércoles cena, domingo cena",
+      "romero_limon aparece 2 veces: martes cena, miércoles comida",
     ],
     "polarity": "lower_is_better",
     "status": "computed",
     "valor": {
       "conteos": {
         "ajillo": 2,
-        "curry_ligero": 1,
-        "limon_hierbas": 1,
-        "mostaza_miel": 1,
-        "pimenton_ajo": 2,
-        "romero_limon": 1,
-        "soja_jengibre": 1,
-        "tomate_casero": 1,
+        "curry_ligero": 2,
+        "mostaza_miel": 2,
+        "pimenton_ajo": 3,
+        "romero_limon": 2,
         "vinagreta": 1,
       },
-      "repeticionesDestacadas": [],
+      "repeticionesDestacadas": [
+        {
+          "count": 3,
+          "value": "pimenton_ajo",
+        },
+      ],
       "umbralDestacadaProvisional": 3,
     },
   },
   "repeticionTecnica": {
     "evidencias": [
-      "plancha aparece 4 veces: martes cena, sábado cena, domingo comida, domingo cena",
-      "horno aparece 3 veces: lunes comida, jueves comida, viernes cena",
-      "salteado aparece 2 veces: martes comida, viernes comida",
+      "plancha aparece 5 veces: lunes cena, martes cena, jueves comida, jueves cena, domingo cena",
+      "crudo aparece 3 veces: martes comida, sábado cena, domingo comida",
+      "horno aparece 2 veces: miércoles comida, miércoles cena",
+      "salteado aparece 2 veces: lunes comida, viernes comida",
     ],
     "polarity": "lower_is_better",
     "status": "computed",
     "valor": {
       "conteos": {
-        "crudo": 1,
-        "horno": 3,
-        "plancha": 4,
+        "crudo": 3,
+        "horno": 2,
+        "plancha": 5,
         "salteado": 2,
         "tortilla": 1,
       },
       "repeticionesDestacadas": [
         {
-          "count": 4,
+          "count": 5,
           "value": "plancha",
         },
         {
           "count": 3,
-          "value": "horno",
+          "value": "crudo",
         },
       ],
       "umbralDestacadaProvisional": 3,

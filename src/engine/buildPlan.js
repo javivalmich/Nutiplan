@@ -2530,12 +2530,12 @@ export function buildPlan(profile, targetKcal, opts = {}) {
     Object.keys(weeklyCuisineExp).forEach(function(k){ famCount[k] = weeklyCuisineExp[k]; });
     var aveTotal = (weeklyProteinCount["ave"]||0);
     var pescTotal= (weeklyProteinCount["pescado"]||0);
-    if(aveTotal > 4) {
+    if(aveTotal > WEEKLY_CAP.ave) {
       warnings.push("🍗 Demasiada ave esta semana ("+aveTotal+" veces) — considera sustituir un día.");
       deductions += 8;
     }
-    if(pescTotal > 2) {
-      warnings.push("🐟 Pescado "+pescTotal+" veces — lo recomendable es máximo 2/semana.");
+    if(pescTotal > WEEKLY_CAP.pescado) {
+      warnings.push("🐟 Pescado "+pescTotal+" veces — lo recomendable es máximo "+WEEKLY_CAP.pescado+"/semana.");
       deductions += 10;
     }
 
@@ -2736,6 +2736,9 @@ export function buildPlan(profile, targetKcal, opts = {}) {
     }
 
     // 9. Proteína diaria estimada — heurística: base ~25g desayuno + ~40g comida + ~35g cena × proteinMult
+    // PLACEHOLDER conocido (Fase 1):
+    // proteína plana.
+    // Macros reales → Fase 5 (reconcile).
     var estProteinBase = 100; // baseline at proteinMult 1.0 con 3 comidas
     var effProteinMult = rules ? (rules.proteinMult || 1.0) : 1.0;
     var estProtein = Math.round(estProteinBase * effProteinMult);

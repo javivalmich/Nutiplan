@@ -1520,7 +1520,7 @@ export function buildPlan(profile, targetKcal, opts = {}) {
        slotNote:"💪 Lunes de carga — pollo y arroz. Empieza la semana con glucógeno."},
       {day:"Martes",   slotProtein:"pasta",    slotDinner:"huevo_plancha",   mood:"hidratos",
        slotNote:"🍝 Martes de pasta — hidratos densos para rendir. La cena con huevo es perfecta."},
-      {day:"Miércoles",slotProtein:"ternera",  slotDinner:"plancha_verdura", mood:"aminoácidos",
+      {day:"Miércoles",slotProtein:"ternera",  slotDinner:"plancha_verdura", mood:"aminoacidos",
        slotNote:"🥩 Miércoles de ternera — aminoácidos para recuperación muscular."},
       {day:"Jueves",   slotProtein:"pollo",    slotDinner:"plancha_verdura", mood:"carga",
        slotNote:"🍗 Jueves de carga — repetimos pollo. En volumen, la constancia manda."},
@@ -1534,7 +1534,7 @@ export function buildPlan(profile, targetKcal, opts = {}) {
     volumen_agresivo: [
       {day:"Lunes",    slotProtein:"pasta",    slotDinner:"huevo_plancha",   mood:"carga_maxima",
        slotNote:"🔥 Lunes de máxima carga — pasta para llenar el glucógeno desde el primer día."},
-      {day:"Martes",   slotProtein:"ternera",  slotDinner:"plancha_verdura", mood:"aminoácidos",
+      {day:"Martes",   slotProtein:"ternera",  slotDinner:"plancha_verdura", mood:"aminoacidos",
        slotNote:"🥩 Martes de ternera — proteína completa, recuperación rápida."},
       {day:"Miércoles",slotProtein:"pollo",    slotDinner:"plancha_verdura", mood:"constancia",
        slotNote:"💪 Miércoles de pollo — mitad de semana, consistencia antes que creatividad."},
@@ -1869,7 +1869,7 @@ export function buildPlan(profile, targetKcal, opts = {}) {
       if(mood==="ligero"||mood==="omega"||mood==="descanso")       apetenciaPen -= ap.freshness * 1.2;
       if(mood==="libre"||mood==="recarga"||mood==="recarga_total") apetenciaPen -= ap.craving * 1.5;
       if(mood==="familiar"||mood==="clásico")              apetenciaPen -= ap.comfort * 0.8;
-      if(mood==="carga"||mood==="carga_maxima"||mood==="aminoácidos") apetenciaPen -= ap.craving * 0.5;
+      if(mood==="carga"||mood==="carga_maxima"||mood==="aminoacidos") apetenciaPen -= ap.craving * 0.5;
 
       // 17. Experiencia culinaria percibida — evita que la semana se sienta
       // como "siete días de plancha" o "todo comfort_caliente".

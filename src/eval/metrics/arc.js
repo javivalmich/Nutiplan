@@ -1,8 +1,11 @@
-// coherenciaArco (Paso 4, Fase 0.5) — tres componentes, cada uno atado a un
-// observable real del motor (gate de honestidad: no se computa nada cuyo
-// observable no esté citado con archivo:línea).
+// Sub-métricas de "coherencia de arco" (Paso 4, Fase 0.5) — tres claves
+// independientes en humanScore (densidadDiaria, domingoReconfortante,
+// diaFacilTrasElaborado), cada una atada a un observable real del motor
+// (gate de honestidad: no se computa nada cuyo observable no esté citado
+// con archivo:línea).
 //
-// 1) densidadPorDia: classifyDayDensity (../dayDensity.js) — meal._spec.density.
+// 1) densidadDiaria: classifyDayDensity (../dayDensity.js) — meal._spec.density.
+//    Diagnóstico, sin juicio direccional propio (polarity: null).
 //
 // 2) domingoReconfortante: observable = day.effectiveMood. El motor activa
 //    el patrón "COMFORT DEL DOMINGO" en src/engine/buildPlan.js:2353-2356
@@ -21,9 +24,9 @@
 //    como un proxy inventado de "elaboración" textual.
 //
 // Ambas comidas principales (comida+cena) deben ser legibles para que un día
-// participe en la comparación; si no, el día queda "unknown" y no cuenta a
-// favor ni en contra (decisión Fase 0.5, regla adicional de densidad/ligereza,
-// aplicada aquí también por consistencia).
+// participe en cualquiera de estas comparaciones; si no, el día queda
+// "unknown" y no cuenta a favor ni en contra (decisión Fase 0.5, regla
+// adicional de densidad/ligereza, aplicada aquí también por consistencia).
 
 import { classifyDayDensity } from '../dayDensity.js';
 import { getMainMeals, isLegibleMeal } from '../planReader.js';
@@ -37,34 +40,46 @@ function classifyDayFacilidad(day) {
   return { status: 'computed', classification: todasFaciles ? 'facil' : 'elaborado' };
 }
 
-export function computeCoherenciaArco(plan) {
+export function computeDensidadDiaria(plan) {
   const days = (plan && plan.days) || [];
-
   const densidadPorDia = {};
-  const facilidadPorDia = {};
   for (const day of days) {
     densidadPorDia[day.name] = classifyDayDensity(day);
-    facilidadPorDia[day.name] = classifyDayFacilidad(day);
   }
-
-  const densidadEvidencias = days.map((d) => {
+  const evidencias = days.map((d) => {
     const c = densidadPorDia[d.name];
     return c.status === 'computed'
       ? `${d.name}: densidad=${c.density} (${c.classification})`
       : `${d.name}: densidad=unknown (menos de 2 comidas legibles)`;
   });
+  return {
+    valor: densidadPorDia,
+    status: 'computed',
+    polarity: null, // diagnóstico, sin juicio direccional propio
+    evidencias,
+  };
+}
 
-  // ── Domingo reconfortante ──────────────────────────────────────────────
+export function computeDomingoReconfortante(plan) {
+  const days = (plan && plan.days) || [];
   const domingo = days.find((d) => d.name === 'Domingo');
-  const domingoReconfortante = domingo ? domingo.effectiveMood === 'reconfortante' : null;
-  const domingoEvidencia = domingo
-    ? `Domingo → effectiveMood: "${domingo.effectiveMood}"` +
-      (domingoReconfortante
-        ? ' (patrón comfort domingo activo, buildPlan.js:2354-2356)'
-        : ' (patrón comfort domingo NO activo en este plan)')
-    : 'No hay día "Domingo" en plan.days — no se puede evaluar.';
+  const valor = domingo ? domingo.effectiveMood === 'reconfortante' : null;
+  const evidencias = [
+    domingo
+      ? `Domingo → effectiveMood: "${domingo.effectiveMood}"` +
+        (valor
+          ? ' (patrón comfort domingo activo, buildPlan.js:2354-2356)'
+          : ' (patrón comfort domingo NO activo en este plan)')
+      : 'No hay día "Domingo" en plan.days — no se puede evaluar.',
+  ];
+  return { valor, status: 'computed', polarity: 'higher_is_better', evidencias };
+}
 
-  // ── Día fácil tras día elaborado ─────────────────────────────────────────
+export function computeDiaFacilTrasElaborado(plan) {
+  const days = (plan && plan.days) || [];
+  const facilidadPorDia = {};
+  for (const day of days) facilidadPorDia[day.name] = classifyDayFacilidad(day);
+
   const pares = [];
   const diasOmitidos = [];
   for (let i = 0; i < days.length - 1; i++) {
@@ -82,24 +97,12 @@ export function computeCoherenciaArco(plan) {
     }
   }
 
-  const arcoEvidencias = [
+  const evidencias = [
     ...pares.map((p) => `${p.elaborado} (elaborado) → ${p.facilDespues} (fácil): patrón de arco coherente`),
     ...(diasOmitidos.length
       ? [`Días excluidos de la comparación elaborado→fácil por datos insuficientes: ${diasOmitidos.join(', ')}`]
       : []),
   ];
 
-  return {
-    valor: {
-      densidadPorDia,
-      domingoReconfortante,
-      diaFacilTrasElaborado: pares,
-    },
-    status: 'computed',
-    // La polaridad aplica al patrón de coherencia (domingo + arco
-    // elaborado→fácil): más presencia del patrón intencional = mejor.
-    // densidadPorDia es diagnóstico, sin juicio direccional propio.
-    polarity: 'higher_is_better',
-    evidencias: [...densidadEvidencias, domingoEvidencia, ...arcoEvidencias],
-  };
+  return { valor: pares, status: 'computed', polarity: 'higher_is_better', evidencias };
 }

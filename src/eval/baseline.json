@@ -84,55 +84,46 @@
         "plato de cuchara (tmpl legumbre/sopa_crema) aparece 3 veces: martes comida, jueves comida, viernes cena"
       ]
     },
-    "coherenciaArco": {
+    "densidadDiaria": {
       "valor": {
-        "densidadPorDia": {
-          "Lunes": {
-            "status": "computed",
-            "density": 1,
-            "classification": "ligero"
-          },
-          "Martes": {
-            "status": "computed",
-            "density": 2,
-            "classification": "intermedio"
-          },
-          "Miércoles": {
-            "status": "computed",
-            "density": 2,
-            "classification": "intermedio"
-          },
-          "Jueves": {
-            "status": "computed",
-            "density": 0,
-            "classification": "ligero"
-          },
-          "Viernes": {
-            "status": "computed",
-            "density": 2,
-            "classification": "intermedio"
-          },
-          "Sábado": {
-            "status": "unknown",
-            "density": null,
-            "classification": null
-          },
-          "Domingo": {
-            "status": "computed",
-            "density": 2,
-            "classification": "intermedio"
-          }
+        "Lunes": {
+          "status": "computed",
+          "density": 1,
+          "classification": "ligero"
         },
-        "domingoReconfortante": true,
-        "diaFacilTrasElaborado": [
-          {
-            "elaborado": "Martes",
-            "facilDespues": "Miércoles"
-          }
-        ]
+        "Martes": {
+          "status": "computed",
+          "density": 2,
+          "classification": "intermedio"
+        },
+        "Miércoles": {
+          "status": "computed",
+          "density": 2,
+          "classification": "intermedio"
+        },
+        "Jueves": {
+          "status": "computed",
+          "density": 0,
+          "classification": "ligero"
+        },
+        "Viernes": {
+          "status": "computed",
+          "density": 2,
+          "classification": "intermedio"
+        },
+        "Sábado": {
+          "status": "unknown",
+          "density": null,
+          "classification": null
+        },
+        "Domingo": {
+          "status": "computed",
+          "density": 2,
+          "classification": "intermedio"
+        }
       },
       "status": "computed",
-      "polarity": "higher_is_better",
+      "polarity": null,
       "evidencias": [
         "Lunes: densidad=1 (ligero)",
         "Martes: densidad=2 (intermedio)",
@@ -140,8 +131,27 @@
         "Jueves: densidad=0 (ligero)",
         "Viernes: densidad=2 (intermedio)",
         "Sábado: densidad=unknown (menos de 2 comidas legibles)",
-        "Domingo: densidad=2 (intermedio)",
-        "Domingo → effectiveMood: \"reconfortante\" (patrón comfort domingo activo, buildPlan.js:2354-2356)",
+        "Domingo: densidad=2 (intermedio)"
+      ]
+    },
+    "domingoReconfortante": {
+      "valor": true,
+      "status": "computed",
+      "polarity": "higher_is_better",
+      "evidencias": [
+        "Domingo → effectiveMood: \"reconfortante\" (patrón comfort domingo activo, buildPlan.js:2354-2356)"
+      ]
+    },
+    "diaFacilTrasElaborado": {
+      "valor": [
+        {
+          "elaborado": "Martes",
+          "facilDespues": "Miércoles"
+        }
+      ],
+      "status": "computed",
+      "polarity": "higher_is_better",
+      "evidencias": [
         "Martes (elaborado) → Miércoles (fácil): patrón de arco coherente",
         "Días excluidos de la comparación elaborado→fácil por datos insuficientes: Sábado"
       ]
@@ -169,6 +179,24 @@
       "evidencias": [
         "Requiere histórico multi-semana para comparar contra semanas previas y detectar variación editorial. Fuera de scope en Fase 0.5."
       ]
+    },
+    "usoSobrasVidaUtil": {
+      "valor": null,
+      "status": "needs_engine2",
+      "polarity": null,
+      "evidencias": []
+    },
+    "alternanciaBatch": {
+      "valor": null,
+      "status": "needs_engine2",
+      "polarity": null,
+      "evidencias": []
+    },
+    "coherenciaCompraPerecederos": {
+      "valor": null,
+      "status": "needs_engine2",
+      "polarity": null,
+      "evidencias": []
     }
   },
   "definicion_saciante": {
@@ -246,50 +274,46 @@
         "umbral provisional de repetición destacada (>=4) alcanzado: 4 veces"
       ]
     },
-    "coherenciaArco": {
+    "densidadDiaria": {
       "valor": {
-        "densidadPorDia": {
-          "Lunes": {
-            "status": "unknown",
-            "density": null,
-            "classification": null
-          },
-          "Martes": {
-            "status": "computed",
-            "density": 1,
-            "classification": "ligero"
-          },
-          "Miércoles": {
-            "status": "unknown",
-            "density": null,
-            "classification": null
-          },
-          "Jueves": {
-            "status": "computed",
-            "density": 0,
-            "classification": "ligero"
-          },
-          "Viernes": {
-            "status": "unknown",
-            "density": null,
-            "classification": null
-          },
-          "Sábado": {
-            "status": "unknown",
-            "density": null,
-            "classification": null
-          },
-          "Domingo": {
-            "status": "computed",
-            "density": 0,
-            "classification": "ligero"
-          }
+        "Lunes": {
+          "status": "unknown",
+          "density": null,
+          "classification": null
         },
-        "domingoReconfortante": true,
-        "diaFacilTrasElaborado": []
+        "Martes": {
+          "status": "computed",
+          "density": 1,
+          "classification": "ligero"
+        },
+        "Miércoles": {
+          "status": "unknown",
+          "density": null,
+          "classification": null
+        },
+        "Jueves": {
+          "status": "computed",
+          "density": 0,
+          "classification": "ligero"
+        },
+        "Viernes": {
+          "status": "unknown",
+          "density": null,
+          "classification": null
+        },
+        "Sábado": {
+          "status": "unknown",
+          "density": null,
+          "classification": null
+        },
+        "Domingo": {
+          "status": "computed",
+          "density": 0,
+          "classification": "ligero"
+        }
       },
       "status": "computed",
-      "polarity": "higher_is_better",
+      "polarity": null,
       "evidencias": [
         "Lunes: densidad=unknown (menos de 2 comidas legibles)",
         "Martes: densidad=1 (ligero)",
@@ -297,8 +321,22 @@
         "Jueves: densidad=0 (ligero)",
         "Viernes: densidad=unknown (menos de 2 comidas legibles)",
         "Sábado: densidad=unknown (menos de 2 comidas legibles)",
-        "Domingo: densidad=0 (ligero)",
-        "Domingo → effectiveMood: \"reconfortante\" (patrón comfort domingo activo, buildPlan.js:2354-2356)",
+        "Domingo: densidad=0 (ligero)"
+      ]
+    },
+    "domingoReconfortante": {
+      "valor": true,
+      "status": "computed",
+      "polarity": "higher_is_better",
+      "evidencias": [
+        "Domingo → effectiveMood: \"reconfortante\" (patrón comfort domingo activo, buildPlan.js:2354-2356)"
+      ]
+    },
+    "diaFacilTrasElaborado": {
+      "valor": [],
+      "status": "computed",
+      "polarity": "higher_is_better",
+      "evidencias": [
         "Días excluidos de la comparación elaborado→fácil por datos insuficientes: Lunes, Miércoles, Viernes, Sábado"
       ]
     },
@@ -351,6 +389,24 @@
       "evidencias": [
         "Requiere histórico multi-semana para comparar contra semanas previas y detectar variación editorial. Fuera de scope en Fase 0.5."
       ]
+    },
+    "usoSobrasVidaUtil": {
+      "valor": null,
+      "status": "needs_engine2",
+      "polarity": null,
+      "evidencias": []
+    },
+    "alternanciaBatch": {
+      "valor": null,
+      "status": "needs_engine2",
+      "polarity": null,
+      "evidencias": []
+    },
+    "coherenciaCompraPerecederos": {
+      "valor": null,
+      "status": "needs_engine2",
+      "polarity": null,
+      "evidencias": []
     }
   },
   "definicion_flexible": {
@@ -437,55 +493,46 @@
         "plato de cuchara (tmpl legumbre/sopa_crema) aparece 2 veces: jueves cena, domingo comida"
       ]
     },
-    "coherenciaArco": {
+    "densidadDiaria": {
       "valor": {
-        "densidadPorDia": {
-          "Lunes": {
-            "status": "computed",
-            "density": 1,
-            "classification": "ligero"
-          },
-          "Martes": {
-            "status": "computed",
-            "density": 0,
-            "classification": "ligero"
-          },
-          "Miércoles": {
-            "status": "computed",
-            "density": 3,
-            "classification": "denso"
-          },
-          "Jueves": {
-            "status": "computed",
-            "density": 1,
-            "classification": "ligero"
-          },
-          "Viernes": {
-            "status": "computed",
-            "density": 1,
-            "classification": "ligero"
-          },
-          "Sábado": {
-            "status": "unknown",
-            "density": null,
-            "classification": null
-          },
-          "Domingo": {
-            "status": "computed",
-            "density": 1,
-            "classification": "ligero"
-          }
+        "Lunes": {
+          "status": "computed",
+          "density": 1,
+          "classification": "ligero"
         },
-        "domingoReconfortante": true,
-        "diaFacilTrasElaborado": [
-          {
-            "elaborado": "Lunes",
-            "facilDespues": "Martes"
-          }
-        ]
+        "Martes": {
+          "status": "computed",
+          "density": 0,
+          "classification": "ligero"
+        },
+        "Miércoles": {
+          "status": "computed",
+          "density": 3,
+          "classification": "denso"
+        },
+        "Jueves": {
+          "status": "computed",
+          "density": 1,
+          "classification": "ligero"
+        },
+        "Viernes": {
+          "status": "computed",
+          "density": 1,
+          "classification": "ligero"
+        },
+        "Sábado": {
+          "status": "unknown",
+          "density": null,
+          "classification": null
+        },
+        "Domingo": {
+          "status": "computed",
+          "density": 1,
+          "classification": "ligero"
+        }
       },
       "status": "computed",
-      "polarity": "higher_is_better",
+      "polarity": null,
       "evidencias": [
         "Lunes: densidad=1 (ligero)",
         "Martes: densidad=0 (ligero)",
@@ -493,8 +540,27 @@
         "Jueves: densidad=1 (ligero)",
         "Viernes: densidad=1 (ligero)",
         "Sábado: densidad=unknown (menos de 2 comidas legibles)",
-        "Domingo: densidad=1 (ligero)",
-        "Domingo → effectiveMood: \"reconfortante\" (patrón comfort domingo activo, buildPlan.js:2354-2356)",
+        "Domingo: densidad=1 (ligero)"
+      ]
+    },
+    "domingoReconfortante": {
+      "valor": true,
+      "status": "computed",
+      "polarity": "higher_is_better",
+      "evidencias": [
+        "Domingo → effectiveMood: \"reconfortante\" (patrón comfort domingo activo, buildPlan.js:2354-2356)"
+      ]
+    },
+    "diaFacilTrasElaborado": {
+      "valor": [
+        {
+          "elaborado": "Lunes",
+          "facilDespues": "Martes"
+        }
+      ],
+      "status": "computed",
+      "polarity": "higher_is_better",
+      "evidencias": [
         "Lunes (elaborado) → Martes (fácil): patrón de arco coherente",
         "Días excluidos de la comparación elaborado→fácil por datos insuficientes: Sábado"
       ]
@@ -522,6 +588,24 @@
       "evidencias": [
         "Requiere histórico multi-semana para comparar contra semanas previas y detectar variación editorial. Fuera de scope en Fase 0.5."
       ]
+    },
+    "usoSobrasVidaUtil": {
+      "valor": null,
+      "status": "needs_engine2",
+      "polarity": null,
+      "evidencias": []
+    },
+    "alternanciaBatch": {
+      "valor": null,
+      "status": "needs_engine2",
+      "polarity": null,
+      "evidencias": []
+    },
+    "coherenciaCompraPerecederos": {
+      "valor": null,
+      "status": "needs_engine2",
+      "polarity": null,
+      "evidencias": []
     }
   },
   "mantenimiento_equilibrado (base)": {
@@ -605,50 +689,46 @@
         "plato de cuchara (tmpl legumbre/sopa_crema) aparece 3 veces: jueves comida, sábado cena, domingo comida"
       ]
     },
-    "coherenciaArco": {
+    "densidadDiaria": {
       "valor": {
-        "densidadPorDia": {
-          "Lunes": {
-            "status": "computed",
-            "density": 1,
-            "classification": "ligero"
-          },
-          "Martes": {
-            "status": "computed",
-            "density": 1,
-            "classification": "ligero"
-          },
-          "Miércoles": {
-            "status": "computed",
-            "density": 2,
-            "classification": "intermedio"
-          },
-          "Jueves": {
-            "status": "computed",
-            "density": 1,
-            "classification": "ligero"
-          },
-          "Viernes": {
-            "status": "computed",
-            "density": 2,
-            "classification": "intermedio"
-          },
-          "Sábado": {
-            "status": "unknown",
-            "density": null,
-            "classification": null
-          },
-          "Domingo": {
-            "status": "computed",
-            "density": 1,
-            "classification": "ligero"
-          }
+        "Lunes": {
+          "status": "computed",
+          "density": 1,
+          "classification": "ligero"
         },
-        "domingoReconfortante": true,
-        "diaFacilTrasElaborado": []
+        "Martes": {
+          "status": "computed",
+          "density": 1,
+          "classification": "ligero"
+        },
+        "Miércoles": {
+          "status": "computed",
+          "density": 2,
+          "classification": "intermedio"
+        },
+        "Jueves": {
+          "status": "computed",
+          "density": 1,
+          "classification": "ligero"
+        },
+        "Viernes": {
+          "status": "computed",
+          "density": 2,
+          "classification": "intermedio"
+        },
+        "Sábado": {
+          "status": "unknown",
+          "density": null,
+          "classification": null
+        },
+        "Domingo": {
+          "status": "computed",
+          "density": 1,
+          "classification": "ligero"
+        }
       },
       "status": "computed",
-      "polarity": "higher_is_better",
+      "polarity": null,
       "evidencias": [
         "Lunes: densidad=1 (ligero)",
         "Martes: densidad=1 (ligero)",
@@ -656,8 +736,22 @@
         "Jueves: densidad=1 (ligero)",
         "Viernes: densidad=2 (intermedio)",
         "Sábado: densidad=unknown (menos de 2 comidas legibles)",
-        "Domingo: densidad=1 (ligero)",
-        "Domingo → effectiveMood: \"reconfortante\" (patrón comfort domingo activo, buildPlan.js:2354-2356)",
+        "Domingo: densidad=1 (ligero)"
+      ]
+    },
+    "domingoReconfortante": {
+      "valor": true,
+      "status": "computed",
+      "polarity": "higher_is_better",
+      "evidencias": [
+        "Domingo → effectiveMood: \"reconfortante\" (patrón comfort domingo activo, buildPlan.js:2354-2356)"
+      ]
+    },
+    "diaFacilTrasElaborado": {
+      "valor": [],
+      "status": "computed",
+      "polarity": "higher_is_better",
+      "evidencias": [
         "Días excluidos de la comparación elaborado→fácil por datos insuficientes: Sábado"
       ]
     },
@@ -684,6 +778,24 @@
       "evidencias": [
         "Requiere histórico multi-semana para comparar contra semanas previas y detectar variación editorial. Fuera de scope en Fase 0.5."
       ]
+    },
+    "usoSobrasVidaUtil": {
+      "valor": null,
+      "status": "needs_engine2",
+      "polarity": null,
+      "evidencias": []
+    },
+    "alternanciaBatch": {
+      "valor": null,
+      "status": "needs_engine2",
+      "polarity": null,
+      "evidencias": []
+    },
+    "coherenciaCompraPerecederos": {
+      "valor": null,
+      "status": "needs_engine2",
+      "polarity": null,
+      "evidencias": []
     }
   },
   "volumen_limpio": {
@@ -760,55 +872,46 @@
         "plato de cuchara (tmpl legumbre/sopa_crema) aparece 2 veces: viernes comida, sábado cena"
       ]
     },
-    "coherenciaArco": {
+    "densidadDiaria": {
       "valor": {
-        "densidadPorDia": {
-          "Lunes": {
-            "status": "unknown",
-            "density": null,
-            "classification": null
-          },
-          "Martes": {
-            "status": "computed",
-            "density": 3,
-            "classification": "denso"
-          },
-          "Miércoles": {
-            "status": "computed",
-            "density": 2,
-            "classification": "intermedio"
-          },
-          "Jueves": {
-            "status": "unknown",
-            "density": null,
-            "classification": null
-          },
-          "Viernes": {
-            "status": "computed",
-            "density": 2,
-            "classification": "intermedio"
-          },
-          "Sábado": {
-            "status": "unknown",
-            "density": null,
-            "classification": null
-          },
-          "Domingo": {
-            "status": "computed",
-            "density": 1,
-            "classification": "ligero"
-          }
+        "Lunes": {
+          "status": "unknown",
+          "density": null,
+          "classification": null
         },
-        "domingoReconfortante": true,
-        "diaFacilTrasElaborado": [
-          {
-            "elaborado": "Martes",
-            "facilDespues": "Miércoles"
-          }
-        ]
+        "Martes": {
+          "status": "computed",
+          "density": 3,
+          "classification": "denso"
+        },
+        "Miércoles": {
+          "status": "computed",
+          "density": 2,
+          "classification": "intermedio"
+        },
+        "Jueves": {
+          "status": "unknown",
+          "density": null,
+          "classification": null
+        },
+        "Viernes": {
+          "status": "computed",
+          "density": 2,
+          "classification": "intermedio"
+        },
+        "Sábado": {
+          "status": "unknown",
+          "density": null,
+          "classification": null
+        },
+        "Domingo": {
+          "status": "computed",
+          "density": 1,
+          "classification": "ligero"
+        }
       },
       "status": "computed",
-      "polarity": "higher_is_better",
+      "polarity": null,
       "evidencias": [
         "Lunes: densidad=unknown (menos de 2 comidas legibles)",
         "Martes: densidad=3 (denso)",
@@ -816,8 +919,27 @@
         "Jueves: densidad=unknown (menos de 2 comidas legibles)",
         "Viernes: densidad=2 (intermedio)",
         "Sábado: densidad=unknown (menos de 2 comidas legibles)",
-        "Domingo: densidad=1 (ligero)",
-        "Domingo → effectiveMood: \"reconfortante\" (patrón comfort domingo activo, buildPlan.js:2354-2356)",
+        "Domingo: densidad=1 (ligero)"
+      ]
+    },
+    "domingoReconfortante": {
+      "valor": true,
+      "status": "computed",
+      "polarity": "higher_is_better",
+      "evidencias": [
+        "Domingo → effectiveMood: \"reconfortante\" (patrón comfort domingo activo, buildPlan.js:2354-2356)"
+      ]
+    },
+    "diaFacilTrasElaborado": {
+      "valor": [
+        {
+          "elaborado": "Martes",
+          "facilDespues": "Miércoles"
+        }
+      ],
+      "status": "computed",
+      "polarity": "higher_is_better",
+      "evidencias": [
         "Martes (elaborado) → Miércoles (fácil): patrón de arco coherente",
         "Días excluidos de la comparación elaborado→fácil por datos insuficientes: Lunes, Jueves, Sábado"
       ]
@@ -864,6 +986,24 @@
       "evidencias": [
         "Requiere histórico multi-semana para comparar contra semanas previas y detectar variación editorial. Fuera de scope en Fase 0.5."
       ]
+    },
+    "usoSobrasVidaUtil": {
+      "valor": null,
+      "status": "needs_engine2",
+      "polarity": null,
+      "evidencias": []
+    },
+    "alternanciaBatch": {
+      "valor": null,
+      "status": "needs_engine2",
+      "polarity": null,
+      "evidencias": []
+    },
+    "coherenciaCompraPerecederos": {
+      "valor": null,
+      "status": "needs_engine2",
+      "polarity": null,
+      "evidencias": []
     }
   },
   "volumen_agresivo": {
@@ -929,50 +1069,46 @@
         "plato de cuchara (tmpl legumbre/sopa_crema) aparece 2 veces: domingo comida, domingo cena"
       ]
     },
-    "coherenciaArco": {
+    "densidadDiaria": {
       "valor": {
-        "densidadPorDia": {
-          "Lunes": {
-            "status": "unknown",
-            "density": null,
-            "classification": null
-          },
-          "Martes": {
-            "status": "unknown",
-            "density": null,
-            "classification": null
-          },
-          "Miércoles": {
-            "status": "computed",
-            "density": 2,
-            "classification": "intermedio"
-          },
-          "Jueves": {
-            "status": "unknown",
-            "density": null,
-            "classification": null
-          },
-          "Viernes": {
-            "status": "unknown",
-            "density": null,
-            "classification": null
-          },
-          "Sábado": {
-            "status": "unknown",
-            "density": null,
-            "classification": null
-          },
-          "Domingo": {
-            "status": "computed",
-            "density": 2,
-            "classification": "intermedio"
-          }
+        "Lunes": {
+          "status": "unknown",
+          "density": null,
+          "classification": null
         },
-        "domingoReconfortante": true,
-        "diaFacilTrasElaborado": []
+        "Martes": {
+          "status": "unknown",
+          "density": null,
+          "classification": null
+        },
+        "Miércoles": {
+          "status": "computed",
+          "density": 2,
+          "classification": "intermedio"
+        },
+        "Jueves": {
+          "status": "unknown",
+          "density": null,
+          "classification": null
+        },
+        "Viernes": {
+          "status": "unknown",
+          "density": null,
+          "classification": null
+        },
+        "Sábado": {
+          "status": "unknown",
+          "density": null,
+          "classification": null
+        },
+        "Domingo": {
+          "status": "computed",
+          "density": 2,
+          "classification": "intermedio"
+        }
       },
       "status": "computed",
-      "polarity": "higher_is_better",
+      "polarity": null,
       "evidencias": [
         "Lunes: densidad=unknown (menos de 2 comidas legibles)",
         "Martes: densidad=unknown (menos de 2 comidas legibles)",
@@ -980,8 +1116,22 @@
         "Jueves: densidad=unknown (menos de 2 comidas legibles)",
         "Viernes: densidad=unknown (menos de 2 comidas legibles)",
         "Sábado: densidad=unknown (menos de 2 comidas legibles)",
-        "Domingo: densidad=2 (intermedio)",
-        "Domingo → effectiveMood: \"reconfortante\" (patrón comfort domingo activo, buildPlan.js:2354-2356)",
+        "Domingo: densidad=2 (intermedio)"
+      ]
+    },
+    "domingoReconfortante": {
+      "valor": true,
+      "status": "computed",
+      "polarity": "higher_is_better",
+      "evidencias": [
+        "Domingo → effectiveMood: \"reconfortante\" (patrón comfort domingo activo, buildPlan.js:2354-2356)"
+      ]
+    },
+    "diaFacilTrasElaborado": {
+      "valor": [],
+      "status": "computed",
+      "polarity": "higher_is_better",
+      "evidencias": [
         "Días excluidos de la comparación elaborado→fácil por datos insuficientes: Lunes, Martes, Jueves, Viernes, Sábado"
       ]
     },
@@ -1041,6 +1191,24 @@
       "evidencias": [
         "Requiere histórico multi-semana para comparar contra semanas previas y detectar variación editorial. Fuera de scope en Fase 0.5."
       ]
+    },
+    "usoSobrasVidaUtil": {
+      "valor": null,
+      "status": "needs_engine2",
+      "polarity": null,
+      "evidencias": []
+    },
+    "alternanciaBatch": {
+      "valor": null,
+      "status": "needs_engine2",
+      "polarity": null,
+      "evidencias": []
+    },
+    "coherenciaCompraPerecederos": {
+      "valor": null,
+      "status": "needs_engine2",
+      "polarity": null,
+      "evidencias": []
     }
   },
   "mantenimiento_equilibrado + intolerancias (lactosa+gluten)": {
@@ -1123,59 +1291,46 @@
         "plato de cuchara (tmpl legumbre/sopa_crema) aparece 3 veces: lunes cena, jueves comida, domingo cena"
       ]
     },
-    "coherenciaArco": {
+    "densidadDiaria": {
       "valor": {
-        "densidadPorDia": {
-          "Lunes": {
-            "status": "computed",
-            "density": 1,
-            "classification": "ligero"
-          },
-          "Martes": {
-            "status": "computed",
-            "density": 1,
-            "classification": "ligero"
-          },
-          "Miércoles": {
-            "status": "computed",
-            "density": 2,
-            "classification": "intermedio"
-          },
-          "Jueves": {
-            "status": "computed",
-            "density": 2,
-            "classification": "intermedio"
-          },
-          "Viernes": {
-            "status": "computed",
-            "density": 1,
-            "classification": "ligero"
-          },
-          "Sábado": {
-            "status": "unknown",
-            "density": null,
-            "classification": null
-          },
-          "Domingo": {
-            "status": "computed",
-            "density": 2,
-            "classification": "intermedio"
-          }
+        "Lunes": {
+          "status": "computed",
+          "density": 1,
+          "classification": "ligero"
         },
-        "domingoReconfortante": true,
-        "diaFacilTrasElaborado": [
-          {
-            "elaborado": "Lunes",
-            "facilDespues": "Martes"
-          },
-          {
-            "elaborado": "Jueves",
-            "facilDespues": "Viernes"
-          }
-        ]
+        "Martes": {
+          "status": "computed",
+          "density": 1,
+          "classification": "ligero"
+        },
+        "Miércoles": {
+          "status": "computed",
+          "density": 2,
+          "classification": "intermedio"
+        },
+        "Jueves": {
+          "status": "computed",
+          "density": 2,
+          "classification": "intermedio"
+        },
+        "Viernes": {
+          "status": "computed",
+          "density": 1,
+          "classification": "ligero"
+        },
+        "Sábado": {
+          "status": "unknown",
+          "density": null,
+          "classification": null
+        },
+        "Domingo": {
+          "status": "computed",
+          "density": 2,
+          "classification": "intermedio"
+        }
       },
       "status": "computed",
-      "polarity": "higher_is_better",
+      "polarity": null,
       "evidencias": [
         "Lunes: densidad=1 (ligero)",
         "Martes: densidad=1 (ligero)",
@@ -1183,8 +1338,31 @@
         "Jueves: densidad=2 (intermedio)",
         "Viernes: densidad=1 (ligero)",
         "Sábado: densidad=unknown (menos de 2 comidas legibles)",
-        "Domingo: densidad=2 (intermedio)",
-        "Domingo → effectiveMood: \"reconfortante\" (patrón comfort domingo activo, buildPlan.js:2354-2356)",
+        "Domingo: densidad=2 (intermedio)"
+      ]
+    },
+    "domingoReconfortante": {
+      "valor": true,
+      "status": "computed",
+      "polarity": "higher_is_better",
+      "evidencias": [
+        "Domingo → effectiveMood: \"reconfortante\" (patrón comfort domingo activo, buildPlan.js:2354-2356)"
+      ]
+    },
+    "diaFacilTrasElaborado": {
+      "valor": [
+        {
+          "elaborado": "Lunes",
+          "facilDespues": "Martes"
+        },
+        {
+          "elaborado": "Jueves",
+          "facilDespues": "Viernes"
+        }
+      ],
+      "status": "computed",
+      "polarity": "higher_is_better",
+      "evidencias": [
         "Lunes (elaborado) → Martes (fácil): patrón de arco coherente",
         "Jueves (elaborado) → Viernes (fácil): patrón de arco coherente",
         "Días excluidos de la comparación elaborado→fácil por datos insuficientes: Sábado"
@@ -1213,6 +1391,24 @@
       "evidencias": [
         "Requiere histórico multi-semana para comparar contra semanas previas y detectar variación editorial. Fuera de scope en Fase 0.5."
       ]
+    },
+    "usoSobrasVidaUtil": {
+      "valor": null,
+      "status": "needs_engine2",
+      "polarity": null,
+      "evidencias": []
+    },
+    "alternanciaBatch": {
+      "valor": null,
+      "status": "needs_engine2",
+      "polarity": null,
+      "evidencias": []
+    },
+    "coherenciaCompraPerecederos": {
+      "valor": null,
+      "status": "needs_engine2",
+      "polarity": null,
+      "evidencias": []
     }
   },
   "mantenimiento_equilibrado + trainingDays": {
@@ -1283,50 +1479,46 @@
         "plato de cuchara (tmpl legumbre/sopa_crema) aparece 2 veces: jueves comida, jueves cena"
       ]
     },
-    "coherenciaArco": {
+    "densidadDiaria": {
       "valor": {
-        "densidadPorDia": {
-          "Lunes": {
-            "status": "unknown",
-            "density": null,
-            "classification": null
-          },
-          "Martes": {
-            "status": "computed",
-            "density": 1,
-            "classification": "ligero"
-          },
-          "Miércoles": {
-            "status": "unknown",
-            "density": null,
-            "classification": null
-          },
-          "Jueves": {
-            "status": "computed",
-            "density": 1,
-            "classification": "ligero"
-          },
-          "Viernes": {
-            "status": "unknown",
-            "density": null,
-            "classification": null
-          },
-          "Sábado": {
-            "status": "unknown",
-            "density": null,
-            "classification": null
-          },
-          "Domingo": {
-            "status": "computed",
-            "density": 2,
-            "classification": "intermedio"
-          }
+        "Lunes": {
+          "status": "unknown",
+          "density": null,
+          "classification": null
         },
-        "domingoReconfortante": true,
-        "diaFacilTrasElaborado": []
+        "Martes": {
+          "status": "computed",
+          "density": 1,
+          "classification": "ligero"
+        },
+        "Miércoles": {
+          "status": "unknown",
+          "density": null,
+          "classification": null
+        },
+        "Jueves": {
+          "status": "computed",
+          "density": 1,
+          "classification": "ligero"
+        },
+        "Viernes": {
+          "status": "unknown",
+          "density": null,
+          "classification": null
+        },
+        "Sábado": {
+          "status": "unknown",
+          "density": null,
+          "classification": null
+        },
+        "Domingo": {
+          "status": "computed",
+          "density": 2,
+          "classification": "intermedio"
+        }
       },
       "status": "computed",
-      "polarity": "higher_is_better",
+      "polarity": null,
       "evidencias": [
         "Lunes: densidad=unknown (menos de 2 comidas legibles)",
         "Martes: densidad=1 (ligero)",
@@ -1334,8 +1526,22 @@
         "Jueves: densidad=1 (ligero)",
         "Viernes: densidad=unknown (menos de 2 comidas legibles)",
         "Sábado: densidad=unknown (menos de 2 comidas legibles)",
-        "Domingo: densidad=2 (intermedio)",
-        "Domingo → effectiveMood: \"reconfortante\" (patrón comfort domingo activo, buildPlan.js:2354-2356)",
+        "Domingo: densidad=2 (intermedio)"
+      ]
+    },
+    "domingoReconfortante": {
+      "valor": true,
+      "status": "computed",
+      "polarity": "higher_is_better",
+      "evidencias": [
+        "Domingo → effectiveMood: \"reconfortante\" (patrón comfort domingo activo, buildPlan.js:2354-2356)"
+      ]
+    },
+    "diaFacilTrasElaborado": {
+      "valor": [],
+      "status": "computed",
+      "polarity": "higher_is_better",
+      "evidencias": [
         "Días excluidos de la comparación elaborado→fácil por datos insuficientes: Lunes, Miércoles, Viernes, Sábado"
       ]
     },
@@ -1388,6 +1594,24 @@
       "evidencias": [
         "Requiere histórico multi-semana para comparar contra semanas previas y detectar variación editorial. Fuera de scope en Fase 0.5."
       ]
+    },
+    "usoSobrasVidaUtil": {
+      "valor": null,
+      "status": "needs_engine2",
+      "polarity": null,
+      "evidencias": []
+    },
+    "alternanciaBatch": {
+      "valor": null,
+      "status": "needs_engine2",
+      "polarity": null,
+      "evidencias": []
+    },
+    "coherenciaCompraPerecederos": {
+      "valor": null,
+      "status": "needs_engine2",
+      "polarity": null,
+      "evidencias": []
     }
   },
   "mantenimiento_equilibrado + isSimple (experiencia novato)": {
@@ -1466,50 +1690,46 @@
         "plato de cuchara (tmpl legumbre/sopa_crema) aparece 3 veces: miércoles cena, sábado cena, domingo comida"
       ]
     },
-    "coherenciaArco": {
+    "densidadDiaria": {
       "valor": {
-        "densidadPorDia": {
-          "Lunes": {
-            "status": "computed",
-            "density": 2,
-            "classification": "intermedio"
-          },
-          "Martes": {
-            "status": "computed",
-            "density": 1,
-            "classification": "ligero"
-          },
-          "Miércoles": {
-            "status": "computed",
-            "density": 1,
-            "classification": "ligero"
-          },
-          "Jueves": {
-            "status": "computed",
-            "density": 1,
-            "classification": "ligero"
-          },
-          "Viernes": {
-            "status": "computed",
-            "density": 1,
-            "classification": "ligero"
-          },
-          "Sábado": {
-            "status": "unknown",
-            "density": null,
-            "classification": null
-          },
-          "Domingo": {
-            "status": "computed",
-            "density": 0,
-            "classification": "ligero"
-          }
+        "Lunes": {
+          "status": "computed",
+          "density": 2,
+          "classification": "intermedio"
         },
-        "domingoReconfortante": true,
-        "diaFacilTrasElaborado": []
+        "Martes": {
+          "status": "computed",
+          "density": 1,
+          "classification": "ligero"
+        },
+        "Miércoles": {
+          "status": "computed",
+          "density": 1,
+          "classification": "ligero"
+        },
+        "Jueves": {
+          "status": "computed",
+          "density": 1,
+          "classification": "ligero"
+        },
+        "Viernes": {
+          "status": "computed",
+          "density": 1,
+          "classification": "ligero"
+        },
+        "Sábado": {
+          "status": "unknown",
+          "density": null,
+          "classification": null
+        },
+        "Domingo": {
+          "status": "computed",
+          "density": 0,
+          "classification": "ligero"
+        }
       },
       "status": "computed",
-      "polarity": "higher_is_better",
+      "polarity": null,
       "evidencias": [
         "Lunes: densidad=2 (intermedio)",
         "Martes: densidad=1 (ligero)",
@@ -1517,8 +1737,22 @@
         "Jueves: densidad=1 (ligero)",
         "Viernes: densidad=1 (ligero)",
         "Sábado: densidad=unknown (menos de 2 comidas legibles)",
-        "Domingo: densidad=0 (ligero)",
-        "Domingo → effectiveMood: \"reconfortante\" (patrón comfort domingo activo, buildPlan.js:2354-2356)",
+        "Domingo: densidad=0 (ligero)"
+      ]
+    },
+    "domingoReconfortante": {
+      "valor": true,
+      "status": "computed",
+      "polarity": "higher_is_better",
+      "evidencias": [
+        "Domingo → effectiveMood: \"reconfortante\" (patrón comfort domingo activo, buildPlan.js:2354-2356)"
+      ]
+    },
+    "diaFacilTrasElaborado": {
+      "valor": [],
+      "status": "computed",
+      "polarity": "higher_is_better",
+      "evidencias": [
         "Días excluidos de la comparación elaborado→fácil por datos insuficientes: Sábado"
       ]
     },
@@ -1545,6 +1779,24 @@
       "evidencias": [
         "Requiere histórico multi-semana para comparar contra semanas previas y detectar variación editorial. Fuera de scope en Fase 0.5."
       ]
+    },
+    "usoSobrasVidaUtil": {
+      "valor": null,
+      "status": "needs_engine2",
+      "polarity": null,
+      "evidencias": []
+    },
+    "alternanciaBatch": {
+      "valor": null,
+      "status": "needs_engine2",
+      "polarity": null,
+      "evidencias": []
+    },
+    "coherenciaCompraPerecederos": {
+      "valor": null,
+      "status": "needs_engine2",
+      "polarity": null,
+      "evidencias": []
     }
   }
 }

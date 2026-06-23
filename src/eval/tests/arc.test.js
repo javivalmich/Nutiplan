@@ -1,8 +1,9 @@
-// Paso 4 (Fase 0.5) — coherenciaArco: domingoReconfortante (effectiveMood) y
-// diaFacilTrasElaborado (metadata.facilidad), ambos sobre comida+cena legibles.
+// Paso 4 (Fase 0.5) — domingoReconfortante (effectiveMood), diaFacilTrasElaborado
+// (metadata.facilidad) y densidadDiaria (classifyDayDensity), tres sub-métricas
+// independientes sobre comida+cena legibles.
 
 import { describe, it, expect } from 'vitest';
-import { computeCoherenciaArco } from '../metrics/arc.js';
+import { computeDensidadDiaria, computeDomingoReconfortante, computeDiaFacilTrasElaborado } from '../metrics/arc.js';
 
 function meal(time, { density = 'media', facilidad = 'alta' } = {}) {
   return { time, metadata: { facilidad }, _spec: { tmpl: 'caliente_clasico', density } };
@@ -14,32 +15,28 @@ function day(name, meals, effectiveMood = 'rutina') {
   return { name, meals, effectiveMood };
 }
 
-describe('computeCoherenciaArco — domingoReconfortante', () => {
+describe('computeDomingoReconfortante', () => {
   it('true cuando Domingo.effectiveMood === "reconfortante" (patrón comfort activo)', () => {
-    const plan = {
-      days: [day('Domingo', [meal('Comida'), meal('Cena')], 'reconfortante')],
-    };
-    const result = computeCoherenciaArco(plan);
-    expect(result.valor.domingoReconfortante).toBe(true);
+    const plan = { days: [day('Domingo', [meal('Comida'), meal('Cena')], 'reconfortante')] };
+    const result = computeDomingoReconfortante(plan);
+    expect(result.status).toBe('computed');
+    expect(result.polarity).toBe('higher_is_better');
+    expect(result.valor).toBe(true);
     expect(result.evidencias.some((e) => e.includes('effectiveMood: "reconfortante"'))).toBe(true);
   });
 
   it('false cuando Domingo.effectiveMood no es "reconfortante"', () => {
-    const plan = {
-      days: [day('Domingo', [meal('Comida'), meal('Cena')], 'libre')],
-    };
-    const result = computeCoherenciaArco(plan);
-    expect(result.valor.domingoReconfortante).toBe(false);
+    const plan = { days: [day('Domingo', [meal('Comida'), meal('Cena')], 'libre')] };
+    expect(computeDomingoReconfortante(plan).valor).toBe(false);
   });
 
   it('null si no hay día Domingo en plan.days', () => {
     const plan = { days: [day('Lunes', [meal('Comida'), meal('Cena')])] };
-    const result = computeCoherenciaArco(plan);
-    expect(result.valor.domingoReconfortante).toBeNull();
+    expect(computeDomingoReconfortante(plan).valor).toBeNull();
   });
 });
 
-describe('computeCoherenciaArco — diaFacilTrasElaborado', () => {
+describe('computeDiaFacilTrasElaborado', () => {
   it('detecta un día elaborado (facilidad media) seguido de un día fácil (ambas comidas alta)', () => {
     const plan = {
       days: [
@@ -47,8 +44,10 @@ describe('computeCoherenciaArco — diaFacilTrasElaborado', () => {
         day('Martes', [meal('Comida', { facilidad: 'alta' }), meal('Cena', { facilidad: 'alta' })]),
       ],
     };
-    const result = computeCoherenciaArco(plan);
-    expect(result.valor.diaFacilTrasElaborado).toEqual([{ elaborado: 'Lunes', facilDespues: 'Martes' }]);
+    const result = computeDiaFacilTrasElaborado(plan);
+    expect(result.status).toBe('computed');
+    expect(result.polarity).toBe('higher_is_better');
+    expect(result.valor).toEqual([{ elaborado: 'Lunes', facilDespues: 'Martes' }]);
   });
 
   it('no detecta patrón si el día siguiente también es elaborado', () => {
@@ -58,8 +57,7 @@ describe('computeCoherenciaArco — diaFacilTrasElaborado', () => {
         day('Martes', [meal('Comida', { facilidad: 'media' }), meal('Cena', { facilidad: 'alta' })]),
       ],
     };
-    const result = computeCoherenciaArco(plan);
-    expect(result.valor.diaFacilTrasElaborado).toEqual([]);
+    expect(computeDiaFacilTrasElaborado(plan).valor).toEqual([]);
   });
 
   it('excluye de la comparación días con menos de 2 comidas legibles, sin inventar clasificación', () => {
@@ -69,18 +67,18 @@ describe('computeCoherenciaArco — diaFacilTrasElaborado', () => {
         day('Domingo', [meal('Comida', { facilidad: 'alta' }), meal('Cena', { facilidad: 'alta' })], 'reconfortante'),
       ],
     };
-    const result = computeCoherenciaArco(plan);
-    expect(result.valor.diaFacilTrasElaborado).toEqual([]);
+    const result = computeDiaFacilTrasElaborado(plan);
+    expect(result.valor).toEqual([]);
     expect(result.evidencias.some((e) => e.includes('Sábado') && e.includes('excluidos'))).toBe(true);
   });
 });
 
-describe('computeCoherenciaArco — shape', () => {
-  it('status computed, polarity higher_is_better, incluye densidadPorDia', () => {
+describe('computeDensidadDiaria', () => {
+  it('status computed, polarity null (diagnóstico), incluye clasificación por día', () => {
     const plan = { days: [day('Lunes', [meal('Comida'), meal('Cena')])] };
-    const result = computeCoherenciaArco(plan);
+    const result = computeDensidadDiaria(plan);
     expect(result.status).toBe('computed');
-    expect(result.polarity).toBe('higher_is_better');
-    expect(result.valor.densidadPorDia.Lunes.status).toBe('computed');
+    expect(result.polarity).toBeNull();
+    expect(result.valor.Lunes.status).toBe('computed');
   });
 });

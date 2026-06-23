@@ -14,7 +14,7 @@
 
 import { computeRepeticionSalsa, computeRepeticionTecnica } from './metrics/repetition.js';
 import { computePlatoCuchara } from './metrics/cuchara.js';
-import { computeCoherenciaArco } from './metrics/arc.js';
+import { computeDensidadDiaria, computeDomingoReconfortante, computeDiaFacilTrasElaborado } from './metrics/arc.js';
 import { computeContinuidadEntrenoHidrato } from './metrics/continuidad.js';
 
 export function humanScore(plan, { history } = {}) {
@@ -22,7 +22,9 @@ export function humanScore(plan, { history } = {}) {
     repeticionSalsa: computeRepeticionSalsa(plan),
     repeticionTecnica: computeRepeticionTecnica(plan),
     platoCuchara: computePlatoCuchara(plan),
-    coherenciaArco: computeCoherenciaArco(plan),
+    densidadDiaria: computeDensidadDiaria(plan),
+    domingoReconfortante: computeDomingoReconfortante(plan),
+    diaFacilTrasElaborado: computeDiaFacilTrasElaborado(plan),
     continuidadEntrenoHidrato: computeContinuidadEntrenoHidrato(plan),
 
     // Multi-semana — fuera de scope en Fase 0.5 (decisión: Opción B). No se
@@ -43,5 +45,17 @@ export function humanScore(plan, { history } = {}) {
         'Requiere histórico multi-semana para comparar contra semanas previas y detectar variación editorial. Fuera de scope en Fase 0.5.',
       ],
     },
+
+    // ── needs_engine2 ────────────────────────────────────────────────────
+    // Conceptos sin observable en el objeto `plan` actual (regla de
+    // honestidad de métricas: no se inventan proxies heurísticos). Grep
+    // sobre src/engine/buildPlan.js confirma que no existe ningún campo de
+    // sobras/aprovechamiento/lote/caducidad — cada meal y su shopping list
+    // son independientes, sin relación entre días ni entre semanas. Solo
+    // engine2 (con MemoryStore/decisionLog) podría modelar esto de forma
+    // honesta, registrando la causa de cada decisión.
+    usoSobrasVidaUtil: { valor: null, status: 'needs_engine2', polarity: null, evidencias: [] },
+    alternanciaBatch: { valor: null, status: 'needs_engine2', polarity: null, evidencias: [] },
+    coherenciaCompraPerecederos: { valor: null, status: 'needs_engine2', polarity: null, evidencias: [] },
   };
 }

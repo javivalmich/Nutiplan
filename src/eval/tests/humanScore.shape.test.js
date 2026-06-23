@@ -59,13 +59,34 @@ describe('humanScore — shape base', () => {
     expect(result.platoCuchara.status).toBe('computed');
   });
 
-  it('sub-métrica computada (Paso 4): coherenciaArco', () => {
+  it('sub-métricas computadas (Paso 4): densidadDiaria, domingoReconfortante, diaFacilTrasElaborado', () => {
     const result = humanScore(fakePlanMinimal());
-    expect(result.coherenciaArco.status).toBe('computed');
+    expect(result.densidadDiaria.status).toBe('computed');
+    expect(result.domingoReconfortante.status).toBe('computed');
+    expect(result.diaFacilTrasElaborado.status).toBe('computed');
   });
 
   it('sub-métrica computada (Paso 5): continuidadEntrenoHidrato', () => {
     const result = humanScore(fakePlanMinimal());
     expect(result.continuidadEntrenoHidrato.status).toBe('computed');
+  });
+
+  it('stubs needs_engine2: usoSobrasVidaUtil, alternanciaBatch, coherenciaCompraPerecederos', () => {
+    const result = humanScore(fakePlanMinimal());
+    for (const key of ['usoSobrasVidaUtil', 'alternanciaBatch', 'coherenciaCompraPerecederos']) {
+      expect(result[key].status).toBe('needs_engine2');
+      expect(result[key].valor).toBeNull();
+      expect(result[key].evidencias).toEqual([]);
+    }
+  });
+
+  it('humanScore expone exactamente 12 sub-métricas (7 computed + 2 needs_history + 3 needs_engine2)', () => {
+    const result = humanScore(fakePlanMinimal());
+    expect(Object.keys(result)).toHaveLength(12);
+    const byStatus = Object.values(result).reduce((acc, m) => {
+      acc[m.status] = (acc[m.status] || 0) + 1;
+      return acc;
+    }, {});
+    expect(byStatus).toEqual({ computed: 7, needs_history: 2, needs_engine2: 3 });
   });
 });

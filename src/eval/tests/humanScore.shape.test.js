@@ -52,9 +52,10 @@ describe('humanScore — shape base', () => {
     expect(result.sorpresaEditorial.valor).toBeNull();
   });
 
-  it('sub-métricas computadas (Paso 3): repeticionSalsa, repeticionTecnica', () => {
+  it('sub-métricas computadas (Paso 3): repeticionSalsa, repeticionTecnica, platoCuchara', () => {
     const result = humanScore(fakePlanMinimal());
     expect(result.repeticionSalsa.status).toBe('computed');
     expect(result.repeticionTecnica.status).toBe('computed');
+    expect(result.platoCuchara.status).toBe('computed');
   });
 });

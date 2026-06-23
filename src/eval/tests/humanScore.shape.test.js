@@ -63,4 +63,9 @@ describe('humanScore — shape base', () => {
     const result = humanScore(fakePlanMinimal());
     expect(result.coherenciaArco.status).toBe('computed');
   });
+
+  it('sub-métrica computada (Paso 5): continuidadEntrenoHidrato', () => {
+    const result = humanScore(fakePlanMinimal());
+    expect(result.continuidadEntrenoHidrato.status).toBe('computed');
+  });
 });

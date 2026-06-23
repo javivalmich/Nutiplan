@@ -15,6 +15,7 @@
 import { computeRepeticionSalsa, computeRepeticionTecnica } from './metrics/repetition.js';
 import { computePlatoCuchara } from './metrics/cuchara.js';
 import { computeCoherenciaArco } from './metrics/arc.js';
+import { computeContinuidadEntrenoHidrato } from './metrics/continuidad.js';
 
 export function humanScore(plan, { history } = {}) {
   return {
@@ -22,6 +23,7 @@ export function humanScore(plan, { history } = {}) {
     repeticionTecnica: computeRepeticionTecnica(plan),
     platoCuchara: computePlatoCuchara(plan),
     coherenciaArco: computeCoherenciaArco(plan),
+    continuidadEntrenoHidrato: computeContinuidadEntrenoHidrato(plan),
 
     // Multi-semana — fuera de scope en Fase 0.5 (decisión: Opción B). No se
     // genera memoria artificial, pastProteins ni semanas sintéticas.

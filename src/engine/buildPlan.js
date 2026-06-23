@@ -1557,8 +1557,9 @@ export function buildPlan(profile, targetKcal, opts = {}) {
   var weeklyCuisineExp   = {}; // cuisineExperience → count ("comfort_caliente", "bowl_fresco" …)
   var weeklyTempFeel     = {}; // "caliente" / "frio" / "muy_caliente" → count
   var weeklySauceCount   = {}; // sauce family → count
-  // Hard caps: fish max 2/week across all fish species, ave (pollo+pavo+conejo) max 4/week total, etc.
-  var WEEKLY_CAP = {pescado:2, marisco:1, legumbre:2, pasta:2, ternera:2, cerdo:2, ave:4};
+  // Hard caps: fish max 3/week across all fish species, ave (pollo+pavo+conejo) max 3/week total, etc.
+  // Valores revisados Fase 1 (BUG 5, verificados contra recomendaciones AESAN 2022).
+  var WEEKLY_CAP = {pescado:3, marisco:1, legumbre:4, pasta:2, ternera:2, cerdo:2, ave:3};
 
   // ── FREEFORM FREQUENCY TRACKING ────────────────────────────────────────────
   // Tracks usage of freeForm combos within the current ISO week.

@@ -1147,13 +1147,13 @@ export function buildPlan(profile, targetKcal, opts = {}) {
 
   // ── TRAINING DINNERS (post-workout recovery) ──────────────────────────────
   const TRAINING_DINNERS = [
-    {tmpl:"caliente_clasico", P:"pollo",   C:"arroz",   V:"brocoli",  S:"pimenton_ajo",  cookM:"plancha", slot:"Cena 🏋️",
+    {tmpl:"caliente_clasico", P:"pollo",   C:"arroz",   V:"brocoli",  S:"pimenton_ajo",  cookM:"plancha", slot:"Cena",
      emoji:"🏋️", title:"Post-entreno: Pollo con arroz y brócoli",
      plateType:"caliente_arroz", density:"media", saciante:false},
-    {tmpl:"caliente_clasico", P:"ternera", C:"patata",  V:"espinacas",S:"romero_limon",  cookM:"plancha", slot:"Cena 🏋️",
+    {tmpl:"caliente_clasico", P:"ternera", C:"patata",  V:"espinacas",S:"romero_limon",  cookM:"plancha", slot:"Cena",
      emoji:"🏋️", title:"Post-entreno: Ternera con patata",
      plateType:"caliente_patata", density:"media", saciante:false},
-    {tmpl:"caliente_clasico", P:"pavo",    C:"boniato", V:"judias",   S:"curry_ligero",  cookM:"plancha", slot:"Cena 🏋️",
+    {tmpl:"caliente_clasico", P:"pavo",    C:"boniato", V:"judias",   S:"curry_ligero",  cookM:"plancha", slot:"Cena",
      emoji:"🏋️", title:"Post-entreno: Pavo con boniato",
      plateType:"caliente_boniato", density:"media", saciante:false},
   ];
@@ -2426,9 +2426,9 @@ export function buildPlan(profile, targetKcal, opts = {}) {
     } else if(isTrain(day)){
       var td = TRAINING_DINNERS[usedD.length % TRAINING_DINNERS.length];
       dinner = composeMeal(td);
-      usedD.push("pollo");
-      usedDPlate.push("caliente_arroz");
-      recordMeal("pollo","caliente_arroz","casero",null,null,null);
+      usedD.push(td.P);
+      usedDPlate.push(td.plateType);
+      recordMeal(td.P,td.plateType,"casero",null,null,null);
       // training dinners don't add to dayCtx — they're overrides
     } else {
       var dPool = isSimple

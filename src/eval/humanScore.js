@@ -14,12 +14,14 @@
 
 import { computeRepeticionSalsa, computeRepeticionTecnica } from './metrics/repetition.js';
 import { computePlatoCuchara } from './metrics/cuchara.js';
+import { computeCoherenciaArco } from './metrics/arc.js';
 
 export function humanScore(plan, { history } = {}) {
   return {
     repeticionSalsa: computeRepeticionSalsa(plan),
     repeticionTecnica: computeRepeticionTecnica(plan),
     platoCuchara: computePlatoCuchara(plan),
+    coherenciaArco: computeCoherenciaArco(plan),
 
     // Multi-semana — fuera de scope en Fase 0.5 (decisión: Opción B). No se
     // genera memoria artificial, pastProteins ni semanas sintéticas.

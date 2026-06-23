@@ -58,4 +58,9 @@ describe('humanScore — shape base', () => {
     expect(result.repeticionTecnica.status).toBe('computed');
     expect(result.platoCuchara.status).toBe('computed');
   });
+
+  it('sub-métrica computada (Paso 4): coherenciaArco', () => {
+    const result = humanScore(fakePlanMinimal());
+    expect(result.coherenciaArco.status).toBe('computed');
+  });
 });

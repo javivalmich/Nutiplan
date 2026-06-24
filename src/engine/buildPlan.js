@@ -14,6 +14,15 @@ import { _hashStr } from './hash.js';
 import { mulberry32 } from './rng.js';
 import { SEASONAL_FOODS } from '../seasonalFoods.js';
 
+// Temperature feel — para el check de "todos los días lo mismo frío/caliente"
+export function deriveTempFeel(combo) {
+  var tmpl  = combo.tmpl  || "";
+  var cookM = combo.cookM || "";
+  if(tmpl==="ensalada"||tmpl==="bowl"||(cookM==="crudo")) return "frio";
+  if(tmpl==="sopa_crema"||cookM==="guisado")              return "muy_caliente";
+  return "caliente";
+}
+
 export function buildPlan(profile, targetKcal, opts = {}) {
   // -- Injectable dependencies -- local vars shadow any outer scope -----------
   const FREEFORM_POOL  = opts.freeFormPool   ?? [];
@@ -196,15 +205,6 @@ export function buildPlan(profile, targetKcal, opts = {}) {
     if(cookM==="plancha" && (sauce==="limon_hierbas"||sauce==="vinagreta"||!sauce)) return "plancha_ligera";
     if(cookM==="plancha")                                           return "plancha_ligera";
     return "casero_clasico";
-  }
-
-  // Temperature feel — para el check de "todos los días lo mismo frío/caliente"
-  function deriveTempFeel(combo) {
-    var tmpl  = combo.tmpl  || "";
-    var cookM = combo.cookM || "";
-    if(tmpl==="ensalada"||tmpl==="bowl"||(cookM==="crudo")) return "frio";
-    if(tmpl==="sopa_crema"||cookM==="guisado")              return "muy_caliente";
-    return "caliente";
   }
 
   // ── ELIMINATED FOODS — HARD RULE ─────────────────────────────────────────

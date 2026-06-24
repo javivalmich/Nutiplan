@@ -23,21 +23,32 @@
 // Jueves quedan descartados como PRIMARIO de batchDay para CUALQUIER
 // variante (A/B/C): su ventana siempre choca con el finde.
 //
-// batchDayPreference: orden de DESPLAZAMIENTO declarado a mano cuando el
-// primario (Miercoles) cae en un dia fijo bloqueante. NO es una busqueda
-// del mejor dia en runtime -- es una lista escrita, igual de espiritu que
-// el zigzag de densidad (se declara, no se optimiza). Orden fijado con el
-// censo 2 delante (perfil sin entreno, dias no-fijos en la ventana por
-// shelfLife 2/3/4): Lunes y Martes empatan como mejor alternativa (1,2,3
-// dias segun shelfLife); desempate por dia mas temprano (Lunes antes que
-// Martes). Jueves siempre da como mucho 1. Viernes siempre da 0 -- el
-// peor posible, va el ultimo antes del seguro universal. Domingo cierra
-// la lista como red de seguridad (fixedRole="familiar" NUNCA bloquea
-// batchDay, asi que el desplazamiento siempre termina).
+// batchDayPreference: SEMANTICA -- Miercoles es la FIRMA DE IDENTIDAD de
+// la variante C (el dia que la define narrativamente), no el resultado
+// de un ranking de rendimiento. El resto de la lista es UNICAMENTE el
+// fallback para cuando Miercoles cae en un dia fijo bloqueante -- nunca
+// se usa si Miercoles esta disponible, aunque otro dia "rinda mas" en el
+// censo (ver el caso volumen_limpio en el PR: Miercoles disponible pero
+// flojo para una ancla concreta NO dispara el fallback; eso es un limite
+// aceptado, no algo que esta lista resuelva).
+//
+// Orden del FALLBACK (solo importa cuando Miercoles esta bloqueado),
+// fijado con el censo 2 delante (perfil sin entreno, dias no-fijos en la
+// ventana por shelfLife 2/3/4):
+//   Martes: 1,2,3 (escala con el shelfLife) -- y a 1 solo dia de
+//     Miercoles, preserva mejor el espiritu "cocinar a media semana".
+//   Lunes:  1,2,3 (empata en conteo con Martes) -- pero a 2 dias de
+//     Miercoles. Desempate por PROXIMIDAD al primario, no por dia mas
+//     temprano: Martes antes que Lunes.
+//   Jueves: 1,1,1 (tope fijo, no escala -- su ventana choca con el
+//     finde a partir de shelfLife=3).
+//   Viernes: 0,0,0 (el peor posible, ventana siempre dentro del finde).
+//   Domingo: red de seguridad final (fixedRole="familiar" NUNCA bloquea
+//     batchDay, asi que el desplazamiento siempre termina).
 export const TEMPLATE_C = Object.freeze({
   skeletonId: 'C',
   batchDay: 'Miercoles',
-  batchDayPreference: Object.freeze(['Miercoles', 'Lunes', 'Martes', 'Jueves', 'Viernes', 'Domingo']),
+  batchDayPreference: Object.freeze(['Miercoles', 'Martes', 'Lunes', 'Jueves', 'Viernes', 'Domingo']),
   density: Object.freeze({
     Lunes: 'denso',
     Martes: 'ligero',

@@ -3,8 +3,8 @@
 // metadata.plateType ya presente, y cuántas caerían al fallback de substring
 // si no existiera? No modifica el motor.
 
-import { buildPlan } from '../src/engine/buildPlan.js';
-import { FIXTURES, buildProfile } from '../src/engine/tests/baselineFixtures.js';
+import { buildPlan } from '../../../src/engine/buildPlan.js';
+import { FIXTURES, buildProfile } from '../../../src/engine/tests/baselineFixtures.js';
 
 const TARGET_KCAL = 2000;
 

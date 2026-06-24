@@ -110,6 +110,47 @@ export function checkEvalIsolationImports(code) {
 }
 
 /**
+ * Tripwire: analiza codigo fuente buscando imports/requires cuyo specifier
+ * apunte a src/engine/** (path relativo que contenga el segmento "engine/",
+ * NO "engine2/" — el regex exige la barra justo despues de "engine"). El
+ * motor nuevo no debe depender en produccion del motor viejo: cualquier
+ * reutilizacion de logica es una copia propia con parity test, no un import
+ * directo (ver derive.js / deriveTempFeelEngine2).
+ *
+ * @param {string} code
+ * @returns {{source: string, line: number, column: number}[]}
+ */
+export function checkEngineLegacyIsolationImports(code) {
+  const violations = [];
+  const ast = parse(code, { ecmaVersion: 'latest', sourceType: 'module', locations: true });
+
+  function isEngineLegacySpecifier(spec) {
+    return typeof spec === 'string' && /(^|\/)engine\//.test(spec);
+  }
+
+  walkSimple(ast, {
+    ImportDeclaration(node) {
+      if (isEngineLegacySpecifier(node.source.value)) {
+        violations.push({ source: node.source.value, line: node.loc.start.line, column: node.loc.start.column });
+      }
+    },
+    CallExpression(node) {
+      if (
+        node.callee.type === 'Identifier' &&
+        node.callee.name === 'require' &&
+        node.arguments[0] &&
+        node.arguments[0].type === 'Literal' &&
+        isEngineLegacySpecifier(node.arguments[0].value)
+      ) {
+        violations.push({ source: node.arguments[0].value, line: node.loc.start.line, column: node.loc.start.column });
+      }
+    },
+  });
+
+  return violations;
+}
+
+/**
  * Tripwire inverso: analiza codigo fuente buscando imports/requires cuyo
  * specifier apunte a src/engine/** o src/engine2/** (path relativo que
  * contenga el segmento "engine/" o "engine2/"). src/eval/ no debe depender

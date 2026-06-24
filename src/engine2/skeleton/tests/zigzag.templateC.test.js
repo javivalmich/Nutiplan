@@ -31,8 +31,13 @@ describe('plantilla C - zigzag estatico (aserción sobre datos declarados)', () 
     expect(diasDensos.length).toBe(2);
   });
 
-  it('el batchDay de la plantilla coincide con uno de los picos densos', () => {
-    expect(TEMPLATE_C.density[TEMPLATE_C.batchDay]).toBe('denso');
+  it('batchDay y densidad son decisiones independientes: batchDay no tiene por que coincidir con un pico denso', () => {
+    // CORREGIDO: batchDay paso de Jueves a Miercoles (censo de ventanas de
+    // sobras, ver PR) precisamente porque Jueves chocaba con el finde
+    // fijo -- la posicion optima para cocinar en cantidad y la posicion
+    // optima de densidad son ejes distintos del diseno, no el mismo dato.
+    expect(TEMPLATE_C.batchDay).toBe('Miercoles');
+    expect(TEMPLATE_C.density.Miercoles).toBe('medio'); // no es un pico, y esta bien que no lo sea
   });
 
   it('Sabado (libre) y Domingo (familiar) llevan una densidad ya escrita que no es "denso" (compatibilidad con las citas fijas, sin recalculo)', () => {

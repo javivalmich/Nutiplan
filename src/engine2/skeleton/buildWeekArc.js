@@ -34,7 +34,7 @@ function resolveSeed(seed) {
  * tienen precedencia (el descanso no se sacrifica por un entreno mal
  * declarado) -- se registra como causa propia en el decision log.
  */
-function computeFixedRoles(profile, decisionLog) {
+export function computeFixedRoles(profile, decisionLog) {
   const fixedRoles = {};
   let nextId = decisionLog.length;
 
@@ -90,34 +90,32 @@ function chooseAnchor(seed, decisionLog) {
 }
 
 /**
- * batchDay de la plantilla, desplazado deterministamente si cae en un dia
- * fijo bloqueante (libre o entreno -- familiar NO bloquea). Nunca se
- * evalua "el mejor dia": se avanza al primer dia no-fijo siguiente.
+ * batchDay resuelto recorriendo batchDayPreference (lista ESCRITA A MANO,
+ * ver templateC.js) hasta el primer dia no bloqueante (libre/entreno --
+ * familiar NO bloquea). NO es una busqueda del mejor dia en runtime: la
+ * plantilla ya declaro el orden; aqui solo se recorre. Domingo cierra
+ * siempre la lista como red de seguridad (familiar nunca bloquea), asi
+ * que el recorrido siempre termina sin necesitar wraparound ciclico.
  */
-function resolveBatchDay(templateBatchDay, fixedRoles, decisionLog) {
+function resolveBatchDay(batchDayPreference, fixedRoles, decisionLog) {
   const BLOCKING = new Set(['libre', 'entreno']);
-  let idx = DAYS_ORDER.indexOf(templateBatchDay);
-  const startIdx = idx;
-  let displaced = false;
-  while (BLOCKING.has(fixedRoles[DAYS_ORDER[idx]])) {
-    displaced = true;
-    idx = (idx + 1) % DAYS_ORDER.length;
-  }
-  const batchDay = DAYS_ORDER[idx];
+  const primario = batchDayPreference[0];
+  const batchDay = batchDayPreference.find((day) => !BLOCKING.has(fixedRoles[day]));
 
-  if (displaced) {
+  if (batchDay === primario) {
     decisionLog.push({
       decisionId: `cp3a-${decisionLog.length}`,
-      cause: 'batchday_desplazado',
-      evidence: `plantilla C fija batchDay=${templateBatchDay}, pero fixedRole="${fixedRoles[DAYS_ORDER[startIdx]]}" lo bloquea`,
-      consequence: `batchDay efectivo = ${batchDay} (siguiente dia no bloqueante)`,
+      cause: 'batchday_de_plantilla',
+      evidence: `plantilla C fija batchDay=${primario}; ningun fixedRole bloqueante en ese dia`,
+      consequence: `batchDay efectivo = ${batchDay}`,
     });
   } else {
     decisionLog.push({
       decisionId: `cp3a-${decisionLog.length}`,
-      cause: 'batchday_de_plantilla',
-      evidence: `plantilla C fija batchDay=${templateBatchDay}; ningun fixedRole bloqueante en ese dia`,
-      consequence: `batchDay efectivo = ${batchDay}`,
+      cause: 'batchday_desplazado',
+      evidence: `plantilla C fija batchDay=${primario} (fixedRole="${fixedRoles[primario]}" lo bloquea); `
+        + `batchDayPreference declarado = [${batchDayPreference.join(', ')}]`,
+      consequence: `batchDay efectivo = ${batchDay} (primer dia no bloqueante de la lista declarada)`,
     });
   }
 
@@ -142,7 +140,7 @@ function resolveBatchDay(templateBatchDay, fixedRoles, decisionLog) {
  * sola entrada por dia. Proteger solo la cena de entreno requeriria esa
  * granularidad, que no existe en F3 -- deuda registrada para F4.)
  */
-function computeLeftoverDays(cookDay, shelfLifeDays, fixedRoles, decisionLog) {
+export function computeLeftoverDays(cookDay, shelfLifeDays, fixedRoles, decisionLog) {
   const cookIdx = DAYS_ORDER.indexOf(cookDay);
   const leftoverDays = [];
   const saltados = [];
@@ -179,8 +177,9 @@ export function buildWeekArc({ profile, seed, strategy }) {
   // 2. Ancla por seed, sin filtros.
   const anchor = chooseAnchor(seed, decisionLog);
 
-  // batchDay de la plantilla, desplazado si cae en dia fijo bloqueante.
-  const batchDay = resolveBatchDay(TEMPLATE_C.batchDay, fixedRoles, decisionLog);
+  // batchDay de la plantilla, desplazado por orden de preferencia
+  // declarado si el primario cae en dia fijo bloqueante.
+  const batchDay = resolveBatchDay(TEMPLATE_C.batchDayPreference, fixedRoles, decisionLog);
 
   // 3. Sobras dentro de shelfLifeDays del ancla. Dias fijos (paso 1) son
   // intransitables: la cita fija tiene precedencia sobre la sobra.

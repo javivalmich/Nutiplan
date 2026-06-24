@@ -3,8 +3,11 @@
 // paso.
 
 import { describe, it, expect } from 'vitest';
-import { buildWeekArc, assertNoFixedRoleSobraContradiction } from '../buildWeekArc.js';
+import {
+  buildWeekArc, assertNoFixedRoleSobraContradiction, computeFixedRoles, computeLeftoverDays,
+} from '../buildWeekArc.js';
 import { DAYS_ORDER } from '../days.js';
+import { TEMPLATE_C } from '../templateC.js';
 import { ANCHORS } from '../../dishes/anchors.js';
 import { FIXTURES } from '../../../engine/tests/baselineFixtures.js';
 
@@ -160,15 +163,17 @@ describe('sobras dentro de vida util: leftoverDays <= shelfLifeDays, y crema vs 
   });
 
   it('la crema #1 (shelfLifeDays=3) y el guiso de ternera (shelfLifeDays=4) tienen techos de sobra DISTINTOS por construccion (independiente de cuanto se trunque despues por dias fijos)', () => {
-    // Tras la correccion (fixedRole > sobra), el TAMANO REALIZADO de la
-    // ventana ya no es un proxy fiable de shelfLifeDays: con batchDay=Jueves
-    // y el fin de semana siempre fijo (libre/familiar), las ventanas de
-    // crema (offsets 1,2 = Viernes,Sabado) y guiso (offsets 1,2,3 =
-    // Viernes,Sabado,Domingo) AMBAS pierden el fin de semana y colapsan al
-    // mismo remanente (solo Viernes) bajo un perfil sin entreno -- eso es
-    // correcto, no un bug: shelfLifeDays es techo, no cuota. Lo que SI debe
-    // seguir siendo distinto, por construccion, es el techo antes de
-    // truncar (shelfLifeDays - 1).
+    // Tras la correccion (fixedRole > sobra) Y el rediseño de batchDay
+    // (Jueves -> Miercoles, censo de ventanas de sobras, ver PR), el
+    // TAMANO REALIZADO de la ventana sigue sin ser un proxy fiable de
+    // shelfLifeDays: con batchDay=Miercoles, crema (offsets 1,2 =
+    // Jueves,Viernes) y guiso (offsets 1,2,3 = Jueves,Viernes,Sabado)
+    // pierden distinto numero de dias por el finde (guiso pierde Sabado,
+    // crema no llega a tocarlo) pero ambas convergen al mismo remanente
+    // [Jueves,Viernes] bajo un perfil sin entreno -- eso es correcto, no
+    // un bug: shelfLifeDays es techo, no cuota. Lo que SI debe seguir
+    // siendo distinto, por construccion, es el techo antes de truncar
+    // (shelfLifeDays - 1).
     const crema = ANCHORS.find((a) => a.identityKey === '["sopa_crema","huevo",null,"tomate",null,null,"crudo"]');
     const guiso = ANCHORS.find((a) => a.identityKey === '["caliente_clasico","ternera","patata","zanahoria",null,"ajillo","guisado"]');
     expect(crema.shelfLifeDays).toBe(3);
@@ -193,21 +198,24 @@ describe('sobras dentro de vida util: leftoverDays <= shelfLifeDays, y crema vs 
     // que los remanentes difieran.
     expect(resCrema.weekArc.anchors[0].leftoverDays.length).toBeLessThanOrEqual(crema.shelfLifeDays - 1);
     expect(resGuiso.weekArc.anchors[0].leftoverDays.length).toBeLessThanOrEqual(guiso.shelfLifeDays - 1);
-    expect(resCrema.weekArc.anchors[0].leftoverDays).toEqual(['Viernes']);
-    expect(resGuiso.weekArc.anchors[0].leftoverDays).toEqual(['Viernes']);
+    expect(resCrema.weekArc.anchors[0].leftoverDays).toEqual(['Jueves', 'Viernes']);
+    expect(resGuiso.weekArc.anchors[0].leftoverDays).toEqual(['Jueves', 'Viernes']);
   });
 
-  it('con un perfil donde Viernes tambien es entreno, la ventana de AMBAS anclas trunca a CERO (sin compensacion)', () => {
+  it('con un perfil donde Jueves Y Viernes son entreno, la ventana de la crema trunca a CERO (sin compensacion)', () => {
+    // Con batchDay=Miercoles, bloquear solo Viernes ya no basta para
+    // truncar a cero (Jueves sigue libre) -- hace falta bloquear los DOS
+    // dias no-fijos de la ventana para reproducir el caso limite.
     const crema = ANCHORS.find((a) => a.identityKey === '["sopa_crema","huevo",null,"tomate",null,null,"crudo"]');
     let seedCrema = null;
     for (let seed = 0; seed < 500 && !seedCrema; seed++) {
-      const { weekArc } = buildWeekArc({ profile: { trainingDays: ['Viernes'] }, seed, strategy: 'x' });
+      const { weekArc } = buildWeekArc({ profile: { trainingDays: ['Jueves', 'Viernes'] }, seed, strategy: 'x' });
       if (weekArc.anchors[0].anchorId === crema.identityKey) seedCrema = seed;
     }
     expect(seedCrema).not.toBeNull();
-    const { weekArc } = buildWeekArc({ profile: { trainingDays: ['Viernes'] }, seed: seedCrema, strategy: 'x' });
-    expect(weekArc.batchDay).toBe('Jueves'); // Jueves no esta bloqueado, no se desplaza
-    expect(weekArc.anchors[0].leftoverDays).toEqual([]); // Viernes(entreno), Sabado(libre) ambos saltados
+    const { weekArc } = buildWeekArc({ profile: { trainingDays: ['Jueves', 'Viernes'] }, seed: seedCrema, strategy: 'x' });
+    expect(weekArc.batchDay).toBe('Miercoles'); // Miercoles no esta bloqueado, no se desplaza
+    expect(weekArc.anchors[0].leftoverDays).toEqual([]); // Jueves y Viernes (entreno) ambos saltados
   });
 });
 
@@ -305,5 +313,98 @@ describe('contra fixtures reales: las 3 variantes de perfil de mantenimiento_equ
     expect(JSON.stringify(resTraining.weekArc)).not.toBe(JSON.stringify(resBase.weekArc));
     const diasEntreno = resTraining.weekArc.beats.filter((b) => b.fixedRole === 'entreno').map((b) => b.day);
     expect(diasEntreno.length).toBe(conTraining.profile.trainingDays.length);
+  });
+});
+
+describe('invariante de diseño (DEFINITIVO): batchDay coherente con citas fijas + sobras correctas, SIN garantizar viabilidad optima', () => {
+  // Descartado por un hallazgo real (ver PR): "si existe ALGUN dia en la
+  // lista que generaria sobra, el resuelto debe ser ese" es una garantia
+  // que el mecanismo NO puede cumplir sin acoplar la resolucion de
+  // batchDay al shelfLife del ancla -- y esa entrelazado esta
+  // explicitamente prohibido (paso 2 "ancla, sin filtros" e independiente
+  // de paso 1/3). Caso real que lo prueba: volumen_limpio + crema de
+  // atun (shelfLife=2) -- el primer dia alcanzable de la lista
+  // (Miercoles) da 0 sobras, aunque Martes (mas abajo en la lista)
+  // hubiera dado 1. Aceptado como limite conocido del diseño.
+  //
+  // Lo que SI se garantiza, y es lo que este invariante verifica:
+  //   1. El batchDay resuelto es SIEMPRE el primer dia de
+  //      batchDayPreference que no tiene fixedRole bloqueante (coherente
+  //      con las citas fijas -- nunca aterriza en libre/entreno).
+  //   2. Las sobras de ESE batchDay, para el shelfLife de la ancla que
+  //      realmente toco, respetan el techo (shelfLifeDays - 1) y nunca
+  //      caen en un dia con fixedRole (ya cubierto por
+  //      assertNoFixedRoleSobraContradiction, re-verificado aqui sobre
+  //      las 9 fixtures x 6 anclas para que quede en este bloque).
+  // sobras=0 por mal emparejamiento ancla/batchDay es un resultado
+  // VALIDO -- no se afirma nada sobre cuanto "aprovecha" la ventana.
+  const BLOCKING = new Set(['libre', 'entreno']);
+
+  it('el batchDay resuelto nunca tiene fixedRole bloqueante, para los 9 perfiles del baseline', () => {
+    for (const fixture of FIXTURES) {
+      const { weekArc } = buildWeekArc({ profile: fixture.profile, seed: 0, strategy: fixture.expectedStrategy });
+      const fixedRoles = computeFixedRoles(fixture.profile, []);
+      expect(BLOCKING.has(fixedRoles[weekArc.batchDay]), `${fixture.name}: batchDay=${weekArc.batchDay} tiene fixedRole="${fixedRoles[weekArc.batchDay]}"`).toBe(false);
+    }
+  });
+
+  it('el batchDay resuelto es exactamente el primer dia no bloqueado de batchDayPreference (mecanico, no optimizado)', () => {
+    for (const fixture of FIXTURES) {
+      const fixedRoles = computeFixedRoles(fixture.profile, []);
+      const esperado = TEMPLATE_C.batchDayPreference.find((day) => !BLOCKING.has(fixedRoles[day]));
+      const { weekArc } = buildWeekArc({ profile: fixture.profile, seed: 0, strategy: fixture.expectedStrategy });
+      expect(weekArc.batchDay).toBe(esperado);
+    }
+  });
+
+  it('sobre los 9 perfiles x las 6 anclas: las sobras respetan el techo y nunca caen en dia fijo (re-verificacion agregada)', () => {
+    let conSobrasPositivas = 0;
+    let conSobrasCero = 0;
+    for (const fixture of FIXTURES) {
+      for (const anchor of ANCHORS) {
+        let seedQueEligeEstaAncla = null;
+        for (let seed = 0; seed < 500 && seedQueEligeEstaAncla === null; seed++) {
+          const { weekArc } = buildWeekArc({ profile: fixture.profile, seed, strategy: fixture.expectedStrategy });
+          if (weekArc.anchors[0].anchorId === anchor.identityKey) seedQueEligeEstaAncla = seed;
+        }
+        expect(seedQueEligeEstaAncla, `${fixture.name} nunca eligio ${anchor.identityKey} en 500 seeds`).not.toBeNull();
+
+        const { weekArc } = buildWeekArc({ profile: fixture.profile, seed: seedQueEligeEstaAncla, strategy: fixture.expectedStrategy });
+        expect(() => assertNoFixedRoleSobraContradiction(weekArc)).not.toThrow();
+        expect(weekArc.anchors[0].leftoverDays.length).toBeLessThanOrEqual(anchor.shelfLifeDays - 1);
+
+        if (weekArc.anchors[0].leftoverDays.length > 0) conSobrasPositivas++;
+        else conSobrasCero++;
+      }
+    }
+    // Control positivo: el barrido cubre ambos casos de verdad (no esta
+    // vacio de ningun lado), incluido el limite conocido (sobras=0
+    // aunque hubiera margen en otro dia de la lista).
+    expect(conSobrasPositivas).toBeGreaterThan(0);
+    expect(conSobrasCero).toBeGreaterThan(0);
+  });
+
+  it('definicion_saciante (entreno Lun/Mie/Vie): el primario Miercoles esta bloqueado, se desplaza a Martes (no Jueves)', () => {
+    const fixture = FIXTURES.find((f) => f.name === 'definicion_saciante');
+    const { weekArc, decisionLog } = buildWeekArc({ profile: fixture.profile, seed: 0, strategy: fixture.expectedStrategy });
+    expect(weekArc.batchDay).toBe('Martes');
+    expect(decisionLog.some((d) => d.cause === 'batchday_desplazado')).toBe(true);
+  });
+
+  it('volumen_limpio (entreno Lun/Jue): limite conocido documentado -- Miercoles (resuelto) da 0 sobras con shelfLife=2 aunque Martes hubiera dado 1', () => {
+    const fixture = FIXTURES.find((f) => f.name === 'volumen_limpio');
+    const fixedRoles = computeFixedRoles(fixture.profile, []);
+    expect(TEMPLATE_C.batchDayPreference.find((d) => !BLOCKING.has(fixedRoles[d]))).toBe('Miercoles');
+    expect(computeLeftoverDays('Miercoles', 2, fixedRoles, []).length).toBe(0); // lo que el mecanismo resuelve
+    expect(computeLeftoverDays('Martes', 2, fixedRoles, []).length).toBe(1); // lo que un dia mas abajo en la lista habria logrado
+    // Documentado como limite aceptado, no como fallo: el mecanismo NO
+    // mira el shelfLife de la ancla al resolver batchDay (por diseño).
+  });
+
+  it('volumen_agresivo (1 dia no-fijo: Miercoles): sobras=0 para toda ancla, y eso es valido', () => {
+    const fixture = FIXTURES.find((f) => f.name === 'volumen_agresivo');
+    const { weekArc } = buildWeekArc({ profile: fixture.profile, seed: 0, strategy: fixture.expectedStrategy });
+    expect(weekArc.batchDay).toBe('Miercoles');
+    expect(weekArc.anchors[0].leftoverDays).toEqual([]);
   });
 });

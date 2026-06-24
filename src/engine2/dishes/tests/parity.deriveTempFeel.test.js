@@ -17,6 +17,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { deriveTempFeel } from '../../../engine/buildPlan.js';
 import { deriveTempFeelEngine2, derivePlateType, deriveMomento } from '../derive.js';
+import { comboIdentityKey } from '../identity.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const BUILD_PLAN_PATH = path.resolve(__dirname, '../../../engine/buildPlan.js');
@@ -99,13 +100,9 @@ describe('parity — derivePlateType coincide 1:1 con combo.plateType || "calien
 // pertenencia multiple (los "duales": recetas identicas servidas en mas
 // de un pool del motor viejo) se hace aqui, sobre los datos reales, para
 // que el test falle si buildPlan.js cambia los duales sin que nadie se
-// entere. Identidad de combo = (tmpl, P, C, V, V2, S, cookM): los unicos
-// campos que describen la receta; familiar/facil/saciante/density son
-// metadatos de scoring del motor viejo, no identidad del plato.
-function comboIdentityKey(combo) {
-  return JSON.stringify([combo.tmpl, combo.P, combo.C, combo.V, combo.V2 || null, combo.S, combo.cookM]);
-}
-
+// entere. comboIdentityKey (src/engine2/dishes/identity.js) es la unica
+// implementacion de identidad de combo en el repo — este archivo la
+// consume, no la reimplementa.
 function buildPoolIndex() {
   const index = new Map();
   const add = (combos, poolName) => {

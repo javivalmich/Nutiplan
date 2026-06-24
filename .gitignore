@@ -37,3 +37,7 @@ lint_output.txt
 
 # Motor viejo deprecado — congelado, no se lee/edita/importa (ver CLAUDE.md). Archivar en Fase 7.
 main_buildPlan_tmp.js
+
+# Scripts de análisis/medición ad-hoc (no producción, no tests CI). Evidencia
+# que se quiera conservar va versionada en docs/evidence/, no aquí.
+analysis/

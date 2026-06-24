@@ -1147,13 +1147,13 @@ export function buildPlan(profile, targetKcal, opts = {}) {
 
   // ── TRAINING DINNERS (post-workout recovery) ──────────────────────────────
   const TRAINING_DINNERS = [
-    {tmpl:"caliente_clasico", P:"pollo",   C:"arroz",   V:"brocoli",  S:"pimenton_ajo",  cookM:"plancha", slot:"Cena 🏋️",
+    {tmpl:"caliente_clasico", P:"pollo",   C:"arroz",   V:"brocoli",  S:"pimenton_ajo",  cookM:"plancha", slot:"Cena",
      emoji:"🏋️", title:"Post-entreno: Pollo con arroz y brócoli",
      plateType:"caliente_arroz", density:"media", saciante:false},
-    {tmpl:"caliente_clasico", P:"ternera", C:"patata",  V:"espinacas",S:"romero_limon",  cookM:"plancha", slot:"Cena 🏋️",
+    {tmpl:"caliente_clasico", P:"ternera", C:"patata",  V:"espinacas",S:"romero_limon",  cookM:"plancha", slot:"Cena",
      emoji:"🏋️", title:"Post-entreno: Ternera con patata",
      plateType:"caliente_patata", density:"media", saciante:false},
-    {tmpl:"caliente_clasico", P:"pavo",    C:"boniato", V:"judias",   S:"curry_ligero",  cookM:"plancha", slot:"Cena 🏋️",
+    {tmpl:"caliente_clasico", P:"pavo",    C:"boniato", V:"judias",   S:"curry_ligero",  cookM:"plancha", slot:"Cena",
      emoji:"🏋️", title:"Post-entreno: Pavo con boniato",
      plateType:"caliente_boniato", density:"media", saciante:false},
   ];
@@ -1520,7 +1520,7 @@ export function buildPlan(profile, targetKcal, opts = {}) {
        slotNote:"💪 Lunes de carga — pollo y arroz. Empieza la semana con glucógeno."},
       {day:"Martes",   slotProtein:"pasta",    slotDinner:"huevo_plancha",   mood:"hidratos",
        slotNote:"🍝 Martes de pasta — hidratos densos para rendir. La cena con huevo es perfecta."},
-      {day:"Miércoles",slotProtein:"ternera",  slotDinner:"plancha_verdura", mood:"aminoácidos",
+      {day:"Miércoles",slotProtein:"ternera",  slotDinner:"plancha_verdura", mood:"aminoacidos",
        slotNote:"🥩 Miércoles de ternera — aminoácidos para recuperación muscular."},
       {day:"Jueves",   slotProtein:"pollo",    slotDinner:"plancha_verdura", mood:"carga",
        slotNote:"🍗 Jueves de carga — repetimos pollo. En volumen, la constancia manda."},
@@ -1534,7 +1534,7 @@ export function buildPlan(profile, targetKcal, opts = {}) {
     volumen_agresivo: [
       {day:"Lunes",    slotProtein:"pasta",    slotDinner:"huevo_plancha",   mood:"carga_maxima",
        slotNote:"🔥 Lunes de máxima carga — pasta para llenar el glucógeno desde el primer día."},
-      {day:"Martes",   slotProtein:"ternera",  slotDinner:"plancha_verdura", mood:"aminoácidos",
+      {day:"Martes",   slotProtein:"ternera",  slotDinner:"plancha_verdura", mood:"aminoacidos",
        slotNote:"🥩 Martes de ternera — proteína completa, recuperación rápida."},
       {day:"Miércoles",slotProtein:"pollo",    slotDinner:"plancha_verdura", mood:"constancia",
        slotNote:"💪 Miércoles de pollo — mitad de semana, consistencia antes que creatividad."},
@@ -1557,8 +1557,9 @@ export function buildPlan(profile, targetKcal, opts = {}) {
   var weeklyCuisineExp   = {}; // cuisineExperience → count ("comfort_caliente", "bowl_fresco" …)
   var weeklyTempFeel     = {}; // "caliente" / "frio" / "muy_caliente" → count
   var weeklySauceCount   = {}; // sauce family → count
-  // Hard caps: fish max 2/week across all fish species, ave (pollo+pavo+conejo) max 4/week total, etc.
-  var WEEKLY_CAP = {pescado:2, marisco:1, legumbre:2, pasta:2, ternera:2, cerdo:2, ave:4};
+  // Hard caps: fish max 3/week across all fish species, ave (pollo+pavo+conejo) max 3/week total, etc.
+  // Valores revisados Fase 1 (BUG 5, verificados contra recomendaciones AESAN 2022).
+  var WEEKLY_CAP = {pescado:3, marisco:1, legumbre:4, pasta:2, ternera:2, cerdo:2, ave:3};
 
   // ── FREEFORM FREQUENCY TRACKING ────────────────────────────────────────────
   // Tracks usage of freeForm combos within the current ISO week.
@@ -1869,7 +1870,7 @@ export function buildPlan(profile, targetKcal, opts = {}) {
       if(mood==="ligero"||mood==="omega"||mood==="descanso")       apetenciaPen -= ap.freshness * 1.2;
       if(mood==="libre"||mood==="recarga"||mood==="recarga_total") apetenciaPen -= ap.craving * 1.5;
       if(mood==="familiar"||mood==="clásico")              apetenciaPen -= ap.comfort * 0.8;
-      if(mood==="carga"||mood==="carga_maxima"||mood==="aminoácidos") apetenciaPen -= ap.craving * 0.5;
+      if(mood==="carga"||mood==="carga_maxima"||mood==="aminoacidos") apetenciaPen -= ap.craving * 0.5;
 
       // 17. Experiencia culinaria percibida — evita que la semana se sienta
       // como "siete días de plancha" o "todo comfort_caliente".
@@ -2231,16 +2232,11 @@ export function buildPlan(profile, targetKcal, opts = {}) {
   //
   // Patrón 3 — COMFORT DEL DOMINGO: el domingo se activa mood "familiar" con
   // extra bonus de cravingScore. No hay wildcard ese día.
-  //
-  // Patrón 4 — REPETICIÓN QUERIDA: si un plato tiene cravingScore alto y ya
-  // apareció esta semana, tiene un 20% de probabilidad de volver a aparecer
-  // (en vez de ser penalizado). Simula "me apetece de nuevo esto".
 
   var HUMAN_PATTERNS = {
     tuesdayRoutine:  !isSimple && _rnd() < 0.30,  // 30% chance
     fridayFatigue:   tiempoCocina !== "mucho",            // siempre si no es chef
     sundayComfort:   true,                                // siempre
-    belovedRepeat:   !isSimple && _rnd() < 0.20,  // 20% chance
   };
 
   var weekSlots = WEEK_SLOTS[strategy] || WEEK_SLOTS.mantenimiento_equilibrado;
@@ -2431,9 +2427,9 @@ export function buildPlan(profile, targetKcal, opts = {}) {
     } else if(isTrain(day)){
       var td = TRAINING_DINNERS[usedD.length % TRAINING_DINNERS.length];
       dinner = composeMeal(td);
-      usedD.push("pollo");
-      usedDPlate.push("caliente_arroz");
-      recordMeal("pollo","caliente_arroz","casero",null,null,null);
+      usedD.push(td.P);
+      usedDPlate.push(td.plateType);
+      recordMeal(td.P,td.plateType,"casero",null,null,null);
       // training dinners don't add to dayCtx — they're overrides
     } else {
       var dPool = isSimple
@@ -2535,12 +2531,12 @@ export function buildPlan(profile, targetKcal, opts = {}) {
     Object.keys(weeklyCuisineExp).forEach(function(k){ famCount[k] = weeklyCuisineExp[k]; });
     var aveTotal = (weeklyProteinCount["ave"]||0);
     var pescTotal= (weeklyProteinCount["pescado"]||0);
-    if(aveTotal > 4) {
+    if(aveTotal > WEEKLY_CAP.ave) {
       warnings.push("🍗 Demasiada ave esta semana ("+aveTotal+" veces) — considera sustituir un día.");
       deductions += 8;
     }
-    if(pescTotal > 2) {
-      warnings.push("🐟 Pescado "+pescTotal+" veces — lo recomendable es máximo 2/semana.");
+    if(pescTotal > WEEKLY_CAP.pescado) {
+      warnings.push("🐟 Pescado "+pescTotal+" veces — lo recomendable es máximo "+WEEKLY_CAP.pescado+"/semana.");
       deductions += 10;
     }
 
@@ -2741,6 +2737,9 @@ export function buildPlan(profile, targetKcal, opts = {}) {
     }
 
     // 9. Proteína diaria estimada — heurística: base ~25g desayuno + ~40g comida + ~35g cena × proteinMult
+    // PLACEHOLDER conocido (Fase 1):
+    // proteína plana.
+    // Macros reales → Fase 5 (reconcile).
     var estProteinBase = 100; // baseline at proteinMult 1.0 con 3 comidas
     var effProteinMult = rules ? (rules.proteinMult || 1.0) : 1.0;
     var estProtein = Math.round(estProteinBase * effProteinMult);

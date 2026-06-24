@@ -17,9 +17,12 @@ const ESTRATEGIAS_REALES = [
 ];
 
 describe('buildWeekArc - una semana C completa con decision log', () => {
+  // seed=0 verificado (CP3B): con este perfil resuelve skeletonId="C". El
+  // seed elige tambien entre A/B/C desde CP3B -- 'demo-cp3a' (el seed
+  // original de CP3A) ya no garantiza C por si mismo.
   const { weekArc, decisionLog } = buildWeekArc({
     profile: { trainingDays: ['Lunes', 'Miercoles', 'Viernes'] },
-    seed: 'demo-cp3a',
+    seed: 0,
     strategy: 'mantenimiento_equilibrado',
   });
 
@@ -180,9 +183,14 @@ describe('sobras dentro de vida util: leftoverDays <= shelfLifeDays, y crema vs 
     expect(guiso.shelfLifeDays).toBe(4);
     expect(crema.shelfLifeDays - 1).not.toBe(guiso.shelfLifeDays - 1); // 2 vs 3
 
+    // Este test es especifico de la variante C (sus offsets/remanentes
+    // estan calculados para batchDay=Miercoles) -- desde CP3B el seed
+    // elige tambien entre A/B/C, asi que la busqueda exige skeletonId="C"
+    // ademas del ancla deseada.
     let seedCrema = null, seedGuiso = null;
-    for (let seed = 0; seed < 500 && (!seedCrema || !seedGuiso); seed++) {
+    for (let seed = 0; seed < 2000 && (!seedCrema || !seedGuiso); seed++) {
       const { weekArc } = buildWeekArc({ profile: { trainingDays: [] }, seed, strategy: 'x' });
+      if (weekArc.skeletonId !== 'C') continue;
       const idx = ANCHORS.findIndex((a) => a.identityKey === weekArc.anchors[0].anchorId);
       if (idx === ANCHORS.indexOf(crema) && !seedCrema) seedCrema = seed;
       if (idx === ANCHORS.indexOf(guiso) && !seedGuiso) seedGuiso = seed;
@@ -208,9 +216,9 @@ describe('sobras dentro de vida util: leftoverDays <= shelfLifeDays, y crema vs 
     // dias no-fijos de la ventana para reproducir el caso limite.
     const crema = ANCHORS.find((a) => a.identityKey === '["sopa_crema","huevo",null,"tomate",null,null,"crudo"]');
     let seedCrema = null;
-    for (let seed = 0; seed < 500 && !seedCrema; seed++) {
+    for (let seed = 0; seed < 2000 && !seedCrema; seed++) {
       const { weekArc } = buildWeekArc({ profile: { trainingDays: ['Jueves', 'Viernes'] }, seed, strategy: 'x' });
-      if (weekArc.anchors[0].anchorId === crema.identityKey) seedCrema = seed;
+      if (weekArc.skeletonId === 'C' && weekArc.anchors[0].anchorId === crema.identityKey) seedCrema = seed;
     }
     expect(seedCrema).not.toBeNull();
     const { weekArc } = buildWeekArc({ profile: { trainingDays: ['Jueves', 'Viernes'] }, seed: seedCrema, strategy: 'x' });
@@ -238,9 +246,11 @@ describe('determinismo: misma seed -> mismo weekArc byte a byte', () => {
 });
 
 describe('desacople (control del metadato): strategy NO afecta la estructura', () => {
-  it('fijados seed, variante C y batchDay (via profile/seed fijos), las 6 estrategias producen la MISMA estructura (beats, anchors, batchDay, decisionLog) -- solo difiere weekArc.strategy', () => {
+  it('fijados seed (verificado: resuelve a variante C), las 6 estrategias producen la MISMA estructura (beats, anchors, batchDay, decisionLog) -- solo difiere weekArc.strategy', () => {
     const fixedInput = { profile: { trainingDays: ['Lunes', 'Viernes'] }, seed: 'desacople-fijo' };
     const resultados = ESTRATEGIAS_REALES.map((strategy) => buildWeekArc({ ...fixedInput, strategy }));
+
+    expect(resultados[0].weekArc.skeletonId).toBe('C'); // seed verificado
 
     const estructuras = resultados.map(({ weekArc, decisionLog }) => {
       const { strategy: _strategy, ...estructuraSinStrategy } = weekArc;
@@ -254,6 +264,25 @@ describe('desacople (control del metadato): strategy NO afecta la estructura', (
     // Y el campo strategy SI varia, como se espera de un metadato real.
     const strategiesEnOutput = resultados.map((r) => r.weekArc.strategy);
     expect(new Set(strategiesEnOutput).size).toBe(ESTRATEGIAS_REALES.length);
+  });
+
+  it('CP3B: el mismo desacople se sostiene con las TRES variantes presentes (seed elige A/B/C, no strategy)', () => {
+    // Un seed por variante, verificado de antemano (no asumido). El punto
+    // es confirmar que el desacople strategy<->estructura no es un
+    // accidente de la variante C: vale igual para A y B.
+    const seedsPorVariante = { A: 7, B: 1, C: 0 };
+    const fixedProfile = { trainingDays: [] };
+
+    for (const [skeletonEsperado, seed] of Object.entries(seedsPorVariante)) {
+      const resultados = ESTRATEGIAS_REALES.map((strategy) => buildWeekArc({ profile: fixedProfile, seed, strategy }));
+      expect(resultados[0].weekArc.skeletonId, `seed=${seed} deberia resolver a ${skeletonEsperado}`).toBe(skeletonEsperado);
+
+      const estructuras = resultados.map(({ weekArc, decisionLog }) => {
+        const { strategy: _strategy, ...estructuraSinStrategy } = weekArc;
+        return JSON.stringify({ estructuraSinStrategy, decisionLog });
+      });
+      expect(estructuras.length ? new Set(estructuras).size : 0, `variante ${skeletonEsperado}: la estructura deberia ser identica entre las 6 estrategias`).toBe(1);
+    }
   });
 
   it('MUERDE: si una decision leyera profile.goal o strategy, este test se pondria rojo (control negativo documentado)', () => {

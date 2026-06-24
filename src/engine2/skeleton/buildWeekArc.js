@@ -1,8 +1,12 @@
-// Constructor de weekArc - Fase 3, Checkpoint 3A (vertical completa,
-// variante C). Entrada: {profile, seed, strategy}. Salida: {weekArc,
-// decisionLog}. Stateless (R4): no importa MemoryStore, no importa eval/.
+// Constructor de weekArc - Fase 3, Checkpoint 3A/3B. Entrada: {profile,
+// seed, strategy}. Salida: {weekArc, decisionLog}. Stateless (R4): no
+// importa MemoryStore, no importa eval/.
 //
 // Orden de construccion (fijo, sin scoring, sin "mejor"):
+//   0. Esqueleto (plantilla): elegido UNICAMENTE por seed entre A/B/C
+//      (CP3B). Sin filtros. RNG con namespace propio, independiente del
+//      de la eleccion de ancla -- cambiar uno no cambia el otro para la
+//      misma seed.
 //   1. Citas fijas (restricciones, primero): Sabado=libre, Domingo=familiar,
 //      dias de entreno del perfil.
 //   2. Ancla: eleccion UNICAMENTE por seed entre las 6 referencias de CP2.
@@ -12,19 +16,44 @@
 //      la cita fija (paso 1) tiene precedencia y el dia se SALTA, sin
 //      compensar el hueco. shelfLifeDays es techo, no cuota: la ventana
 //      puede quedar por debajo, incluso en cero.
-//   4. Densidad: leida de la plantilla C, ya escrita y valida por
+//   4. Densidad: leida de la plantilla elegida, ya escrita y valida por
 //      construccion -- nunca calculada aqui.
 //
 // strategy es METADATO PASIVO: se copia al output, no decide nada
 // estructural (ver test de desacople en tests/buildWeekArc.test.js).
 
 import { DAYS_ORDER, isSameDay } from './days.js';
+import { TEMPLATE_A } from './templateA.js';
+import { TEMPLATE_B } from './templateB.js';
 import { TEMPLATE_C } from './templateC.js';
 import { mulberry32, seedFromString } from './rng.js';
 import { ANCHORS } from '../dishes/anchors.js';
 
+export const TEMPLATES = Object.freeze([TEMPLATE_A, TEMPLATE_B, TEMPLATE_C]);
+
 function resolveSeed(seed) {
   return typeof seed === 'number' ? seed >>> 0 : seedFromString(String(seed));
+}
+
+/**
+ * Esqueleto (plantilla A/B/C) elegido UNICAMENTE por seed. Sin filtros de
+ * ningun tipo -- ni estrategia, ni estacion, ni nada del perfil. RNG con
+ * namespace propio ("::skeleton") para que la eleccion de plantilla y la
+ * eleccion de ancla sean independientes entre si para la misma seed
+ * (cambiar el catalogo de anclas no afecta que plantilla sale, y
+ * viceversa).
+ */
+function chooseSkeleton(seed, decisionLog) {
+  const rng = mulberry32(resolveSeed(`${seed}::skeleton`));
+  const index = Math.floor(rng() * TEMPLATES.length);
+  const template = TEMPLATES[index];
+  decisionLog.push({
+    decisionId: `cp3a-${decisionLog.length}`,
+    cause: 'eleccion_esqueleto_por_seed',
+    evidence: `seed=${JSON.stringify(seed)} -> indice ${index} de ${TEMPLATES.length} plantillas (A/B/C, sin filtros)`,
+    consequence: `esqueleto elegido: ${template.skeletonId}`,
+  });
+  return template;
 }
 
 /**
@@ -171,6 +200,9 @@ export function computeLeftoverDays(cookDay, shelfLifeDays, fixedRoles, decision
 export function buildWeekArc({ profile, seed, strategy }) {
   const decisionLog = [];
 
+  // 0. Esqueleto (plantilla A/B/C) por seed, sin filtros.
+  const template = chooseSkeleton(seed, decisionLog);
+
   // 1. Citas fijas (restricciones, primero).
   const fixedRoles = computeFixedRoles(profile, decisionLog);
 
@@ -179,15 +211,15 @@ export function buildWeekArc({ profile, seed, strategy }) {
 
   // batchDay de la plantilla, desplazado por orden de preferencia
   // declarado si el primario cae en dia fijo bloqueante.
-  const batchDay = resolveBatchDay(TEMPLATE_C.batchDayPreference, fixedRoles, decisionLog);
+  const batchDay = resolveBatchDay(template.batchDayPreference, fixedRoles, decisionLog);
 
   // 3. Sobras dentro de shelfLifeDays del ancla. Dias fijos (paso 1) son
   // intransitables: la cita fija tiene precedencia sobre la sobra.
   const leftoverDays = computeLeftoverDays(batchDay, anchor.shelfLifeDays, fixedRoles, decisionLog);
   const leftoverDaySet = new Set(leftoverDays);
 
-  // 4. beats[]: densidad de la plantilla C (nunca calculada en runtime),
-  // fixedRole si aplica, slotRole segun relacion con el ancla.
+  // 4. beats[]: densidad de la plantilla elegida (nunca calculada en
+  // runtime), fixedRole si aplica, slotRole segun relacion con el ancla.
   const beats = DAYS_ORDER.map((day) => {
     const isAnchorDay = day === batchDay;
     const isLeftoverDay = leftoverDaySet.has(day);
@@ -198,23 +230,23 @@ export function buildWeekArc({ profile, seed, strategy }) {
       ...(fixedRoles[day] ? { fixedRole: fixedRoles[day] } : {}),
       slotRole,
       ...(slotRole === 'ancla' ? { anchorRef: anchor.identityKey } : {}),
-      density: TEMPLATE_C.density[day],
+      density: template.density[day],
     };
 
     let cause;
     let evidence;
     if (isAnchorDay) {
       cause = 'beat_dia_ancla';
-      evidence = `${day} es el batchDay efectivo; densidad de plantilla C = "${TEMPLATE_C.density[day]}"`;
+      evidence = `${day} es el batchDay efectivo; densidad de plantilla ${template.skeletonId} = "${template.density[day]}"`;
     } else if (isLeftoverDay) {
       cause = 'beat_dia_sobra';
       evidence = `${day} cae dentro de shelfLifeDays del ancla cocinada en ${batchDay}`;
     } else if (fixedRoles[day]) {
       cause = 'beat_dia_fijo';
-      evidence = `${day} tiene fixedRole="${fixedRoles[day]}" (ver cita fija); densidad de plantilla C = "${TEMPLATE_C.density[day]}"`;
+      evidence = `${day} tiene fixedRole="${fixedRoles[day]}" (ver cita fija); densidad de plantilla ${template.skeletonId} = "${template.density[day]}"`;
     } else {
       cause = 'beat_dia_rotativo';
-      evidence = `${day} sin cita fija ni relacion con el ancla; densidad de plantilla C = "${TEMPLATE_C.density[day]}"; slotRole="rotativo" vacio para F4`;
+      evidence = `${day} sin cita fija ni relacion con el ancla; densidad de plantilla ${template.skeletonId} = "${template.density[day]}"; slotRole="rotativo" vacio para F4`;
     }
 
     decisionLog.push({
@@ -228,7 +260,7 @@ export function buildWeekArc({ profile, seed, strategy }) {
   });
 
   const weekArc = {
-    skeletonId: TEMPLATE_C.skeletonId,
+    skeletonId: template.skeletonId,
     strategy, // metadato pasivo: no participa en ninguna decision de arriba
     batchDay,
     anchors: [

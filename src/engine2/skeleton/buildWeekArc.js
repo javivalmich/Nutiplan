@@ -16,6 +16,13 @@
 //      la cita fija (paso 1) tiene precedencia y el dia se SALTA, sin
 //      compensar el hueco. shelfLifeDays es techo, no cuota: la ventana
 //      puede quedar por debajo, incluso en cero.
+//   3.5. Capricho (CP3C): recorre caprichoPreference de la plantilla
+//      buscando el primer dia que NO sea fixedRole bloqueante NI este ya
+//      ocupado por el ancla (cookDay o leftoverDays). A diferencia de las
+//      sobras (que tienen techo de calendario), el capricho se DESPLAZA
+//      por la lista declarada -- solo se trunca a cero si NINGUN dia
+//      cumple las dos condiciones (perfil sin espacio, mismo caso limite
+//      que el batch).
 //   4. Densidad: leida de la plantilla elegida, ya escrita y valida por
 //      construccion -- nunca calculada aqui.
 //
@@ -194,6 +201,56 @@ export function computeLeftoverDays(cookDay, shelfLifeDays, fixedRoles, decision
 }
 
 /**
+ * Capricho (CP3C): recorre caprichoPreference (lista ESCRITA A MANO, ver
+ * templateA/B/C.js) hasta el primer dia que NO sea fixedRole bloqueante
+ * (libre/entreno -- familiar NO bloquea, igual que en batchDay) Y que NO
+ * este ya ocupado por el ancla (cookDay o cualquier leftoverDay). A
+ * diferencia de las sobras, el capricho no tiene techo de calendario --
+ * cualquier dia disponible le sirve -- asi que se DESPLAZA por la lista
+ * declarada en vez de truncar al primer choque. Solo se trunca a cero si
+ * NINGUN dia de la lista cumple ambas condiciones (perfil sin espacio,
+ * mismo caso limite que el batch). Distingue "desplazado" de "truncado"
+ * en la causa -- no son lo mismo.
+ */
+function chooseCapricho(caprichoPreference, fixedRoles, batchDay, leftoverDays, decisionLog) {
+  // "Mismo invariante que las sobras": CUALQUIER fixedRole es
+  // intransitable, incluido "familiar" -- a diferencia de batchDay (donde
+  // familiar NUNCA bloquea, por ser la red de seguridad universal). El
+  // capricho no tiene ese privilegio: si Domingo es familiar, el
+  // capricho lo respeta igual que las sobras.
+  const ocupados = new Set([batchDay, ...leftoverDays]);
+  const primario = caprichoPreference[0];
+  const capricho = caprichoPreference.find((day) => !fixedRoles[day] && !ocupados.has(day));
+
+  if (!capricho) {
+    decisionLog.push({
+      decisionId: `cp3a-${decisionLog.length}`,
+      cause: 'capricho_truncado',
+      evidence: `caprichoPreference declarado = [${caprichoPreference.join(', ')}]; ningun dia esta libre de fixedRole bloqueante y sin ocupar por el ancla (batchDay=${batchDay}, leftoverDays=[${leftoverDays.join(', ')}])`,
+      consequence: 'sin dia de capricho disponible (truncado a cero: perfil sin espacio)',
+    });
+  } else if (capricho === primario) {
+    decisionLog.push({
+      decisionId: `cp3a-${decisionLog.length}`,
+      cause: 'capricho_de_plantilla',
+      evidence: `plantilla fija caprichoDay=${primario}; ningun fixedRole bloqueante ni ocupacion del ancla en ese dia`,
+      consequence: `capricho realizado en ${capricho}`,
+    });
+  } else {
+    const razonPrimario = fixedRoles[primario] ? `fixedRole="${fixedRoles[primario]}"` : 'ocupado por el ancla (cookDay o sobra)';
+    decisionLog.push({
+      decisionId: `cp3a-${decisionLog.length}`,
+      cause: 'capricho_desplazado',
+      evidence: `plantilla fija caprichoDay=${primario} (bloqueado: ${razonPrimario}); `
+        + `caprichoPreference declarado = [${caprichoPreference.join(', ')}]`,
+      consequence: `capricho realizado en ${capricho} (primer dia disponible de la lista declarada)`,
+    });
+  }
+
+  return capricho;
+}
+
+/**
  * @param {{profile: object, seed: (number|string), strategy: string}} input
  * @returns {{weekArc: object, decisionLog: object[]}}
  */
@@ -218,12 +275,18 @@ export function buildWeekArc({ profile, seed, strategy }) {
   const leftoverDays = computeLeftoverDays(batchDay, anchor.shelfLifeDays, fixedRoles, decisionLog);
   const leftoverDaySet = new Set(leftoverDays);
 
+  // 3.5. Capricho: recorre caprichoPreference; nunca pisa fixedRole ni el
+  // arco del ancla (cookDay/leftoverDays) -- ver chooseCapricho.
+  const caprichoDay = chooseCapricho(template.caprichoPreference, fixedRoles, batchDay, leftoverDays, decisionLog);
+
   // 4. beats[]: densidad de la plantilla elegida (nunca calculada en
-  // runtime), fixedRole si aplica, slotRole segun relacion con el ancla.
+  // runtime), fixedRole si aplica, slotRole segun relacion con el ancla
+  // o el capricho.
   const beats = DAYS_ORDER.map((day) => {
     const isAnchorDay = day === batchDay;
     const isLeftoverDay = leftoverDaySet.has(day);
-    const slotRole = isAnchorDay || isLeftoverDay ? 'ancla' : 'rotativo';
+    const isCaprichoDay = day === caprichoDay;
+    const slotRole = isAnchorDay || isLeftoverDay ? 'ancla' : isCaprichoDay ? 'capricho' : 'rotativo';
 
     const beat = {
       day,
@@ -241,6 +304,9 @@ export function buildWeekArc({ profile, seed, strategy }) {
     } else if (isLeftoverDay) {
       cause = 'beat_dia_sobra';
       evidence = `${day} cae dentro de shelfLifeDays del ancla cocinada en ${batchDay}`;
+    } else if (isCaprichoDay) {
+      cause = 'beat_dia_capricho';
+      evidence = `${day} es el dia de capricho resuelto (ver decision capricho_de_plantilla/capricho_desplazado); densidad de plantilla ${template.skeletonId} = "${template.density[day]}"`;
     } else if (fixedRoles[day]) {
       cause = 'beat_dia_fijo';
       evidence = `${day} tiene fixedRole="${fixedRoles[day]}" (ver cita fija); densidad de plantilla ${template.skeletonId} = "${template.density[day]}"`;
@@ -287,6 +353,26 @@ export function assertNoFixedRoleSobraContradiction(weekArc) {
   if (conflictos.length) {
     throw new Error(
       `Contradiccion fixedRole/sobra en: ${conflictos.map((b) => `${b.day} (fixedRole="${b.fixedRole}")`).join(', ')}`
+    );
+  }
+  return true;
+}
+
+/**
+ * Invariante (CP3C): ningun dia con slotRole="capricho" puede tener
+ * tambien fixedRole, ni coincidir con el cookDay o un leftoverDay del
+ * ancla. El capricho se resuelve DESPUES de ancla+sobras precisamente
+ * para que esto sea imposible por construccion -- este invariante lo
+ * verifica, no lo decide.
+ * @param {object} weekArc
+ * @returns {true}
+ */
+export function assertNoCaprichoCollision(weekArc) {
+  const ocupadosPorAncla = new Set(weekArc.anchors.flatMap((a) => [a.cookDay, ...a.leftoverDays]));
+  const conflictos = weekArc.beats.filter((b) => b.slotRole === 'capricho' && (b.fixedRole || ocupadosPorAncla.has(b.day)));
+  if (conflictos.length) {
+    throw new Error(
+      `Contradiccion capricho/ocupacion en: ${conflictos.map((b) => `${b.day} (fixedRole="${b.fixedRole || 'ninguno'}", ocupadoPorAncla=${ocupadosPorAncla.has(b.day)})`).join(', ')}`
     );
   }
   return true;

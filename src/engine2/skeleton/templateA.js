@@ -30,10 +30,31 @@
 // Sin empates en esta lista -- a diferencia de C (Lunes/Martes empataban
 // y se desempataba por proximidad), aqui el orden por rendimiento ya es
 // total, no hace falta desempate.
+//
+// caprichoPreference -- SEMANTICA (Checkpoint 3C): igual patron que
+// batchDayPreference, pero el capricho NO tiene censo de rendimiento (no
+// hay "ventana" que rellenar, cualquier dia disponible sirve igual para
+// un solo capricho), y su fixedRole intransitable es el MISMO que el de
+// las sobras (CUALQUIER fixedRole bloquea, incluido "familiar" -- a
+// diferencia de batchDay, donde familiar nunca bloquea). Por eso Sabado
+// Y Domingo se omiten aqui (ambos siempre bloqueados para capricho,
+// ninguno sirve de red de seguridad como en batchDayPreference): si
+// los 5 dias de diario estan ocupados, el capricho trunca a cero, no
+// hay sexto recurso.
+//
+// El primario (Viernes) es la FIRMA DE IDENTIDAD del capricho de A --
+// distinto de su batchDay (Lunes), para que ancla y capricho nunca
+// compitan por el mismo dia primario. El fallback se ordena UNICAMENTE
+// por proximidad al primario (no hay otro criterio posible sin inventar
+// un censo que no existe): Jueves(1) < Miercoles(2) < Martes(3) <
+// Lunes(4, ademas el propio batchDay de A -- solo libre si Lunes se
+// desplazo a otro batchDay).
 export const TEMPLATE_A = Object.freeze({
   skeletonId: 'A',
   batchDay: 'Lunes',
   batchDayPreference: Object.freeze(['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Domingo']),
+  caprichoDay: 'Viernes',
+  caprichoPreference: Object.freeze(['Viernes', 'Jueves', 'Miercoles', 'Martes', 'Lunes']),
   density: Object.freeze({
     Lunes: 'medio',
     Martes: 'ligero',

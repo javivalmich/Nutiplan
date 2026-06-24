@@ -48,6 +48,12 @@ describe('buildWeekArc - una semana C completa con decision log', () => {
     }
   });
 
+  it('CP3C: este demo SI realiza un capricho real, y va tan vacio de contenido como un rotativo', () => {
+    const caprichoBeat = weekArc.beats.find((b) => b.slotRole === 'capricho');
+    expect(caprichoBeat).toBeDefined();
+    expect(Object.keys(caprichoBeat).sort()).toEqual(['day', 'density', 'slotRole']);
+  });
+
   it('anchors[] referencia una identidad real del catalogo de CP2', () => {
     expect(weekArc.anchors).toHaveLength(1);
     const ref = weekArc.anchors[0];

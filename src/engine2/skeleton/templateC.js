@@ -45,10 +45,25 @@
 //   Viernes: 0,0,0 (el peor posible, ventana siempre dentro del finde).
 //   Domingo: red de seguridad final (fixedRole="familiar" NUNCA bloquea
 //     batchDay, asi que el desplazamiento siempre termina).
+//
+// caprichoPreference -- SEMANTICA (Checkpoint 3C): mismo patron que
+// batchDayPreference, sin censo de rendimiento (cualquier dia disponible
+// sirve igual para un capricho de un solo dia), pero su fixedRole
+// intransitable es el MISMO que el de las sobras (CUALQUIER fixedRole
+// bloquea, incluido "familiar" -- a diferencia de batchDay). Sabado Y
+// Domingo se omiten (ambos siempre bloqueados para capricho, ninguno
+// sirve de red de seguridad): si los 5 dias de diario estan ocupados,
+// trunca a cero.
+//
+// Primario = Lunes -- distinto del batchDay de C (Miercoles), para que
+// ancla y capricho no compitan por el mismo dia primario. Fallback por
+// proximidad a Lunes: Martes(1), Miercoles(2), Jueves(3), Viernes(4).
 export const TEMPLATE_C = Object.freeze({
   skeletonId: 'C',
   batchDay: 'Miercoles',
   batchDayPreference: Object.freeze(['Miercoles', 'Martes', 'Lunes', 'Jueves', 'Viernes', 'Domingo']),
+  caprichoDay: 'Lunes',
+  caprichoPreference: Object.freeze(['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes']),
   density: Object.freeze({
     Lunes: 'denso',
     Martes: 'ligero',

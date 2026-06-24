@@ -1,0 +1,262 @@
+// Constructor de weekArc - Fase 3, Checkpoint 3A (vertical completa,
+// variante C). Entrada: {profile, seed, strategy}. Salida: {weekArc,
+// decisionLog}. Stateless (R4): no importa MemoryStore, no importa eval/.
+//
+// Orden de construccion (fijo, sin scoring, sin "mejor"):
+//   1. Citas fijas (restricciones, primero): Sabado=libre, Domingo=familiar,
+//      dias de entreno del perfil.
+//   2. Ancla: eleccion UNICAMENTE por seed entre las 6 referencias de CP2.
+//      Sin filtros (ni estacion, ni estrategia, ni temperatura).
+//   3. Sobras/aprovechamiento: dentro de shelfLifeDays del ancla elegida,
+//      pero NUNCA sobre un dia con fixedRole (libre/familiar/entreno) --
+//      la cita fija (paso 1) tiene precedencia y el dia se SALTA, sin
+//      compensar el hueco. shelfLifeDays es techo, no cuota: la ventana
+//      puede quedar por debajo, incluso en cero.
+//   4. Densidad: leida de la plantilla C, ya escrita y valida por
+//      construccion -- nunca calculada aqui.
+//
+// strategy es METADATO PASIVO: se copia al output, no decide nada
+// estructural (ver test de desacople en tests/buildWeekArc.test.js).
+
+import { DAYS_ORDER, isSameDay } from './days.js';
+import { TEMPLATE_C } from './templateC.js';
+import { mulberry32, seedFromString } from './rng.js';
+import { ANCHORS } from '../dishes/anchors.js';
+
+function resolveSeed(seed) {
+  return typeof seed === 'number' ? seed >>> 0 : seedFromString(String(seed));
+}
+
+/**
+ * Citas fijas: Sabado=libre y Domingo=familiar son universales (no
+ * dependen del perfil). Los dias de entreno SI vienen del perfil. Si un
+ * dia de entreno declarado coincide con Sabado/Domingo, libre/familiar
+ * tienen precedencia (el descanso no se sacrifica por un entreno mal
+ * declarado) -- se registra como causa propia en el decision log.
+ */
+function computeFixedRoles(profile, decisionLog) {
+  const fixedRoles = {};
+  let nextId = decisionLog.length;
+
+  fixedRoles.Sabado = 'libre';
+  decisionLog.push({
+    decisionId: `cp3a-${nextId++}`,
+    cause: 'cita_fija_libre',
+    evidence: 'Sabado es siempre el dia libre del esqueleto (regla universal, no depende del perfil)',
+    consequence: 'beats.Sabado.fixedRole = "libre"',
+  });
+
+  fixedRoles.Domingo = 'familiar';
+  decisionLog.push({
+    decisionId: `cp3a-${nextId++}`,
+    cause: 'cita_fija_familiar',
+    evidence: 'Domingo es siempre el cierre familiar del esqueleto (regla universal, no depende del perfil)',
+    consequence: 'beats.Domingo.fixedRole = "familiar"',
+  });
+
+  const trainingDays = profile.trainingDays || [];
+  for (const day of DAYS_ORDER) {
+    if (fixedRoles[day]) continue; // libre/familiar ya tienen precedencia
+    const declarado = trainingDays.find((td) => isSameDay(td, day));
+    if (declarado) {
+      fixedRoles[day] = 'entreno';
+      decisionLog.push({
+        decisionId: `cp3a-${nextId++}`,
+        cause: 'cita_fija_entreno',
+        evidence: `"${declarado}" esta en profile.trainingDays`,
+        consequence: `beats.${day}.fixedRole = "entreno"`,
+      });
+    }
+  }
+
+  return fixedRoles;
+}
+
+/**
+ * Ancla elegida UNICAMENTE por seed entre las 6 referencias de CP2. Sin
+ * filtros de ningun tipo.
+ */
+function chooseAnchor(seed, decisionLog) {
+  const rng = mulberry32(resolveSeed(seed));
+  const index = Math.floor(rng() * ANCHORS.length);
+  const anchor = ANCHORS[index];
+  decisionLog.push({
+    decisionId: `cp3a-${decisionLog.length}`,
+    cause: 'eleccion_ancla_por_seed',
+    evidence: `seed=${JSON.stringify(seed)} -> indice ${index} de ${ANCHORS.length} anclas catalogadas en CP2 (sin filtros)`,
+    consequence: `ancla elegida: ${anchor.identityKey}`,
+  });
+  return anchor;
+}
+
+/**
+ * batchDay de la plantilla, desplazado deterministamente si cae en un dia
+ * fijo bloqueante (libre o entreno -- familiar NO bloquea). Nunca se
+ * evalua "el mejor dia": se avanza al primer dia no-fijo siguiente.
+ */
+function resolveBatchDay(templateBatchDay, fixedRoles, decisionLog) {
+  const BLOCKING = new Set(['libre', 'entreno']);
+  let idx = DAYS_ORDER.indexOf(templateBatchDay);
+  const startIdx = idx;
+  let displaced = false;
+  while (BLOCKING.has(fixedRoles[DAYS_ORDER[idx]])) {
+    displaced = true;
+    idx = (idx + 1) % DAYS_ORDER.length;
+  }
+  const batchDay = DAYS_ORDER[idx];
+
+  if (displaced) {
+    decisionLog.push({
+      decisionId: `cp3a-${decisionLog.length}`,
+      cause: 'batchday_desplazado',
+      evidence: `plantilla C fija batchDay=${templateBatchDay}, pero fixedRole="${fixedRoles[DAYS_ORDER[startIdx]]}" lo bloquea`,
+      consequence: `batchDay efectivo = ${batchDay} (siguiente dia no bloqueante)`,
+    });
+  } else {
+    decisionLog.push({
+      decisionId: `cp3a-${decisionLog.length}`,
+      cause: 'batchday_de_plantilla',
+      evidence: `plantilla C fija batchDay=${templateBatchDay}; ningun fixedRole bloqueante en ese dia`,
+      consequence: `batchDay efectivo = ${batchDay}`,
+    });
+  }
+
+  return batchDay;
+}
+
+/**
+ * Sobras dentro de shelfLifeDays del ancla: dias 1..shelfLifeDays-1
+ * despues del cookDay (el propio cookDay es "fresco", no sobra). Se
+ * trunca al final de la semana -- no da la vuelta a la semana siguiente
+ * (el arco es semanal).
+ *
+ * Dias con fixedRole (libre, familiar, entreno) son INTRANSITABLES para
+ * sobras: la cita fija tiene precedencia sobre el aprovechamiento. Un dia
+ * fijo dentro de la ventana se SALTA -- no se ocupa, no se compensa
+ * desplazando el rango. shelfLifeDays es techo de calendario, no cuota:
+ * la ventana efectiva puede quedar por debajo, incluso en cero, si todos
+ * los dias candidatos son fijos.
+ *
+ * (Nota: el dia de entreno se trata COMPLETO como fijo aqui porque el
+ * esqueleto actual no distingue comida/cena por dia -- beats[] tiene una
+ * sola entrada por dia. Proteger solo la cena de entreno requeriria esa
+ * granularidad, que no existe en F3 -- deuda registrada para F4.)
+ */
+function computeLeftoverDays(cookDay, shelfLifeDays, fixedRoles, decisionLog) {
+  const cookIdx = DAYS_ORDER.indexOf(cookDay);
+  const leftoverDays = [];
+  const saltados = [];
+  for (let offset = 1; offset <= shelfLifeDays - 1 && cookIdx + offset < DAYS_ORDER.length; offset++) {
+    const day = DAYS_ORDER[cookIdx + offset];
+    if (fixedRoles[day]) {
+      saltados.push(`${day} (fixedRole="${fixedRoles[day]}")`);
+    } else {
+      leftoverDays.push(day);
+    }
+  }
+  decisionLog.push({
+    decisionId: `cp3a-${decisionLog.length}`,
+    cause: 'aprovechamiento_sobras',
+    evidence: `cookDay=${cookDay}, shelfLifeDays=${shelfLifeDays} del ancla elegida`
+      + (saltados.length ? `; saltados por ser dias fijos: ${saltados.join(', ')}` : ''),
+    consequence: leftoverDays.length
+      ? `sobras servidas en: ${leftoverDays.join(', ')}`
+      : 'sin dias de sobra disponibles (truncado a cero: todos los dias candidatos eran fijos, o no quedaba semana)',
+  });
+  return leftoverDays;
+}
+
+/**
+ * @param {{profile: object, seed: (number|string), strategy: string}} input
+ * @returns {{weekArc: object, decisionLog: object[]}}
+ */
+export function buildWeekArc({ profile, seed, strategy }) {
+  const decisionLog = [];
+
+  // 1. Citas fijas (restricciones, primero).
+  const fixedRoles = computeFixedRoles(profile, decisionLog);
+
+  // 2. Ancla por seed, sin filtros.
+  const anchor = chooseAnchor(seed, decisionLog);
+
+  // batchDay de la plantilla, desplazado si cae en dia fijo bloqueante.
+  const batchDay = resolveBatchDay(TEMPLATE_C.batchDay, fixedRoles, decisionLog);
+
+  // 3. Sobras dentro de shelfLifeDays del ancla. Dias fijos (paso 1) son
+  // intransitables: la cita fija tiene precedencia sobre la sobra.
+  const leftoverDays = computeLeftoverDays(batchDay, anchor.shelfLifeDays, fixedRoles, decisionLog);
+  const leftoverDaySet = new Set(leftoverDays);
+
+  // 4. beats[]: densidad de la plantilla C (nunca calculada en runtime),
+  // fixedRole si aplica, slotRole segun relacion con el ancla.
+  const beats = DAYS_ORDER.map((day) => {
+    const isAnchorDay = day === batchDay;
+    const isLeftoverDay = leftoverDaySet.has(day);
+    const slotRole = isAnchorDay || isLeftoverDay ? 'ancla' : 'rotativo';
+
+    const beat = {
+      day,
+      ...(fixedRoles[day] ? { fixedRole: fixedRoles[day] } : {}),
+      slotRole,
+      ...(slotRole === 'ancla' ? { anchorRef: anchor.identityKey } : {}),
+      density: TEMPLATE_C.density[day],
+    };
+
+    let cause;
+    let evidence;
+    if (isAnchorDay) {
+      cause = 'beat_dia_ancla';
+      evidence = `${day} es el batchDay efectivo; densidad de plantilla C = "${TEMPLATE_C.density[day]}"`;
+    } else if (isLeftoverDay) {
+      cause = 'beat_dia_sobra';
+      evidence = `${day} cae dentro de shelfLifeDays del ancla cocinada en ${batchDay}`;
+    } else if (fixedRoles[day]) {
+      cause = 'beat_dia_fijo';
+      evidence = `${day} tiene fixedRole="${fixedRoles[day]}" (ver cita fija); densidad de plantilla C = "${TEMPLATE_C.density[day]}"`;
+    } else {
+      cause = 'beat_dia_rotativo';
+      evidence = `${day} sin cita fija ni relacion con el ancla; densidad de plantilla C = "${TEMPLATE_C.density[day]}"; slotRole="rotativo" vacio para F4`;
+    }
+
+    decisionLog.push({
+      decisionId: `cp3a-${decisionLog.length}`,
+      cause,
+      evidence,
+      consequence: JSON.stringify(beat),
+    });
+
+    return beat;
+  });
+
+  const weekArc = {
+    skeletonId: TEMPLATE_C.skeletonId,
+    strategy, // metadato pasivo: no participa en ninguna decision de arriba
+    batchDay,
+    anchors: [
+      { anchorId: anchor.identityKey, cookDay: batchDay, leftoverDays },
+    ],
+    beats,
+  };
+
+  return { weekArc, decisionLog };
+}
+
+/**
+ * Invariante: en ningun weekArc puede haber un dia que sea a la vez
+ * fixedRole (libre/familiar/entreno) y dia de SOBRA (leftover) del
+ * ancla. La cita fija tiene precedencia (paso 1 antes que paso 3) -- si
+ * esto se rompe, computeLeftoverDays dejo de respetar la jerarquia.
+ * Lanza con el dia y el fixedRole en conflicto, no elige cual prevalece.
+ * @param {object} weekArc
+ * @returns {true}
+ */
+export function assertNoFixedRoleSobraContradiction(weekArc) {
+  const leftoverDaySet = new Set(weekArc.anchors.flatMap((a) => a.leftoverDays));
+  const conflictos = weekArc.beats.filter((b) => b.fixedRole && leftoverDaySet.has(b.day));
+  if (conflictos.length) {
+    throw new Error(
+      `Contradiccion fixedRole/sobra en: ${conflictos.map((b) => `${b.day} (fixedRole="${b.fixedRole}")`).join(', ')}`
+    );
+  }
+  return true;
+}

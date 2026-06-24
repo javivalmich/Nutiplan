@@ -40,3 +40,38 @@ export function comboIdentityKey(combo) {
     normalizeIdentityField(combo.cookM),
   ]);
 }
+
+/**
+ * Agrupa combos por identidad. plateType/density NO forman parte de la
+ * tupla de identidad (ver comboIdentityKey), pero si dos instancias de la
+ * MISMA receta discrepan en plateType o density, eso es un problema de
+ * calidad de datos, no una decision a resolver en silencio: lanza en vez
+ * de elegir una de las dos (constitucion de engine2: filtros y
+ * prioridades, nunca una eleccion arbitraria entre candidatos).
+ * @param {object[]} combos
+ * @returns {Map<string, object[]>} identidad -> instancias
+ * @throws {Error} si alguna identidad tiene instancias con plateType o
+ *   density inconsistentes
+ */
+export function groupCombosByIdentity(combos) {
+  const groups = new Map();
+  for (const combo of combos) {
+    const key = comboIdentityKey(combo);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(combo);
+  }
+
+  for (const [key, instances] of groups) {
+    if (instances.length < 2) continue;
+    const plateTypes = new Set(instances.map((c) => c.plateType ?? null));
+    const densities = new Set(instances.map((c) => c.density ?? null));
+    if (plateTypes.size > 1 || densities.size > 1) {
+      throw new Error(
+        `Identidad inconsistente ${key}: plateType=[${[...plateTypes]}] density=[${[...densities]}] ` +
+        `en ${instances.length} instancias`
+      );
+    }
+  }
+
+  return groups;
+}

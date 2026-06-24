@@ -5,6 +5,7 @@
 
 import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { checkEvalIsolationImports } from './tripwires/checkers.js';
@@ -52,14 +53,18 @@ describe('tripwire — checker fixtures (pass/fail)', () => {
 // CONTROL POSITIVO end-to-end: ver justificacion en tripwire-no-score.test.js.
 // Aqui probamos que un import real a ../eval/ colado en src/engine2/ es
 // detectado por el MISMO escaneo recursivo que protege el directorio real.
-// Subdirectorio propio para evitar carreras con el otro archivo de tripwire
-// cuando vitest corre ambos test files en paralelo.
+// Fixture fuera de ENGINE2_ROOT (tmpdir unico via mkdtempSync): el escaneo
+// "real" de este archivo y del de tripwire-no-score.test.js recorre
+// ENGINE2_ROOT completo sin excluir subdirectorios __selftest_*__, asi que
+// un fixture vivo ahi seria visible para el escaneo del otro archivo de
+// tripwire mientras corren en paralelo en workers distintos de vitest
+// (carrera mkdir/rmSync vs listJsFiles). Sacar el fixture del arbol
+// escaneado la descarta por construccion, no por suerte de timing.
 describe('tripwire — autotest end-to-end (el escaneo real SI detecta una violacion real)', () => {
-  const selfTestDir = path.join(ENGINE2_ROOT, '__selftest_eval_isolation__');
+  const selfTestDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tripwire-eval-isolation-'));
   const selfTestFile = path.join(selfTestDir, 'violation.js');
 
   it('un import a ../eval/ colado en src/engine2/ es detectado por el escaneo real', () => {
-    fs.mkdirSync(selfTestDir, { recursive: true });
     fs.writeFileSync(selfTestFile, "import { humanScore } from '../eval/humanScore.js';\n", 'utf8');
     try {
       const files = listJsFiles(selfTestDir);

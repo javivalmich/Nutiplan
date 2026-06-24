@@ -9,6 +9,7 @@
 
 import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { checkNoScoreIdentifiers } from './tripwires/checkers.js';
@@ -94,15 +95,19 @@ describe('tripwire — checker fixtures (pass/fail)', () => {
 // real, y confirma que lo detecta. Sin esto, el tripwire podria pasar
 // solo porque engine2 esta vacio hoy — esto prueba que el cableado
 // (listJsFiles + checker sobre la ruta real) funciona, no solo la funcion
-// checker en aislamiento. Subdirectorio propio (no compartido con el otro
-// archivo de tripwire) para evitar carreras cuando vitest corre los test
-// files en paralelo. Limpieza garantizada en finally aunque la aserción falle.
+// checker en aislamiento. Fixture fuera de ENGINE2_ROOT (tmpdir unico via
+// mkdtempSync): el escaneo "real" de este archivo y del de
+// tripwire-eval-isolation.test.js recorre ENGINE2_ROOT completo sin excluir
+// subdirectorios __selftest_*__, asi que un fixture vivo ahi seria visible
+// para el escaneo del otro archivo de tripwire mientras corren en paralelo
+// en workers distintos de vitest (carrera mkdir/rmSync vs listJsFiles).
+// Sacar el fixture del arbol escaneado la descarta por construccion, no por
+// suerte de timing. Limpieza garantizada en finally aunque la aserción falle.
 describe('tripwire — autotest end-to-end (el escaneo real SI detecta una violacion real)', () => {
-  const selfTestDir = path.join(ENGINE2_ROOT, '__selftest_no_score__');
+  const selfTestDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tripwire-no-score-'));
   const selfTestFile = path.join(selfTestDir, 'violation.js');
 
   it('un archivo con "const score" colado en src/engine2/ es detectado por el escaneo real', () => {
-    fs.mkdirSync(selfTestDir, { recursive: true });
     fs.writeFileSync(selfTestFile, 'export const score = computeFit(dish);\n', 'utf8');
     try {
       const files = listJsFiles(selfTestDir).filter((f) => !isUnderTestsDir(f));

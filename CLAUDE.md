@@ -54,4 +54,4 @@ archive/           # buildPlan.js viejo + tmp, al final (Fase 7)
 
 ## Orden de fases (roadmap v2)
 `0 → 0.5 → 1 → 3 → 2 (continua) → 4 → 5 → 6 → 7`
-**Fase actual: 1.** No trabajes fases futuras en esta sesión.
+**Fase actual: 3.** No trabajes fases futuras en esta sesión.

@@ -16,7 +16,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { deriveTempFeel } from '../../../engine/buildPlan.js';
-import { deriveTempFeelEngine2 } from '../derive.js';
+import { deriveTempFeelEngine2, derivePlateType, deriveMomento } from '../derive.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const BUILD_PLAN_PATH = path.resolve(__dirname, '../../../engine/buildPlan.js');
@@ -78,5 +78,72 @@ describe('consistencia de `slot` (solo asercion, nunca usado por momento)', () =
 
   it('TRAINING_DINNERS declara slot="Cena" explicito en cada entry', () => {
     for (const c of trainingCombos) expect(c.slot).toBe('Cena');
+  });
+});
+
+describe('parity — derivePlateType coincide 1:1 con combo.plateType || "caliente_arroz"', () => {
+  it('para cada combo real de LUNCH_COMBOS, DINNER_COMBOS y TRAINING_DINNERS', () => {
+    const allCombos = [...lunchCombos, ...dinnerCombos, ...trainingCombos];
+    const drift = [];
+    for (const combo of allCombos) {
+      const expected = combo.plateType || 'caliente_arroz';
+      const own = derivePlateType(combo);
+      if (expected !== own) drift.push({ combo, expected, own });
+    }
+    expect(drift).toEqual([]);
+  });
+});
+
+// deriveMomento(pools) NO detecta por si misma a que pools pertenece un
+// combo — recibe esa lista ya resuelta por el llamador. La deteccion de
+// pertenencia multiple (los "duales": recetas identicas servidas en mas
+// de un pool del motor viejo) se hace aqui, sobre los datos reales, para
+// que el test falle si buildPlan.js cambia los duales sin que nadie se
+// entere. Identidad de combo = (tmpl, P, C, V, V2, S, cookM): los unicos
+// campos que describen la receta; familiar/facil/saciante/density son
+// metadatos de scoring del motor viejo, no identidad del plato.
+function comboIdentityKey(combo) {
+  return JSON.stringify([combo.tmpl, combo.P, combo.C, combo.V, combo.V2 || null, combo.S, combo.cookM]);
+}
+
+function buildPoolIndex() {
+  const index = new Map();
+  const add = (combos, poolName) => {
+    for (const combo of combos) {
+      const key = comboIdentityKey(combo);
+      if (!index.has(key)) index.set(key, new Set());
+      index.get(key).add(poolName);
+    }
+  };
+  add(lunchCombos, 'LUNCH_COMBOS');
+  add(dinnerCombos, 'DINNER_COMBOS');
+  add(trainingCombos, 'TRAINING_DINNERS');
+  return index;
+}
+
+describe('momento — union real de los duales (recetas en mas de un pool)', () => {
+  const poolIndex = buildPoolIndex();
+  const duales = [...poolIndex.entries()].filter(([, pools]) => pools.size > 1);
+
+  it('hay exactamente 5 identidades de combo presentes en mas de un pool', () => {
+    expect(duales.length).toBe(5);
+  });
+
+  it('cada dual resuelve a momento EXACTO {comida, cena} (no solo "includes cena")', () => {
+    for (const [key, pools] of duales) {
+      const momento = deriveMomento([...pools]);
+      expect(new Set(momento), `dual ${key} con pools ${[...pools]}`).toEqual(new Set(['comida', 'cena']));
+      expect(momento.length, `dual ${key} no debe tener duplicados`).toBe(2);
+    }
+  });
+
+  it('el dual LUNCH∩TRAINING conocido (ternera+patata+espinacas) esta entre los 5 y resuelve {comida, cena}', () => {
+    const key = comboIdentityKey({
+      tmpl: 'caliente_clasico', P: 'ternera', C: 'patata', V: 'espinacas', V2: null,
+      S: 'romero_limon', cookM: 'plancha',
+    });
+    expect(poolIndex.has(key)).toBe(true);
+    expect(new Set(poolIndex.get(key))).toEqual(new Set(['LUNCH_COMBOS', 'TRAINING_DINNERS']));
+    expect(new Set(deriveMomento([...poolIndex.get(key)]))).toEqual(new Set(['comida', 'cena']));
   });
 });

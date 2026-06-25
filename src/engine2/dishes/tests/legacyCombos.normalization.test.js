@@ -1,64 +1,152 @@
-// Fase 2, Paso B.1 (correccion) — invariante de seguridad de las
-// normalizaciones de legacyCombos.data.js.
+// Fase 2, Paso B.1 (correccion) — invariante de PARIDAD REAL de
+// legacyCombos.data.js, no de "el motor viejo no cambio".
 //
-// legacyCombos.data.js es un SNAPSHOT NORMALIZADO (paritario salvo
-// colapso documentado de colisiones de identidad), no una copia
-// inmutable byte a byte de buildPlan.js. La propiedad que debe
-// preservarse es COMPORTAMIENTO OBSERVABLE identico al motor vivo, no
-// igualdad literal de arrays.
+// HALLAZGO del invariante anterior (version por hash SHA-256 de
+// buildPlan.js y los snapshots dorados): legacyCombos.data.js no es
+// importado por buildPlan.js ni por su suite de snapshots, asi que esos
+// hashes son INMUNES a cualquier cambio en la copia — el test pasaba por
+// construccion, no discriminaba nada. Sustituido por este invariante.
 //
-// Invariante de seguridad: tras CUALQUIER normalizacion, los snapshots
-// dorados post-Fase-1 (generados por la suite de buildPlan.js, motor
-// vivo congelado) siguen IDENTICOS byte a byte. legacyCombos.data.js no
-// es importado por buildPlan.js ni por la suite que produce esos
-// snapshots, asi que esto deberia cumplirse por construccion — este test
-// fija esa garantia con un hash SHA-256, para que no se rompa por
-// accidente en el futuro si alguien empieza a usar esta copia desde el
-// motor vivo o a tocar buildPlan.js "para sincronizar".
+// La pregunta correcta: ¿la copia normalizada es EXACTAMENTE el literal
+// vivo de buildPlan.js, salvo las normalizaciones documentadas en
+// legacyCombos.normalizations.js? Dos partes:
 //
-// Hashes de referencia capturados ANTES de aplicar la NORMALIZACION #1
-// (cerdo+brocoli+mostaza_miel+plancha, density "media"->"baja" colapsada
-// en legacyCombos.data.js) — ver legacyCombos.normalizations.js.
+//   1. ACOTACION: re-extrae el array literal real de buildPlan.js (mismos
+//      marcadores de texto que Control 2 de paridad), le aplica
+//      PROGRAMATICAMENTE las normalizaciones declaradas, y exige
+//      IGUALDAD ESTRUCTURAL EXACTA con el export correspondiente de
+//      legacyCombos.data.js. Cualquier diferencia no cubierta por una
+//      normalizacion documentada -> FALLA.
+//
+//   2. DISCRIMINACION: (a) inyectar una entrada fantasma en la copia ->
+//      debe detectarse: rojo. (b) mutar temporalmente el valorElegido
+//      declarado -> debe dejar de cuadrar: rojo. Revertir ambos -> verde.
 
 import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
-import crypto from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { comboIdentityKey } from '../identity.js';
+import {
+  LUNCH_COMBOS_RAW,
+  DINNER_COMBOS_RAW,
+  TRAINING_DINNERS_RAW,
+} from '../legacyCombos.data.js';
+import { NORMALIZATIONS } from '../legacyCombos.normalizations.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '../../../..');
 const BUILD_PLAN_PATH = path.join(REPO_ROOT, 'src/engine/buildPlan.js');
-const SNAPSHOT_BASELINE_PATH = path.join(
-  REPO_ROOT,
-  'src/engine/tests/__snapshots__/buildPlan.baseline.test.js.snap'
-);
-const SNAPSHOT_GOLDEN_PATH = path.join(
-  REPO_ROOT,
-  'src/engine/tests/__snapshots__/buildPlan.snapshot.test.js.snap'
-);
 
-const EXPECTED_SHA256 = {
-  'buildPlan.js': '5bd7bbbff4b12bb288929a5d2edec34323b638cc93d5430c7d6883c9d03e61f1',
-  'buildPlan.baseline.test.js.snap': 'cd6fd734f938de1d46519edfdabc32c3062b06f6ae7d314b1df7adf6b04b4fbb',
-  'buildPlan.snapshot.test.js.snap': '8796ab924f08e45b7a7710d2e01b4a86be6f2641064b9a2be545427992abaa21',
-};
+// ── Extraccion del literal VIVO de buildPlan.js como datos reales (no solo conteo) ──
 
-function sha256(filePath) {
-  const buffer = fs.readFileSync(filePath);
-  return crypto.createHash('sha256').update(buffer).digest('hex');
+function extractLiveLiteralArray(sourceText, startMarker, endMarker) {
+  const startIdx = sourceText.indexOf(startMarker);
+  if (startIdx === -1) throw new Error(`Marcador de inicio no encontrado: "${startMarker}"`);
+  const contentStart = startIdx + startMarker.length;
+  const endIdx = sourceText.indexOf(endMarker, contentStart);
+  if (endIdx === -1) throw new Error(`Marcador de fin no encontrado: "${endMarker}"`);
+  const segment = sourceText.slice(contentStart, endIdx);
+  // eslint-disable-next-line no-new-func
+  return new Function(`return [${segment}];`)();
 }
 
-describe('invariante de seguridad: buildPlan.js y los snapshots dorados NO cambian por normalizar legacyCombos.data.js', () => {
-  it('buildPlan.js sigue byte a byte identico (motor vivo congelado, nunca se edita desde aqui)', () => {
-    expect(sha256(BUILD_PLAN_PATH)).toBe(EXPECTED_SHA256['buildPlan.js']);
+// ── Aplicacion programatica de las normalizaciones declaradas ──────────
+
+/**
+ * Colapsa, en orden, los grupos de identidad cubiertos por una
+ * normalizacion declarada: conserva la PRIMERA aparicion (con el campo
+ * divergente sobreescrito al valorElegido) y descarta apariciones
+ * posteriores del mismo identityKey. Combos sin normalizacion pasan
+ * intactos.
+ * @param {object[]} liveArray
+ * @param {object[]} normalizations
+ * @param {string} origen
+ * @returns {object[]}
+ */
+function applyNormalizations(liveArray, normalizations, origen) {
+  const relevantByKey = new Map(
+    normalizations.filter((n) => n.origen === origen).map((n) => [n.identityKey, n])
+  );
+  const yaColapsado = new Set();
+  const result = [];
+
+  for (const combo of liveArray) {
+    const key = comboIdentityKey(combo);
+    const norm = relevantByKey.get(key);
+    if (!norm) {
+      result.push(combo);
+      continue;
+    }
+    if (yaColapsado.has(key)) continue; // descarta apariciones posteriores ya colapsadas
+    yaColapsado.add(key);
+    result.push({ ...combo, [norm.campoDivergente]: norm.valorElegido });
+  }
+  return result;
+}
+
+const buildPlanSource = fs.readFileSync(BUILD_PLAN_PATH, 'utf-8');
+
+const liveLunch = extractLiveLiteralArray(buildPlanSource, 'const LUNCH_COMBOS = [', '\n  ].filter(function(m){');
+const liveDinner = extractLiveLiteralArray(buildPlanSource, 'const DINNER_COMBOS = [', '\n  ].filter(function(m){');
+const liveTraining = extractLiveLiteralArray(buildPlanSource, 'const TRAINING_DINNERS = [', '\n  ];');
+
+describe('invariante de paridad real: copia normalizada === literal vivo + normalizaciones declaradas', () => {
+  it('precondicion: el literal vivo de buildPlan.js tiene la cardinalidad esperada (101/81/3)', () => {
+    expect(liveLunch.length).toBe(101);
+    expect(liveDinner.length).toBe(81);
+    expect(liveTraining.length).toBe(3);
   });
 
-  it('buildPlan.baseline.test.js.snap sigue byte a byte identico', () => {
-    expect(sha256(SNAPSHOT_BASELINE_PATH)).toBe(EXPECTED_SHA256['buildPlan.baseline.test.js.snap']);
+  it('LUNCH_COMBOS_RAW === literal vivo (sin normalizaciones declaradas en este origen)', () => {
+    const normalizado = applyNormalizations(liveLunch, NORMALIZATIONS, 'LUNCH_COMBOS_RAW');
+    expect(LUNCH_COMBOS_RAW).toEqual(normalizado);
   });
 
-  it('buildPlan.snapshot.test.js.snap sigue byte a byte identico', () => {
-    expect(sha256(SNAPSHOT_GOLDEN_PATH)).toBe(EXPECTED_SHA256['buildPlan.snapshot.test.js.snap']);
+  it('DINNER_COMBOS_RAW === literal vivo + NORMALIZACION #1 aplicada (cerdo+brocoli -> density "baja")', () => {
+    const normalizado = applyNormalizations(liveDinner, NORMALIZATIONS, 'DINNER_COMBOS_RAW');
+    expect(normalizado.length).toBe(80); // 81 vivos - 1 colapsada
+    expect(DINNER_COMBOS_RAW).toEqual(normalizado);
+  });
+
+  it('TRAINING_DINNERS_RAW === literal vivo (sin normalizaciones declaradas en este origen)', () => {
+    const normalizado = applyNormalizations(liveTraining, NORMALIZATIONS, 'TRAINING_DINNERS_RAW');
+    expect(TRAINING_DINNERS_RAW).toEqual(normalizado);
+  });
+});
+
+describe('ACOTACION — discriminacion: una entrada fantasma en la copia DEBE detectarse', () => {
+  it('inyectar una entrada extra en la copia (simulada) rompe la igualdad; sin ella, cuadra', () => {
+    const normalizado = applyNormalizations(liveLunch, NORMALIZATIONS, 'LUNCH_COMBOS_RAW');
+
+    const copiaConFantasma = [...LUNCH_COMBOS_RAW, { tmpl: 'fantasma', P: 'x', C: null, V: 'y', S: 'z', cookM: 'plancha', plateType: 'a', density: 'media', familiar: true, facil: true }];
+    expect(copiaConFantasma).not.toEqual(normalizado);
+
+    // Sin la entrada fantasma (la copia real), SI cuadra.
+    expect(LUNCH_COMBOS_RAW).toEqual(normalizado);
+  });
+
+  it('un campo de mas (no documentado) en una entrada de la copia tambien rompe la igualdad', () => {
+    const normalizado = applyNormalizations(liveDinner, NORMALIZATIONS, 'DINNER_COMBOS_RAW');
+
+    const copiaConCampoExtra = DINNER_COMBOS_RAW.map((c, i) => (i === 0 ? { ...c, campoNoDocumentado: true } : c));
+    expect(copiaConCampoExtra).not.toEqual(normalizado);
+
+    expect(DINNER_COMBOS_RAW).toEqual(normalizado);
+  });
+});
+
+describe('DISCRIMINACION — mutar temporalmente el valorElegido declarado debe romper la igualdad', () => {
+  it('si la normalizacion declarada dijera "media" en vez de "baja", la copia real (que tiene "baja") dejaria de cuadrar', () => {
+    const normalizacionMutada = NORMALIZATIONS.map((n) =>
+      n.origen === 'DINNER_COMBOS_RAW' ? { ...n, valorElegido: 'media' } : n
+    );
+
+    const normalizadoConMutacion = applyNormalizations(liveDinner, normalizacionMutada, 'DINNER_COMBOS_RAW');
+    expect(DINNER_COMBOS_RAW).not.toEqual(normalizadoConMutacion);
+
+    // Revertido (normalizacion real, sin mutar): vuelve a cuadrar.
+    const normalizadoReal = applyNormalizations(liveDinner, NORMALIZATIONS, 'DINNER_COMBOS_RAW');
+    expect(DINNER_COMBOS_RAW).toEqual(normalizadoReal);
   });
 });

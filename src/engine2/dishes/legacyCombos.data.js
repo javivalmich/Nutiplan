@@ -17,16 +17,18 @@
 // identidad, "mejorar" o reinterpretar un combo, o introducir campos
 // nuevos (eso es anotacion editorial, otra capa, otro paso).
 //
-// Invariante de seguridad: tras cualquier normalizacion, los snapshots
-// dorados post-Fase-1 (src/engine/tests/__snapshots__/buildPlan.baseline
-// .test.js.snap y buildPlan.snapshot.test.js.snap) siguen IDENTICOS byte
-// a byte — verificado por hash SHA-256 en
-// src/engine2/dishes/tests/legacyCombos.normalization.test.js. Esto es
-// estructural: legacyCombos.data.js no es importado por buildPlan.js ni
-// por la suite que genera esos snapshots, asi que ninguna normalizacion
-// aqui puede tocarlos; el test fija esa garantia para que no se rompa
-// por accidente en el futuro (p.ej. si alguien decide alguna vez usar
-// esta copia desde el motor vivo).
+// Invariante de paridad real (src/engine2/dishes/tests/
+// legacyCombos.normalization.test.js): re-extrae el literal VIVO de
+// buildPlan.js (mismos marcadores de texto que el Control 2 de paridad),
+// le aplica programaticamente las normalizaciones declaradas en
+// legacyCombos.normalizations.js, y exige igualdad ESTRUCTURAL EXACTA con
+// los exports de este archivo. Cualquier diferencia no cubierta por una
+// normalizacion documentada hace fallar el test (entrada de mas o de
+// menos, campo no documentado, valor distinto al declarado). Un hash
+// SHA-256 de buildPlan.js o de los snapshots dorados NO sirve como
+// invariante aqui: ese archivo no importa esta copia, asi que esos hashes
+// son inmunes a cualquier cambio que se haga en ella — un guardian que
+// nunca puede fallar no discrimina nada.
 //
 // Fase 2, Paso 0, Commit 2. Copia LITERAL de los arrays LUNCH_COMBOS,
 // DINNER_COMBOS y TRAINING_DINNERS de src/engine/buildPlan.js, tomada

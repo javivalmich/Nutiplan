@@ -1,9 +1,32 @@
 // ============================================================================
-// COPIA CONGELADA PARITARIA DEL MOTOR VIEJO.
-// NO editar manualmente.
-// Solo sincronizar si buildPlan.js cambia.
-// Regla 5 (CLAUDE.md): copia verificada, no modificacion del motor vivo.
+// SNAPSHOT NORMALIZADO DEL DATASET LEGACY.
+// Paritario salvo colapso documentado de colisiones de identidad.
+// Cada normalizacion lleva causa (ver banner de la normalizacion abajo y
+// legacyCombos.normalizations.js, el decision log).
+// Solo sincronizar si buildPlan.js cambia (re-extraer y re-evaluar colisiones).
+// Regla 5 (CLAUDE.md): copia verificada, no modificacion del motor vivo
+// (buildPlan.js NUNCA se edita desde aqui).
 // ============================================================================
+//
+// Propiedad que debe preservarse: COMPORTAMIENTO OBSERVABLE identico al
+// motor vivo (buildPlan.js) — NO igualdad literal byte a byte de sus
+// arrays. La unica operacion de normalizacion permitida es: colapsar una
+// colision de comboIdentityKey cuyos miembros difieren en algun campo,
+// eligiendo el valor coherente con el resto del dataset. Prohibido bajo
+// esta etiqueta: editar cualquier valor que NO este en colision de
+// identidad, "mejorar" o reinterpretar un combo, o introducir campos
+// nuevos (eso es anotacion editorial, otra capa, otro paso).
+//
+// Invariante de seguridad: tras cualquier normalizacion, los snapshots
+// dorados post-Fase-1 (src/engine/tests/__snapshots__/buildPlan.baseline
+// .test.js.snap y buildPlan.snapshot.test.js.snap) siguen IDENTICOS byte
+// a byte — verificado por hash SHA-256 en
+// src/engine2/dishes/tests/legacyCombos.normalization.test.js. Esto es
+// estructural: legacyCombos.data.js no es importado por buildPlan.js ni
+// por la suite que genera esos snapshots, asi que ninguna normalizacion
+// aqui puede tocarlos; el test fija esa garantia para que no se rompa
+// por accidente en el futuro (p.ej. si alguien decide alguna vez usar
+// esta copia desde el motor vivo).
 //
 // Fase 2, Paso 0, Commit 2. Copia LITERAL de los arrays LUNCH_COMBOS,
 // DINNER_COMBOS y TRAINING_DINNERS de src/engine/buildPlan.js, tomada
@@ -15,8 +38,9 @@
 // Fuente verificada linea a linea (ver informe Fase 2 / Paso 0):
 //   LUNCH_COMBOS_RAW     <- buildPlan.js:705-827  (101 entradas, dentro de
 //                           const LUNCH_COMBOS = [ ... ].filter(...).map(...))
-//   DINNER_COMBOS_RAW    <- buildPlan.js:845-952  (81 entradas, dentro de
-//                           const DINNER_COMBOS = [ ... ].filter(...).map(...))
+//   DINNER_COMBOS_RAW    <- buildPlan.js:845-952  (81 entradas en el
+//                           original; 80 aqui tras 1 normalizacion — ver
+//                           NORMALIZACION #1 abajo)
 //   TRAINING_DINNERS_RAW <- buildPlan.js:1150-1158 (3 entradas; el original
 //                           NO tiene filter/map posterior, se usa el array
 //                           directo via modulo de indice)
@@ -28,6 +52,24 @@
 // Congelados con Object.freeze (proteccion de mutacion accidental a nivel
 // de array; las entradas individuales son objetos literales nuevos, no
 // referencias al array vivo de buildPlan.js).
+//
+// ── NORMALIZACION #1 (Fase 2, Paso B.1, correccion) ─────────────────────
+// Colision de identidad detectada por el gate de colision (scripts/
+// phaseB1/collisionGate.js): identityKey
+//   ["caliente_clasico","cerdo",null,"brocoli",null,"mostaza_miel","plancha"]
+// tenia 2 miembros literales en buildPlan.js:845-952 (lineas fuente 857 y
+// 877), identicos en toda clave salvo density: "media" (linea 857) vs
+// "baja" (linea 877).
+// Causa de la eleccion ("baja"): el plateType de ambos es
+// "plancha_verdura". Sobre el universo real de DINNER_COMBOS_RAW, ese
+// plateType tiene density="baja" en 25/28 entradas (89%); "media" es la
+// minoria (3/28, incluyendo precisamente este combo y "cerdo+pimientos").
+// La otra entrada de cerdo en plancha_verdura sin colision (cerdo+acelgas,
+// linea 908) ya es "baja", lo que descarta una regla implicita de
+// "cerdo siempre media" como justificacion del valor minoritario. Se
+// colapsa a un unico registro con density:"baja", coherente con el resto
+// del dataset para este plateType. Ver decision log completo:
+// legacyCombos.normalizations.js.
 
 export const LUNCH_COMBOS_RAW = Object.freeze([
     // ── Clásicos familiares ──────────────────────────────────────────────
@@ -168,7 +210,7 @@ export const DINNER_COMBOS_RAW = Object.freeze([
     {tmpl:"caliente_clasico", P:"pavo",    C:null,  V:"calabacin",  S:"curry_ligero",  cookM:"salteado",plateType:"plancha_verdura", density:"baja",  saciante:false},
     {tmpl:"caliente_clasico", P:"ternera", C:null,  V:"espinacas",  S:"ajillo",        cookM:"plancha", plateType:"plancha_verdura", density:"baja",  saciante:false},
     {tmpl:"caliente_clasico", P:"ternera", C:null,  V:"pimientos",  S:"romero_limon",  cookM:"plancha", plateType:"plancha_verdura", density:"baja",  saciante:false},
-    {tmpl:"caliente_clasico", P:"cerdo",   C:null,  V:"brocoli",    S:"mostaza_miel",  cookM:"plancha", plateType:"plancha_verdura", density:"media", saciante:false},
+    {tmpl:"caliente_clasico", P:"cerdo",   C:null,  V:"brocoli",    S:"mostaza_miel",  cookM:"plancha", plateType:"plancha_verdura", density:"baja", saciante:false}, // NORMALIZACION #1: era "media" en buildPlan.js:857, colapsada con el duplicado de buildPlan.js:877 (density:"baja") — ver banner arriba y legacyCombos.normalizations.js
     {tmpl:"caliente_clasico", P:"cerdo",   C:null,  V:"pimientos",  S:"ajillo",        cookM:"horno",   plateType:"plancha_verdura", density:"media", saciante:false},
     // ── Pescado ─────────────────────────────────────────────────────────
     {tmpl:"caliente_clasico", P:"merluza", C:null,  V:"judias",     S:"ajillo",        cookM:"horno",   plateType:"pescado_horno",  density:"baja",  saciante:false},
@@ -188,7 +230,7 @@ export const DINNER_COMBOS_RAW = Object.freeze([
     {tmpl:"caliente_clasico", P:"atun",    C:null,  V:"lechuga",    V2:"pepino",       cookM:"crudo",   plateType:"ensalada",       density:"baja",  saciante:false},
     {tmpl:"caliente_clasico", P:"pavo",    C:null,  V:"calabacin",  S:"mostaza_miel",  cookM:"plancha", plateType:"plancha_verdura", density:"baja",  saciante:false},
     {tmpl:"caliente_clasico", P:"ternera", C:null,  V:"espinacas",  S:"ajillo",        cookM:"plancha", plateType:"plancha_verdura", density:"baja",  saciante:false},
-    {tmpl:"caliente_clasico", P:"cerdo",   C:null,  V:"brocoli",    S:"mostaza_miel",  cookM:"plancha", plateType:"plancha_verdura", density:"baja",  saciante:false},
+    // NORMALIZACION #1: duplicado de cerdo+brocoli+mostaza_miel+plancha (buildPlan.js:877) eliminado — colapsado en la entrada de arriba (linea 213 original), ver banner.
     {tmpl:"caliente_clasico", P:"merluza", C:null,  V:"calabacin",  S:"limon_hierbas", cookM:"horno",   plateType:"pescado_horno",  density:"baja",  saciante:false},
     {tmpl:"caliente_clasico", P:"dorada",  C:null,  V:"judias",     S:"ajillo",        cookM:"horno",   plateType:"pescado_horno",  density:"baja",  saciante:false},
     {tmpl:"ensalada",         P:"gambas",  C:null,  V:"lechuga",    V2:"tomate",S:"limon_hierbas",cookM:"plancha",plateType:"ensalada",density:"baja",saciante:true},

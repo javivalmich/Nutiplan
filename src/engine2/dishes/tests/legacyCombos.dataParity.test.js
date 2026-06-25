@@ -32,6 +32,7 @@ import {
   DINNER_COMBOS_RAW,
   TRAINING_DINNERS_RAW,
 } from '../legacyCombos.data.js';
+import { NORMALIZATIONS } from '../legacyCombos.normalizations.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '../../../..');
@@ -138,7 +139,7 @@ describe('Control 1 — cobertura observada: todo plato servido en snapshots POS
   });
 });
 
-describe('Control 2 — paridad de cardinalidad de ARRAY (RAW vs buildPlan.js, no cardinalidad de set)', () => {
+describe('Control 2 — paridad de cardinalidad de ARRAY (RAW vs buildPlan.js, ajustada por normalizaciones documentadas)', () => {
   const buildPlanSource = fs.readFileSync(BUILD_PLAN_PATH, 'utf-8');
 
   const lunchCountInSource = countLiteralEntries(
@@ -157,15 +158,25 @@ describe('Control 2 — paridad de cardinalidad de ARRAY (RAW vs buildPlan.js, n
     '\n  ];'
   );
 
-  it('LUNCH_COMBOS_RAW.length === nº de entradas literales de LUNCH_COMBOS en buildPlan.js', () => {
+  function entradasEliminadasPorNormalizacion(origen) {
+    return NORMALIZATIONS
+      .filter((n) => n.origen === origen)
+      .reduce((sum, n) => sum + n.entradasEliminadas, 0);
+  }
+
+  it('LUNCH_COMBOS_RAW.length === nº de entradas literales de LUNCH_COMBOS en buildPlan.js (sin normalizaciones en este origen)', () => {
+    expect(entradasEliminadasPorNormalizacion('LUNCH_COMBOS_RAW')).toBe(0);
     expect(LUNCH_COMBOS_RAW.length).toBe(lunchCountInSource);
   });
 
-  it('DINNER_COMBOS_RAW.length === nº de entradas literales de DINNER_COMBOS en buildPlan.js', () => {
-    expect(DINNER_COMBOS_RAW.length).toBe(dinnerCountInSource);
+  it('DINNER_COMBOS_RAW.length === nº de entradas literales en buildPlan.js MENOS las eliminadas por normalizacion documentada', () => {
+    const eliminadas = entradasEliminadasPorNormalizacion('DINNER_COMBOS_RAW');
+    expect(eliminadas).toBe(1); // NORMALIZACION #1 (cerdo+brocoli+mostaza_miel+plancha)
+    expect(DINNER_COMBOS_RAW.length).toBe(dinnerCountInSource - eliminadas);
   });
 
-  it('TRAINING_DINNERS_RAW.length === nº de entradas literales de TRAINING_DINNERS en buildPlan.js', () => {
+  it('TRAINING_DINNERS_RAW.length === nº de entradas literales de TRAINING_DINNERS en buildPlan.js (sin normalizaciones en este origen)', () => {
+    expect(entradasEliminadasPorNormalizacion('TRAINING_DINNERS_RAW')).toBe(0);
     expect(TRAINING_DINNERS_RAW.length).toBe(trainingCountInSource);
   });
 
@@ -180,6 +191,14 @@ describe('Control 2 — paridad de cardinalidad de ARRAY (RAW vs buildPlan.js, n
 
     // Confirma que, sin la mutacion, la cardinalidad real SI coincide.
     expect(LUNCH_COMBOS_RAW.length).toBe(lunchCountInSource);
+  });
+
+  it('cada normalizacion documentada declara nEliminadas consistente con la reduccion real observada (LUNCH/DINNER/TRAINING)', () => {
+    for (const origenNombre of ['LUNCH_COMBOS_RAW', 'DINNER_COMBOS_RAW', 'TRAINING_DINNERS_RAW']) {
+      const sourceCount = { LUNCH_COMBOS_RAW: lunchCountInSource, DINNER_COMBOS_RAW: dinnerCountInSource, TRAINING_DINNERS_RAW: trainingCountInSource }[origenNombre];
+      const rawArray = { LUNCH_COMBOS_RAW, DINNER_COMBOS_RAW, TRAINING_DINNERS_RAW }[origenNombre];
+      expect(rawArray.length).toBe(sourceCount - entradasEliminadasPorNormalizacion(origenNombre));
+    }
   });
 });
 

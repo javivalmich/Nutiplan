@@ -52,33 +52,29 @@ describe('verificacion explicita de los hallazgos de Paso 0 (Commit 2)', () => {
     expect(classifyGroup(members)).toBe('COLAPSABLE');
   });
 
-  it('Caso B: DINNER · cerdo·brocoli·mostaza_miel·plancha → DIVERGENTE, campo divergente incluye density', () => {
+  it('Caso B (HISTORICO): DINNER · cerdo·brocoli·mostaza_miel·plancha era DIVERGENTE (density), ahora colapsado por NORMALIZACION #1', () => {
+    // Este caso ya NO es una colision en legacyCombos.data.js: la
+    // divergencia (density "media" vs "baja") se colapso a un unico
+    // registro con density:"baja" (ver legacyCombos.normalizations.js,
+    // normalizacion #1). El grupo ahora tiene 1 solo miembro.
     const key = comboIdentityKey({
       tmpl: 'caliente_clasico', P: 'cerdo', C: null, V: 'brocoli', S: 'mostaza_miel', cookM: 'plancha',
     });
     const members = dinnerGroups.get(key);
     expect(members).toBeDefined();
-    expect(members.length).toBe(2);
-    expect(classifyGroup(members)).toBe('DIVERGENTE');
-    const diff = diffGroup(members);
-    expect(Object.keys(diff)).toContain('density');
+    expect(members.length).toBe(1);
+    expect(members[0].density).toBe('baja');
   });
 });
 
-describe('regresion: ningun otro grupo cambia de clasificacion bajo la semantica de union-de-claves', () => {
-  it('LUNCH_RAW, DINNER_RAW y TRAINING_RAW solo tienen los 2 grupos divergentes conocidos (cerdo·brocoli y, si los hay, otros nuevos se reportan)', () => {
+describe('regresion: ningun grupo legacy queda divergente tras la normalizacion documentada', () => {
+  it('LUNCH_RAW, DINNER_RAW y TRAINING_RAW no tienen NINGUN grupo divergente (la unica conocida, cerdo·brocoli, fue colapsada)', () => {
     const result = runCollisionGate(universe);
     const divergenciasLegacy = result.divergences.filter((d) => d.origen !== 'FREEFORM');
-    // Si aparece un grupo divergente legacy DISTINTO a "cerdo brocoli", es
-    // un hallazgo nuevo: el test debe fallar para que se reporte, no para
-    // que se ignore.
-    const claveDivergenteConocida = comboIdentityKey({
-      tmpl: 'caliente_clasico', P: 'cerdo', C: null, V: 'brocoli', S: 'mostaza_miel', cookM: 'plancha',
-    });
-    for (const d of divergenciasLegacy) {
-      expect(d.identityKey).toBe(claveDivergenteConocida);
-    }
-    expect(divergenciasLegacy.length).toBe(1);
+    // Si aparece CUALQUIER grupo divergente legacy, es un hallazgo nuevo
+    // no documentado en legacyCombos.normalizations.js: el test debe
+    // fallar para que se reporte, no para que se ignore.
+    expect(divergenciasLegacy).toEqual([]);
   });
 });
 
@@ -156,11 +152,15 @@ describe('reporte agregado obligatorio', () => {
     console.log('[reporte agregado gate]', JSON.stringify(result.perOrigin, null, 2));
   });
 
-  it('HALLAZGO BLOQUEANTE: el gate real (universo completo actual) ABORTA — 1 divergencia legacy real en DINNER_RAW (cerdo·brocoli·mostaza_miel·plancha, density "media" vs "baja"). Por contrato del gate (Parte 1.3), esto bloquea la Parte 2 de este paso.', () => {
+  it('el gate real (universo completo actual) PASA tras la normalizacion documentada — la unica divergencia conocida (cerdo·brocoli) fue colapsada con causa registrada', () => {
+    // Hasta la normalizacion #1 (legacyCombos.normalizations.js), el gate
+    // abortaba aqui (ver informe Fase 2 / Paso B.1). Tras colapsar la
+    // colision divergente eligiendo el valor coherente con el resto del
+    // dataset, el gate pasa: solo quedan grupos colapsables (idénticos).
     const result = runCollisionGate(universe);
-    expect(result.aborted).toBe(true);
-    expect(result.divergences.length).toBe(1);
-    expect(result.divergences[0].origen).toBe('DINNER_RAW');
-    expect(Object.keys(result.divergences[0].diff)).toContain('density');
+    expect(result.aborted).toBe(false);
+    expect(result.divergences).toEqual([]);
+    expect(result.perOrigin.DINNER_RAW.nGruposDivergentes).toBe(0);
+    expect(result.perOrigin.DINNER_RAW.nGruposColapsables).toBe(1); // ternera·espinacas, duplicado identico
   });
 });

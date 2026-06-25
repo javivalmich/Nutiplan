@@ -1,10 +1,20 @@
+// Enums del Plato — negativos discriminantes contra validateDish.
+//
 // Fase 2, Paso 0, Commit 1: endurece el contrato implicito de "rol"
 // (Paso A lo encontro como hallazgo: rol solo exigia string no vacio).
 // Este test fija el enum y demuestra que el control realmente discrimina
 // (no solo que pasa en verde por casualidad).
+//
+// Fase 2, Paso B.1, Parte 3 (limpieza): se consolidan aqui los negativos
+// de leftoverQuality y energiaCocina que vivian en el huerfano
+// validator.controlPositivo.test.js (Paso A) — ese archivo solo
+// comprobaba CONTAINMENT del valor en el enum (anchors.test.js ya lo
+// hacia tambien), nunca ejercitaba el rechazo real de validateDish con
+// DishSchemaError. Se migran aqui para no perder esa cobertura al
+// eliminar el huerfano (ver informe Fase 2 / Paso B.1).
 
 import { describe, it, expect } from 'vitest';
-import { validateDish, DishSchemaError, ROLES } from '../schema.js';
+import { validateDish, DishSchemaError, ROLES, LEFTOVER_QUALITIES, ENERGIA_COCINA_NIVELES } from '../schema.js';
 import { ANCHORS } from '../anchors.js';
 
 function validDishFixture(overrides = {}) {
@@ -59,5 +69,39 @@ describe('regresion: los 6 ANCHORS reales siguen validando rol', () => {
     for (const anchor of ANCHORS) {
       expect(validateDish(validDishFixture({ rol: anchor.rol }))).toBe(true);
     }
+  });
+});
+
+describe('leftoverQuality — enum cerrado (baja, media, alta)', () => {
+  it('NEGATIVO: rechaza un valor fuera de enum ("regular")', () => {
+    expect(LEFTOVER_QUALITIES).not.toContain('regular');
+    expect(() => validateDish(validDishFixture({ leftoverQuality: 'regular' }))).toThrow(DishSchemaError);
+  });
+
+  it('PRUEBA DE DISCRIMINACION: el rechazo depende del valor, no es un falso positivo estructural', () => {
+    const dish = validDishFixture({ leftoverQuality: 'regular' });
+    expect(() => validateDish(dish)).toThrow(DishSchemaError);
+
+    const dishConValorValido = { ...dish, leftoverQuality: 'alta' };
+    expect(validateDish(dishConValorValido)).toBe(true);
+
+    expect(() => validateDish(dish)).toThrow(DishSchemaError);
+  });
+});
+
+describe('energiaCocina — enum cerrado (bajo, medio, alto)', () => {
+  it('NEGATIVO: rechaza un valor fuera de enum ("extremo")', () => {
+    expect(ENERGIA_COCINA_NIVELES).not.toContain('extremo');
+    expect(() => validateDish(validDishFixture({ energiaCocina: 'extremo' }))).toThrow(DishSchemaError);
+  });
+
+  it('PRUEBA DE DISCRIMINACION: el rechazo depende del valor, no es un falso positivo estructural', () => {
+    const dish = validDishFixture({ energiaCocina: 'extremo' });
+    expect(() => validateDish(dish)).toThrow(DishSchemaError);
+
+    const dishConValorValido = { ...dish, energiaCocina: 'medio' };
+    expect(validateDish(dishConValorValido)).toBe(true);
+
+    expect(() => validateDish(dish)).toThrow(DishSchemaError);
   });
 });

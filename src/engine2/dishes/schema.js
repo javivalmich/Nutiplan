@@ -20,6 +20,7 @@ export const MOMENTOS = Object.freeze(['comida', 'cena']);
 export const TEMP_FEELS = Object.freeze(['frio', 'caliente', 'muy_caliente']);
 export const ENERGIA_COCINA_NIVELES = Object.freeze(['bajo', 'medio', 'alto']);
 export const LEFTOVER_QUALITIES = Object.freeze(['baja', 'media', 'alta']);
+export const ROLES = Object.freeze(['ancla', 'rotativo', 'capricho']);
 
 const REQUIRED_FIELDS = Object.freeze([
   'id',
@@ -65,8 +66,8 @@ export function validateDish(dish) {
   if (typeof dish.nombre !== 'string' || dish.nombre.length === 0) {
     errors.push('"nombre" debe ser un string no vacio');
   }
-  if (typeof dish.rol !== 'string' || dish.rol.length === 0) {
-    errors.push('"rol" debe ser un string no vacio');
+  if (!ROLES.includes(dish.rol)) {
+    errors.push(`"rol" debe ser uno de: ${ROLES.join(', ')}`);
   }
   if (typeof dish.batchable !== 'boolean') {
     errors.push('"batchable" debe ser boolean');

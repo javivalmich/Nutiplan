@@ -13,6 +13,7 @@ import {
   parseFieldAnswer,
   promptFor,
   EDITORIAL_FIELDS,
+  deriveTituloSugerido,
 } from '../../../../scripts/phaseB2/annotate.js';
 import { validateDish } from '../schema.js';
 
@@ -140,52 +141,54 @@ describe('annotateScaffold — fixture de 2 platos (normal + ancla)', () => {
     expect(mensajes.some((m) => m.includes('Valor invalido'))).toBe(true);
   });
 
-  it('(c) si el usuario NO responde un campo (respuesta vacia), ese campo SIGUE "TODO" — no se decide solo', async () => {
+  it('(c) si el usuario NO responde un campo SIN sugerencia (respuesta vacia), ese campo SIGUE "TODO" — no se decide solo. "nombre" es la excepcion: SI tiene sugerencia, asi que Enter la confirma (ver bloque dedicado de discriminacion del invariante mas abajo)', async () => {
     const ask = makeScriptedAsk([
-      '', // nombre del plato normal: sin responder
-      '', // rol: sin responder
+      '', // nombre del plato normal: Enter -> CONFIRMA la sugerencia (no es "sin responder")
+      '', // rol: sin responder (rol no tiene sugerencia)
       'false',
       'media',
       '3',
       'medio',
-      '', // nombre del ancla: sin responder
+      '', // nombre del ancla: Enter -> CONFIRMA la sugerencia
     ]);
 
     const { dishes, restantes } = await annotateScaffold(fixturePath, ask);
 
     const platoNormal = dishes.find((d) => d.id.includes('pollo'));
-    expect(platoNormal.rol).toBe('TODO'); // sigue TODO: el usuario no respondio
-    expect(platoNormal.nombre).toBe('TODO');
+    expect(platoNormal.rol).toBe('TODO'); // sigue TODO: el usuario no respondio (sin sugerencia)
+    expect(platoNormal.nombre).toBe('Pollo con arroz y brócoli a la plancha'); // Enter confirmo la sugerencia
     expect(platoNormal.batchable).toBe(false); // este SI se respondio
 
     const ancla = dishes.find((d) => d.id.includes('ternera'));
-    expect(ancla.nombre).toBe('TODO');
+    expect(ancla.nombre).toBe('Ternera con patata y zanahoria guisado'); // Enter confirmo la sugerencia
 
     expect(restantes.length).toBeGreaterThan(0);
-    expect(restantes).toEqual(
-      expect.arrayContaining([
-        { id: platoNormal.id, field: 'rol' },
-        { id: platoNormal.id, field: 'nombre' },
-        { id: ancla.id, field: 'nombre' },
-      ])
-    );
+    expect(restantes).toEqual([{ id: platoNormal.id, field: 'rol' }]);
   });
 
-  it('escritura incremental y resumible: tras una pasada parcial, releer el fixture en disco refleja lo ya respondido', async () => {
-    const ask = makeScriptedAsk(['Pollo con arroz', 'rotativo', 'false', 'media', '3', 'medio', '']);
-    await annotateScaffold(fixturePath, ask);
+  it('escritura incremental y resumible: tras una pasada parcial (sale antes de llegar al ancla), releer el fixture en disco refleja lo ya respondido y deja el resto en TODO', async () => {
+    // Solo 6 respuestas: cubren el plato normal completo. Al llegar al
+    // ancla (nombre pendiente), makeScriptedAsk se queda sin respuestas y
+    // lanza -- simula que Javi sale a mitad de la pasada.
+    const ask = makeScriptedAsk(['Pollo con arroz', 'rotativo', 'false', 'media', '3', 'medio']);
+    await annotateScaffold(fixturePath, ask).catch(() => {});
 
     const enDisco = JSON.parse(fs.readFileSync(fixturePath, 'utf-8'));
     const platoNormal = enDisco.find((d) => d.id.includes('pollo'));
     expect(platoNormal.rol).toBe('rotativo'); // persistido en disco, no solo en memoria
     expect(platoNormal.nombre).toBe('Pollo con arroz');
 
-    // Segunda pasada (resumible): el ancla aun tiene nombre=TODO en disco;
-    // retomamos justo ahi sin re-preguntar nada del plato normal (ya
-    // completo, se salta).
-    const ask2 = makeScriptedAsk(['Ternera guisada con patata y zanahoria']);
+    const anclaParcial = enDisco.find((d) => d.id.includes('ternera'));
+    expect(anclaParcial.nombre).toBe('TODO'); // nunca se llego a preguntar: sigue TODO
+
+    // Segunda pasada (resumible): retoma justo en el ancla, sin
+    // re-preguntar nada del plato normal (ya completo, se salta).
+    const ask2 = makeScriptedAsk(['']); // Enter -> confirma la sugerencia derivada
     const { restantes } = await annotateScaffold(fixturePath, ask2);
     expect(restantes).toEqual([]);
+
+    const final = JSON.parse(fs.readFileSync(fixturePath, 'utf-8'));
+    expect(final.find((d) => d.id.includes('ternera')).nombre).toBe('Ternera con patata y zanahoria guisado');
   });
 
   it('cada Dish completamente anotado (todos los campos respondidos) pasa validateDish real', async () => {
@@ -197,6 +200,67 @@ describe('annotateScaffold — fixture de 2 platos (normal + ancla)', () => {
     for (const dish of dishes) {
       expect(validateDish(dish)).toBe(true);
     }
+  });
+});
+
+describe('deriveTituloSugerido — derivacion pura desde la tupla de identidad (dish.id)', () => {
+  it('es determinista: misma tupla -> mismo titulo en 2 llamadas', () => {
+    const dish = { id: '["caliente_clasico","pollo","arroz","brocoli",null,"limon_hierbas","plancha"]' };
+    const a = deriveTituloSugerido(dish);
+    const b = deriveTituloSugerido(dish);
+    expect(a).toEqual(b);
+  });
+
+  it('caso CON C (carbohidrato presente)', () => {
+    const dish = { id: '["caliente_clasico","pollo","arroz","brocoli",null,"limon_hierbas","plancha"]' };
+    expect(deriveTituloSugerido(dish).titulo).toBe('Pollo con arroz y brócoli a la plancha');
+  });
+
+  it('caso SIN C (C=null)', () => {
+    const dish = { id: '["caliente_clasico","pollo",null,"brocoli",null,"limon_hierbas","plancha"]' };
+    expect(deriveTituloSugerido(dish).titulo).toBe('Pollo con brócoli a la plancha');
+  });
+
+  it('caso CON V2 (dos verduras encadenadas)', () => {
+    const dish = { id: '["caliente_clasico","pollo",null,"brocoli","pimientos","limon_hierbas","plancha"]' };
+    expect(deriveTituloSugerido(dish).titulo).toBe('Pollo con brócoli y pimientos a la plancha');
+  });
+
+  it('slug SIN mapeo conocido: se incluye crudo en el titulo y se reporta en slugsSinMapear (no peta, no inventa tilde)', () => {
+    const dish = { id: '["x","pollo",null,"kale_morado",null,"ajillo","plancha"]' };
+    const { titulo, slugsSinMapear } = deriveTituloSugerido(dish);
+    expect(titulo).toBe('Pollo con kale_morado a la plancha');
+    expect(slugsSinMapear).toEqual(['kale_morado']);
+  });
+});
+
+describe('DISCRIMINACION DEL INVARIANTE (las 3 caras): la sugerencia de nombre NUNCA se auto-escribe sin confirmacion', () => {
+  it('CARA 1 — Enter (respuesta vacia) -> nombre = la sugerencia derivada, confirmada explicitamente', async () => {
+    const ask = makeScriptedAsk(['', 'rotativo', 'false', 'media', '3', 'medio', '']);
+    const { dishes } = await annotateScaffold(fixturePath, ask);
+    const platoNormal = dishes.find((d) => d.id.includes('pollo'));
+    expect(platoNormal.nombre).toBe('Pollo con arroz y brócoli a la plancha');
+    expect(platoNormal.nombre).not.toBe('TODO');
+  });
+
+  it('CARA 2 — texto del usuario -> nombre = el texto, NO la sugerencia', async () => {
+    const ask = makeScriptedAsk(['Pollo casero de mi receta', 'rotativo', 'false', 'media', '3', 'medio', 'Ternera de mi receta']);
+    const { dishes } = await annotateScaffold(fixturePath, ask);
+    const platoNormal = dishes.find((d) => d.id.includes('pollo'));
+    expect(platoNormal.nombre).toBe('Pollo casero de mi receta');
+    expect(platoNormal.nombre).not.toBe('Pollo con arroz y brócoli a la plancha'); // no la sugerencia
+  });
+
+  it('CARA 3 — el usuario sale ANTES de llegar a "nombre" -> el campo SIGUE "TODO" (la sugerencia nunca se auto-escribe sin que se le muestre y conteste)', async () => {
+    // 0 respuestas: el primer campo pendiente del primer plato CON algun
+    // TODO es "nombre" (EDITORIAL_FIELDS[0]) -> ask() se llama y lanza de
+    // inmediato, antes de que exista ninguna respuesta (ni Enter ni texto).
+    const ask = makeScriptedAsk([]);
+    await annotateScaffold(fixturePath, ask).catch(() => {});
+
+    const enDisco = JSON.parse(fs.readFileSync(fixturePath, 'utf-8'));
+    const platoNormal = enDisco.find((d) => d.id.includes('pollo'));
+    expect(platoNormal.nombre).toBe('TODO'); // nunca se le pregunto: sigue TODO, no se decidio nada
   });
 });
 

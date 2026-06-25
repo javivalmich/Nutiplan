@@ -1,0 +1,2499 @@
+[
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",\"arroz\",\"brocoli\",null,\"limon_hierbas\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",\"arroz\",\"espinacas\",null,\"pimenton_ajo\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",\"patata\",\"judias\",null,\"provenzal\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",\"boniato\",\"calabacin\",null,\"pimenton_ajo\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_boniato"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pavo\",\"patata\",\"judias\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pavo\",\"arroz\",\"pimientos\",null,\"pimenton_ajo\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"ternera\",\"patata\",\"espinacas\",null,\"romero_limon\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"ternera\",\"arroz\",\"pimientos\",null,\"ajillo\",\"guisado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"cerdo\",\"patata\",\"zanahoria\",null,\"mostaza_miel\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"cerdo\",\"boniato\",\"calabacin\",null,\"romero_limon\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_boniato"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"conejo\",\"patata\",\"pimientos\",null,\"ajillo\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"salmon\",\"boniato\",\"espinacas\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_boniato"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"salmon\",\"quinoa\",\"espinacas\",null,\"soja_jengibre\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"merluza\",\"patata\",\"judias\",null,\"ajillo\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"bacalao\",\"patata\",\"pimientos\",null,\"ajillo\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"dorada\",\"patata\",\"brocoli\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"sardinas\",\"arroz\",\"tomate\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"pasta\",\"pollo\",\"pasta\",\"tomate\",null,\"tomate_casero\",\"salteado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"pasta\",\"atun\",\"pasta\",\"calabacin\",null,\"ajillo\",\"crudo\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"pasta\",\"huevo\",\"pasta\",null,null,\"ajillo\",\"revuelto\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"legumbre\",\"lentejas\",null,\"zanahoria\",null,\"pimenton_ajo\",\"guisado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"legumbre\",\"garbanzos\",null,\"espinacas\",null,\"pimenton_ajo\",\"guisado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"legumbre\",\"alubias\",null,\"pimientos\",null,\"ajillo\",\"guisado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"legumbre\",\"garbanzos\",null,\"brocoli\",null,\"curry_ligero\",\"salteado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"bowl\",\"pollo\",\"quinoa\",\"espinacas\",null,\"curry_ligero\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "[\"bowl\",\"pavo\",\"quinoa\",\"pimientos\",null,\"limon_hierbas\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "[\"bowl\",\"pollo\",\"arroz\",\"brocoli\",null,\"soja_jengibre\",\"salteado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "[\"bowl\",\"salmon\",\"quinoa\",\"pepino\",null,\"soja_jengibre\",\"crudo\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "[\"ensalada\",\"pollo\",null,\"lechuga\",\"tomate\",\"vinagreta\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"ensalada\",\"atun\",null,\"lechuga\",\"tomate\",\"vinagreta\",\"crudo\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"ensalada\",\"gambas\",null,\"lechuga\",\"pepino\",\"vinagreta\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"gambas\",\"arroz\",\"calabacin\",null,\"ajillo\",\"salteado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"calamares\",\"arroz\",\"pimientos\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"huevo\",\"arroz\",\"espinacas\",null,\"ajillo\",\"revuelto\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"huevo\",\"patata\",\"pimientos\",null,\"pimenton_ajo\",\"tortilla\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"ternera\",\"patata\",\"zanahoria\",null,\"ajillo\",\"guisado\"]",
+    "nombre": "TODO",
+    "rol": "ancla",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 4,
+    "energiaCocina": "alto",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",\"pasta\",\"tomate\",null,\"pimenton_ajo\",\"salteado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"atun\",\"arroz\",\"tomate\",null,\"limon_hierbas\",\"crudo\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"ensalada\",\"pollo\",\"quinoa\",\"tomate\",\"pepino\",\"limon_hierbas\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"merluza\",\"arroz\",\"espinacas\",null,\"ajillo\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"pasta\",\"ternera\",\"pasta\",\"calabacin\",null,\"tomate_casero\",\"salteado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"pasta\",\"pollo\",\"pasta\",\"espinacas\",null,\"ajillo\",\"salteado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"legumbre\",\"lentejas\",\"arroz\",\"zanahoria\",null,\"pimenton_ajo\",\"guisado\"]",
+    "nombre": "TODO",
+    "rol": "ancla",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 4,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"bowl\",\"atun\",\"arroz\",\"pepino\",\"tomate\",\"vinagreta\",\"crudo\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "[\"bowl\",\"pollo\",\"boniato\",\"calabacin\",null,\"pimenton_ajo\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"sardinas\",\"patata\",\"pimientos\",null,\"vinagreta\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"sopa_crema\",\"pollo\",null,\"brocoli\",null,\"limon_hierbas\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "sopa_crema"
+  },
+  {
+    "id": "[\"sopa_crema\",\"merluza\",null,\"brocoli\",null,\"limon_hierbas\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "sopa_crema"
+  },
+  {
+    "id": "[\"sopa_crema\",\"gambas\",null,\"calabacin\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "sopa_crema"
+  },
+  {
+    "id": "[\"sopa_crema\",\"huevo\",null,\"espinacas\",null,\"limon_hierbas\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "sopa_crema"
+  },
+  {
+    "id": "[\"sopa_crema\",\"atun\",null,\"tomate\",\"pepino\",null,\"crudo\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "sopa_crema"
+  },
+  {
+    "id": "[\"sopa_crema\",\"bacalao\",null,\"zanahoria\",\"calabaza\",\"ajillo\",\"guisado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "sopa_crema"
+  },
+  {
+    "id": "[\"sopa_crema\",\"huevo\",null,\"tomate\",null,null,\"crudo\"]",
+    "nombre": "TODO",
+    "rol": "ancla",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "sopa_crema"
+  },
+  {
+    "id": "[\"pasta\",\"gambas\",\"pasta\",\"tomate\",null,\"ajillo\",\"salteado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"pasta\",\"gambas\",\"pasta\",\"calabacin\",null,\"ajillo\",\"salteado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"pasta\",\"salmon\",\"pasta\",\"espinacas\",null,\"limon_hierbas\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"pasta\",\"merluza\",\"pasta\",\"calabacin\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"pasta\",\"pavo\",\"pasta\",\"tomate\",null,\"tomate_casero\",\"salteado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"pasta\",\"cerdo\",\"pasta\",\"pimientos\",null,\"pimenton_ajo\",\"salteado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"pasta\",\"ternera\",\"pasta\",\"berenjena\",null,\"tomate_casero\",\"salteado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"legumbre\",\"lentejas\",null,\"espinacas\",null,\"pimenton_ajo\",\"guisado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"legumbre\",\"lentejas\",null,\"pimientos\",null,\"pimenton_ajo\",\"guisado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"legumbre\",\"lentejas\",null,\"calabacin\",null,\"ajillo\",\"guisado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"legumbre\",\"garbanzos\",null,\"zanahoria\",null,\"pimenton_ajo\",\"guisado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"legumbre\",\"garbanzos\",null,\"tomate\",null,\"ajillo\",\"salteado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"legumbre\",\"garbanzos\",null,\"pimientos\",null,\"pimenton_ajo\",\"guisado\"]",
+    "nombre": "TODO",
+    "rol": "ancla",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 4,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"legumbre\",\"alubias\",null,\"acelgas\",null,\"ajillo\",\"guisado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"legumbre\",\"garbanzos\",null,\"berenjena\",null,\"curry_ligero\",\"salteado\"]",
+    "nombre": "TODO",
+    "rol": "ancla",
+    "batchable": true,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"bowl\",\"salmon\",\"arroz\",\"espinacas\",null,\"soja_jengibre\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "[\"bowl\",\"atun\",\"quinoa\",\"pepino\",\"tomate\",\"vinagreta\",\"crudo\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "[\"bowl\",\"gambas\",\"arroz\",\"pepino\",null,\"limon_hierbas\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "[\"bowl\",\"ternera\",\"arroz\",\"tomate\",null,\"vinagreta\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "[\"bowl\",\"merluza\",\"quinoa\",\"espinacas\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "[\"bowl\",\"pavo\",\"boniato\",\"calabacin\",null,\"pimenton_ajo\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "[\"ensalada\",\"salmon\",null,\"lechuga\",\"pepino\",\"limon_hierbas\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"ensalada\",\"pavo\",null,\"lechuga\",\"tomate\",\"vinagreta\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"ensalada\",\"gambas\",null,\"lechuga\",\"tomate\",\"vinagreta\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"ensalada\",\"atun\",null,\"tomate\",\"pepino\",\"vinagreta\",\"crudo\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"ensalada\",\"pollo\",\"quinoa\",\"pepino\",\"zanahoria\",\"limon_hierbas\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"conejo\",\"arroz\",\"zanahoria\",null,\"ajillo\",\"guisado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"conejo\",\"boniato\",\"espinacas\",null,\"romero_limon\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_boniato"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"conejo\",\"arroz\",\"berenjena\",null,\"pimenton_ajo\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"dorada\",\"arroz\",\"calabacin\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"bacalao\",\"arroz\",\"espinacas\",null,\"ajillo\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"bacalao\",\"boniato\",\"tomate\",null,\"pimenton_ajo\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_boniato"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"cerdo\",\"patata\",\"berenjena\",null,\"pimenton_ajo\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pavo\",\"arroz\",\"berenjena\",null,\"tomate_casero\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"calamares\",\"arroz\",\"calabacin\",null,\"ajillo\",\"salteado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"cerdo\",\"patata\",\"coles\",null,\"mostaza_miel\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",\"patata\",\"puerro\",null,\"provenzal\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"merluza\",\"arroz\",\"puerro\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"sopa_crema\",\"pollo\",null,\"puerro\",null,\"provenzal\",\"guisado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "sopa_crema"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"ternera\",\"arroz\",\"champiñones\",null,\"ajillo\",\"salteado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"pasta\",\"pollo\",\"pasta\",\"champiñones\",null,\"provenzal\",\"salteado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"huevo\",\"patata\",\"champiñones\",null,\"ajillo\",\"revuelto\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"salmon\",\"arroz\",\"esparragos\",null,\"limon_hierbas\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"bowl\",\"pollo\",\"quinoa\",\"esparragos\",null,\"limon_hierbas\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "[\"ensalada\",\"gambas\",null,\"esparragos\",\"tomate\",\"vinagreta\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"conejo\",\"patata\",\"alcachofa\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"cerdo\",\"arroz\",\"alcachofa\",null,\"ajillo\",\"guisado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"legumbre\",\"garbanzos\",null,\"alcachofa\",null,\"limon_hierbas\",\"guisado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",null,\"brocoli\",null,\"limon_hierbas\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",null,\"espinacas\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",null,\"calabacin\",null,\"provenzal\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",null,\"coles\",null,\"romero_limon\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",null,\"pimientos\",null,\"pimenton_ajo\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",null,\"berenjena\",null,\"provenzal\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pavo\",null,\"brocoli\",null,\"limon_hierbas\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pavo\",null,\"judias\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pavo\",null,\"calabacin\",null,\"curry_ligero\",\"salteado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"ternera\",null,\"espinacas\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"ternera\",null,\"pimientos\",null,\"romero_limon\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"cerdo\",null,\"brocoli\",null,\"mostaza_miel\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"cerdo\",null,\"pimientos\",null,\"ajillo\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"merluza\",null,\"judias\",null,\"ajillo\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pescado_horno"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"dorada\",null,\"calabacin\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pescado_horno"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"bacalao\",null,\"pimientos\",null,\"ajillo\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pescado_horno"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"salmon\",null,\"espinacas\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pescado_horno"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"sardinas\",null,\"tomate\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pescado_horno"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"huevo\",null,\"espinacas\",null,\"ajillo\",\"revuelto\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "huevo_plancha"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"huevo\",null,\"calabacin\",null,\"pimenton_ajo\",\"tortilla\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "huevo_plancha"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"huevo\",null,\"pimientos\",null,\"pimenton_ajo\",\"revuelto\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "huevo_plancha"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"huevo\",null,\"tomate\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "huevo_plancha"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"huevo\",null,\"zanahoria\",null,\"pimenton_ajo\",\"tortilla\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "huevo_plancha"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"huevo\",null,\"brocoli\",null,\"limon_hierbas\",\"revuelto\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "huevo_plancha"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"atun\",null,\"tomate\",null,\"vinagreta\",\"crudo\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"atun\",null,\"lechuga\",\"pepino\",null,\"crudo\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pavo\",null,\"calabacin\",null,\"mostaza_miel\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"merluza\",null,\"calabacin\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pescado_horno"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"dorada\",null,\"judias\",null,\"ajillo\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pescado_horno"
+  },
+  {
+    "id": "[\"ensalada\",\"gambas\",null,\"lechuga\",\"tomate\",\"limon_hierbas\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"sopa_crema\",\"pollo\",null,\"calabaza\",null,\"provenzal\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "sopa_crema"
+  },
+  {
+    "id": "[\"sopa_crema\",\"huevo\",null,\"calabaza\",\"zanahoria\",null,null]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "sopa_crema"
+  },
+  {
+    "id": "[\"sopa_crema\",\"huevo\",null,\"calabacin\",\"zanahoria\",null,\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "sopa_crema"
+  },
+  {
+    "id": "[\"sopa_crema\",\"gambas\",null,\"calabaza\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "sopa_crema"
+  },
+  {
+    "id": "[\"sopa_crema\",\"atun\",null,\"tomate\",\"pimientos\",null,\"crudo\"]",
+    "nombre": "TODO",
+    "rol": "ancla",
+    "batchable": true,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "frio",
+    "plateType": "sopa_crema"
+  },
+  {
+    "id": "[\"sopa_crema\",\"pollo\",null,\"zanahoria\",\"calabacin\",null,\"guisado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "sopa_crema"
+  },
+  {
+    "id": "[\"ensalada\",\"atun\",null,\"lechuga\",\"pepino\",\"vinagreta\",\"crudo\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"ensalada\",\"ternera\",null,\"lechuga\",\"tomate\",\"vinagreta\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"gambas\",null,\"calabacin\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"calamares\",null,\"pimientos\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"conejo\",null,\"espinacas\",null,\"ajillo\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"dorada\",null,\"espinacas\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pescado_horno"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"bacalao\",null,\"espinacas\",null,\"ajillo\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pescado_horno"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"ternera\",null,\"berenjena\",null,\"pimenton_ajo\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pavo\",null,\"berenjena\",null,\"tomate_casero\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"calamares\",null,\"calabacin\",null,\"ajillo\",\"salteado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"cerdo\",null,\"coles\",null,\"mostaza_miel\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"cerdo\",null,\"acelgas\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",null,\"puerro\",null,\"provenzal\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"sopa_crema\",\"pollo\",null,\"puerro\",\"zanahoria\",null,\"guisado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "sopa_crema"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"ternera\",null,\"champiñones\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",null,\"champiñones\",null,\"provenzal\",\"salteado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"huevo\",null,\"champiñones\",null,\"ajillo\",\"revuelto\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "huevo_plancha"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"salmon\",null,\"esparragos\",null,\"limon_hierbas\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pescado_horno"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"huevo\",null,\"esparragos\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "huevo_plancha"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"conejo\",null,\"alcachofa\",null,\"ajillo\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"merluza\",null,\"alcachofa\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pescado_horno"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",\"patata\",\"espinacas\",null,\"ajillo\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",\"boniato\",\"pimientos\",null,\"provenzal\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pavo\",\"arroz\",\"calabacin\",null,\"curry_ligero\",\"salteado\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pavo\",\"patata\",\"judias\",null,\"ajillo\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pavo\",\"boniato\",\"espinacas\",null,\"mostaza_miel\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"ternera\",\"patata\",\"pimientos\",null,\"romero_limon\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"ternera\",\"arroz\",\"champiñones\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"ternera\",\"boniato\",\"brocoli\",null,\"pimenton_ajo\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"cerdo\",\"arroz\",\"pimientos\",null,\"ajillo\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"merluza\",\"patata\",\"judias\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"merluza\",\"arroz\",\"calabacin\",null,\"ajillo\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"bacalao\",\"arroz\",\"espinacas\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"salmon\",\"arroz\",\"esparragos\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"salmon\",\"patata\",\"espinacas\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"dorada\",\"patata\",\"calabacin\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"dorada\",\"arroz\",\"judias\",null,\"ajillo\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"conejo\",\"patata\",\"espinacas\",null,\"romero_limon\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"conejo\",\"arroz\",\"champiñones\",null,\"ajillo\",\"horno\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",\"arroz\",\"brocoli\",null,\"pimenton_ajo\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pavo\",\"boniato\",\"judias\",null,\"curry_ligero\",\"plancha\"]",
+    "nombre": "TODO",
+    "rol": "TODO",
+    "batchable": "TODO",
+    "leftoverQuality": "TODO",
+    "shelfLifeDays": "TODO",
+    "energiaCocina": "TODO",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_boniato"
+  }
+]

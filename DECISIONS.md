@@ -60,3 +60,38 @@ Formato:
   import, mismo directorio `src/engine2/dishes/__discrim_check__/` — `violation.js` reportado
   como violación, `violation.test.js` no aparece en la lista (A2.3).
 - Decide: Javi.
+
+## D-005 — [2026-06-26] Resolución de D-003 (D10 re-verificado en main)
+
+- **Decisión/Hallazgo:**
+  D-003 queda RESUELTA tras verificación fresca en main. La reconciliación del roadmap en
+  consecuencia es decisión de Javi (el log solo registra los hechos verificados).
+
+- **Evidencia A1 (cuisineExperience existe en runtime):**
+  - definición del campo en el objeto comida: `src/engine/buildPlan.js:1239` →
+    `cuisineExperience:cxp,`
+  - asignación desde el helper: `src/engine/buildPlan.js:1226` →
+    `var cxp = deriveCuisineExperience(combo);`
+
+- **Evidencia A2 (deriveCuisineExperience):**
+  - declaración: `src/engine/buildPlan.js:189` → `function deriveCuisineExperience(combo) {`
+  - anidamiento en buildPlan(): `export function buildPlan(...)` en línea 26; único
+    `function`/`export function` de nivel superior del archivo desde esa línea
+    (`grep -n "^function \|^export function " src/engine/buildPlan.js` solo devuelve
+    líneas 18 y 26 en todo el fichero); cierre de `buildPlan()` es la última línea del
+    archivo, línea 2806 (`}` final, archivo de 2806 líneas). 26 < 189 < 2806.
+  - export: `grep -rn "export.*deriveCuisineExperience" src/` → vacío (no exportada)
+
+- **Evidencia A3 (consistencia de helpers):**
+  - computeApetencia: declaración `src/engine/buildPlan.js:1171`; export
+    `grep -rn "export.*computeApetencia" src/` → vacío (no exportada)
+  - deriveTempFeelEngine2: declaración `src/engine2/dishes/derive.js:18` →
+    `export function deriveTempFeelEngine2(combo) {`
+
+- **Hechos verificados (sin inferencia añadida):**
+  - cuisineExperience existe en runtime.
+  - deriveCuisineExperience existe como helper local, no exportado.
+  - computeApetencia es local, no exportada.
+  - deriveTempFeelEngine2 es implementación propia de engine2.
+
+- **Decide:** Javi.

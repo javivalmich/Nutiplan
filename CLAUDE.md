@@ -12,6 +12,7 @@ App de menús diarios/semanales personalizados. El motor actual (`buildPlan.js`)
 4. **Archivo canónico del motor viejo: `buildPlan.js`.** `main_buildPlan_tmp.js` está DEPRECATED: no se lee, no se edita, no se importa.
 5. **Motor viejo congelado:** ninguna heurística nueva ni evolución de las existentes (`weeklySaucePen` y compañía quedan como están). Solo se tocan los bugs listados en la Fase 1.
 6. **Determinismo:** misma seed → mismo plan, byte a byte, en ambos motores. `seed = hash(userId + weekNumber)`.
+7. **`engine/` (motor viejo) no se importa desde `engine2/`** — jamás, salvo `*.test.js` de parity; `engine2` mantiene copias paritarias propias (p.ej. `deriveTempFeelEngine2`). Vigilado por tripwire de CI (`tripwire-engine2-engine-isolation.test.js`): escaneo AST de imports de `engine/` en archivos bajo `engine2/`, excepción por patrón de nombre (`*.test.js` + `__selftest_*__`), nunca por carpeta `tests/` genérica.
 
 ## Contrato de shape entre motores
 Ambos motores devuelven EXACTAMENTE estas claves (verificado en buildPlan.js:2780

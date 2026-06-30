@@ -166,6 +166,21 @@ const EDITORIAL_TODO = Object.freeze({
   shelfLifeDays: 'TODO',
   energiaCocina: 'TODO',
   nombre: 'TODO',
+  // Columnas de tags canonicos (curaduria, checkpoint plateType-enum).
+  // ANCHORS (CP2) no las fija para ningun plato: quedan TODO siempre,
+  // incluso para los 6 platos ya anotados.
+  proteinType: 'TODO',
+  digestiveLoad: 'TODO',
+  satietyScore: 'TODO',
+  energyDensity: 'TODO',
+  containsGluten: 'TODO',
+  containsLactosa: 'TODO',
+  glutenFreeAdaptable: 'TODO',
+  lightMealCompatible: 'TODO',
+  avoidInAggressiveCut: 'TODO',
+  familiar: 'TODO',
+  // Columna nueva congelable: si/no/pre-cocinado.
+  congelable: 'TODO',
 });
 
 /**

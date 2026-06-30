@@ -20,14 +20,10 @@ import { deriveMomento, deriveTempFeelEngine2, derivePlateType } from './derive.
 export function assembleDish(combo, poolMembership, editorial) {
   return {
     id: comboIdentityKey(combo),
-    nombre: editorial.nombre,
-    rol: editorial.rol,
-    batchable: editorial.batchable,
-    leftoverQuality: editorial.leftoverQuality,
-    shelfLifeDays: editorial.shelfLifeDays,
-    energiaCocina: editorial.energiaCocina,
+    ...editorial,
     momento: deriveMomento(poolMembership),
     tempFeel: deriveTempFeelEngine2(combo),
     plateType: derivePlateType(combo),
+    ...(combo.reviewPlateType ? { reviewPlateType: true } : {}),
   };
 }

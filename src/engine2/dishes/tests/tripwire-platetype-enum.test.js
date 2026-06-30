@@ -29,3 +29,17 @@ describe('PRUEBA DE DISCRIMINACION: un plateType inventado en el scaffold debe d
     expect(fueraDeEnumLimpio).toEqual([]); // VERDE esperado
   });
 });
+
+describe('PRUEBA DE DISCRIMINACION: rename pescado_salsa -> en_salsa (enum-24)', () => {
+  it('rojo: el valor viejo "pescado_salsa" ya NO pertenece al enum', () => {
+    expect(PLATE_TYPES.includes('pescado_salsa')).toBe(false); // ROJO: ya no es valido
+  });
+
+  it('verde: "en_salsa" (su reemplazo) sí pertenece al enum, junto con pescado_plancha/airfryer/crudo', () => {
+    expect(PLATE_TYPES.includes('en_salsa')).toBe(true);
+    expect(PLATE_TYPES.includes('pescado_plancha')).toBe(true);
+    expect(PLATE_TYPES.includes('airfryer')).toBe(true);
+    expect(PLATE_TYPES.includes('crudo')).toBe(true);
+    expect(PLATE_TYPES.length).toBe(24);
+  });
+});

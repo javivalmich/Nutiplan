@@ -5,6 +5,9 @@
 import { describe, it, expect } from 'vitest';
 import {
   PLATETYPE_CORRECTIONS,
+  PESCADO_PLANCHA_CORRECTIONS,
+  CRUDO_CORRECTIONS,
+  REVIEW_CORRECTIONS,
   applyPlateTypeCorrections,
   applyPlateTypeCorrectionsToPool,
   comboIdentityKey,
@@ -42,23 +45,79 @@ describe('VERDE: con applyPlateTypeCorrectionsToPool, el oracle de las 14 correg
     expect(sopaCrema[0].reviewPlateType).toBe(true);
   });
 
-  it('oracle exacto: cada una de las 14 entradas corregidas cae en el tipo esperado', () => {
+  // DIVERGENCIA INTENCIONAL (PR2, checkpoint enum-24): las reglas
+  // ESPECIFICAS pescado_plancha y crudo ganan sobre la GENERICA de PR1
+  // para 6 identityKeys que tambien aparecen en PLATETYPE_CORRECTIONS:
+  //   - merluza/brocoli, gambas/calabacin, gambas/calabaza:
+  //     "plancha_verdura" -> "pescado_plancha"
+  //   - atun/tomate-pepino, huevo/tomate, atun/tomate-pimientos:
+  //     "ensalada" -> "crudo"
+  // Ver precedencia documentada en legacyCombos.plateTypeCorrections.js.
+  const GANADAS_POR_REGLA_ESPECIFICA = new Map([
+    ...PESCADO_PLANCHA_CORRECTIONS.map((e) => [e.identityKey, 'pescado_plancha']),
+    ...CRUDO_CORRECTIONS.map((e) => [e.identityKey, 'crudo']),
+  ]);
+
+  it('oracle exacto (PR1): las entradas no superadas por una regla especifica caen en el tipo esperado de PR1', () => {
     const porIdentidad = new Map(corregido.map((c) => [comboIdentityKey(c), c]));
     for (const entry of PLATETYPE_CORRECTIONS) {
       if (entry.cookM === null) continue; // caso ambiguo, verificado aparte
+      if (GANADAS_POR_REGLA_ESPECIFICA.has(entry.identityKey)) continue; // divergencia documentada arriba
       const combo = porIdentidad.get(entry.identityKey);
       expect(combo).toBeDefined();
       expect(combo.plateType).toBe(entry.valorElegido);
     }
   });
 
-  it('ningun combo fuera de sopa_crema cambia de plateType (alcance limitado)', () => {
-    const identityKeysCorregidas = new Set(PLATETYPE_CORRECTIONS.map((e) => e.identityKey));
+  it('oracle exacto (PR2): las entradas superadas por una regla especifica caen en pescado_plancha/crudo, no en el tipo de PR1', () => {
+    const porIdentidad = new Map(corregido.map((c) => [comboIdentityKey(c), c]));
+    for (const [identityKey, valorEsperado] of GANADAS_POR_REGLA_ESPECIFICA) {
+      const combo = porIdentidad.get(identityKey);
+      expect(combo).toBeDefined();
+      expect(combo.plateType).toBe(valorEsperado);
+    }
+  });
+
+  it('ningun combo fuera del alcance documentado (PR1 + PR2) cambia de plateType', () => {
+    const identityKeysCorregidas = new Set([
+      ...PLATETYPE_CORRECTIONS.map((e) => e.identityKey),
+      ...PESCADO_PLANCHA_CORRECTIONS.map((e) => e.identityKey),
+      ...CRUDO_CORRECTIONS.map((e) => e.identityKey),
+      ...REVIEW_CORRECTIONS.map((e) => e.identityKey),
+    ]);
     for (let i = 0; i < RAW_POOL.length; i++) {
       const key = comboIdentityKey(RAW_POOL[i]);
       if (identityKeysCorregidas.has(key)) continue;
       expect(corregido[i].plateType).toBe(RAW_POOL[i].plateType);
     }
+  });
+});
+
+describe('B.2 (checkpoint enum-24): control rojo->verde de pescado_plancha y crudo', () => {
+  it('rojo: sin las reglas especificas, los combos quedan en plancha_verdura/pescado_horno/ensalada', () => {
+    // Estado "sucio" = el combo RAW tal cual, sin pasar por applyPlateTypeCorrections.
+    const sardinasRaw = RAW_POOL.find((c) => comboIdentityKey(c) === '["caliente_clasico","sardinas",null,"tomate",null,"ajillo","plancha"]');
+    const atunCrudoRaw = RAW_POOL.find((c) => comboIdentityKey(c) === '["sopa_crema","atun",null,"tomate","pepino",null,"crudo"]');
+    expect(sardinasRaw.plateType).toBe('pescado_horno'); // ROJO: mal etiquetado, sin corregir
+    expect(atunCrudoRaw.plateType).toBe('sopa_crema'); // ROJO: sin corregir
+  });
+
+  it('verde: con applyPlateTypeCorrections, caen en pescado_plancha / crudo segun el oracle ratificado', () => {
+    const sardinasRaw = RAW_POOL.find((c) => comboIdentityKey(c) === '["caliente_clasico","sardinas",null,"tomate",null,"ajillo","plancha"]');
+    const atunCrudoRaw = RAW_POOL.find((c) => comboIdentityKey(c) === '["sopa_crema","atun",null,"tomate","pepino",null,"crudo"]');
+    expect(applyPlateTypeCorrections(sardinasRaw).plateType).toBe('pescado_plancha'); // VERDE
+    expect(applyPlateTypeCorrections(atunCrudoRaw).plateType).toBe('crudo'); // VERDE
+  });
+
+  it('caso 121 (atun/caliente_clasico/crudo/base arroz): NO se autoasigna, queda reviewPlateType:true sin cambiar plateType', () => {
+    const key121 = '["caliente_clasico","atun","arroz","tomate",null,"limon_hierbas","crudo"]';
+    const combo121 = RAW_POOL.find((c) => comboIdentityKey(c) === key121);
+    expect(combo121).toBeDefined();
+    expect(combo121.plateType).toBe('caliente_arroz');
+
+    const corregido121 = applyPlateTypeCorrections(combo121);
+    expect(corregido121.plateType).toBe('caliente_arroz'); // sin cambiar: contradictorio, sin regla fija
+    expect(corregido121.reviewPlateType).toBe(true);
   });
 });
 

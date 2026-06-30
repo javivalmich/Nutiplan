@@ -37,6 +37,7 @@
 import { comboIdentityKey } from '../../src/engine2/dishes/identity.js';
 import { assembleDish } from '../../src/engine2/dishes/assemble.js';
 import { ANCHORS } from '../../src/engine2/dishes/anchors.js';
+import { applyPlateTypeCorrectionsToPool } from '../../src/engine2/dishes/legacyCombos.plateTypeCorrections.js';
 import {
   LUNCH_COMBOS_RAW,
   DINNER_COMBOS_RAW,
@@ -165,6 +166,21 @@ const EDITORIAL_TODO = Object.freeze({
   shelfLifeDays: 'TODO',
   energiaCocina: 'TODO',
   nombre: 'TODO',
+  // Columnas de tags canonicos (curaduria, checkpoint plateType-enum).
+  // ANCHORS (CP2) no las fija para ningun plato: quedan TODO siempre,
+  // incluso para los 6 platos ya anotados.
+  proteinType: 'TODO',
+  digestiveLoad: 'TODO',
+  satietyScore: 'TODO',
+  energyDensity: 'TODO',
+  containsGluten: 'TODO',
+  containsLactosa: 'TODO',
+  glutenFreeAdaptable: 'TODO',
+  lightMealCompatible: 'TODO',
+  avoidInAggressiveCut: 'TODO',
+  familiar: 'TODO',
+  // Columna nueva congelable: si/no/pre-cocinado.
+  congelable: 'TODO',
 });
 
 /**
@@ -195,10 +211,14 @@ export function editorialFromAnchorOrTodo(identityKey) {
  * @returns {{ ok: true, dishes: object[], report: object } | { ok: false, divergences: object[] }}
  */
 export function generateScaffold() {
+  // Correccion de plateType (cajon sopa_crema, ver
+  // legacyCombos.plateTypeCorrections.js) aplicada ANTES de agrupar/derivar:
+  // no muta legacyCombos.data.js, no afecta comboIdentityKey (plateType no
+  // es campo de identidad).
   const pools = {
-    [POOL_NAME.LUNCH]: LUNCH_COMBOS_RAW,
-    [POOL_NAME.DINNER]: DINNER_COMBOS_RAW,
-    [POOL_NAME.TRAINING]: TRAINING_DINNERS_RAW,
+    [POOL_NAME.LUNCH]: applyPlateTypeCorrectionsToPool(LUNCH_COMBOS_RAW),
+    [POOL_NAME.DINNER]: applyPlateTypeCorrectionsToPool(DINNER_COMBOS_RAW),
+    [POOL_NAME.TRAINING]: applyPlateTypeCorrectionsToPool(TRAINING_DINNERS_RAW),
   };
 
   const totalEntradasCrudas = Object.values(pools).reduce((sum, arr) => sum + arr.length, 0);

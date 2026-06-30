@@ -21,6 +21,12 @@ export const TEMP_FEELS = Object.freeze(['frio', 'caliente', 'muy_caliente']);
 export const ENERGIA_COCINA_NIVELES = Object.freeze(['bajo', 'medio', 'alto']);
 export const LEFTOVER_QUALITIES = Object.freeze(['baja', 'media', 'alta']);
 export const ROLES = Object.freeze(['ancla', 'rotativo', 'capricho']);
+export const PLATE_TYPES = Object.freeze([
+  'caliente_arroz', 'caliente_patata', 'caliente_boniato', 'plancha_verdura', 'pescado_horno',
+  'pescado_salsa', 'asado', 'legumbre', 'guiso', 'sopa_crema', 'arroz_plato', 'pasta', 'masa',
+  'gratinado', 'relleno', 'huevo_plancha', 'tortilla', 'ensalada', 'bowl', 'salteado_wok',
+  'bocado_mano',
+]);
 
 const REQUIRED_FIELDS = Object.freeze([
   'id',
@@ -92,8 +98,8 @@ export function validateDish(dish) {
   if (!TEMP_FEELS.includes(dish.tempFeel)) {
     errors.push(`"tempFeel" debe ser uno de: ${TEMP_FEELS.join(', ')}`);
   }
-  if (typeof dish.plateType !== 'string' || dish.plateType.length === 0) {
-    errors.push('"plateType" debe ser un string no vacio');
+  if (!PLATE_TYPES.includes(dish.plateType)) {
+    errors.push(`"plateType" debe ser uno de: ${PLATE_TYPES.join(', ')}`);
   }
 
   if (errors.length) throw new DishSchemaError(errors);

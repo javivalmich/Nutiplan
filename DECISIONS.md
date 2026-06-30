@@ -95,3 +95,15 @@ Formato:
   - deriveTempFeelEngine2 es implementación propia de engine2.
 
 - **Decide:** Javi.
+
+## D-006 — [2026-06-30] Cajón sopa_crema: plateType corregido, tempFeel pendiente
+- Hallazgo: 15 entradas legacy con plateType:"sopa_crema" cuyo cookM real es plancha/crudo/guisado
+  (oracle en A.5). Daño colateral: derive.js:22 deriva tempFeel "muy_caliente" por tmpl==='sopa_crema',
+  afectando incluso a los crudo.
+- Resuelto en este checkpoint: plateType corregido vía legacyCombos.plateTypeCorrections.js (seam nuevo,
+  NO legacyCombos.normalizations.js — ese archivo solo cubre colisiones de identidad, ver B.0 de este
+  checkpoint), 14 entradas corregidas + enum cerrado (schema.js) + tripwire.
+- Pendiente (deuda): la tempFeel "muy_caliente" en los crudo/plancha NO se corrige aquí — su raíz es
+  tmpl:"sopa_crema", y arreglarla diverge la paridad de deriveTempFeel o arrastra la derivación de
+  estructura (blast radius mayor). Se aborda en checkpoint aparte.
+- Decide: Javi.

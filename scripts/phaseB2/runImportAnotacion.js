@@ -24,7 +24,10 @@ const XLSX_PATH = path.join(__dirname, 'input', 'Anotacion_cocinero_242_v4.xlsx'
 const SCAFFOLD_PATH = path.join(__dirname, 'output', 'dishes.scaffold.json');
 const DISHES_PATH = path.join(__dirname, 'output', 'dishes.json');
 
-const EXPECTED_EXCLUDED = 2;
+// Casos A (atun/arroz/crudo, Nº38) y B (huevo/calabaza/zanahoria) resueltos:
+// RESOLVED_CORRECTIONS en legacyCombos.plateTypeCorrections.js. 0 reviewPlateType
+// pendientes -- los 178 scaffold dishes son promovibles.
+const EXPECTED_EXCLUDED = 0;
 
 async function main() {
   const scaffoldDishes = JSON.parse(fs.readFileSync(SCAFFOLD_PATH, 'utf-8'));

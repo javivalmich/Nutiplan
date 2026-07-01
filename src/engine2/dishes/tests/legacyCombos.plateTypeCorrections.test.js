@@ -8,6 +8,7 @@ import {
   PESCADO_PLANCHA_CORRECTIONS,
   CRUDO_CORRECTIONS,
   REVIEW_CORRECTIONS,
+  RESOLVED_CORRECTIONS,
   applyPlateTypeCorrections,
   applyPlateTypeCorrectionsToPool,
   comboIdentityKey,
@@ -37,12 +38,14 @@ describe('ROJO: sin correccion, el pool RAW tiene 15 entradas sopa_crema', () =>
 describe('VERDE: con applyPlateTypeCorrectionsToPool, el oracle de las 14 corregidas se cumple', () => {
   const corregido = applyPlateTypeCorrectionsToPool(RAW_POOL);
 
-  it('sopa_crema baja de 15 a 1 (solo el caso ambiguo cookM null sobrevive)', () => {
+  it('sopa_crema baja de 15 a 1 (el caso cookM null, antes ambiguo, resuelto por Javi via RESOLVED_CORRECTIONS)', () => {
     const sopaCrema = corregido.filter((c) => c.plateType === 'sopa_crema');
     expect(sopaCrema.length).toBe(1);
     expect(sopaCrema[0].P).toBe('huevo');
     expect(sopaCrema[0].cookM).toBeFalsy();
-    expect(sopaCrema[0].reviewPlateType).toBe(true);
+    // Ya NO es un caso ambiguo: Javi confirmo sopa_crema explicitamente
+    // (RESOLVED_CORRECTIONS), asi que reviewPlateType ya no se marca.
+    expect(sopaCrema[0].reviewPlateType).toBeUndefined();
   });
 
   // DIVERGENCIA INTENCIONAL (PR2, checkpoint enum-24): las reglas
@@ -78,12 +81,13 @@ describe('VERDE: con applyPlateTypeCorrectionsToPool, el oracle de las 14 correg
     }
   });
 
-  it('ningun combo fuera del alcance documentado (PR1 + PR2) cambia de plateType', () => {
+  it('ningun combo fuera del alcance documentado (PR1 + PR2 + resoluciones humanas) cambia de plateType', () => {
     const identityKeysCorregidas = new Set([
       ...PLATETYPE_CORRECTIONS.map((e) => e.identityKey),
       ...PESCADO_PLANCHA_CORRECTIONS.map((e) => e.identityKey),
       ...CRUDO_CORRECTIONS.map((e) => e.identityKey),
       ...REVIEW_CORRECTIONS.map((e) => e.identityKey),
+      ...RESOLVED_CORRECTIONS.map((e) => e.identityKey),
     ]);
     for (let i = 0; i < RAW_POOL.length; i++) {
       const key = comboIdentityKey(RAW_POOL[i]);
@@ -109,15 +113,16 @@ describe('B.2 (checkpoint enum-24): control rojo->verde de pescado_plancha y cru
     expect(applyPlateTypeCorrections(atunCrudoRaw).plateType).toBe('crudo'); // VERDE
   });
 
-  it('caso 121 (atun/caliente_clasico/crudo/base arroz): NO se autoasigna, queda reviewPlateType:true sin cambiar plateType', () => {
+  it('caso 121 (atun/caliente_clasico/crudo/base arroz): ratificado por Javi como "bowl" (RESOLVED_CORRECTIONS), sin reviewPlateType', () => {
     const key121 = '["caliente_clasico","atun","arroz","tomate",null,"limon_hierbas","crudo"]';
     const combo121 = RAW_POOL.find((c) => comboIdentityKey(c) === key121);
     expect(combo121).toBeDefined();
-    expect(combo121.plateType).toBe('caliente_arroz');
+    expect(combo121.plateType).toBe('caliente_arroz'); // origen RAW, sin corregir
 
     const corregido121 = applyPlateTypeCorrections(combo121);
-    expect(corregido121.plateType).toBe('caliente_arroz'); // sin cambiar: contradictorio, sin regla fija
-    expect(corregido121.reviewPlateType).toBe(true);
+    // Ya NO es un caso contradictorio sin regla: Javi ratifico "bowl".
+    expect(corregido121.plateType).toBe('bowl');
+    expect(corregido121.reviewPlateType).toBeUndefined();
   });
 });
 

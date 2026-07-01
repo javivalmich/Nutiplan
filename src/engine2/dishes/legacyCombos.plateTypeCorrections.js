@@ -90,13 +90,33 @@ export const CRUDO_CORRECTIONS = Object.freeze([
 
 // Casos sin regla fija: se documentan, NO se autoasignan. Quedan con su
 // plateType actual + reviewPlateType:true (TODO cocinero).
-export const REVIEW_CORRECTIONS = Object.freeze([
-  { identityKey: '["caliente_clasico","atun","arroz","tomate",null,"limon_hierbas","crudo"]', cookM: 'crudo', P: 'atun', causa: 'tmpl caliente_clasico + cookM crudo + base arroz: contradictorio, sin regla fija -> revision humana' },
+// Vacio: los dos casos que llego a contener (huevo/calabaza/zanahoria y el
+// caso 121 atun/arroz/crudo) ya estan resueltos, ver RESOLVED_CORRECTIONS.
+export const REVIEW_CORRECTIONS = Object.freeze([]);
+
+// ─── Resoluciones ratificadas por Javi (post-revision humana) ──────────
+//
+// Casos que estaban en REVIEW_CORRECTIONS o caian en el fallback ambiguo
+// de PR1 (deriveSopaCremaGenericPlateType devolviendo null) y que Javi ya
+// ha resuelto explicitamente. Gana sobre REVIEW_CORRECTIONS y sobre la
+// regla GENERICA de PR1 -- estos identityKeys NUNCA deben volver a marcar
+// reviewPlateType.
+//
+//   - huevo/calabaza/zanahoria (cookM ausente, antes ambiguo en PR1):
+//     Javi CONFIRMA sopa_crema (crema) -- ya no es un caso ambiguo.
+//   - caso 121, atun/caliente_clasico/crudo/base arroz (antes en
+//     REVIEW_CORRECTIONS): Javi RATIFICA plateType="bowl" (poke). El bug de
+//     nombre asociado (suggestNameFromTuple ignoraba cookM:"crudo", ver
+//     DECISIONS.md D-008) se corrigio por separado.
+export const RESOLVED_CORRECTIONS = Object.freeze([
+  { identityKey: '["sopa_crema","huevo",null,"calabaza","zanahoria",null,null]', valorElegido: 'sopa_crema', causa: 'resuelto por Javi: confirma sopa_crema (crema), cookM ausente ya no es ambiguo' },
+  { identityKey: '["caliente_clasico","atun","arroz","tomate",null,"limon_hierbas","crudo"]', valorElegido: 'bowl', causa: 'resuelto por Javi: poke, plateType=bowl (antes contradictorio en REVIEW_CORRECTIONS)' },
 ]);
 
 const PESCADO_PLANCHA_BY_KEY = new Map(PESCADO_PLANCHA_CORRECTIONS.map((e) => [e.identityKey, e]));
 const CRUDO_BY_KEY = new Map(CRUDO_CORRECTIONS.map((e) => [e.identityKey, e]));
 const REVIEW_BY_KEY = new Map(REVIEW_CORRECTIONS.map((e) => [e.identityKey, e]));
+const RESOLVED_BY_KEY = new Map(RESOLVED_CORRECTIONS.map((e) => [e.identityKey, e]));
 
 /**
  * Deriva el plateType corregido para un combo con plateType "sopa_crema",
@@ -117,6 +137,8 @@ function deriveSopaCremaGenericPlateType(combo) {
 /**
  * Aplica la correccion de plateType a un combo, sin mutarlo. Evalua,
  * en orden de PRECEDENCIA (especifica antes que generica):
+ *   0. RESOLVED_CORRECTIONS (por identityKey) -> plateType ratificado por
+ *      Javi, SIN reviewPlateType (decision humana final, maxima precedencia)
  *   1. PESCADO_PLANCHA_CORRECTIONS (por identityKey) -> pescado_plancha
  *   2. CRUDO_CORRECTIONS (por identityKey) -> crudo
  *   3. REVIEW_CORRECTIONS (por identityKey) -> reviewPlateType:true,
@@ -130,6 +152,9 @@ function deriveSopaCremaGenericPlateType(combo) {
  */
 export function applyPlateTypeCorrections(combo) {
   const key = comboIdentityKey(combo);
+
+  const resuelto = RESOLVED_BY_KEY.get(key);
+  if (resuelto) return { ...combo, plateType: resuelto.valorElegido };
 
   const pescadoPlancha = PESCADO_PLANCHA_BY_KEY.get(key);
   if (pescadoPlancha) return { ...combo, plateType: pescadoPlancha.valorElegido };

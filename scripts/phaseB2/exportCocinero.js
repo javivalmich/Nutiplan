@@ -122,6 +122,7 @@ export function suggestNameFromTuple([tmpl, P, C, V, V2, S, cookM]) {
     : cookM === 'vapor' ? 'al vapor'
     : cookM === 'revuelto' ? 'revuelto'
     : cookM === 'tortilla' ? 'en tortilla'
+    : cookM === 'crudo' ? 'en crudo'
     : 'a la plancha';
   const sauceChar = sLabel ? ` con ${sLabel}` : '';
   const base = pLabel ? cap(pLabel.toLowerCase()) : 'Plato';

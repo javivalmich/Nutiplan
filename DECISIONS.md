@@ -121,3 +121,25 @@ Formato:
 - Nota: freeform entra como filas EDITORIALES (scripts/phaseB2/output/freeform.editorial.json, 64 filas,
   discriminador propio identity.id); su integración estructural (slug↔tupla) sigue diferida a Paso C.
 - Decide: Javi.
+
+## D-008 — [2026-07-01] Bug del generador de nombres (cookM "crudo" ignorado) + 3 combos re-nombrados
+- Hallazgo: `suggestNameFromTuple()` (scripts/phaseB2/exportCocinero.js), rama `caliente_clasico`, construye
+  `methodChar` con un ternario que solo cubre horno/guisado/salteado/vapor/revuelto/tortilla; cualquier otro
+  cookM (incluido "crudo") caía en el `else` final ("a la plancha") por defecto silencioso — no una decisión.
+  El diccionario COOK_LABEL ya tenía una entrada para "crudo" ("en conserva"), pero se calculaba en la variable
+  `cookDesc` y nunca se usaba (código muerto).
+- Blast radius verificado (A.1): de los 115 combos `caliente_clasico`, solo los 3 con cookM:"crudo" caían mal
+  (el resto de valores no cubiertos por el ternario, "plancha", coincide por casualidad con el texto correcto).
+  Ningún otro cookM afectado en todo el universo legacy (184 combos comparados).
+- Decisión (Javi): cookM:"crudo" se lee "en crudo" en el nombre (no "en conserva": engaña, crudo es general,
+  no solo lata). Fix: se añadió el caso explícito al ternario de `methodChar`.
+- 3 combos re-nombrados (identityKey): atún/arroz/tomate/crudo (Nº38, caso 121 de D-007 — plateType ratificado
+  como "bowl" vía RESOLVED_CORRECTIONS en legacyCombos.plateTypeCorrections.js, promovido por primera vez),
+  atún/tomate/vinagreta y atún/lechuga/pepino (ambos plateType "ensalada", YA estaban en dishes.json en main
+  con el nombre erróneo — corregidos in place, solo el campo nombre, sin tocar sus otros campos).
+- Control de discriminación: exactamente esos 3 nombres cambian (verificado comparando el nombre promovido
+  contra el "Nombre sugerido" congelado del v4.xlsx para los 178 scaffold); los 175 restantes son idénticos
+  byte a byte al xlsx.
+- dishes.json pasa de 177 a 178. antiTodo.test.js pasa a VERDE (0 pendientes) sin necesidad de editar su
+  semántica — la aserción siempre fue `expect(pendientes).toEqual([])`.
+- Decide: Javi.

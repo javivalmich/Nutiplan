@@ -31,6 +31,20 @@ export const FIELDS_TO_WRITE = Object.freeze([
   'nombre', 'rol', 'batchable', 'leftoverQuality', 'shelfLifeDays', 'energiaCocina',
 ]);
 
+// DECISIONS.md D-008: suggestNameFromTuple ignoraba cookM:"crudo" en la rama
+// caliente_clasico (defaulteaba silenciosamente a "a la plancha"). El v4.xlsx
+// se genero ANTES del fix, asi que su columna "Nombre sugerido" quedo
+// congelada con el texto viejo para estos 3 identityKeys. Son la UNICA
+// excepcion documentada al tripwire de nombre: para ellos se promueve el
+// nombre REGENERADO (ya corregido), no el texto congelado del xlsx. Ningun
+// otro identityKey esta en esta lista -- el tripwire sigue protegiendo todo
+// lo demas sin relajarse.
+export const KNOWN_NAME_CORRECTIONS = Object.freeze(new Set([
+  '["caliente_clasico","atun","arroz","tomate",null,"limon_hierbas","crudo"]',
+  '["caliente_clasico","atun",null,"tomate",null,"vinagreta","crudo"]',
+  '["caliente_clasico","atun",null,"lechuga","pepino",null,"crudo"]',
+]));
+
 /**
  * Convierte shelfLifeDays a entero. Decision de Javi: un rango "N-M" se
  * promueve al MINIMO (N). Un entero (string o number) se devuelve tal cual.
@@ -152,12 +166,16 @@ export function buildImportResult(xlsxRows, scaffoldDishes) {
     if (!dish) throw new Error(`No hay dish del scaffold en la posicion Nº=${n}`);
 
     const nombreEsperado = regenerateNombreSugerido(dish);
-    if (xr.nombre !== nombreEsperado) {
+    if (xr.nombre !== nombreEsperado && !KNOWN_NAME_CORRECTIONS.has(dish.id)) {
       throw new Error(
         `Tripwire de nombre falló en Nº=${n}: xlsx="${xr.nombre}" vs regenerado="${nombreEsperado}" (id=${dish.id}). ` +
         'El matching posicional puede haberse roto (drift entre el v4 y el scaffold actual).'
       );
     }
+    // Para los identityKeys de KNOWN_NAME_CORRECTIONS, el nombre a promover
+    // es el REGENERADO (fuente de verdad tras D-008), no el texto congelado
+    // del xlsx.
+    const nombreAPromover = KNOWN_NAME_CORRECTIONS.has(dish.id) ? nombreEsperado : xr.nombre;
 
     if (dish.reviewPlateType) {
       excluded.push({ id: dish.id, n, nombre: xr.nombre });
@@ -171,7 +189,7 @@ export function buildImportResult(xlsxRows, scaffoldDishes) {
     shelfLifeTally.set(rawShelf, tallyEntry);
 
     const editorial = {
-      nombre: xr.nombre,
+      nombre: nombreAPromover,
       rol: xr.rol,
       batchable: parseBatchable(xr.batchable),
       leftoverQuality: xr.leftoverQuality,

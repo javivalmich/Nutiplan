@@ -1,0 +1,2471 @@
+[
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",\"arroz\",\"brocoli\",null,\"limon_hierbas\",\"plancha\"]",
+    "nombre": "Pechuga de pollo a la plancha con limón, orégano y ajo con brócoli y arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",\"arroz\",\"espinacas\",null,\"pimenton_ajo\",\"horno\"]",
+    "nombre": "Pechuga de pollo al horno con pimentón ahumado y ajo con espinacas y arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",\"patata\",\"judias\",null,\"provenzal\",\"horno\"]",
+    "nombre": "Pechuga de pollo al horno con hierbas provenzales con judías verdes y patata",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",\"boniato\",\"calabacin\",null,\"pimenton_ajo\",\"horno\"]",
+    "nombre": "Pechuga de pollo al horno con pimentón ahumado y ajo con calabacín y boniato",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_boniato"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pavo\",\"patata\",\"judias\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "Pechuga de pavo al horno con limón, orégano y ajo con judías verdes y patata",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pavo\",\"arroz\",\"pimientos\",null,\"pimenton_ajo\",\"plancha\"]",
+    "nombre": "Pechuga de pavo a la plancha con pimentón ahumado y ajo con pimientos y arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"ternera\",\"patata\",\"espinacas\",null,\"romero_limon\",\"plancha\"]",
+    "nombre": "Ternera magra a la plancha con romero, limón y ajo con espinacas y patata",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"ternera\",\"arroz\",\"pimientos\",null,\"ajillo\",\"guisado\"]",
+    "nombre": "Ternera magra guisado con ajo, perejil y guindilla con pimientos y arroz blanco",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"cerdo\",\"patata\",\"zanahoria\",null,\"mostaza_miel\",\"plancha\"]",
+    "nombre": "Lomo de cerdo a la plancha con mostaza y miel con zanahoria y patata",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"cerdo\",\"boniato\",\"calabacin\",null,\"romero_limon\",\"horno\"]",
+    "nombre": "Lomo de cerdo al horno con romero, limón y ajo con calabacín y boniato",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_boniato"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"conejo\",\"patata\",\"pimientos\",null,\"ajillo\",\"horno\"]",
+    "nombre": "Conejo al horno con ajo, perejil y guindilla con pimientos y patata",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"salmon\",\"boniato\",\"espinacas\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "Salmón al horno con limón, orégano y ajo con espinacas y boniato",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_boniato"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"salmon\",\"quinoa\",\"espinacas\",null,\"soja_jengibre\",\"horno\"]",
+    "nombre": "Salmón al horno con soja baja en sal y jengibre con espinacas y quinoa",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"merluza\",\"patata\",\"judias\",null,\"ajillo\",\"horno\"]",
+    "nombre": "Merluza al horno con ajo, perejil y guindilla con judías verdes y patata",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"bacalao\",\"patata\",\"pimientos\",null,\"ajillo\",\"horno\"]",
+    "nombre": "Bacalao fresco al horno con ajo, perejil y guindilla con pimientos y patata",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"dorada\",\"patata\",\"brocoli\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "Dorada al horno con limón, orégano y ajo con brócoli y patata",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"sardinas\",\"arroz\",\"tomate\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "Sardinas a la plancha con ajo, perejil y guindilla con tomate cherry y arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"pasta\",\"pollo\",\"pasta\",\"tomate\",null,\"tomate_casero\",\"salteado\"]",
+    "nombre": "Pasta integral al pomodoro con pechuga de pollo",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"pasta\",\"atun\",\"pasta\",\"calabacin\",null,\"ajillo\",\"crudo\"]",
+    "nombre": "Pasta integral al ajillo con atún en conserva",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"pasta\",\"huevo\",\"pasta\",null,null,\"ajillo\",\"revuelto\"]",
+    "nombre": "Pasta integral al ajillo con huevos",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"legumbre\",\"lentejas\",null,\"zanahoria\",null,\"pimenton_ajo\",\"guisado\"]",
+    "nombre": "Lentejas con pimentón con zanahoria",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"legumbre\",\"garbanzos\",null,\"espinacas\",null,\"pimenton_ajo\",\"guisado\"]",
+    "nombre": "Garbanzos con pimentón con espinacas",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"legumbre\",\"alubias\",null,\"pimientos\",null,\"ajillo\",\"guisado\"]",
+    "nombre": "Alubias blancas al ajillo con pimientos",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"legumbre\",\"garbanzos\",null,\"brocoli\",null,\"curry_ligero\",\"salteado\"]",
+    "nombre": "Garbanzos al curry con brócoli",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"bowl\",\"pollo\",\"quinoa\",\"espinacas\",null,\"curry_ligero\",\"plancha\"]",
+    "nombre": "Bowl de curry de pechuga de pollo con quinoa",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "[\"bowl\",\"pavo\",\"quinoa\",\"pimientos\",null,\"limon_hierbas\",\"plancha\"]",
+    "nombre": "Bowl mediterráneo de pechuga de pavo con quinoa",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "[\"bowl\",\"pollo\",\"arroz\",\"brocoli\",null,\"soja_jengibre\",\"salteado\"]",
+    "nombre": "Bowl asiático de pechuga de pollo con arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "[\"bowl\",\"salmon\",\"quinoa\",\"pepino\",null,\"soja_jengibre\",\"crudo\"]",
+    "nombre": "Bowl asiático de salmón con quinoa",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "[\"ensalada\",\"pollo\",null,\"lechuga\",\"tomate\",\"vinagreta\",\"plancha\"]",
+    "nombre": "Pechuga de pollo en ensalada",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"ensalada\",\"atun\",null,\"lechuga\",\"tomate\",\"vinagreta\",\"crudo\"]",
+    "nombre": "Atún en conserva en ensalada",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"ensalada\",\"gambas\",null,\"lechuga\",\"pepino\",\"vinagreta\",\"plancha\"]",
+    "nombre": "Gambas en ensalada",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"gambas\",\"arroz\",\"calabacin\",null,\"ajillo\",\"salteado\"]",
+    "nombre": "Gambas salteado con ajo, perejil y guindilla con calabacín y arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"calamares\",\"arroz\",\"pimientos\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "Calamares a la plancha con ajo, perejil y guindilla con pimientos y arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"huevo\",\"arroz\",\"espinacas\",null,\"ajillo\",\"revuelto\"]",
+    "nombre": "Huevos revuelto con ajo, perejil y guindilla con espinacas y arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"huevo\",\"patata\",\"pimientos\",null,\"pimenton_ajo\",\"tortilla\"]",
+    "nombre": "Huevos en tortilla con pimentón ahumado y ajo con pimientos y patata",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"ternera\",\"patata\",\"zanahoria\",null,\"ajillo\",\"guisado\"]",
+    "nombre": "Ternera con patata y zanahoria guisado",
+    "rol": "ancla",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "alto",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",\"pasta\",\"tomate\",null,\"pimenton_ajo\",\"salteado\"]",
+    "nombre": "Pechuga de pollo salteado con pimentón ahumado y ajo con tomate cherry y pasta integral",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"ensalada\",\"pollo\",\"quinoa\",\"tomate\",\"pepino\",\"limon_hierbas\",\"plancha\"]",
+    "nombre": "Pechuga de pollo en ensalada con quinoa",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"merluza\",\"arroz\",\"espinacas\",null,\"ajillo\",\"horno\"]",
+    "nombre": "Merluza al horno con ajo, perejil y guindilla con espinacas y arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"pasta\",\"ternera\",\"pasta\",\"calabacin\",null,\"tomate_casero\",\"salteado\"]",
+    "nombre": "Pasta integral al pomodoro con ternera magra",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"pasta\",\"pollo\",\"pasta\",\"espinacas\",null,\"ajillo\",\"salteado\"]",
+    "nombre": "Pasta integral al ajillo con pechuga de pollo",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"legumbre\",\"lentejas\",\"arroz\",\"zanahoria\",null,\"pimenton_ajo\",\"guisado\"]",
+    "nombre": "Lentejas con arroz y zanahoria guisado",
+    "rol": "ancla",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"bowl\",\"atun\",\"arroz\",\"pepino\",\"tomate\",\"vinagreta\",\"crudo\"]",
+    "nombre": "Bowl proteico de atún en conserva con arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "[\"bowl\",\"pollo\",\"boniato\",\"calabacin\",null,\"pimenton_ajo\",\"horno\"]",
+    "nombre": "Bowl proteico de pechuga de pollo con boniato",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"sardinas\",\"patata\",\"pimientos\",null,\"vinagreta\",\"plancha\"]",
+    "nombre": "Sardinas a la plancha con vinagre de Módena y mostaza con pimientos y patata",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"sopa_crema\",\"pollo\",null,\"brocoli\",null,\"limon_hierbas\",\"plancha\"]",
+    "nombre": "Crema de brócoli con pechuga de pollo encima",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"sopa_crema\",\"merluza\",null,\"brocoli\",null,\"limon_hierbas\",\"plancha\"]",
+    "nombre": "Crema de brócoli con merluza encima",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "pescado_plancha"
+  },
+  {
+    "id": "[\"sopa_crema\",\"gambas\",null,\"calabacin\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "Crema de calabacín con gambas encima",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "pescado_plancha"
+  },
+  {
+    "id": "[\"sopa_crema\",\"huevo\",null,\"espinacas\",null,\"limon_hierbas\",\"plancha\"]",
+    "nombre": "Crema de espinacas con huevos encima",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "huevo_plancha"
+  },
+  {
+    "id": "[\"sopa_crema\",\"atun\",null,\"tomate\",\"pepino\",null,\"crudo\"]",
+    "nombre": "Crema de tomate cherry con atún en conserva encima",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "crudo"
+  },
+  {
+    "id": "[\"sopa_crema\",\"bacalao\",null,\"zanahoria\",\"calabaza\",\"ajillo\",\"guisado\"]",
+    "nombre": "Crema de zanahoria con bacalao fresco encima",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "guiso"
+  },
+  {
+    "id": "[\"sopa_crema\",\"huevo\",null,\"tomate\",null,null,\"crudo\"]",
+    "nombre": "Huevo con tomate en crudo",
+    "rol": "ancla",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "crudo"
+  },
+  {
+    "id": "[\"pasta\",\"gambas\",\"pasta\",\"tomate\",null,\"ajillo\",\"salteado\"]",
+    "nombre": "Pasta integral al ajillo con gambas",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"pasta\",\"gambas\",\"pasta\",\"calabacin\",null,\"ajillo\",\"salteado\"]",
+    "nombre": "Pasta integral al ajillo con gambas",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"pasta\",\"salmon\",\"pasta\",\"espinacas\",null,\"limon_hierbas\",\"plancha\"]",
+    "nombre": "Pasta integral con proteína con salmón",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"pasta\",\"merluza\",\"pasta\",\"calabacin\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "Pasta integral al ajillo con merluza",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"pasta\",\"pavo\",\"pasta\",\"tomate\",null,\"tomate_casero\",\"salteado\"]",
+    "nombre": "Pasta integral al pomodoro con pechuga de pavo",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"pasta\",\"cerdo\",\"pasta\",\"pimientos\",null,\"pimenton_ajo\",\"salteado\"]",
+    "nombre": "Pasta integral con proteína con lomo de cerdo",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"pasta\",\"ternera\",\"pasta\",\"berenjena\",null,\"tomate_casero\",\"salteado\"]",
+    "nombre": "Pasta integral al pomodoro con ternera magra",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"legumbre\",\"lentejas\",null,\"espinacas\",null,\"pimenton_ajo\",\"guisado\"]",
+    "nombre": "Lentejas con pimentón con espinacas",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"legumbre\",\"lentejas\",null,\"pimientos\",null,\"pimenton_ajo\",\"guisado\"]",
+    "nombre": "Lentejas con pimentón con pimientos",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"legumbre\",\"lentejas\",null,\"calabacin\",null,\"ajillo\",\"guisado\"]",
+    "nombre": "Lentejas al ajillo con calabacín",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"legumbre\",\"garbanzos\",null,\"zanahoria\",null,\"pimenton_ajo\",\"guisado\"]",
+    "nombre": "Garbanzos con pimentón con zanahoria",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"legumbre\",\"garbanzos\",null,\"tomate\",null,\"ajillo\",\"salteado\"]",
+    "nombre": "Garbanzos al ajillo con tomate cherry",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"legumbre\",\"garbanzos\",null,\"pimientos\",null,\"pimenton_ajo\",\"guisado\"]",
+    "nombre": "Garbanzos con pimientos guisado",
+    "rol": "ancla",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"legumbre\",\"alubias\",null,\"acelgas\",null,\"ajillo\",\"guisado\"]",
+    "nombre": "Alubias blancas al ajillo con acelgas",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"legumbre\",\"garbanzos\",null,\"berenjena\",null,\"curry_ligero\",\"salteado\"]",
+    "nombre": "Garbanzos con berenjena salteado",
+    "rol": "ancla",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"bowl\",\"salmon\",\"arroz\",\"espinacas\",null,\"soja_jengibre\",\"horno\"]",
+    "nombre": "Bowl asiático de salmón con arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "[\"bowl\",\"atun\",\"quinoa\",\"pepino\",\"tomate\",\"vinagreta\",\"crudo\"]",
+    "nombre": "Bowl proteico de atún en conserva con quinoa",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "[\"bowl\",\"gambas\",\"arroz\",\"pepino\",null,\"limon_hierbas\",\"plancha\"]",
+    "nombre": "Bowl mediterráneo de gambas con arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "[\"bowl\",\"ternera\",\"arroz\",\"tomate\",null,\"vinagreta\",\"plancha\"]",
+    "nombre": "Bowl proteico de ternera magra con arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "[\"bowl\",\"merluza\",\"quinoa\",\"espinacas\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "Bowl mediterráneo de merluza con quinoa",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "[\"bowl\",\"pavo\",\"boniato\",\"calabacin\",null,\"pimenton_ajo\",\"horno\"]",
+    "nombre": "Bowl proteico de pechuga de pavo con boniato",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "[\"ensalada\",\"salmon\",null,\"lechuga\",\"pepino\",\"limon_hierbas\",\"plancha\"]",
+    "nombre": "Salmón en ensalada",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"ensalada\",\"pavo\",null,\"lechuga\",\"tomate\",\"vinagreta\",\"plancha\"]",
+    "nombre": "Pechuga de pavo en ensalada",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"ensalada\",\"gambas\",null,\"lechuga\",\"tomate\",\"vinagreta\",\"plancha\"]",
+    "nombre": "Gambas en ensalada",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"ensalada\",\"atun\",null,\"tomate\",\"pepino\",\"vinagreta\",\"crudo\"]",
+    "nombre": "Atún en conserva en ensalada",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"ensalada\",\"pollo\",\"quinoa\",\"pepino\",\"zanahoria\",\"limon_hierbas\",\"plancha\"]",
+    "nombre": "Pechuga de pollo en ensalada con quinoa",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"conejo\",\"arroz\",\"zanahoria\",null,\"ajillo\",\"guisado\"]",
+    "nombre": "Conejo guisado con ajo, perejil y guindilla con zanahoria y arroz blanco",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"conejo\",\"boniato\",\"espinacas\",null,\"romero_limon\",\"horno\"]",
+    "nombre": "Conejo al horno con romero, limón y ajo con espinacas y boniato",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_boniato"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"conejo\",\"arroz\",\"berenjena\",null,\"pimenton_ajo\",\"horno\"]",
+    "nombre": "Conejo al horno con pimentón ahumado y ajo con berenjena y arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"dorada\",\"arroz\",\"calabacin\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "Dorada al horno con limón, orégano y ajo con calabacín y arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"bacalao\",\"arroz\",\"espinacas\",null,\"ajillo\",\"horno\"]",
+    "nombre": "Bacalao fresco al horno con ajo, perejil y guindilla con espinacas y arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"bacalao\",\"boniato\",\"tomate\",null,\"pimenton_ajo\",\"horno\"]",
+    "nombre": "Bacalao fresco al horno con pimentón ahumado y ajo con tomate cherry y boniato",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_boniato"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"cerdo\",\"patata\",\"berenjena\",null,\"pimenton_ajo\",\"horno\"]",
+    "nombre": "Lomo de cerdo al horno con pimentón ahumado y ajo con berenjena y patata",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pavo\",\"arroz\",\"berenjena\",null,\"tomate_casero\",\"horno\"]",
+    "nombre": "Pechuga de pavo al horno con tomate casero con berenjena y arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"calamares\",\"arroz\",\"calabacin\",null,\"ajillo\",\"salteado\"]",
+    "nombre": "Calamares salteado con ajo, perejil y guindilla con calabacín y arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"cerdo\",\"patata\",\"coles\",null,\"mostaza_miel\",\"horno\"]",
+    "nombre": "Lomo de cerdo al horno con mostaza y miel con col de bruselas y patata",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",\"patata\",\"puerro\",null,\"provenzal\",\"horno\"]",
+    "nombre": "Pechuga de pollo al horno con hierbas provenzales con puerro y patata",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"merluza\",\"arroz\",\"puerro\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "Merluza al horno con limón, orégano y ajo con puerro y arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"sopa_crema\",\"pollo\",null,\"puerro\",null,\"provenzal\",\"guisado\"]",
+    "nombre": "Crema de puerro con pechuga de pollo encima",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "guiso"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"ternera\",\"arroz\",\"champiñones\",null,\"ajillo\",\"salteado\"]",
+    "nombre": "Ternera magra salteado con ajo, perejil y guindilla con champiñones y arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"pasta\",\"pollo\",\"pasta\",\"champiñones\",null,\"provenzal\",\"salteado\"]",
+    "nombre": "Pasta integral con proteína con pechuga de pollo",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"huevo\",\"patata\",\"champiñones\",null,\"ajillo\",\"revuelto\"]",
+    "nombre": "Huevos revuelto con ajo, perejil y guindilla con champiñones y patata",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"salmon\",\"arroz\",\"esparragos\",null,\"limon_hierbas\",\"plancha\"]",
+    "nombre": "Salmón a la plancha con limón, orégano y ajo con espárragos y arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"bowl\",\"pollo\",\"quinoa\",\"esparragos\",null,\"limon_hierbas\",\"plancha\"]",
+    "nombre": "Bowl mediterráneo de pechuga de pollo con quinoa",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "[\"ensalada\",\"gambas\",null,\"esparragos\",\"tomate\",\"vinagreta\",\"plancha\"]",
+    "nombre": "Gambas en ensalada",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"conejo\",\"patata\",\"alcachofa\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "Conejo al horno con limón, orégano y ajo con alcachofas y patata",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"cerdo\",\"arroz\",\"alcachofa\",null,\"ajillo\",\"guisado\"]",
+    "nombre": "Lomo de cerdo guisado con ajo, perejil y guindilla con alcachofas y arroz blanco",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"legumbre\",\"garbanzos\",null,\"alcachofa\",null,\"limon_hierbas\",\"guisado\"]",
+    "nombre": "Garbanzos estofadas con alcachofas",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "legumbre"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",null,\"brocoli\",null,\"limon_hierbas\",\"plancha\"]",
+    "nombre": "Pechuga de pollo a la plancha con limón, orégano y ajo con brócoli",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",null,\"espinacas\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "Pechuga de pollo a la plancha con ajo, perejil y guindilla con espinacas",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",null,\"calabacin\",null,\"provenzal\",\"plancha\"]",
+    "nombre": "Pechuga de pollo a la plancha con hierbas provenzales con calabacín",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",null,\"coles\",null,\"romero_limon\",\"horno\"]",
+    "nombre": "Pechuga de pollo al horno con romero, limón y ajo con col de bruselas",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",null,\"pimientos\",null,\"pimenton_ajo\",\"horno\"]",
+    "nombre": "Pechuga de pollo al horno con pimentón ahumado y ajo con pimientos",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",null,\"berenjena\",null,\"provenzal\",\"horno\"]",
+    "nombre": "Pechuga de pollo al horno con hierbas provenzales con berenjena",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pavo\",null,\"brocoli\",null,\"limon_hierbas\",\"plancha\"]",
+    "nombre": "Pechuga de pavo a la plancha con limón, orégano y ajo con brócoli",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pavo\",null,\"judias\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "Pechuga de pavo a la plancha con ajo, perejil y guindilla con judías verdes",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pavo\",null,\"calabacin\",null,\"curry_ligero\",\"salteado\"]",
+    "nombre": "Pechuga de pavo salteado con curry y cúrcuma con calabacín",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"ternera\",null,\"espinacas\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "Ternera magra a la plancha con ajo, perejil y guindilla con espinacas",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"ternera\",null,\"pimientos\",null,\"romero_limon\",\"plancha\"]",
+    "nombre": "Ternera magra a la plancha con romero, limón y ajo con pimientos",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"cerdo\",null,\"brocoli\",null,\"mostaza_miel\",\"plancha\"]",
+    "nombre": "Lomo de cerdo a la plancha con mostaza y miel con brócoli",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"cerdo\",null,\"pimientos\",null,\"ajillo\",\"horno\"]",
+    "nombre": "Lomo de cerdo al horno con ajo, perejil y guindilla con pimientos",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"merluza\",null,\"judias\",null,\"ajillo\",\"horno\"]",
+    "nombre": "Merluza al horno con ajo, perejil y guindilla con judías verdes",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pescado_horno"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"dorada\",null,\"calabacin\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "Dorada al horno con limón, orégano y ajo con calabacín",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pescado_horno"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"bacalao\",null,\"pimientos\",null,\"ajillo\",\"horno\"]",
+    "nombre": "Bacalao fresco al horno con ajo, perejil y guindilla con pimientos",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pescado_horno"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"salmon\",null,\"espinacas\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "Salmón al horno con limón, orégano y ajo con espinacas",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pescado_horno"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"sardinas\",null,\"tomate\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "Sardinas a la plancha con ajo, perejil y guindilla con tomate cherry",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pescado_plancha"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"huevo\",null,\"espinacas\",null,\"ajillo\",\"revuelto\"]",
+    "nombre": "Huevos revuelto con ajo, perejil y guindilla con espinacas",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "huevo_plancha"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"huevo\",null,\"calabacin\",null,\"pimenton_ajo\",\"tortilla\"]",
+    "nombre": "Huevos en tortilla con pimentón ahumado y ajo con calabacín",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "huevo_plancha"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"huevo\",null,\"pimientos\",null,\"pimenton_ajo\",\"revuelto\"]",
+    "nombre": "Huevos revuelto con pimentón ahumado y ajo con pimientos",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "huevo_plancha"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"huevo\",null,\"tomate\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "Huevos a la plancha con ajo, perejil y guindilla con tomate cherry",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "huevo_plancha"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"huevo\",null,\"zanahoria\",null,\"pimenton_ajo\",\"tortilla\"]",
+    "nombre": "Huevos en tortilla con pimentón ahumado y ajo con zanahoria",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "huevo_plancha"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"huevo\",null,\"brocoli\",null,\"limon_hierbas\",\"revuelto\"]",
+    "nombre": "Huevos revuelto con limón, orégano y ajo con brócoli",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "huevo_plancha"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"atun\",null,\"tomate\",null,\"vinagreta\",\"crudo\"]",
+    "nombre": "Atún en conserva a la plancha con vinagre de Módena y mostaza con tomate cherry",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"atun\",null,\"lechuga\",\"pepino\",null,\"crudo\"]",
+    "nombre": "Atún en conserva a la plancha con lechuga mixta y pepino",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pavo\",null,\"calabacin\",null,\"mostaza_miel\",\"plancha\"]",
+    "nombre": "Pechuga de pavo a la plancha con mostaza y miel con calabacín",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"merluza\",null,\"calabacin\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "Merluza al horno con limón, orégano y ajo con calabacín",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pescado_horno"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"dorada\",null,\"judias\",null,\"ajillo\",\"horno\"]",
+    "nombre": "Dorada al horno con ajo, perejil y guindilla con judías verdes",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pescado_horno"
+  },
+  {
+    "id": "[\"ensalada\",\"gambas\",null,\"lechuga\",\"tomate\",\"limon_hierbas\",\"plancha\"]",
+    "nombre": "Gambas en ensalada",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"sopa_crema\",\"pollo\",null,\"calabaza\",null,\"provenzal\",\"plancha\"]",
+    "nombre": "Crema de calabaza con pechuga de pollo encima",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"sopa_crema\",\"huevo\",null,\"calabacin\",\"zanahoria\",null,\"plancha\"]",
+    "nombre": "Crema de calabacín con huevos encima",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "huevo_plancha"
+  },
+  {
+    "id": "[\"sopa_crema\",\"gambas\",null,\"calabaza\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "Crema de calabaza con gambas encima",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "pescado_plancha"
+  },
+  {
+    "id": "[\"sopa_crema\",\"atun\",null,\"tomate\",\"pimientos\",null,\"crudo\"]",
+    "nombre": "Atún con tomate y pimientos en crudo",
+    "rol": "ancla",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "frio",
+    "plateType": "crudo"
+  },
+  {
+    "id": "[\"sopa_crema\",\"pollo\",null,\"zanahoria\",\"calabacin\",null,\"guisado\"]",
+    "nombre": "Crema de zanahoria con pechuga de pollo encima",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "guiso"
+  },
+  {
+    "id": "[\"ensalada\",\"atun\",null,\"lechuga\",\"pepino\",\"vinagreta\",\"crudo\"]",
+    "nombre": "Atún en conserva en ensalada",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"ensalada\",\"ternera\",null,\"lechuga\",\"tomate\",\"vinagreta\",\"plancha\"]",
+    "nombre": "Ternera magra en ensalada",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"gambas\",null,\"calabacin\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "Gambas a la plancha con ajo, perejil y guindilla con calabacín",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pescado_plancha"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"calamares\",null,\"pimientos\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "Calamares a la plancha con ajo, perejil y guindilla con pimientos",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pescado_plancha"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"conejo\",null,\"espinacas\",null,\"ajillo\",\"horno\"]",
+    "nombre": "Conejo al horno con ajo, perejil y guindilla con espinacas",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"dorada\",null,\"espinacas\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "Dorada al horno con limón, orégano y ajo con espinacas",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pescado_horno"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"bacalao\",null,\"espinacas\",null,\"ajillo\",\"horno\"]",
+    "nombre": "Bacalao fresco al horno con ajo, perejil y guindilla con espinacas",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pescado_horno"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"ternera\",null,\"berenjena\",null,\"pimenton_ajo\",\"plancha\"]",
+    "nombre": "Ternera magra a la plancha con pimentón ahumado y ajo con berenjena",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pavo\",null,\"berenjena\",null,\"tomate_casero\",\"horno\"]",
+    "nombre": "Pechuga de pavo al horno con tomate casero con berenjena",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"calamares\",null,\"calabacin\",null,\"ajillo\",\"salteado\"]",
+    "nombre": "Calamares salteado con ajo, perejil y guindilla con calabacín",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"cerdo\",null,\"coles\",null,\"mostaza_miel\",\"horno\"]",
+    "nombre": "Lomo de cerdo al horno con mostaza y miel con col de bruselas",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"cerdo\",null,\"acelgas\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "Lomo de cerdo a la plancha con ajo, perejil y guindilla con acelgas",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",null,\"puerro\",null,\"provenzal\",\"horno\"]",
+    "nombre": "Pechuga de pollo al horno con hierbas provenzales con puerro",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"sopa_crema\",\"pollo\",null,\"puerro\",\"zanahoria\",null,\"guisado\"]",
+    "nombre": "Crema de puerro con pechuga de pollo encima",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "guiso"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"ternera\",null,\"champiñones\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "Ternera magra a la plancha con ajo, perejil y guindilla con champiñones",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",null,\"champiñones\",null,\"provenzal\",\"salteado\"]",
+    "nombre": "Pechuga de pollo salteado con hierbas provenzales con champiñones",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"huevo\",null,\"champiñones\",null,\"ajillo\",\"revuelto\"]",
+    "nombre": "Huevos revuelto con ajo, perejil y guindilla con champiñones",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "huevo_plancha"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"salmon\",null,\"esparragos\",null,\"limon_hierbas\",\"plancha\"]",
+    "nombre": "Salmón a la plancha con limón, orégano y ajo con espárragos",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pescado_plancha"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"huevo\",null,\"esparragos\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "Huevos a la plancha con ajo, perejil y guindilla con espárragos",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "huevo_plancha"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"conejo\",null,\"alcachofa\",null,\"ajillo\",\"horno\"]",
+    "nombre": "Conejo al horno con ajo, perejil y guindilla con alcachofas",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"merluza\",null,\"alcachofa\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "Merluza al horno con limón, orégano y ajo con alcachofas",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pescado_horno"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",\"patata\",\"espinacas\",null,\"ajillo\",\"horno\"]",
+    "nombre": "Pechuga de pollo al horno con ajo, perejil y guindilla con espinacas y patata",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",\"boniato\",\"pimientos\",null,\"provenzal\",\"horno\"]",
+    "nombre": "Pechuga de pollo al horno con hierbas provenzales con pimientos y boniato",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pavo\",\"arroz\",\"calabacin\",null,\"curry_ligero\",\"salteado\"]",
+    "nombre": "Pechuga de pavo salteado con curry y cúrcuma con calabacín y arroz blanco",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pavo\",\"patata\",\"judias\",null,\"ajillo\",\"horno\"]",
+    "nombre": "Pechuga de pavo al horno con ajo, perejil y guindilla con judías verdes y patata",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pavo\",\"boniato\",\"espinacas\",null,\"mostaza_miel\",\"horno\"]",
+    "nombre": "Pechuga de pavo al horno con mostaza y miel con espinacas y boniato",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"ternera\",\"patata\",\"pimientos\",null,\"romero_limon\",\"plancha\"]",
+    "nombre": "Ternera magra a la plancha con romero, limón y ajo con pimientos y patata",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"ternera\",\"arroz\",\"champiñones\",null,\"ajillo\",\"plancha\"]",
+    "nombre": "Ternera magra a la plancha con ajo, perejil y guindilla con champiñones y arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"ternera\",\"boniato\",\"brocoli\",null,\"pimenton_ajo\",\"horno\"]",
+    "nombre": "Ternera magra al horno con pimentón ahumado y ajo con brócoli y boniato",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"cerdo\",\"arroz\",\"pimientos\",null,\"ajillo\",\"horno\"]",
+    "nombre": "Lomo de cerdo al horno con ajo, perejil y guindilla con pimientos y arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"merluza\",\"patata\",\"judias\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "Merluza al horno con limón, orégano y ajo con judías verdes y patata",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"merluza\",\"arroz\",\"calabacin\",null,\"ajillo\",\"horno\"]",
+    "nombre": "Merluza al horno con ajo, perejil y guindilla con calabacín y arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"bacalao\",\"arroz\",\"espinacas\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "Bacalao fresco al horno con limón, orégano y ajo con espinacas y arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"salmon\",\"arroz\",\"esparragos\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "Salmón al horno con limón, orégano y ajo con espárragos y arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"salmon\",\"patata\",\"espinacas\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "Salmón al horno con limón, orégano y ajo con espinacas y patata",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"dorada\",\"patata\",\"calabacin\",null,\"limon_hierbas\",\"horno\"]",
+    "nombre": "Dorada al horno con limón, orégano y ajo con calabacín y patata",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"dorada\",\"arroz\",\"judias\",null,\"ajillo\",\"horno\"]",
+    "nombre": "Dorada al horno con ajo, perejil y guindilla con judías verdes y arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"conejo\",\"patata\",\"espinacas\",null,\"romero_limon\",\"horno\"]",
+    "nombre": "Conejo al horno con romero, limón y ajo con espinacas y patata",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"conejo\",\"arroz\",\"champiñones\",null,\"ajillo\",\"horno\"]",
+    "nombre": "Conejo al horno con ajo, perejil y guindilla con champiñones y arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pollo\",\"arroz\",\"brocoli\",null,\"pimenton_ajo\",\"plancha\"]",
+    "nombre": "Pechuga de pollo a la plancha con pimentón ahumado y ajo con brócoli y arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_arroz"
+  },
+  {
+    "id": "[\"caliente_clasico\",\"pavo\",\"boniato\",\"judias\",null,\"curry_ligero\",\"plancha\"]",
+    "nombre": "Pechuga de pavo a la plancha con curry y cúrcuma con judías verdes y boniato",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_boniato"
+  }
+]

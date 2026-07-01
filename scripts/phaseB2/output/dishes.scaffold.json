@@ -951,7 +951,8 @@
       "comida"
     ],
     "tempFeel": "frio",
-    "plateType": "caliente_arroz"
+    "plateType": "caliente_arroz",
+    "reviewPlateType": true
   },
   {
     "id": "[\"ensalada\",\"pollo\",\"quinoa\",\"tomate\",\"pepino\",\"limon_hierbas\",\"plancha\"]",
@@ -1201,7 +1202,7 @@
       "comida"
     ],
     "tempFeel": "muy_caliente",
-    "plateType": "plancha_verdura"
+    "plateType": "pescado_plancha"
   },
   {
     "id": "[\"sopa_crema\",\"gambas\",null,\"calabacin\",null,\"ajillo\",\"plancha\"]",
@@ -1226,7 +1227,7 @@
       "comida"
     ],
     "tempFeel": "muy_caliente",
-    "plateType": "plancha_verdura"
+    "plateType": "pescado_plancha"
   },
   {
     "id": "[\"sopa_crema\",\"huevo\",null,\"espinacas\",null,\"limon_hierbas\",\"plancha\"]",
@@ -1276,7 +1277,7 @@
       "comida"
     ],
     "tempFeel": "frio",
-    "plateType": "ensalada"
+    "plateType": "crudo"
   },
   {
     "id": "[\"sopa_crema\",\"bacalao\",null,\"zanahoria\",\"calabaza\",\"ajillo\",\"guisado\"]",
@@ -1326,7 +1327,7 @@
       "comida"
     ],
     "tempFeel": "frio",
-    "plateType": "ensalada"
+    "plateType": "crudo"
   },
   {
     "id": "[\"pasta\",\"gambas\",\"pasta\",\"tomate\",null,\"ajillo\",\"salteado\"]",
@@ -2977,7 +2978,7 @@
       "cena"
     ],
     "tempFeel": "caliente",
-    "plateType": "pescado_horno"
+    "plateType": "pescado_plancha"
   },
   {
     "id": "[\"caliente_clasico\",\"huevo\",null,\"espinacas\",null,\"ajillo\",\"revuelto\"]",
@@ -3378,7 +3379,7 @@
       "cena"
     ],
     "tempFeel": "muy_caliente",
-    "plateType": "plancha_verdura"
+    "plateType": "pescado_plancha"
   },
   {
     "id": "[\"sopa_crema\",\"atun\",null,\"tomate\",\"pimientos\",null,\"crudo\"]",
@@ -3403,7 +3404,7 @@
       "cena"
     ],
     "tempFeel": "frio",
-    "plateType": "ensalada"
+    "plateType": "crudo"
   },
   {
     "id": "[\"sopa_crema\",\"pollo\",null,\"zanahoria\",\"calabacin\",null,\"guisado\"]",
@@ -3503,7 +3504,7 @@
       "cena"
     ],
     "tempFeel": "caliente",
-    "plateType": "plancha_verdura"
+    "plateType": "pescado_plancha"
   },
   {
     "id": "[\"caliente_clasico\",\"calamares\",null,\"pimientos\",null,\"ajillo\",\"plancha\"]",
@@ -3528,7 +3529,7 @@
       "cena"
     ],
     "tempFeel": "caliente",
-    "plateType": "plancha_verdura"
+    "plateType": "pescado_plancha"
   },
   {
     "id": "[\"caliente_clasico\",\"conejo\",null,\"espinacas\",null,\"ajillo\",\"horno\"]",
@@ -3878,7 +3879,7 @@
       "cena"
     ],
     "tempFeel": "caliente",
-    "plateType": "pescado_horno"
+    "plateType": "pescado_plancha"
   },
   {
     "id": "[\"caliente_clasico\",\"huevo\",null,\"esparragos\",null,\"ajillo\",\"plancha\"]",

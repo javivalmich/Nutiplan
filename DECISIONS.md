@@ -107,3 +107,17 @@ Formato:
   tmpl:"sopa_crema", y arreglarla diverge la paridad de deriveTempFeel o arrastra la derivación de
   estructura (blast radius mayor). Se aborda en checkpoint aparte.
 - Decide: Javi.
+
+## D-007 — [2026-06-30] Enum plateType a 24 + re-derivación 242 + freeform en anotación
+- Decisión: enum a 24 (rename pescado_salsa→en_salsa; add pescado_plancha, airfryer, crudo). Re-derivación de los
+  178 (pescado+plancha→pescado_plancha con precedencia sobre la genérica de PR1; "X en crudo"→crudo) y fusión
+  editorial de los 64 freeform en el xlsx.
+- Regla de precedencia: la regla específica (pescado+plancha, crudo) gana a la genérica (sopa_crema→
+  plancha_verdura/ensalada de PR1) — implementada en legacyCombos.plateTypeCorrections.js evaluando
+  PESCADO_PLANCHA_CORRECTIONS/CRUDO_CORRECTIONS por identityKey antes del fallback genérico por cookM+P.
+- Casos a revisión humana: línea 121 (atún, tmpl caliente_clasico, cookM crudo, base arroz — contradictorio,
+  sin regla fija) y, en el lote freeform, bibimbap_ternera_huevo (dudoso pese a sugerir salteado_wok),
+  gyozas_verduras y papas_mojo_pollo (plateType libre sin ninguna regla de mapeo) → reviewPlateType:true.
+- Nota: freeform entra como filas EDITORIALES (scripts/phaseB2/output/freeform.editorial.json, 64 filas,
+  discriminador propio identity.id); su integración estructural (slug↔tupla) sigue diferida a Paso C.
+- Decide: Javi.

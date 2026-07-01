@@ -21,11 +21,13 @@ export const TEMP_FEELS = Object.freeze(['frio', 'caliente', 'muy_caliente']);
 export const ENERGIA_COCINA_NIVELES = Object.freeze(['bajo', 'medio', 'alto']);
 export const LEFTOVER_QUALITIES = Object.freeze(['baja', 'media', 'alta']);
 export const ROLES = Object.freeze(['ancla', 'rotativo', 'capricho']);
+// Enum a 24 (checkpoint enum-24): pescado_salsa renombrado a en_salsa;
+// se añaden pescado_plancha, airfryer, crudo.
 export const PLATE_TYPES = Object.freeze([
-  'caliente_arroz', 'caliente_patata', 'caliente_boniato', 'plancha_verdura', 'pescado_horno',
-  'pescado_salsa', 'asado', 'legumbre', 'guiso', 'sopa_crema', 'arroz_plato', 'pasta', 'masa',
-  'gratinado', 'relleno', 'huevo_plancha', 'tortilla', 'ensalada', 'bowl', 'salteado_wok',
-  'bocado_mano',
+  'caliente_arroz', 'caliente_patata', 'caliente_boniato', 'plancha_verdura', 'pescado_plancha',
+  'pescado_horno', 'en_salsa', 'asado', 'legumbre', 'guiso', 'sopa_crema', 'arroz_plato', 'pasta',
+  'masa', 'gratinado', 'relleno', 'huevo_plancha', 'tortilla', 'ensalada', 'bowl', 'salteado_wok',
+  'bocado_mano', 'airfryer', 'crudo',
 ]);
 
 const REQUIRED_FIELDS = Object.freeze([

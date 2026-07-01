@@ -30,7 +30,7 @@ export const PLATE_TYPES = Object.freeze([
   'bocado_mano', 'airfryer', 'crudo',
 ]);
 
-const REQUIRED_FIELDS = Object.freeze([
+export const REQUIRED_FIELDS = Object.freeze([
   'id',
   'nombre',
   'rol',

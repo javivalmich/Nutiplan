@@ -522,6 +522,20 @@
     "plateType": "pasta"
   },
   {
+    "id": "[\"caliente_clasico\",\"atun\",\"arroz\",\"tomate\",null,\"limon_hierbas\",\"crudo\"]",
+    "nombre": "Atún en conserva en crudo con limón, orégano y ajo con tomate cherry y arroz blanco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
     "id": "[\"ensalada\",\"pollo\",\"quinoa\",\"tomate\",\"pepino\",\"limon_hierbas\",\"plancha\"]",
     "nombre": "Pechuga de pollo en ensalada con quinoa",
     "rol": "rotativo",
@@ -1742,7 +1756,7 @@
   },
   {
     "id": "[\"caliente_clasico\",\"atun\",null,\"tomate\",null,\"vinagreta\",\"crudo\"]",
-    "nombre": "Atún en conserva a la plancha con vinagre de Módena y mostaza con tomate cherry",
+    "nombre": "Atún en conserva en crudo con vinagre de Módena y mostaza con tomate cherry",
     "rol": "rotativo",
     "batchable": false,
     "leftoverQuality": "baja",
@@ -1756,7 +1770,7 @@
   },
   {
     "id": "[\"caliente_clasico\",\"atun\",null,\"lechuga\",\"pepino\",null,\"crudo\"]",
-    "nombre": "Atún en conserva a la plancha con lechuga mixta y pepino",
+    "nombre": "Atún en conserva en crudo con lechuga mixta y pepino",
     "rol": "rotativo",
     "batchable": false,
     "leftoverQuality": "baja",
@@ -1837,6 +1851,20 @@
     ],
     "tempFeel": "muy_caliente",
     "plateType": "plancha_verdura"
+  },
+  {
+    "id": "[\"sopa_crema\",\"huevo\",null,\"calabaza\",\"zanahoria\",null,null]",
+    "nombre": "Crema de calabaza con huevos encima",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "sopa_crema"
   },
   {
     "id": "[\"sopa_crema\",\"huevo\",null,\"calabacin\",\"zanahoria\",null,\"plancha\"]",

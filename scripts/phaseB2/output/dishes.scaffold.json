@@ -930,12 +930,12 @@
   },
   {
     "id": "[\"caliente_clasico\",\"atun\",\"arroz\",\"tomate\",null,\"limon_hierbas\",\"crudo\"]",
-    "rol": "TODO",
-    "batchable": "TODO",
-    "leftoverQuality": "TODO",
-    "shelfLifeDays": "TODO",
-    "energiaCocina": "TODO",
-    "nombre": "TODO",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "nombre": "Atún en conserva en crudo con limón, orégano y ajo con tomate cherry y arroz blanco",
     "proteinType": "TODO",
     "digestiveLoad": "TODO",
     "satietyScore": "TODO",
@@ -951,8 +951,7 @@
       "comida"
     ],
     "tempFeel": "frio",
-    "plateType": "caliente_arroz",
-    "reviewPlateType": true
+    "plateType": "bowl"
   },
   {
     "id": "[\"ensalada\",\"pollo\",\"quinoa\",\"tomate\",\"pepino\",\"limon_hierbas\",\"plancha\"]",
@@ -3137,7 +3136,7 @@
     "leftoverQuality": "baja",
     "shelfLifeDays": 1,
     "energiaCocina": "bajo",
-    "nombre": "Atún en conserva a la plancha con vinagre de Módena y mostaza con tomate cherry",
+    "nombre": "Atún en conserva en crudo con vinagre de Módena y mostaza con tomate cherry",
     "proteinType": "TODO",
     "digestiveLoad": "TODO",
     "satietyScore": "TODO",
@@ -3162,7 +3161,7 @@
     "leftoverQuality": "baja",
     "shelfLifeDays": 1,
     "energiaCocina": "bajo",
-    "nombre": "Atún en conserva a la plancha con lechuga mixta y pepino",
+    "nombre": "Atún en conserva en crudo con lechuga mixta y pepino",
     "proteinType": "TODO",
     "digestiveLoad": "TODO",
     "satietyScore": "TODO",
@@ -3307,12 +3306,12 @@
   },
   {
     "id": "[\"sopa_crema\",\"huevo\",null,\"calabaza\",\"zanahoria\",null,null]",
-    "rol": "TODO",
-    "batchable": "TODO",
-    "leftoverQuality": "TODO",
-    "shelfLifeDays": "TODO",
-    "energiaCocina": "TODO",
-    "nombre": "TODO",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "medio",
+    "nombre": "Crema de calabaza con huevos encima",
     "proteinType": "TODO",
     "digestiveLoad": "TODO",
     "satietyScore": "TODO",
@@ -3328,8 +3327,7 @@
       "cena"
     ],
     "tempFeel": "muy_caliente",
-    "plateType": "sopa_crema",
-    "reviewPlateType": true
+    "plateType": "sopa_crema"
   },
   {
     "id": "[\"sopa_crema\",\"huevo\",null,\"calabacin\",\"zanahoria\",null,\"plancha\"]",

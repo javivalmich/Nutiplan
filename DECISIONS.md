@@ -303,3 +303,27 @@ Formato:
 - Decide: no se toca la suite de medición en este PR (fuera de scope — solo documental). Resolución:
   PR de sincronización de gates, próximo, con fork pendiente de ratificar sobre la sonda
   `__noSlotHint` (si se implementa de verdad en el motor o se retira del gate).
+
+## D-016 — [2026-07-03] Ratificación de la sonda __noSlotHint: opción (a), flag permanente default-off
+- Decisión/Hallazgo: de las dos resoluciones abiertas por D-015 para `__noSlotHint`, se ratifica la
+  opción (a) — flag permanente `opts.__noSlotHint` en `buildPlan.js`, default ausente/false, que
+  condiciona los dos canales reales del hint de slot: el bonus suave (`src/engine/buildPlan.js:1786-1789`)
+  y la inyección forzosa al top-N (`injectedHint`, `src/engine/buildPlan.js:2075-2083`). Se descarta la
+  opción (b) — sonda temporal a revertir tras la medición — por ser exactamente el protocolo que ya
+  produjo la medición inválida sin detección que D-015 documentó (el comentario de
+  `gate2_measure.test.js` prometía una sonda "temporal" que nunca se insertó, y Stage 3 corrió dos
+  veces la misma lógica de producción sin que nadie lo notara).
+- Evidencia:
+  - Con el flag ausente/false, `opts.__noSlotHint !== true` evalúa igual que la condición previa
+    (`if(slotHint)` / `if(slotHint && slotHint.protein)`) — cambio de comportamiento nulo por
+    construcción, no solo verificado empíricamente.
+  - Paridad confirmada sin regenerar snapshots: `buildPlan.baseline.test.js` + `buildPlan.snapshot.test.js`
+    + `humanScore.baseline.test.js` → 3 archivos, 59 tests, verde, `.snap` intactos.
+  - Con el flag activo (`gate2_measure.test.js` Stage 3, escenario B), el efecto causal del slotHint
+    ahora es real y medible: Δ(B−A) por día = Lunes −73.6%, Martes −51.2%, Miércoles −29.2%,
+    Jueves −8.2%, Viernes −0.4%, Domingo −0.4% (Sábado = libre, sin categoría de slot). Antes de esta
+    sesión el flag no existía en producción, así que Stage 3 medía dos veces el mismo escenario A sin
+    saberlo.
+  - `npm test`: 51 archivos / 522 tests, VERDE (incluye `analysis/gate2_measure.test.js` y
+    `analysis/gate4_protein_guard.test.js`, ambos parte del run por defecto).
+- Decide: Javi (ratificación de sesión 2026-07-02, ejecutada en fix/sync-gates-medicion 2026-07-03).

@@ -143,3 +143,87 @@ Formato:
 - dishes.json pasa de 177 a 178. antiTodo.test.js pasa a VERDE (0 pendientes) sin necesidad de editar su
   semántica — la aserción siempre fue `expect(pendientes).toEqual([])`.
 - Decide: Javi.
+
+## D-009 — [2026-07-02] Paso C: promoción de 63 combos freeform a dishes.json (178→241)
+- Decisión/Hallazgo: se integran estructuralmente los 64 combos de `src/data/FREEFORM_COMBOS.js`
+  (diferido desde D-007) mediante un JOIN por título normalizado (minúsculas + NFD sin diacríticos +
+  sin puntuación + espacios colapsados) contra las filas `fuente=freeform` de
+  `scripts/phaseB2/input/Anotacion_cocinero_242_v4.xlsx`, hoja `Platos`. Se promueven únicamente
+  `rol`, `batchable`, `leftoverQuality`, `shelfLifeDays`, `energiaCocina` desde el xlsx;
+  `dish.id = identity.id` y `dish.nombre = identity.title` vienen directos de FREEFORM_COMBOS (no del
+  xlsx). `bol_fruta_yogur` queda excluido: `behavior.slot=["Al"]` no tiene equivalente en el
+  vocabulario legacy de `momento` ({comida,cena}).
+- Evidencia:
+  - Auditoría de join (`scripts/diag/check_title_join.mjs`, descartable): 64 filas xlsx freeform, 64
+    combos, 0 ambiguos, 0 sin-match, cobertura 1:1 exacta.
+  - Implementación: `scripts/phaseB2/freeformPromote.js` (`normalizeTitle`, `joinFreeformXlsx`,
+    `buildFreeformDishes`), runner `scripts/phaseB2/runFreeformPromote.js`.
+  - `deriveMomentoFreeform` (`src/engine2/dishes/deriveFreeform.js`): slot `"C"/"Ce"` → `comida/cena`;
+    slot `"Al"` lanza (sin mapeo) — por eso `bol_fruta_yogur` se excluye ANTES de llamarla, no dentro.
+  - Ejecución real: `node scripts/phaseB2/runFreeformPromote.js` → "PROMOCION OK: 178 + 63 = 241
+    platos escritos". `dishes.json`: 241 entradas, 241 ids únicos (verificado en
+    `tripwire-platetype-enum.test.js`, describe "dishes.json real (241)").
+  - Idempotencia (v4): dos ejecuciones independientes desde el mismo `dishes.json` de 178 producen
+    salida byte-idéntica (`diff` vacío, 3399 líneas ambas). Una segunda ejecución sobre el `dishes.json`
+    ya de 241 aborta por el guard de colisión de ids sin escribir nada (archivo sin cambios).
+  - `npm test`: 51 archivos / 522 tests, VERDE. `antiTodo.test.js` (lee `dishes.scaffold.json`, ajeno a
+    esta promoción) sigue VERDE sin tocar su semántica.
+- Decide: Javi.
+
+## D-010 — [2026-07-02] FREEFORM_TEMPFEEL_OVERRIDES + corrección del gap bibimbap post-gate
+- Decisión/Hallazgo: se crea `deriveTempFeelFreeform` (`src/engine2/dishes/deriveFreeform.js`), función
+  de derivación específica para freeform (F, CLAUDE.md), paritaria en contrato pero NO en
+  implementación con `deriveTempFeelEngine2` del scaffold (que queda intacta). Regla: consulta PRIMERO
+  `FREEFORM_TEMPFEEL_OVERRIDES` (por `identity.id`, para cualquier plateType — F.3); si no hay entrada
+  y el plateType final (post-remapeo D-011) pertenece a `{sopa_crema, bowl, tortilla}`, LANZA (F.2, sin
+  valor por defecto); en cualquier otro caso aplica la derivación general F.1 por plateType, o lanza si
+  tampoco hay regla ahí.
+- Corrección registrada como parte de esta misma causa: la tabla de overrides ratificada en sesión
+  (17 obligatorias + 1 excepción F.3 = 18) se definió sobre el plateType LIBRE del xlsx, mientras que
+  F.2 exige aplicarla sobre el plateType FINAL, post-remapeo D-011. `bibimbap_ternera_huevo` remapea a
+  `bowl` (D-011) pero el ANEXO original no traía fila para "Bibimbap..." — el tripwire de este mismo
+  checkpoint lo detectó (`deriveTempFeelFreeform` habría lanzado al promoverlo, sin valor por defecto
+  posible). Javi confirmó el gap como error de la sesión (no del repo) y ratificó
+  `bibimbap_ternera_huevo → caliente, pendienteCocinero:false`. La tabla queda en 18 entradas: 9
+  `sopa_crema` + 5 `bowl` + 3 `tortilla` (las 17 obligatorias) + 1 excepción F.3
+  (`ensalada_lentejas_feta`, plateType `ensalada`, ensalada TIBIA — la derivación general daría "frio",
+  incorrecto).
+- Evidencia:
+  - Auditoría de cobertura (`scripts/diag/audit_overrides_coverage.mjs`, descartable): exactamente 17
+    combos (excluyendo `bol_fruta_yogur`) tienen plateType final en `{sopa_crema, bowl, tortilla}`;
+    antes de la corrección el ANEXO cubría 16 (faltaba `bibimbap_ternera_huevo`, mapeado a `bowl` por
+    D-011).
+  - Resolución de los 17 nombres del ANEXO a `identity.id` real por título normalizado
+    (`scripts/diag/resolve_overrides.mjs` + `resolve_overrides2.mjs`, descartables): 17/17 resuelven a
+    exactamente 1 combo (algunos por igualdad normalizada exacta, otros porque el ANEXO usa el título
+    abreviado del xlsx en vez del título literal de FREEFORM_COMBOS — resueltos por coincidencia de
+    subsecuencia/conjunto de palabras, sin ambigüedad en ningún caso).
+  - `deriveFreeform.test.js`: 6 pendienteCocinero:true confirmados
+    (`crema_calabacin_queso_huevo`, `sopa_miso_tofu`, `hummus_pita_pollo`, `buddha_bowl_completo`,
+    `tortilla_patatas_completa`, `ensalada_lentejas_feta`).
+  - r2 (falsable, CLAUDE.md): eliminar temporalmente `gazpacho_huevo_atun` de
+    `FREEFORM_TEMPFEEL_OVERRIDES` → `deriveTempFeelFreeform` lanza
+    ("exige entrada en FREEFORM_TEMPFEEL_OVERRIDES (F.2) y no la tiene"), cascada roja en
+    `freeformPromote.test.js` y `tripwire-platetype-enum.test.js` (6 tests). Revertido: `npm test`
+    verde (51/51 archivos, 522/522 tests) antes de continuar.
+- Decide: Javi.
+
+## D-011 — [2026-07-02] Remapeos de plateType por identity.id (papas_mojo_pollo, bibimbap_ternera_huevo, gyozas_verduras)
+- Decisión: `FREEFORM_PLATE_TYPE_ID_OVERRIDES` (`scripts/phaseB2/freeformEditorial.js`), tabla por
+  `identity.id` (no por plateType libre, para que una futura entrada freeform con el mismo libre no
+  herede la resolución sin ratificación propia). Gana sobre `FREEFORM_PLATE_TYPE_MAP` genérica y sobre
+  `REVISION_EXPLICITA`: `papas_mojo_pollo` (libre `patatas_canarias`) → `caliente_patata`;
+  `bibimbap_ternera_huevo` (libre `bibimbap`) → `bowl`; `gyozas_verduras` (libre `gyozas`) → `masa`.
+  `REVISION_EXPLICITA` queda vacía (antes contenía `'bibimbap'`, bloqueo ya innecesario: la resolución
+  por id tiene precedencia).
+- Evidencia:
+  - `resolveFreeformPlateType()` implementa la precedencia (0. override por id, 1. tabla genérica salvo
+    bloqueo, 2. sin regla → plateType libre intacto + `reviewPlateType:true`).
+  - `buildFreeformEditorialRows()` refactorizada para usar `resolveFreeformPlateType()` (fuente única,
+    sin lógica duplicada); `freeformEditorial.test.js` actualizado: las 64 filas resuelven sin
+    `reviewPlateType` (antes 61 mapeadas + 3 pendientes), con tests de discriminación que verifican que
+    el override por id gana sobre la tabla genérica y sobre `REVISION_EXPLICITA`.
+  - `scripts/diag/verify_full_derivation.mjs` (descartable): las 63 entradas promovibles (excluyendo
+    `bol_fruta_yogur`) resuelven `plateType` + `tempFeel` + `momento` sin lanzar, con
+    `reviewPlateType` siempre `false`.
+- Decide: Javi.

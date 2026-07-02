@@ -26,6 +26,7 @@
 import fs from 'node:fs';
 import { ROLES, LEFTOVER_QUALITIES, ENERGIA_COCINA_NIVELES } from '../../src/engine2/dishes/schema.js';
 import { findTodoFields } from './antiTodo.js';
+import { esIdTupla } from './idKind.js';
 
 // Vocabulario real verificado contra legacyCombos.data.js (LUNCH_COMBOS_RAW
 // + DINNER_COMBOS_RAW + TRAINING_DINNERS_RAW), campos P/C/V/V2/S/cookM.
@@ -95,10 +96,19 @@ function mapToken(slug, sinMapear) {
  * p1/p2, no en el titulo). S queda disponible en el resultado solo a
  * efectos de no ocultar campos (no afecta al titulo, no es un fallo).
  *
- * @param {{id: string}} dish
+ * GUARDA id-tupla vs id-slug (D-009): tras la promocion freeform, dish.id
+ * puede ser un slug plano en vez de la tupla serializada (ver idKind.js).
+ * Un slug NO se deriva: la derivacion de titulo es exclusiva del pipeline
+ * de tuplas; los freeform ya traen `nombre` curado, que se devuelve tal
+ * cual.
+ *
+ * @param {{id: string, nombre?: string}} dish
  * @returns {{ titulo: string, slugsSinMapear: string[] }}
  */
 export function deriveTituloSugerido(dish) {
+  if (!esIdTupla(dish.id)) {
+    return { titulo: dish.nombre, slugsSinMapear: [] };
+  }
   const [, P, C, V, V2, , cookM] = JSON.parse(dish.id);
   const sinMapear = new Set();
 

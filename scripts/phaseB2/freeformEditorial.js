@@ -54,9 +54,41 @@ export const FREEFORM_PLATE_TYPE_MAP = Object.freeze({
   carpaccio: 'crudo', ceviche: 'crudo',
 });
 
-// Dudoso por nombre, ratificado explicitamente como NO autoasignado
-// aunque su plateType libre ("bibimbap") podria sugerir salteado_wok.
-const REVISION_EXPLICITA = Object.freeze(['bibimbap']);
+// D-011: remapeos ratificados por Javi, identificados por identity.id (NO
+// por plateType libre -- una futura entrada freeform con el mismo libre
+// no debe heredar la resolucion sin ratificacion propia). Gana sobre
+// FREEFORM_PLATE_TYPE_MAP y sobre REVISION_EXPLICITA. Ver resolveFreeformPlateType.
+export const FREEFORM_PLATE_TYPE_ID_OVERRIDES = Object.freeze({
+  papas_mojo_pollo: 'caliente_patata',
+  bibimbap_ternera_huevo: 'bowl',
+  gyozas_verduras: 'masa',
+});
+
+// Antes contenia 'bibimbap': dudoso por nombre, ratificado explicitamente
+// como NO autoasignado por la tabla GENERICA aunque su plateType libre
+// ("bibimbap") podria sugerir salteado_wok. Resuelto via D-011
+// (bibimbap_ternera_huevo -> bowl, ver FREEFORM_PLATE_TYPE_ID_OVERRIDES):
+// ya no necesita bloquearse aqui, la resolucion por id tiene precedencia.
+const REVISION_EXPLICITA = Object.freeze([]);
+
+/**
+ * Resuelve el plateType final de un combo freeform, en orden de
+ * precedencia: 0. FREEFORM_PLATE_TYPE_ID_OVERRIDES (D-011, por identity.id)
+ * -> 1. FREEFORM_PLATE_TYPE_MAP (generica, por plateType libre, salvo
+ * bloqueo REVISION_EXPLICITA) -> 2. sin regla: plateType libre intacto +
+ * reviewPlateType:true (TODO cocinero, sin inventar destino).
+ * @param {object} combo entrada de FREEFORM_COMBOS
+ * @returns {{ plateType: string, reviewPlateType: boolean }}
+ */
+export function resolveFreeformPlateType(combo) {
+  const overrideId = FREEFORM_PLATE_TYPE_ID_OVERRIDES[combo.identity.id];
+  if (overrideId) return { plateType: overrideId, reviewPlateType: false };
+
+  const plateTypeLibre = combo.identity.plateType;
+  const mapeado = REVISION_EXPLICITA.includes(plateTypeLibre) ? undefined : FREEFORM_PLATE_TYPE_MAP[plateTypeLibre];
+  if (mapeado === undefined) return { plateType: plateTypeLibre, reviewPlateType: true };
+  return { plateType: mapeado, reviewPlateType: false };
+}
 
 const EDITORIAL_TODO_FREEFORM = Object.freeze({
   rol: 'TODO',
@@ -78,15 +110,14 @@ const EDITORIAL_TODO_FREEFORM = Object.freeze({
 export function buildFreeformEditorialRows() {
   return FREEFORM_COMBOS.map((combo) => {
     const { identity, nutrition, behavior } = combo;
-    const plateTypeLibre = identity.plateType;
-    const mapeado = REVISION_EXPLICITA.includes(plateTypeLibre) ? undefined : FREEFORM_PLATE_TYPE_MAP[plateTypeLibre];
+    const { plateType, reviewPlateType } = resolveFreeformPlateType(combo);
 
     const row = {
       id: identity.id,
       nombre: identity.title,
       freeform: true,
-      plateTypeLibre,
-      plateType: mapeado ?? plateTypeLibre,
+      plateTypeLibre: identity.plateType,
+      plateType,
       proteinType: identity.proteinType ?? 'TODO',
       digestiveLoad: behavior?.digestiveLoad ?? 'TODO',
       satietyScore: behavior?.satietyScore ?? 'TODO',
@@ -100,7 +131,7 @@ export function buildFreeformEditorialRows() {
       ...EDITORIAL_TODO_FREEFORM,
     };
 
-    if (mapeado === undefined) {
+    if (reviewPlateType) {
       row.reviewPlateType = true;
     }
 

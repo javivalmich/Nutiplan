@@ -15,6 +15,7 @@ import ExcelJS from 'exceljs';
 import { pathToFileURL } from 'node:url';
 import dishesScaffoldRaw from './output/dishes.scaffold.json' with { type: 'json' };
 import freeformEditorialRaw from './output/freeform.editorial.json' with { type: 'json' };
+import { esIdTupla } from './idKind.js';
 
 // ── Diccionarios de labels (copia estatica desde src/engine/buildPlan.js,
 //    PROT/CARB/VEG/SAUCE, lineas 150-267) — solo "label", nada mas. ──────────
@@ -205,18 +206,28 @@ function findPreviousAnnotation(idJson) {
  * que buildPlatosRows(): ancla previa si hay match por tupla, si no
  * suggestNameFromTuple(). Exportada para que importAnotacion.js (Paso B.2)
  * la reutilice como tripwire de coherencia, sin duplicar esta logica.
- * @param {{id: string}} dish
+ *
+ * GUARDA id-tupla vs id-slug (D-009): dish.id puede ser un slug freeform
+ * (ver idKind.js). Un slug no tiene tupla que regenerar: se devuelve el
+ * `nombre` ya curado del Dish tal cual.
+ * @param {{id: string, nombre?: string}} dish
  * @returns {string}
  */
 export function regenerateNombreSugerido(dish) {
+  if (!esIdTupla(dish.id)) return dish.nombre;
   const tuple = JSON.parse(dish.id);
   const prev = findPreviousAnnotation(dish.id);
   return prev ? prev.nombre : suggestNameFromTuple(tuple);
 }
 
-function buildPlatosRows() {
-  const dishesScaffold = Object.values(dishesScaffoldRaw);
-  const freeformEditorial = Object.values(freeformEditorialRaw);
+/**
+ * @param {{ dishesScaffold?: object[], freeformEditorial?: object[] }} [opts]
+ *   Overrides de datos para tests; por defecto lee los ficheros de
+ *   ./output/ (comportamiento de producción sin cambios).
+ */
+export function buildPlatosRows(opts = {}) {
+  const dishesScaffold = opts.dishesScaffold ?? Object.values(dishesScaffoldRaw);
+  const freeformEditorial = opts.freeformEditorial ?? Object.values(freeformEditorialRaw);
   const matchedPrevious = new Set();
   const unmatchedReport = [];
   const rows = [];
@@ -224,10 +235,14 @@ function buildPlatosRows() {
 
   for (const d of dishesScaffold) {
     n++;
-    const tuple = JSON.parse(d.id);
-    const prev = findPreviousAnnotation(d.id);
+    // GUARDA id-tupla vs id-slug (D-009): ver idKind.js. Si d.id es un
+    // slug freeform, las columnas derivadas de la tupla quedan vacías y
+    // el resto se puebla desde los campos del Dish, como siempre.
+    const isTupla = esIdTupla(d.id);
+    const tuple = isTupla ? JSON.parse(d.id) : null;
+    const prev = isTupla ? findPreviousAnnotation(d.id) : null;
     if (prev) matchedPrevious.add(prev.nombre);
-    const nombreSugerido = prev ? prev.nombre : suggestNameFromTuple(tuple);
+    const nombreSugerido = prev ? prev.nombre : (isTupla ? suggestNameFromTuple(tuple) : d.nombre);
 
     rows.push({
       n,
@@ -235,7 +250,7 @@ function buildPlatosRows() {
       momento: Array.isArray(d.momento) ? d.momento.join(', ') : d.momento,
       plateType: d.plateType,
       rol: prev ? prev.rol : 'rotativo',
-      proteinType: tuple[1] ? (PROTEIN_FAMILY[tuple[1]] || tuple[1]) : '',
+      proteinType: isTupla ? (tuple[1] ? (PROTEIN_FAMILY[tuple[1]] || tuple[1]) : '') : '',
       containsGluten: proposeGluten(nombreSugerido, d.plateType),
       containsLactosa: proposeLactosa(nombreSugerido, d.plateType),
       glutenFreeAdaptable: '',
@@ -246,7 +261,9 @@ function buildPlatosRows() {
       energiaCocina: prev ? prev.energiaCocina : '',
       yaAnotado: prev ? 'sí' : 'no',
       revisarTipo: d.reviewPlateType
-        ? (d.plateTypeLibre || `${d.plateType} (asignado, sin plateTypeLibre — combo: ${PROTEIN_FAMILY[tuple[1]] || tuple[1]}/${tuple[6] || 'sin metodo'})`)
+        ? (d.plateTypeLibre || (isTupla
+            ? `${d.plateType} (asignado, sin plateTypeLibre — combo: ${PROTEIN_FAMILY[tuple[1]] || tuple[1]}/${tuple[6] || 'sin metodo'})`
+            : `${d.plateType} (asignado, sin plateTypeLibre)`))
         : '',
       fuente: 'scaffold',
     });

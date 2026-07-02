@@ -14,6 +14,13 @@ import { _hashStr } from './hash.js';
 import { mulberry32 } from './rng.js';
 import { SEASONAL_FOODS } from '../seasonalFoods.js';
 
+// Hard caps: fish max 3/week across all fish species, ave (pollo+pavo+conejo) max 3/week total, etc.
+// Valores revisados Fase 1 (BUG 5, verificados contra recomendaciones AESAN 2022).
+// Exportada (fix/sync-gates-medicion, D-015): antes vivía como `var` local dentro de buildPlan()
+// (linea 1562 previa a este cambio); export puro para que analysis/ deje de mantener copias locales
+// desincronizadas — valor y uso interno sin tocar.
+export const WEEKLY_CAP = {pescado:3, marisco:1, legumbre:4, pasta:2, ternera:2, cerdo:2, ave:3};
+
 // Temperature feel — para el check de "todos los días lo mismo frío/caliente"
 export function deriveTempFeel(combo) {
   var tmpl  = combo.tmpl  || "";
@@ -1557,9 +1564,7 @@ export function buildPlan(profile, targetKcal, opts = {}) {
   var weeklyCuisineExp   = {}; // cuisineExperience → count ("comfort_caliente", "bowl_fresco" …)
   var weeklyTempFeel     = {}; // "caliente" / "frio" / "muy_caliente" → count
   var weeklySauceCount   = {}; // sauce family → count
-  // Hard caps: fish max 3/week across all fish species, ave (pollo+pavo+conejo) max 3/week total, etc.
-  // Valores revisados Fase 1 (BUG 5, verificados contra recomendaciones AESAN 2022).
-  var WEEKLY_CAP = {pescado:3, marisco:1, legumbre:4, pasta:2, ternera:2, cerdo:2, ave:3};
+  // WEEKLY_CAP: exportada a nivel de módulo (ver arriba, D-015). Sigue en scope aquí por closure.
 
   // ── FREEFORM FREQUENCY TRACKING ────────────────────────────────────────────
   // Tracks usage of freeForm combos within the current ISO week.
@@ -1775,8 +1780,11 @@ export function buildPlan(profile, targetKcal, opts = {}) {
       var sacBonus = (strategy === "definicion_saciante" && m.saciante) ? -2.5 : 0;
 
       // 7. Slot hint
+      // opts.__noSlotHint (default false/ausente): sonda de medición para aislar el
+      // efecto del slotHint en A/B (gate2 Stage 3, D-015). Con el flag ausente el
+      // comportamiento es idéntico al de siempre.
       var slotBonus = 0;
-      if(slotHint) {
+      if(slotHint && opts.__noSlotHint !== true) {
         if(slotHint.protein && (m.protein||m.type) === slotHint.protein) slotBonus -= 4;
         if(slotHint.plateType && ptKey === slotHint.plateType) slotBonus -= 3;
       }
@@ -2062,9 +2070,11 @@ export function buildPlan(profile, targetKcal, opts = {}) {
     // ── Stage 2a: controlled lunch-hint injection ───────────────────────────
     // If the lunch slotHint protein survived the weekly CAP but was pruned out
     // of the top-N, push it into candidates so it can still be picked.
+    // opts.__noSlotHint (default false/ausente): mismo gate que en el slotBonus
+    // de arriba, D-015 — con el flag ausente el comportamiento es idéntico.
     var injectedHint = false;
     var hintIdx = -1;
-    if (slotHint && slotHint.protein) {
+    if (slotHint && slotHint.protein && opts.__noSlotHint !== true) {
       for (var k = 0; k < scored.length; k++) {
         if ((scored[k].m.protein || scored[k].m.type) === slotHint.protein) { hintIdx = k; break; }
       }

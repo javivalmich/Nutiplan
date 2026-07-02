@@ -2495,5 +2495,905 @@
     ],
     "tempFeel": "caliente",
     "plateType": "caliente_boniato"
+  },
+  {
+    "id": "gazpacho_huevo_atun",
+    "nombre": "Gazpacho con huevo duro, atún y pan",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "sopa_crema"
+  },
+  {
+    "id": "pisto_manchego_huevo",
+    "nombre": "Pisto manchego con huevo a la plancha",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "guiso"
+  },
+  {
+    "id": "cocido_express",
+    "nombre": "Cocido madrileño express",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "alto",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "guiso"
+  },
+  {
+    "id": "fabada_simplificada",
+    "nombre": "Fabada asturiana simplificada",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "alto",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "guiso"
+  },
+  {
+    "id": "fideua_marisco",
+    "nombre": "Fideuá de marisco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "arroz_plato"
+  },
+  {
+    "id": "papas_mojo_pollo",
+    "nombre": "Papas arrugadas con mojo rojo y pollo a la plancha",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "caliente_patata"
+  },
+  {
+    "id": "caldo_gallego_grelos_completo",
+    "nombre": "Caldo gallego de grelos (completo)",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "sopa_crema"
+  },
+  {
+    "id": "caldo_gallego_grelos_ligero",
+    "nombre": "Caldo gallego de grelos (ligero)",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "sopa_crema"
+  },
+  {
+    "id": "caldo_gallego_repollo_completo",
+    "nombre": "Caldo gallego de repollo (completo)",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "sopa_crema"
+  },
+  {
+    "id": "paella_gambas_verduras",
+    "nombre": "Paella de gambas y verduras",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "arroz_plato"
+  },
+  {
+    "id": "tortilla_patatas_completa",
+    "nombre": "Tortilla de patatas completa con ensalada",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "tortilla"
+  },
+  {
+    "id": "ensaladilla_proteica",
+    "nombre": "Ensaladilla proteica (atún, huevo y pollo)",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "ensalada_pasta",
+    "nombre": "Ensalada de pasta con atún, huevo y tomate",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "empanada_gallega_atun",
+    "nombre": "Empanada gallega de atún con ensalada",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "masa"
+  },
+  {
+    "id": "crema_calabacin_queso_huevo",
+    "nombre": "Crema de calabacín con queso fresco y huevo",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "sopa_crema"
+  },
+  {
+    "id": "moussaka_ligera",
+    "nombre": "Moussaka ligera con berenjena y bechamel reducida",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "gratinado"
+  },
+  {
+    "id": "ensalada_griega_pollo",
+    "nombre": "Ensalada griega con pollo y feta",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "frio",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "shakshuka",
+    "nombre": "Shakshuka con pan integral",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "tortilla"
+  },
+  {
+    "id": "hummus_pita_pollo",
+    "nombre": "Hummus con pita integral y pollo especiado",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "bowl"
+  },
+  {
+    "id": "pasta_carbonara",
+    "nombre": "Pasta carbonara",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "pasta_alla_norma",
+    "nombre": "Pasta alla norma con atún",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "risotto_setas_pollo",
+    "nombre": "Risotto de setas con pollo",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "arroz_plato"
+  },
+  {
+    "id": "pizza_proteica_casera",
+    "nombre": "Pizza proteica casera con pollo y mozzarella",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "masa"
+  },
+  {
+    "id": "gnocchi_sorrentina",
+    "nombre": "Gnocchi alla sorrentina",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pasta"
+  },
+  {
+    "id": "curry_garbanzos",
+    "nombre": "Curry de garbanzos con arroz basmati",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "guiso"
+  },
+  {
+    "id": "pad_thai_gambas",
+    "nombre": "Pad thai con gambas",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "salteado_wok"
+  },
+  {
+    "id": "ramen_simplificado",
+    "nombre": "Ramen simplificado con pollo y huevo",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "sopa_crema"
+  },
+  {
+    "id": "wok_verduras_pollo",
+    "nombre": "Wok de verduras con pollo y arroz",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "salteado_wok"
+  },
+  {
+    "id": "gyozas_verduras",
+    "nombre": "Gyozas de pollo y verduras con salsa ponzu",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "masa"
+  },
+  {
+    "id": "tacos_pescado",
+    "nombre": "Tacos de pescado blanco con ensalada de col",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "bocado_mano"
+  },
+  {
+    "id": "tacos_carne",
+    "nombre": "Tacos de ternera al pastor con piña y cebolla",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "bocado_mano"
+  },
+  {
+    "id": "quesadilla_fitness",
+    "nombre": "Quesadilla fitness de pollo y queso bajo en grasa",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "bocado_mano"
+  },
+  {
+    "id": "burrito_legumbres",
+    "nombre": "Burrito de alubias negras, arroz y verduras",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "bocado_mano"
+  },
+  {
+    "id": "hamburguesa_ternera_completa",
+    "nombre": "Hamburguesa de ternera con pan brioche y patatas gajo",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "bocado_mano"
+  },
+  {
+    "id": "hamburguesa_pavo_completa",
+    "nombre": "Hamburguesa de pavo con pan integral y patatas gajo",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "bocado_mano"
+  },
+  {
+    "id": "hamburguesa_pollo_completa",
+    "nombre": "Hamburguesa de pollo con pan integral y patatas gajo",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "bocado_mano"
+  },
+  {
+    "id": "ceviche_pescado_blanco",
+    "nombre": "Ceviche de pescado blanco con boniato y cancha",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "crudo"
+  },
+  {
+    "id": "carpaccio_ternera",
+    "nombre": "Carpaccio de ternera con rúcula, parmesano y pan",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "crudo"
+  },
+  {
+    "id": "pollo_crujiente_af_boniato",
+    "nombre": "Pollo crujiente al airfryer con boniato asado",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "alto",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "airfryer"
+  },
+  {
+    "id": "salmon_af_verduras",
+    "nombre": "Salmón al airfryer con verduras asadas",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "alto",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "airfryer"
+  },
+  {
+    "id": "croquetas_jamon_af",
+    "nombre": "Croquetas caseras de jamón al airfryer con ensalada",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "airfryer"
+  },
+  {
+    "id": "nuggets_caseros_pollo_af",
+    "nombre": "Nuggets caseros de pollo al airfryer con patata gajo",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "airfryer"
+  },
+  {
+    "id": "verduras_crujientes_af_proteina",
+    "nombre": "Verduras crujientes al airfryer con pollo",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "airfryer"
+  },
+  {
+    "id": "huevos_rellenos",
+    "nombre": "Huevos rellenos de atún con ensalada",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "frio",
+    "plateType": "tortilla"
+  },
+  {
+    "id": "esparragos_mayo_atun_huevo",
+    "nombre": "Espárragos con mayonesa, atún y huevo duro",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "wrap_mediterraneo",
+    "nombre": "Wrap mediterráneo de pollo, hummus y verduras",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "bocado_mano"
+  },
+  {
+    "id": "buddha_bowl_completo",
+    "nombre": "Buddha bowl con quinoa, pollo, aguacate y verduras",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "pollo_teriyaki_arroz",
+    "nombre": "Pollo teriyaki con arroz jazmín y verduras",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "en_salsa"
+  },
+  {
+    "id": "sopa_castellana_jamon",
+    "nombre": "Sopa castellana con jamón serrano y huevo pochado",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "sopa_crema"
+  },
+  {
+    "id": "pollo_ajillo_patatas",
+    "nombre": "Pollo al ajillo con patatas nuevas",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "en_salsa"
+  },
+  {
+    "id": "menestra_verduras_jamon",
+    "nombre": "Menestra de verduras de temporada con jamón",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "plancha_verdura"
+  },
+  {
+    "id": "marmitako_bonito",
+    "nombre": "Marmitako de bonito del norte",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "guiso"
+  },
+  {
+    "id": "berberechos_vapor_pan",
+    "nombre": "Berberechos al vapor con limón y pan tostado",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "en_salsa"
+  },
+  {
+    "id": "falafel_tabule_yogur",
+    "nombre": "Falafel con tabulé de bulgur y yogur de menta",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "frio",
+    "plateType": "bowl"
+  },
+  {
+    "id": "sardinas_plancha_escalivada",
+    "nombre": "Sardinas a la plancha con escalivada y pan tostado",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 1,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "pescado_plancha"
+  },
+  {
+    "id": "mejillones_salsa_verde",
+    "nombre": "Mejillones en salsa verde con pan de pueblo",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "en_salsa"
+  },
+  {
+    "id": "pita_pollo_harissa",
+    "nombre": "Pita de pollo a la harissa con ensalada árabe y yogur",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "bocado_mano"
+  },
+  {
+    "id": "ensalada_lentejas_feta",
+    "nombre": "Ensalada tibia de lentejas con feta, tomate y hierbas",
+    "rol": "rotativo",
+    "batchable": true,
+    "leftoverQuality": "alta",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida",
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "ensalada"
+  },
+  {
+    "id": "tom_kha_gai",
+    "nombre": "Tom Kha Gai — sopa tailandesa de pollo y coco",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "muy_caliente",
+    "plateType": "sopa_crema"
+  },
+  {
+    "id": "bowl_salmon_teriyaki",
+    "nombre": "Bowl de salmón teriyaki con edamame, arroz y pepino",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "baja",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "bowl"
+  },
+  {
+    "id": "bibimbap_ternera_huevo",
+    "nombre": "Bibimbap de ternera picada, huevo y verduras salteadas",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 3,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "bowl"
+  },
+  {
+    "id": "bao_pollo_hoisin",
+    "nombre": "Bao de pollo deshilachado con pepino y salsa hoisin",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 2,
+    "energiaCocina": "bajo",
+    "momento": [
+      "comida"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "bocado_mano"
+  },
+  {
+    "id": "sopa_miso_tofu",
+    "nombre": "Sopa de miso con tofu firme, setas shiitake y alga wakame",
+    "rol": "rotativo",
+    "batchable": false,
+    "leftoverQuality": "media",
+    "shelfLifeDays": 2,
+    "energiaCocina": "medio",
+    "momento": [
+      "cena"
+    ],
+    "tempFeel": "caliente",
+    "plateType": "sopa_crema"
   }
 ]

@@ -227,3 +227,79 @@ Formato:
     `bol_fruta_yogur`) resuelven `plateType` + `tempFeel` + `momento` sin lanzar, con
     `reviewPlateType` siempre `false`.
 - Decide: Javi.
+
+## D-012 — [2026-07-02] Deuda: warning de proteína matemáticamente inerte (motor viejo)
+- Decisión/Hallazgo: el warning "[AJUSTE] Proteína estimada insuficiente" en `validateWeek` compara
+  `estProtein = 100×proteinMult` (con `proteinMult` acotado por reglas de estrategia, tope observado
+  115) contra un umbral fijo `<130`. Con `estProtein` máximo 115 < 130 en todas las estrategias, el
+  warning dispara SIEMPRE, para toda estrategia — no es señal, es ruido constante. El objetivo real
+  (`targetProtein`, vía `calcMacros`) ya está calculado en `buildPlan()` (línea 57) y por tanto en
+  scope de clausura de `validateWeek` (línea 2508), pero el chequeo de proteína no lo usa.
+- Evidencia:
+  - `src/engine/buildPlan.js:2739-2748`: bloque completo, con comentario propio ya fechando el
+    placeholder ("PLACEHOLDER conocido (Fase 1) ... Macros reales → Fase 5 (reconcile)").
+  - `src/engine/buildPlan.js:57`: `const targetProtein = calcMacros(targetKcal,profile.weight,
+    profile.goal,profile.activity,strategy).protein;` — calculado, sin conexión con el warning de
+    la línea 2746.
+  - `validateWeek` declarada en `src/engine/buildPlan.js:2508`, dentro de `buildPlan()` (abre en
+    línea 26, cierra en línea 2806) → `targetProtein` está en su scope de clausura.
+- Decide: no se toca el motor viejo (congelado, CLAUDE.md invariante 5). Explica el 100% de
+  `weekWarnings≥1` observado en `gate4_closure`. Resolución diferida a Fase 5 (reconcile), ya
+  fechada en el propio comentario del código.
+
+## D-013 — [2026-07-02] Deuda: chequeo de kcal ciego a targetKcal/baseScale (motor viejo)
+- Decisión/Hallazgo: el chequeo de calorías diarias en `validateWeek` sale de `PLATE_KCAL`, tabla
+  estática por `plateType` (`src/engine/buildPlan.js:2611-2699`), mientras que las raciones reales de
+  cada plato escalan por `baseScale` (rango observado 0.88-1.58) en función de `targetKcal` del
+  perfil. Consecuencia: falsos negativos en superávit (un plato con `baseScale` alto se contabiliza
+  con el kcal estático de tabla, más bajo que el real) y falsos positivos en déficit (mismo mecanismo
+  a la inversa).
+- Evidencia: `src/engine/buildPlan.js:2611` (`var PLATE_KCAL = {`) hasta `2699` (cierre de la tabla,
+  última entrada `bol_fruta: 470,`); el chequeo de patrón de kcal diaria/consecutiva que consume esta
+  tabla es el mismo bloque de `validateWeek` que produce los warnings de las líneas 2725-2737.
+- Decide: no se toca el motor viejo (congelado). Misma resolución que D-012 — Fase 5 (reconcile), que
+  ya tiene como mandato calcular macros/raciones reales en vez de heurísticas estáticas.
+
+## D-014 — [2026-07-02] Deuda: asimetría estructural de scoring contra freeform (motor viejo)
+- Decisión/Hallazgo: `inflateFreeFormForPool` (`src/engine/buildPlan.js:1262-1310`, bloque de retorno
+  en `1277-1309`) anula explícitamente (`null`) los campos `facil`, `saciante`, `sauce`, `cookM`,
+  `veggie`, `culinaryStyle`, `cuisineExperience`, `tempFeel`, `apetencia` para todo combo freeform que
+  entra al pool de `smartPick` — el propio comentario del bloque lo declara intencional ("NO
+  introducir inferencias nuevas aquí", líneas 1246-1261). En cambio `comboToPoolEntry`
+  (`src/engine/buildPlan.js:1211-1244`), el camino legacy, calcula y puebla esos mismos campos vía
+  `computeApetencia`, `deriveCuisineExperience`, `deriveTempFeel` (líneas 1225-1227). Como esos campos
+  alimentan bonus favorables en el scoring de `smartPick`, solo el legacy puede cobrarlos — asimetría
+  estructural, no accidental.
+- Evidencia: causa trazada de los 30/64 combos muertos observados en `gate2b` (T10b). Confirmado por
+  lectura directa de ambas funciones en `src/engine/buildPlan.js` (líneas citadas arriba), sin
+  necesidad de instrumentación adicional.
+- Decide: NO es una feature a preservar en la migración. `engine2` resuelve esta asimetría
+  arquitectónicamente (sin scoring numérico, CLAUDE.md invariante 1); el diseño de selección de
+  Fase 4 en adelante debe conocer esta causa para no reproducirla por descuido al portar heurísticas
+  del motor viejo como referencia.
+
+## D-015 — [2026-07-02] Deuda: drift de la suite de medición (`analysis/gate2_measure.test.js`, `analysis/gate4_protein_guard.test.js`)
+- Decisión/Hallazgo: dos problemas independientes en la suite de medición (no en el motor de
+  producción):
+  1. `gate2_measure.test.js:78` y `gate4_protein_guard.test.js:33` mantienen copias locales
+     hardcodeadas de `WEEKLY_CAP` con los valores previos al commit `ae6b9e3` (pescado 2→3,
+     legumbre 2→4, ave 4→3) — ambas copias siguen en pescado:2, legumbre:2, ave:4. La comparación
+     T4 de `gate2_measure` (choque con `WEEKLY_CAP`) es inválida para pescado/legumbre/ave: mide
+     contra un cap que ya no rige en producción.
+  2. `gate2_measure.test.js:434,462` construye un flag `__noSlotHint` que se pasa a `buildPlan` para
+     intentar desactivar `slotBonus` en un stage de comparación A/B (Stage 3). `buildPlan.js` nunca
+     lee `__noSlotHint` — el `slotBonus` real (`src/engine/buildPlan.js:1778-1781,1904`) depende solo
+     de `slotHint`, sin gate por ese flag. La conclusión A/B de ese stage es artefacto: ambas ramas
+     ejecutan la misma lógica de producción dos veces.
+- Evidencia:
+  - `WEEKLY_CAP` de producción vigente: `pescado:3, legumbre:4, ave:3` (commit `ae6b9e3`, "fix(engine):
+    BUG 5 — nuevos valores de WEEKLY_CAP").
+  - `analysis/gate2_measure.test.js:78`: `const WEEKLY_CAP = { pescado: 2, marisco: 1, legumbre: 2,
+    ternera: 2, cerdo: 2, ave: 4 };` — valores pre-`ae6b9e3`.
+  - `analysis/gate4_protein_guard.test.js:33`: `const WEEKLY_CAP = {pescado:2, marisco:1, legumbre:2,
+    pasta:2, ternera:2, cerdo:2, ave:4};` — mismo drift.
+  - `grep -rn "__noSlotHint" src/` → vacío: el flag no existe en ningún archivo de producción bajo
+    `src/`, solo en `analysis/gate2_measure.test.js` (líneas 434, 462).
+- Decide: no se toca la suite de medición en este PR (fuera de scope — solo documental). Resolución:
+  PR de sincronización de gates, próximo, con fork pendiente de ratificar sobre la sonda
+  `__noSlotHint` (si se implementa de verdad en el motor o se retira del gate).

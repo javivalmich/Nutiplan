@@ -520,3 +520,39 @@ Formato:
   correcciones sobre el plan original de la sesión — v1 sobre catálogo real en vez de fixture, y
   preservación de `colision_sin_hueco` como evento — incorporadas antes de empezar el TDD, no
   relitigadas después).
+
+## D-020 — [2026-07-03] MEDICIÓN humanScore de P1b: BLOQUEADA por incompatibilidad de shape
+- Decisión/Hallazgo: la MEDICIÓN prevista en el encargo de P1b ("humanScore de N semanas engine2
+  vs baseline, en repetición y continuidad") no se ejecuta esta sesión: `humanScore` y sus
+  sub-métricas no saben leer la salida de `runWalk` (`{slots, decisionLog}`).
+  `collectLegibleMainMeals`/`isLegibleMeal` (`src/eval/planReader.js:12`) exigen
+  `meal._spec.tmpl` de tipo string para considerar un meal legible; `computeRepeticionSalsa` y
+  `computeRepeticionTecnica` (`src/eval/metrics/repetition.js:17`) leen `meal._spec.S` y
+  `meal._spec.cookM` respectivamente — vocabulario del combo legacy. El esquema de Dish de
+  engine2 (`src/engine2/dishes/schema.js:1-18`) excluye ese vocabulario por diseño ("10 campos,
+  cero macros / equivalencias / densidades energeticas"; los 5 campos editoriales de Fase 3 son
+  `rol, batchable, leftoverQuality, shelfLifeDays, energiaCocina`, ninguno mapea 1:1 a
+  `tmpl/S/cookM`). No existe adaptador `runWalk → plan.days[].meals[]._spec` en ningún punto del
+  árbol (`grep -rniE "reconcile|toLegacyPlan|adaptPlan" src/engine2/` → vacío).
+- Se descarta explícitamente construir un adaptador ad-hoc esta sesión: un traductor parcial (p.
+  ej. solo para los 178 platos por tupla legacy, sin cobertura de los 63 promovidos desde
+  `FREEFORM_COMBOS`, D-009) reproduciría la asimetría estructural ya diagnosticada en D-014
+  (`inflateFreeFormForPool` anulando campos derivados solo para el pool freeform) — el mismo
+  patrón de daño, en la herramienta de medición en vez de en el motor. Y correr `humanScore` sin
+  adaptador reportaría "0 meals legibles" en las sub-métricas de repetición/continuidad, un
+  resultado que PARECE dato (evidencias vacías) pero es artefacto de shape, no ausencia real de
+  repetición — viola la regla de honestidad de métricas que el propio `humanScore.js` declara en
+  su cabecera para los casos `needs_engine2`.
+- El criterio de aceptación de Fase 4 tenía por tanto un prerrequisito no declarado (adaptador
+  engine2→humanScore) que no se identificó hasta esta sesión. La medición se difiere a P2: el
+  resolver de composición de esa fase (tupla para los 178 + `FREEFORM_COMBOS` para los 63) es el
+  punto natural donde los 241 platos del catálogo se pueden leer de forma simétrica hacia un
+  `_spec`-equivalente, sin la asimetría de D-014.
+- Evidencia: citas de línea arriba (`planReader.js:12`, `repetition.js:17`, `schema.js:1-18`);
+  grep de adaptador → vacío; único consumidor real de `humanScore` en el árbol es
+  `src/engine/tests/humanScore.baseline.test.js` (motor viejo), confirmado por
+  `grep -rln "humanScore"` fuera de `src/eval/`.
+- Decide: Javi (ratificación de sesión 2026-07-03, causa literal: "NO se mide. No construyas
+  adaptador ad-hoc ni parcial — un adaptador que lee los 178 por tupla pero no los 63 freeform
+  reproduce la asimetría de medición de D-014 [...], y '0 meals legibles' produciría métricas
+  vacías que parecen dato").

@@ -430,3 +430,93 @@ Formato:
     (intactos).
 - Decide: Javi (ratificación de sesión 2026-07-03, ejecutada en `feature/f4-p1a-expansion`; los
   elementos de P1b quedan marcados explícitamente para el PR siguiente contra este mismo asiento).
+
+## D-019 — [2026-07-03] Fase 4, Componente P1b (selección libre del walk): paquete de decisiones
+- Decisión/Hallazgo: sesión de implementación de F4-P1b en rama `feature/f4-p1b-seleccion`
+  (desde `main` en `48509ac`, P1a ya mergeado). Un solo módulo nuevo: `src/engine2/walk/runWalk.js`
+  (rellena los huecos abiertos que `expandWeekArc.js` deja tras colocar ancla+sobras — ese
+  archivo NO se toca, se consume tal cual). Se ratifican cinco decisiones de esta sesión, causas
+  literales del prompt 2026-07-03:
+  1. **Pool de capricho vacío → degradación explícita a rotativo, con causa en el log.** El
+     catálogo real (`scripts/phaseB2/output/dishes.json`, 241 platos) tiene 0 platos con
+     `rol:"capricho"` (235 `rotativo` + 6 `ancla` = 241 — verificado, ver Evidencia). v1 (falsable
+     central de semana real) corre sobre ese catálogo real, con la degradación visible como
+     entrada de evento (`capricho_degradado_a_rotativo`) en el decisionLog: ambos huecos del día
+     capricho se procesan como rotativo normal (con preferencias A/B incluidas, ya no son "el
+     hueco capricho"). No es una nota de deuda aparte: es el estado honesto del catálogo hoy. El
+     camino capricho verdadero (pool no vacío, set único y set ambiguo) se cubre con fixture
+     propio en v2. Hueco NORMAL (rotativo) con pool vacío → lanza, sin fallback (deja medido que
+     hoy es inalcanzable en el catálogo real, en vez de encubrirlo).
+  2. **Preferencias A/B NO aplican al hueco capricho** (exención ratificada: A/B tejen variedad
+     en lo ordinario; el capricho es la excepción consciente de la semana, no otro rotativo más).
+     Solo reglas duras (rol="capricho" + no-repetición). Desempate entre ≥2 candidatos capricho
+     válidos: paso 6 puro, causa literal `"capricho de la semana"`. 1 candidato → directo, sin
+     RNG, causa `capricho_candidato_unico`. El hueco hermano (momento no elegido) pasa a rotativo
+     normal, con A/B incluidas — la exención es solo del propio hueco capricho.
+  3. **Sub-namespace RNG `::walk::select`, distinto de `::walk`.** `expandWeekArc.js` (P1a) usa
+     `mulberry32(seedFromString(`${seed}::walk`))` para su propio desempate de momento del ancla;
+     ese generador es interno, no se expone y `runWalk.js` no puede compartirlo sin tocar P1a
+     (prohibido). Reutilizar literalmente `${seed}::walk` reiniciaría la secuencia desde el índice
+     0 y correlacionaría por coincidencia numérica el primer desempate de selección con el de
+     ancla de P1a — no rompe el determinismo (la seed sigue fijando el resultado) pero es una
+     dependencia accidental innecesaria. `runWalk.js` usa su propio stream,
+     `${seed}::walk::select` (mismo namespace lógico "walk", stream independiente), documentado en
+     el JSDoc de cabecera del módulo.
+  4. **Preferencia A vacuamente satisfecha sin "ayer"** (Lunes, o cualquier hueco sin día anterior
+     en la semana): no es "imposibilidad" (no hay restricción real que evaluar), es "no aplica" —
+     causa distinta en el log (`preferencia A no aplica: no hay dia anterior...`) de la
+     imposibilidad genuina (`preferencia A satisfecha por imposibilidad: ...`). Mismo criterio
+     para B con menos de 2 días previos en la semana.
+  5. **decisionLog conserva `colision_sin_hueco` como entrada de evento, no la descarta.** El log
+     final de `runWalk` = 14 entradas de relleno (una por hueco, shape uniforme
+     `{day, momento, plato, causa, evidencia, alternativasDescartadas[, energiaCocina]}` — las que
+     v11 cuenta y valida) + entradas de evento preservadas sin pérdida de causa
+     (`evento:true`, shape `{day, causa, evidencia, alternativasDescartadas:[]}`, sin `plato`):
+     reformar el shape de las entradas heredadas de P1a a este envoltorio uniforme sí; perder
+     causas (incluida `colision_sin_hueco`, el único evento que P1a puede producir) no.
+     `energiaCocina` solo aparece en las entradas de relleno que `runWalk` selecciona (P1a no la
+     lee ni la registra, sigue intacta desde el catálogo — D-018).
+- Evidencia:
+  - Catálogo real: `node -e "..."` sobre `scripts/phaseB2/output/dishes.json` → 241 platos, conteo
+    por rol `{ rotativo: 235, ancla: 6 }` — 0 `capricho`. Confirmado además por
+    `src/engine2/dishes/tests/schema.rolEnum.test.js` / `annotate.test.js` (ninguno anota
+    `rol:"capricho"` en el universo actual): el hueco editorial capricho está pendiente de sesión
+    con el cocinero, no es un bug de esta implementación.
+  - Falsables v1-v13 demostrados verdes: `src/engine2/walk/tests/runWalk.test.js`, 24 tests.
+  - Ciclos de mutación r1-r5 (CLAUDE.md: TDD, cada falsable "sucio" mutación→rojo→revert→checksum
+    idéntico→verde), checksum de `runWalk.js` constante en las 5 vueltas:
+    `cf02f0e49549856aa1533b5eda591732`.
+    - r1 (guarda de no-repetición deshabilitada en el pool rotativo) → v4 ROJO (`expected 2 to be
+      1`) → revert → checksum idéntico → verde.
+    - r2 (rol="ancla" colado en el pool rotativo) → v5 no detectó el mutante por azar (el ancla
+      libre del catálogo real es 1 de ~200 candidatos, baja probabilidad); se construyó un
+      escenario dedicado (única candidata de cena = un plato `rol:"ancla"` no usado, con 7
+      rotativos legítimos para el resto de días) → mutante coloca la ancla en Martes/cena
+      (verificado directamente sobre `slots`) → revert → checksum idéntico → verde (la misma
+      ancla deja de aparecer en cualquier hueco).
+    - r3 (preferencia A neutralizada a "no aplica" siempre) → v6 ROJO (2/2, evidencia deja de
+      contener "preferencia A aplicada"/"satisfecha por imposibilidad") → revert → checksum
+      idéntico → verde.
+    - r4 (preferencia B neutralizada a "no aplica" siempre) → v7 ROJO (2/2, mismo patrón) →
+      revert → checksum idéntico → verde.
+    - r5 (EL CENTRAL: RNG desempatando sobre `pool` pre-filtros en vez de `candidatesB`
+      post-filtros) → v10 ROJO (`Miercoles` deja de ser consistente entre semillas: el candidato
+      que preferencia A debía excluir por construcción vuelve a ganar cuando gana la tirada) →
+      revert → checksum idéntico → verde.
+  - `npm test` (`npx vitest run`): 57 archivos / 587 tests VERDE (563 base P1a + 24 nuevos de
+    `runWalk`).
+  - Lint: `npx eslint src/engine2/walk/runWalk.js src/engine2/walk/tests/runWalk.test.js` → 0
+    problemas. (El lint global del repo reporta 123 errores preexistentes en archivos ajenos a
+    esta sesión — p. ej. `App.jsx` — no tocados aquí.)
+  - Tripwires (`tripwire-no-score`, `tripwire-eval-isolation`, `tripwire-engine2-engine-isolation`,
+    `tripwire-reverse-isolation`) verdes sobre `src/engine2/walk/` sin tocar su configuración: 4
+    archivos, 32 tests, VERDE.
+  - `git diff --stat main` sobre `src/engine/**`, `src/engine2/skeleton/**`,
+    `src/engine2/dishes/**`, `src/engine2/memory/**`, `src/engine2/contracts/**`, `scripts/**`,
+    `dishes.json` → vacío (intactos). Único archivo nuevo de producción:
+    `src/engine2/walk/runWalk.js`; único archivo de test nuevo:
+    `src/engine2/walk/tests/runWalk.test.js`.
+- Decide: Javi (ratificación de sesión 2026-07-03, ejecutada en `feature/f4-p1b-seleccion`; dos
+  correcciones sobre el plan original de la sesión — v1 sobre catálogo real en vez de fixture, y
+  preservación de `colision_sin_hueco` como evento — incorporadas antes de empezar el TDD, no
+  relitigadas después).

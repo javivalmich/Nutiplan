@@ -372,3 +372,61 @@ Formato:
     `src/engine2/skeleton/**`, `src/engine2/dishes/{schema,derive,deriveFreeform,assemble,identity,
     legacyCombos*}.js`, `scripts/**`, `dishes.json` → vacío (intactos).
 - Decide: Javi (ratificación de sesión 2026-07-03, ejecutada en `feature/f4-p0-infra`).
+
+## D-018 — [2026-07-03] Fase 4, Componente P1 (walk): paquete completo de decisiones ratificadas
+- Decisión/Hallazgo: sesión de planificación 2026-07-03 ratifica el paquete completo de decisiones
+  P1 antes de implementar, causas literales del encargo de sesión (no reconstruidas):
+  1. **Partición P1a/P1b**: P1a (esta rama, `feature/f4-p1a-expansion`) implementa
+     `expandWeekArc` — expansión de `weekArc.beats[]` (7, uno por día) a 14 huecos
+     (comida+cena) y la colocación de ancla+sobras vía cascada de momento. P1b (PR siguiente,
+     contra este mismo asiento) selecciona los platos libres de los huecos que P1a deja abiertos
+     (rotativo/capricho) — fuera de alcance de P1a.
+  2. **Cadena activa 1-3-6 con posiciones 2/4/5 reservadas**: de la cadena de pasos declarada para
+     P1, los eslabones 2, 4 y 5 quedan reservados (composición, composición, modelo-de-usuario) —
+     no se implementan en ningún PR de esta sesión, ni P1a ni P1b.
+  3. **Cascada de momento con eslabón 0**: ver cabecera de `src/engine2/walk/expandWeekArc.js` —
+     eslabón 0 (ancla en cookDay: momento único → directo, momento ambos → desempate RNG
+     `::walk`), eslabón 1 (sobra momento único → directo), eslabón 2 (sobra momento ambos → hereda
+     el momento YA resuelto del ancla, sin nuevo sorteo), eslabón 3 (colisión: la segunda
+     colocación toma el momento restante si su propio set lo admite; si no, se descarta para ese
+     día — nunca se fuerza contra el set real del plato).
+  4. **Preferencias A≻B contractuales con "satisfecha por imposibilidad"**: fuera de alcance de
+     P1a (no hay preferencias A≻B en la cascada de momento de esta rama); se deja registrado aquí
+     para que P1b no lo relitigue.
+  5. **INVARIANTE RNG**: "el RNG nunca reintroduce candidatos descartados; solo desempata entre
+     equivalentes tras los pasos activos". En P1a esto se cumple por construcción: el desempate
+     `::walk` solo interviene cuando el momento del plato-ancla es genuinamente ambiguo (ambos
+     valores admitidos), nunca para forzar un momento que el plato no admite.
+  6. **`energiaCocina` preservada sin consumir**: campo del esquema de Plato (CP1) que P1a no lee
+     ni descarta — sigue viajando en el catálogo para consumidores futuros.
+  7. **`humanScore` reportado no gate**: fuera de alcance de P1a (constitución de `engine2`: `eval/`
+     jamás se importa desde `engine2/` — `expandWeekArc.js` no lo importa).
+  8. **`MemoryStore` inyectado no leído**: P1a es stateless, como `buildWeekArc` (R4) — no importa
+     `src/engine2/memory/`.
+- Evidencia:
+  - Pre-check p1 (read-only, catálogo real `scripts/phaseB2/output/dishes.json`, 241 platos, 32
+    `batchable`): 3 platos `batchable` con `momento` ambos (`curry_garbanzos`,
+    `pollo_teriyaki_arroz`, `ensalada_lentejas_feta`), ninguno `rol:"ancla"`. De los 6 platos
+    `rol:"ancla"` (los que resuelve `chooseAnchor` en `buildWeekArc`), los 6 tienen `momento` de un
+    solo valor — cero ambigüedad real alcanzable hoy; el eslabón 0 de desempate RNG se verifica con
+    fixture construido (v3, v5).
+  - p2: `src/engine/buildPlan.js:2434-2443` confirma que `TRAINING_DINNERS` sustituye la CENA
+    (objetos con `slot:"Cena"` en `buildPlan.js:1157-1165`), nunca la comida.
+  - p3: `src/engine2/skeleton/buildWeekArc.js:285-336` — `beats[]` es un array de 7 (uno por día,
+    sin distinguir comida/cena, deuda explícita para F4 en el comentario de
+    `computeLeftoverDays`), shape `{day, fixedRole?, slotRole, anchorRef?, density}`; `anchors[]`
+    es `[{anchorId, cookDay, leftoverDays}]`. Sin desajuste con lo asumido.
+  - Falsables v1-v7 demostrados verdes: `src/engine2/walk/tests/expandWeekArc.test.js`, 17 tests.
+  - r1 (rompe herencia de momento en sobra) y r2 (rompe namespace RNG `::walk`→`::skeleton`)
+    demostrados ROJO con mutación deliberada sobre `expandWeekArc.js`, revertidos, checksum MD5
+    idéntico pre/post-mutación (`870859ab79e22aa2de06fc2ccbeff648`) y suite verde tras cada revert.
+  - `npm test`: 56 archivos / 563 tests VERDE (546 base F4-P0 + 17 nuevos de `expandWeekArc`).
+  - Tripwires (`tripwire-no-score`, `tripwire-eval-isolation`, `tripwire-engine2-engine-isolation`,
+    `tripwire-reverse-isolation`) verdes sobre `src/engine2/walk/` sin tocar su configuración: 4
+    archivos, 32 tests, VERDE.
+  - `git diff --stat main` sobre `src/engine/**`, `src/engine2/skeleton/**`,
+    `src/engine2/dishes/**` (incluido `loadCatalog.js`, consumido no modificado),
+    `src/engine2/memory/**`, `src/engine2/contracts/**`, `scripts/**`, `dishes.json` → vacío
+    (intactos).
+- Decide: Javi (ratificación de sesión 2026-07-03, ejecutada en `feature/f4-p1a-expansion`; los
+  elementos de P1b quedan marcados explícitamente para el PR siguiente contra este mismo asiento).

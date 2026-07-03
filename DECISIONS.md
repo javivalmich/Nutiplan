@@ -327,3 +327,48 @@ Formato:
   - `npm test`: 51 archivos / 522 tests, VERDE (incluye `analysis/gate2_measure.test.js` y
     `analysis/gate4_protein_guard.test.js`, ambos parte del run por defecto).
 - Decide: Javi (ratificación de sesión 2026-07-02, ejecutada en fix/sync-gates-medicion 2026-07-03).
+
+## D-017 — [2026-07-03] Fase 4, Componente P0 (infraestructura del walk): decisiones ratificadas
+- Decisión/Hallazgo: sesión de implementación de F4-P0 en rama `feature/f4-p0-infra` (desde
+  `main` en `eb213df`). Cuatro componentes: `loadCatalog`, `MemoryStore` en memoria, `WeeklyTargets`,
+  `validateProfile`. Se ratifican seis decisiones de esta sesión, causas literales del prompt
+  2026-07-03:
+  1. **Frontera informacional P1/P2**: `validateProfile` (`src/engine2/contracts/profile.js`)
+     reconoce ÚNICAMENTE `trainingDays` — el campo consumido hoy por P1. `WeeklyTargets`
+     (`src/engine2/contracts/weeklyTargets.js`) es un contrato/shape declarado en P0 SIN consumidor:
+     su ratificación de valores de negocio queda para P2. Ningún placeholder de campo sin consumidor
+     en ninguno de los dos.
+  2. **Catálogo congelado**: `loadCatalog` (`src/engine2/dishes/loadCatalog.js`) lee
+     `scripts/phaseB2/output/dishes.json` (ruta actual, ratificada como canónica para este
+     checkpoint — la mudanza a ruta de producto es asiento futuro), valida cada plato con
+     `validateDish` (`schema.js`, reutilizado sin duplicar) y devuelve el catálogo congelado en
+     profundidad (`Object.freeze` recursivo sobre array, platos y campos anidados, p. ej. `momento`).
+  3. **`getWeek` de semana no guardada → `null`**: la ausencia es valor del dominio, no error.
+  4. **`saveWeek` sobre semana existente → sobreescribe**: último gana, sin merge ni versión previa
+     retenida.
+  5. **Desdoble `WeeklyTargets`**: nivel 1 = contrato/shape (`pescado`, `legumbre`, `verduraDiaria`,
+     semántica de SUELO/CUOTA — nunca techo, explícitamente no es `WEEKLY_CAP`). Nivel 2 =
+     `DEFAULT_WEEKLY_TARGETS` congelado con valores provisionales (`pescado:2, legumbre:2,
+     verduraDiaria:1`) — ratificación de negocio pendiente para P2. Recordatorio F5: revisar
+     legumbre a 4 (AESAN).
+  6. **`profile` solo-consumidores-P1**: ver punto 1 — `validateProfile` no valida ningún campo que
+     P1 no consuma todavía.
+- Evidencia:
+  - D0 verificado antes de tocar código: `main` = `eb213dfe2ab356f4f3f2143229be40ecf5159f0c`, marcador
+    "Fase actual: 4" en `CLAUDE.md:58`, catálogo 241 platos (`node -e` sobre
+    `scripts/phaseB2/output/dishes.json`), suite 51 archivos / 522 tests VERDE, `contract.js`
+    solo-firmas (4 funciones, cada una `throw new Error(... 'sin implementación')`).
+  - Falsables demostrados ROJO→revert→VERDE con mutación deliberada sobre copia efímera o sobre el
+    módulo en construcción (nunca sobre artefactos reales): `loadCatalog` r1 (campo ausente), r2 (id
+    duplicado), r3 (freeze superficial vs recursivo); `inMemoryStore` v2 (aislamiento entre usuarios),
+    v3 (aislamiento entre semanas); `validateProfile` r1+r2 (vocabulario fuera de rango, no-array).
+  - Suite final: 55 archivos / 546 tests VERDE (522 base + 24 nuevos: 8 `loadCatalog` + 6
+    `inMemoryStore` + 4 `weeklyTargets` + 6 `profile`).
+  - Tripwires verdes sobre los 4 módulos nuevos (escaneo recursivo automático de `src/engine2/`, sin
+    tocar su configuración): `tripwire-no-score.test.js`, `tripwire-eval-isolation.test.js`,
+    `tripwire-engine2-engine-isolation.test.js`, `tripwire-reverse-isolation.test.js` → 4 archivos,
+    32 tests, VERDE.
+  - `git diff --stat` entre `main` y `feature/f4-p0-infra` sobre `src/engine/**`,
+    `src/engine2/skeleton/**`, `src/engine2/dishes/{schema,derive,deriveFreeform,assemble,identity,
+    legacyCombos*}.js`, `scripts/**`, `dishes.json` → vacío (intactos).
+- Decide: Javi (ratificación de sesión 2026-07-03, ejecutada en `feature/f4-p0-infra`).

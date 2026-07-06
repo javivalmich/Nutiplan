@@ -476,7 +476,7 @@ describe('runWalk - v14: vetos duros (P2b-i, paso 2 del walk, D-022)', () => {
     expect(dishScaffoldDesconocida).toBeDefined();
   });
 
-  it('f13+f15: el vetado (por valor) y el vetado (por desconocida, fail-closed) no aparecen en ninguna colocacion; el libre los ocupa; log de universo una vez, con conteo por campo/motivo', () => {
+  it('f13+f15: el vetado (por valor) y el vetado (por desconocida, contrato de dominio) no aparecen en ninguna colocacion; el libre los ocupa; log de universo una vez, con conteo por campo/motivo', () => {
     const { anchors, dishes } = anchorEverythingExcept([{ day: 'Lunes', momento: 'comida' }]);
     const weekArc = { beats: beats7(), anchors };
     const catalogoAislado = [...dishes, dishGlutenTrue, dishGlutenFalse, dishScaffoldDesconocida];

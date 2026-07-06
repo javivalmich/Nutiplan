@@ -9,8 +9,13 @@
 //      misma seed.
 //   1. Citas fijas (restricciones, primero): Sabado=libre, Domingo=familiar,
 //      dias de entreno del perfil.
-//   2. Ancla: eleccion UNICAMENTE por seed entre las 6 referencias de CP2.
-//      Sin filtros (ni estacion, ni estrategia, ni temperatura).
+//   2. Ancla: eleccion UNICAMENTE por seed entre las referencias de CP2
+//      SUPERVIVIENTES del veto de intolerancias (D-023, F4-P2b-i-bis) --
+//      el filtrado ocurre ANTES del sorteo, el RNG nunca ve a los
+//      vetados. Sin ningun otro filtro (ni estacion, ni estrategia, ni
+//      temperatura). Cero supervivientes es un resultado VALIDO: la
+//      presencia de ancla no es requisito de validez del plan (contrato
+//      de ausencia, D-023) -- ver chooseAnchor.
 //   3. Sobras/aprovechamiento: dentro de shelfLifeDays del ancla elegida,
 //      pero NUNCA sobre un dia con fixedRole (libre/familiar/entreno) --
 //      la cita fija (paso 1) tiene precedencia y el dia se SALTA, sin
@@ -35,6 +40,8 @@ import { TEMPLATE_B } from './templateB.js';
 import { TEMPLATE_C } from './templateC.js';
 import { mulberry32, seedFromString } from './rng.js';
 import { ANCHORS } from '../dishes/anchors.js';
+import { filterSurvivors } from '../walk/vetoes.js';
+import { resolveDishComposition } from '../dishes/compositionResolver.js';
 
 export const TEMPLATES = Object.freeze([TEMPLATE_A, TEMPLATE_B, TEMPLATE_C]);
 
@@ -109,17 +116,74 @@ export function computeFixedRoles(profile, decisionLog) {
 }
 
 /**
- * Ancla elegida UNICAMENTE por seed entre las 6 referencias de CP2. Sin
- * filtros de ningun tipo.
+ * Vista de composicion de un ancla, resuelta por su identityKey (que ES
+ * el dish.id real del catalogo, ver anchors.js/CompositionResolver). Punto
+ * de wiring por defecto de chooseAnchor -- los tests pueden inyectar un
+ * getVista sintetico (ver vetoes.js:filterSurvivors) para ejercer estados
+ * hoy inalcanzables con el catalogo real.
  */
-function chooseAnchor(seed, decisionLog) {
+function anchorVista(anchor) {
+  return resolveDishComposition({ id: anchor.identityKey });
+}
+
+/**
+ * Ancla elegida UNICAMENTE por seed, entre las anclas SUPERVIVIENTES del
+ * veto (D-023): el filtrado (paso 1, filterSurvivors) ocurre ANTES del
+ * sorteo (paso 2) -- el RNG nunca ve a los vetados, por construccion, no
+ * por descarte posterior (f17/f20). Sin veto activo (intolerancias vacio/
+ * ausente), supervivientes === anchors (mismo orden, misma longitud): el
+ * sorteo es byte-identico al camino pre-D-023 (f19).
+ *
+ * Cero supervivientes -> CONTRATO DE AUSENCIA (D-023): la presencia de un
+ * ancla no es requisito de validez del plan. Se registra la ausencia y
+ * sus consecuencias en una unica entrada del log, y se devuelve null --
+ * el resto de buildWeekArc (batchDay/leftoverDays/beats) queda vacio por
+ * construccion, no por rama especial (ver buildWeekArc()).
+ * @param {ReadonlyArray<object>} anchors catalogo de anclas (ANCHORS en produccion)
+ * @param {(number|string)} seed
+ * @param {string[]} [intolerancias]
+ * @param {object[]} decisionLog
+ * @param {(anchor: object) => object} [getVista] inyeccion para tests (ver filterSurvivors)
+ * @returns {object|null}
+ */
+export function chooseAnchor(anchors, seed, intolerancias, decisionLog, getVista = anchorVista) {
+  const vetoActivo = Boolean(intolerancias && intolerancias.length > 0);
+  const supervivientes = filterSurvivors(anchors, intolerancias, getVista);
+
+  if (vetoActivo) {
+    decisionLog.push({
+      decisionId: `cp3a-${decisionLog.length}`,
+      cause: 'veto_ancla_universo_reducido',
+      evidence: `intolerancias=[${intolerancias.join(', ')}]; ${supervivientes.length} de ${anchors.length} anclas catalogadas sobreviven el veto `
+        + '(D-023: un plato cuyo estado respecto al campo vetado es desconocido no puede demostrarse compatible con un requisito de exclusion)',
+      consequence: supervivientes.length
+        ? `sorteo restringido a ${supervivientes.length} anclas supervivientes`
+        : 'cero supervivientes: sin sorteo posible',
+    });
+  }
+
+  if (supervivientes.length === 0) {
+    decisionLog.push({
+      decisionId: `cp3a-${decisionLog.length}`,
+      cause: 'ancla_ausente',
+      evidence: `intolerancias=[${(intolerancias || []).join(', ')}]; 0 de ${anchors.length} anclas catalogadas sobreviven el veto -- `
+        + 'ningun superviviente disponible para el sorteo por seed',
+      consequence: 'semana sin ancla (D-023: la presencia de ancla no es requisito de validez): sin batchDay, sin leftoverDays, '
+        + 'ningun beat con slotRole "ancla" (los dias que lo habrian sido degradan a rotativo/capricho por construccion); '
+        + 'capricho, fixedRoles y vetos del walk operan con normalidad',
+    });
+    return null;
+  }
+
   const rng = mulberry32(resolveSeed(seed));
-  const index = Math.floor(rng() * ANCHORS.length);
-  const anchor = ANCHORS[index];
+  const index = Math.floor(rng() * supervivientes.length);
+  const anchor = supervivientes[index];
   decisionLog.push({
     decisionId: `cp3a-${decisionLog.length}`,
     cause: 'eleccion_ancla_por_seed',
-    evidence: `seed=${JSON.stringify(seed)} -> indice ${index} de ${ANCHORS.length} anclas catalogadas en CP2 (sin filtros)`,
+    evidence: vetoActivo
+      ? `seed=${JSON.stringify(seed)} -> indice ${index} de ${supervivientes.length} anclas supervivientes del veto (de ${anchors.length} catalogadas)`
+      : `seed=${JSON.stringify(seed)} -> indice ${index} de ${anchors.length} anclas catalogadas en CP2 (sin filtros)`,
     consequence: `ancla elegida: ${anchor.identityKey}`,
   });
   return anchor;
@@ -263,16 +327,24 @@ export function buildWeekArc({ profile, seed, strategy }) {
   // 1. Citas fijas (restricciones, primero).
   const fixedRoles = computeFixedRoles(profile, decisionLog);
 
-  // 2. Ancla por seed, sin filtros.
-  const anchor = chooseAnchor(seed, decisionLog);
+  // 2. Ancla por seed, filtrada por veto (D-023) antes del sorteo. Puede
+  // no haber superviviente -- ver contrato de ausencia en chooseAnchor.
+  const intolerancias = profile?.intolerances ?? [];
+  const anchor = chooseAnchor(ANCHORS, seed, intolerancias, decisionLog);
 
-  // batchDay de la plantilla, desplazado por orden de preferencia
-  // declarado si el primario cae en dia fijo bloqueante.
-  const batchDay = resolveBatchDay(template.batchDayPreference, fixedRoles, decisionLog);
+  // batchDay/leftoverDays solo tienen sentido si hay algo que cocinar: sin
+  // ancla superviviente, ambos quedan vacios por construccion (D-023,
+  // contrato de ausencia), no por rama especial -- el resto de la cascada
+  // (capricho, beats) ya esta escrito para tolerar batchDay=undefined.
+  const batchDay = anchor
+    ? resolveBatchDay(template.batchDayPreference, fixedRoles, decisionLog)
+    : undefined;
 
   // 3. Sobras dentro de shelfLifeDays del ancla. Dias fijos (paso 1) son
   // intransitables: la cita fija tiene precedencia sobre la sobra.
-  const leftoverDays = computeLeftoverDays(batchDay, anchor.shelfLifeDays, fixedRoles, decisionLog);
+  const leftoverDays = anchor
+    ? computeLeftoverDays(batchDay, anchor.shelfLifeDays, fixedRoles, decisionLog)
+    : [];
   const leftoverDaySet = new Set(leftoverDays);
 
   // 3.5. Capricho: recorre caprichoPreference; nunca pisa fixedRole ni el
@@ -328,10 +400,8 @@ export function buildWeekArc({ profile, seed, strategy }) {
   const weekArc = {
     skeletonId: template.skeletonId,
     strategy, // metadato pasivo: no participa en ninguna decision de arriba
-    batchDay,
-    anchors: [
-      { anchorId: anchor.identityKey, cookDay: batchDay, leftoverDays },
-    ],
+    ...(anchor ? { batchDay } : {}), // ausencia estructural (D-023), no valor centinela -- ver "sin batchDay"
+    anchors: anchor ? [{ anchorId: anchor.identityKey, cookDay: batchDay, leftoverDays }] : [],
     beats,
   };
 

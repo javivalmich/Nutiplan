@@ -1,9 +1,9 @@
 // Tests de vetoes.js — Fase 4, Componente P2b-i (paso 2 del walk).
 // Falsables f13-f16 segun el prompt de sesion 2026-07-06 (ver DECISIONS.md,
 // D-022). f14 (uniformidad scaffold/freeform via el resolver) y f15
-// (fail-closed sobre "desconocida") se verifican aqui a nivel de unidad,
-// contra el catalogo real (loadCatalog) para evitar fixtures que no
-// resuelven via CompositionResolver.
+// (contrato de dominio sobre "desconocida", D-023) se verifican aqui a
+// nivel de unidad, contra el catalogo real (loadCatalog) para evitar
+// fixtures que no resuelven via CompositionResolver.
 
 import { describe, it, expect } from 'vitest';
 import { evaluateVeto, evaluateVetoFromVista, computeVetoUniverse } from '../vetoes.js';
@@ -41,7 +41,7 @@ describe('evaluateVeto — f14: uniformidad — scaffold y freeform via la MISMA
     expect(evaluateVeto(freeformGlutenFalse, ['gluten'])).toEqual([]);
   });
 
-  it('f15: scaffold (estado "desconocida") se veta con motivo "desconocida" — fail-closed, MISMA funcion, sin heuristica propia (p.ej. por tmpl)', () => {
+  it('f15: scaffold (estado "desconocida") se veta con motivo "desconocida" — contrato de dominio (D-023: un estado desconocido no puede demostrarse compatible con la exclusion), MISMA funcion, sin heuristica propia (p.ej. por tmpl)', () => {
     expect(evaluateVeto(scaffoldDish, ['gluten'])).toEqual([{ campo: 'gluten', motivo: 'desconocida' }]);
   });
 

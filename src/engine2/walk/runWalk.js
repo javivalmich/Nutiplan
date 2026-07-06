@@ -1,5 +1,6 @@
-// Seleccion del walk — Fase 4, Componente P1b. Entrada: {weekArc, catalog,
-// seed, memoryStore}. Salida: {slots, decisionLog}. Rellena los huecos que
+// Seleccion del walk — Fase 4, Componentes P1b + P2b-i (vetos duros,
+// D-022). Entrada: {weekArc, catalog, seed, memoryStore, profile}. Salida:
+// {slots, decisionLog}. Rellena los huecos que
 // expandWeekArc (P1a, NO se toca aqui) deja abiertos: rotativo y capricho.
 // Prohibido score/ranking (CLAUDE.md invariante 1): solo pools por rol,
 // prioridades ordenadas (primera respuesta valida gana) y desempate por
@@ -19,6 +20,12 @@
 //
 // CASCADA DE SELECCION por hueco abierto (D-019, orden fijo):
 //   Paso 1 (respetar lo colocado): un hueco con abierto=false no se toca.
+//   Paso 2 (vetos duros, D-022/vetoes.js): ANTES de construir ningun pool,
+//     se calcula UNA VEZ el universo vetado del catalogo (rol="rotativo"/
+//     "capricho" -- el ancla no pasa por aqui) segun profile.intolerances.
+//     Los pools de capricho y generico excluyen esos ids junto con
+//     usedIds -- un plato vetado no aparece en ninguna colocacion ni
+//     estructura del espacio de decision (principio ratificado D-022).
 //   CAPRICHO (dia con slotRole="capricho", ambos huecos abiertos por
 //     construccion — ver assertNoCaprichoCollision en buildWeekArc.js):
 //     se resuelve ANTES que el resto de la semana, en una fase propia.
@@ -76,6 +83,7 @@ import { expandWeekArc } from './expandWeekArc.js';
 import { DAYS_ORDER } from '../skeleton/days.js';
 import { mulberry32, seedFromString } from '../skeleton/rng.js';
 import { MOMENTOS } from '../dishes/schema.js';
+import { computeVetoUniverse } from './vetoes.js';
 
 function selectRng(seed) {
   return mulberry32(seedFromString(`${seed}::walk::select`));
@@ -133,13 +141,13 @@ function reshapeP1aEntry(entry) {
 /**
  * Rellena los huecos abiertos que expandWeekArc (P1a) deja tras colocar
  * ancla+sobras. No reestructura P1a, no lo modifica: lo consume tal cual.
- * @param {{weekArc: object, catalog: ReadonlyArray<object>, seed: (number|string), memoryStore?: object}} input
+ * @param {{weekArc: object, catalog: ReadonlyArray<object>, seed: (number|string), memoryStore?: object, profile?: {intolerances?: string[]}}} input
  * @returns {{slots: object[], decisionLog: object[]}}
  */
 export function runWalk(input) {
   // input.memoryStore se recibe por inyeccion y NUNCA se lee ni se invoca aqui (D-019, v13):
   // no se desestructura para que quede estructuralmente imposible tocarlo por accidente.
-  const { weekArc, catalog, seed } = input;
+  const { weekArc, catalog, seed, profile } = input;
   const { slots: p1aSlots, decisionLog: p1aRawLog } = expandWeekArc({ weekArc, catalog, seed });
 
   const slots = new Map();
@@ -152,6 +160,9 @@ export function runWalk(input) {
 
   const decisionLog = p1aRawLog.map(reshapeP1aEntry);
   const rng = selectRng(seed);
+
+  const intolerancias = profile?.intolerances ?? [];
+  const { vetoedIds, conteo: conteoVetos, activo: vetoActivo } = computeVetoUniverse(catalog, intolerancias);
 
   function pushFill(day, momento, dishId, causa, evidencia, alternativasDescartadas) {
     const key = slotKey(day, momento);
@@ -189,11 +200,27 @@ export function runWalk(input) {
     return findDish(catalog, slot.dishId);
   }
 
+  // ─── VETOS (paso 2, D-022) ───────────────────────────────────────────
+  // Causa UNA VEZ por construccion de universo, no por hueco: los vetados
+  // existieron cero veces en el espacio de decision, no "se descartaron"
+  // hueco a hueco.
+  if (vetoActivo) {
+    const resumenPorCampo = intolerancias
+      .map((campo) => `${campo}: ${conteoVetos[campo].valor} por valor + ${conteoVetos[campo].desconocida} por desconocida`)
+      .join('; ');
+    pushEvent(
+      undefined,
+      'veto_universo_reducido',
+      `intolerancias=[${intolerancias.join(', ')}]; ${vetoedIds.size} platos excluidos del espacio de decision del walk `
+        + `(rol="rotativo"/"capricho") antes de cualquier construccion de pool; ${resumenPorCampo}`,
+    );
+  }
+
   // ─── CAPRICHO ────────────────────────────────────────────────────────
   const caprichoSlot = [...slots.values()].find((s) => s.slotRole === 'capricho');
   if (caprichoSlot) {
     const caprichoDay = caprichoSlot.day;
-    const caprichoPool = catalog.filter((d) => d.rol === 'capricho' && !usedIds.has(d.id));
+    const caprichoPool = catalog.filter((d) => d.rol === 'capricho' && !usedIds.has(d.id) && !vetoedIds.has(d.id));
 
     if (caprichoPool.length === 0) {
       pushEvent(
@@ -244,11 +271,11 @@ export function runWalk(input) {
       const slot = slots.get(key);
       if (!slot.abierto) continue; // Paso 1: ya colocado, la cadena no corre.
 
-      const pool = catalog.filter((d) => d.rol === 'rotativo' && d.momento.includes(momento) && !usedIds.has(d.id));
+      const pool = catalog.filter((d) => d.rol === 'rotativo' && d.momento.includes(momento) && !usedIds.has(d.id) && !vetoedIds.has(d.id));
       if (pool.length === 0) {
         throw new Error(
           `runWalk: pool rotativo vacio para ${day}/${momento} `
-            + `(rol="rotativo", momento admite "${momento}", excluidos los ids ya usados en la semana)`,
+            + `(rol="rotativo", momento admite "${momento}", excluidos los ids ya usados en la semana y los vetados)`,
         );
       }
 

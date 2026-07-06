@@ -556,3 +556,96 @@ Formato:
   adaptador ad-hoc ni parcial — un adaptador que lee los 178 por tupla pero no los 63 freeform
   reproduce la asimetría de medición de D-014 [...], y '0 meals legibles' produciría métricas
   vacías que parecen dato").
+
+## D-021 — [2026-07-06] Fase 4, Componente P2a ("infraestructura composicional"): resolver de
+  composición sin crecer el schema de Dish
+- Decisión/Hallazgo: el schema de Plato (`src/engine2/dishes/schema.js`, 10 campos) NO crece para
+  dar cabida a proteinType/density/gluten/lactosa/verdura. La composición es una VISTA DERIVADA
+  calculada en carga sobre la salida de `loadCatalog()`, nunca escrita de vuelta a `dishes.json`:
+  `loadCatalog() → CompositionResolver → consumidores (P2b/P2c)`. Renombre del checkpoint, de
+  "resolver de composición" a **"infraestructura composicional"** (más preciso: no es un resolver
+  aislado, es la capa que hace legible el catálogo para P2b/P2c sin tocar su contrato).
+  - Implementación: `src/engine2/dishes/compositionResolver.js` (único módulo nuevo).
+    `resolveDishComposition(dish)` / `resolveCatalogComposition(dishes)` como orquestadores;
+    `resolveScaffoldComposition(tupla, dishId)` / `resolveFreeformComposition(combo, dishId)`
+    exportadas como funciones puras independientes (mismo patrón que `derive.js`/`assemble.js`:
+    piezas puras, testeables sin I/O, compuestas por un orquestador delgado).
+  - Fuentes de datos declaradas (data-only, ninguna importa `buildPlan.js`): `dish.id` (es
+    literalmente el JSON de `comboIdentityKey` para los 178 scaffold — el "join" es una lectura de
+    mapa, no una búsqueda difusa); `src/data/FREEFORM_COMBOS.js` (join por `identity.id`, los 63
+    freeform); `legacyCombos.data.js` vía `groupCombosByIdentity` (density de los 178, mismo
+    mecanismo que `anchors.js` en CP2).
+  - Contrato de vista, idéntico shape base para los 241 independientemente del origen:
+    `{origen, claveP, proteinType, containsGluten, containsLactosa, density, verdura}` +
+    `tupla` (solo scaffold, ausente en freeform — verificado estructuralmente, no por valor
+    `undefined`). **Justificación contractual de paridad de intención** (aplica también de cara a
+    P2b): "engine2 implementa el contrato declarado de los vetos de forma uniforme; las asimetrías
+    accidentales del legacy no forman parte del contrato observable que se desea preservar."
+  - **`proteinType`** (vocabulario cerrado de 8: pescado, marisco, legumbre, ave, carne, huevo,
+    cereal, vegetal): freeform lee `identity.proteinType` directo; scaffold usa la tabla NUEVA
+    `P_TO_PROTEINTYPE` (17 claves, no es copia paritaria del legacy — el legacy usa otra taxonomía,
+    `CULINARY_FAMILY` — "carne" agrupa vacuno+cerdo deliberadamente). El veto de cerdo NO opera
+    sobre esta capa: opera sobre `claveP` (la clave `P` cruda / `identity.protein`), que el resolver
+    expone por separado para que P2b elija la capa correcta.
+  - **`density`**: scaffold hereda `baja/media/alta` de `legacyCombos.data.js` sin traducir; freeform
+    normaliza LÉXICAMENTE `low/medium/high → baja/media/alta` (cambia vocabulario, no significado).
+  - **`containsGluten`/`containsLactosa`**: freeform los declara (`identity.containsGluten/
+    containsLactosa`, boolean); scaffold no tiene fuente estructural hoy (`legacyCombos.data.js` no
+    tiene esos campos, verificado por grep, 0 ocurrencias) → estado DESCONOCIDO explícito, mismo
+    patrón de unión etiquetada que verdura. No se deriva por `tmpl==="pasta"` ni heurística similar
+    — esa derivación (si se ratifica) es decisión de P2b, fuera de alcance aquí.
+  - **`verdura`**: unión etiquetada por origen — scaffold `{estado:"conocida", ejes:[V,V2 no-nulos]}`
+    (`ejes:[]` es "sin verdura" DEMOSTRADO, p. ej. `pasta+huevo` con `V:null`); freeform
+    `{estado:"desconocida"}` SIN campo `ejes` (ausencia estructural, no `ejes:[]`). Frase ratificada
+    para el JSDoc: *"La ausencia de contribución refleja ausencia de información, no ausencia de
+    verdura."* Helper de lectura `ejesVerdura(vista)` lanza sobre estado desconocido.
+  - La vista completa va `Object.freeze` en profundidad (campos planos y anidados: `tupla`,
+    `verdura`, `verdura.ejes`).
+  - **Nota para P2b (ratificada ahora como POLÍTICA, no como contrato de P2a)**: los valores
+    `pescado:3, legumbre:3, verduraDiaria:1` para `DEFAULT_WEEKLY_TARGETS`
+    (`src/engine2/contracts/weeklyTargets.js:32-35`, hoy `{pescado:2, legumbre:2, verduraDiaria:1}`,
+    marcados en el propio código como "provisionales — ratificación de negocio pendiente para P2").
+    Razones ratificadas: pescado 3 alineado con AESAN (coincide con el cap legacy vigente por razón
+    propia, no por herencia); legumbre 3 con el recordatorio ya existente en el código ("F5: revisar
+    a 4, AESAN"); `verduraDiaria` 1 = presencia diaria. Es POLÍTICA, no contrato: el contrato
+    `WeeklyTargets` (shape + semántica SUELO/CUOTA, nunca techo) no cambia, solo los defaults —
+    pueden cambiar sin re-ratificar el contrato. **Alcance de P2a: solo se asienta la ratificación
+    aquí. `weeklyTargets.js` NO se toca en esta sesión** — la actualización del default aterriza en
+    P2b junto a su consumidor (un concern por PR).
+  - Causas literales de sesión 2026-07-03/04 (prompt de P2a) y aclaración de sesión 2026-07-06
+    (valores 3/3/1, elíptica en el prompt original — aclarada por Javi a petición explícita en vez
+    de asumida).
+- Evidencia:
+  - D2 (diagnóstico previo) confirmado en runtime: 241 platos, 178 resuelven como tupla de 7
+    elementos vía `JSON.parse(dish.id)`, 63 hacen join limpio contra `FREEFORM_COMBOS` por
+    `identity.id`, 0 platos sin origen determinable (`neither: 0`); `bol_fruta_yogur` confirmado
+    fuera de los 241 (`dishes.find(d => d.id === 'bol_fruta_yogur')` → `undefined`).
+  - `P_TO_PROTEINTYPE` (17 claves) verificado 1:1 contra el universo real de valores `P` en
+    `legacyCombos.data.js` (`grep -oE 'P:"[a-z_]+"' | sort -u` → exactamente 17, sin huecos).
+  - `FREEFORM_COMBOS.js`: 64 combos, 0 sin `containsGluten`, 0 sin `containsLactosa`, 0 sin
+    `nutrition.energyDensity`; valores de `energyDensity` = `{low, medium, high}` (los 3 del mapeo
+    léxico, sin huecos).
+  - Falsables demostrados ROJO→revert→checksum→VERDE con mutación deliberada sobre el módulo en
+    construcción (nunca sobre `dishes.json`/`FREEFORM_COMBOS.js`/`legacyCombos.data.js` reales):
+    r1 (freeform sin entrada en `FREEFORM_COMBOS` → silenciar el throw hace fallar el test de r1),
+    r2 (clave P ausente de `P_TO_PROTEINTYPE` → default silencioso hace fallar r2 nombrando la
+    clave), r3 (energyDensity fuera del mapeo léxico → default silencioso hace fallar r3), r4
+    (control negativo: inyectar `ejes:[]` en la vista freeform hace fallar 3 tests — v5 estructural
+    + 2 de r4 — confirmando que la unión etiquetada, no un valor centinela, es lo que sostiene la
+    distinción "desconocida ≠ sin verdura"), r5 (quitar `deepFreeze` hace fallar las 4 mutaciones:
+    campo plano, `verdura` anidado, array `ejes`, `tupla` anidada), v6 (invertir el orden en
+    `resolveCatalogComposition` hace fallar el test de estabilidad de orden). Cada mutación
+    verificada con `sha256sum` idéntico antes/después del revert.
+  - Suite final: 58 archivos / 613 tests VERDE (587 base de P1b + 26 nuevos de
+    `compositionResolver.test.js`).
+  - Tripwires verdes sin modificar su configuración: `-t "tripwire"` → 5 archivos / 34 tests VERDE
+    (incluye `tripwire-no-score`, `tripwire-eval-isolation`, `tripwire-engine2-engine-isolation`,
+    `tripwire-reverse-isolation`); grep manual de `score|rank(ing)?|top-?N` y de imports
+    `.../eval/` o `.../engine/` sobre `compositionResolver.js` → limpio.
+  - `git diff --stat origin/main -- src/engine src/engine2/skeleton src/engine2/walk
+    src/engine2/memory src/engine2/contracts scripts src/engine2/dishes/loadCatalog.js
+    src/engine2/dishes/schema.js dishes.json` → vacío (todas las rutas protegidas intactas).
+  - `sha256sum scripts/phaseB2/output/dishes.json` idéntico antes/después de toda la sesión
+    (`a8fe0abb...`) — el resolver es vista, nunca escritura.
+- Decide: Javi (ratificación de sesión 2026-07-03/04, ejecutada en `feature/f4-p2a-composicion`;
+  aclaración de valores 3/3/1 ratificada en sesión 2026-07-06).

@@ -206,3 +206,75 @@ describe('r1 — freeform sin entrada en FREEFORM_COMBOS aborta identificando el
       .toThrow(/id_inventado_sin_mapeo_alguno/);
   });
 });
+
+// Cobertura de containsGluten/containsLactosa (gap detectado en verificacion
+// read-only 2026-07-06 sobre main e3a1b0b: compositionResolver.test.js:37
+// solo hacia toHaveProperty, sin examinar estado/valor). Sin cambios de
+// produccion — el comportamiento ya era correcto, esto solo lo fija.
+describe('g1 — scaffold (178): containsGluten/containsLactosa desconocido explicito, sin clave "valor"', () => {
+  it('los 178 scaffold resuelven estado="desconocida" en ambos campos', () => {
+    const scaffold = porOrigen('scaffold');
+    expect(scaffold).toHaveLength(178);
+    for (const v of scaffold) {
+      expect(v.containsGluten.estado).toBe('desconocida');
+      expect(v.containsLactosa.estado).toBe('desconocida');
+    }
+  });
+
+  it('ninguno de los 178 tiene la clave "valor" en containsGluten/containsLactosa', () => {
+    for (const v of porOrigen('scaffold')) {
+      expect('valor' in v.containsGluten).toBe(false);
+      expect('valor' in v.containsLactosa).toBe(false);
+    }
+  });
+});
+
+describe('g2 — freeform (63): containsGluten/containsLactosa declarado, valor boolean', () => {
+  it('los 63 freeform resuelven estado="conocida" y valor boolean en ambos campos', () => {
+    const freeform = porOrigen('freeform');
+    expect(freeform).toHaveLength(63);
+    for (const v of freeform) {
+      expect(v.containsGluten.estado).toBe('conocida');
+      expect(typeof v.containsGluten.valor).toBe('boolean');
+      expect(v.containsLactosa.estado).toBe('conocida');
+      expect(typeof v.containsLactosa.valor).toBe('boolean');
+    }
+  });
+});
+
+// g3: no-uniformidad, no snapshot duro. Fijar los conteos exactos (39/24,
+// 20/43) haria que el test dependiera de CUANTOS combos de cada tipo hay
+// en FREEFORM_COMBOS.js hoy -- anadir/editar un combo real (cambio de
+// datos legitimo, no un bug) romperia un test que no esta protegiendo
+// nada. La invariante real que importa es la no-uniformidad: si un
+// default disfrazado colapsara todo a un unico valor, esto lo detecta
+// igual que un snapshot, sin acoplarse al conteo actual.
+describe('g3 — no-uniformidad: containsGluten/containsLactosa no son un default disfrazado', () => {
+  it('entre los 63 freeform hay al menos un true y un false en containsGluten', () => {
+    const valores = porOrigen('freeform').map((v) => v.containsGluten.valor);
+    expect(valores).toContain(true);
+    expect(valores).toContain(false);
+  });
+
+  it('entre los 63 freeform hay al menos un true y un false en containsLactosa', () => {
+    const valores = porOrigen('freeform').map((v) => v.containsLactosa.valor);
+    expect(valores).toContain(true);
+    expect(valores).toContain(false);
+  });
+});
+
+describe('g4 — distinguibilidad estructural (analogo a v5 de verdura): "valor" in campo distingue los estados', () => {
+  it('"valor" in campo es verdadero SOLO cuando estado="conocida", para las 241 vistas', () => {
+    for (const v of vistas) {
+      expect('valor' in v.containsGluten).toBe(v.containsGluten.estado === 'conocida');
+      expect('valor' in v.containsLactosa).toBe(v.containsLactosa.estado === 'conocida');
+    }
+  });
+
+  it('ninguna vista desconocida resuelve valor=false (desconocida no es false)', () => {
+    for (const v of vistas) {
+      if (v.containsGluten.estado === 'desconocida') expect(v.containsGluten.valor).toBeUndefined();
+      if (v.containsLactosa.estado === 'desconocida') expect(v.containsLactosa.valor).toBeUndefined();
+    }
+  });
+});

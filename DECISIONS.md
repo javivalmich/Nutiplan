@@ -846,3 +846,43 @@ Formato:
     literal del propio D-022 se conserva).
 - Decide: Javi (ratificación de sesión 2026-07-06, ejecutada en `feature/f4-p2b-i-bis-veto-ancla`
   sobre `main` post-D-022).
+- **Addendum (mismo PR, previo al push) — ratificación del before/after de los 3 tests preexistentes
+  modificados, y corrección de una afirmación de esta misma entrada**:
+  1. Ratificados con diff literal los 3 cambios sobre tests preexistentes: (i)
+     `buildWeekArc.test.js` — "intolerancias NO cambia la estructura" reemplazada (no ajustada) por
+     una aserción que verifica el contrato de ausencia (D-023 asiento 1) sobre el mismo fixture; (ii)
+     y (iii) los dos barridos mecánicos de `batchDay`/sobras excluyen la fixture con intolerancias
+     activas vía `FIXTURES_CON_ANCLA = FIXTURES.filter((f) => !(f.profile.intolerances?.length))`.
+     Javi cita textualmente: *"3 tests preexistentes actualizados por derogación de premisa,
+     ratificados con diff literal; la exclusión de la fixture con intolerancias en los barridos es
+     válida mientras D-021 mantenga 'desconocida' incondicional en scaffold — el PR de ingesta del
+     catálogo confirmado debe revisitarla."* Registrado como deuda de seguimiento: cuando la ingesta
+     del cuaderno del cocinero aterrice (asiento 3 de esta misma entrada) y alguna de las 6 anclas
+     deje de resolver `"desconocida"`, `FIXTURES_CON_ANCLA` puede volver a ser `FIXTURES` completo
+     para esa fixture — no antes.
+  2. **Verificación pedida — `FIXTURES_CON_ANCLA` es filtro intensional, no lista extensional**:
+     confirmado por lectura directa del código
+     (`src/engine2/skeleton/tests/buildWeekArc.test.js:421`): `FIXTURES.filter((f) =>
+     !(f.profile.intolerances?.length))` excluye por la CONDICIÓN "veto activo" (longitud de
+     `intolerances` > 0), no por nombre de fixture hardcodeado. Sin cambio necesario.
+  3. **Verificación pedida — `vetoes.js:17` ("política FAIL-CLOSED")**: `git blame` confirma que la
+     línea (y todo el banner de cabecera del módulo, líneas 1-20) pertenece íntegramente al commit
+     `b542c279` (D-022, 2026-07-06 18:41:59), anterior a `filterSurvivors` de esta sesión — es
+     terminología vieja en producción, no nueva. **Corrección de esta misma entrada D-023**: el
+     bullet de Evidencia que afirma *"El comentario de producción en `vetoes.js:17`... NO se
+     toca"* queda SUPERADO por este addendum — sí se tocó, en este mismo PR. Cambio aplicado:
+     "política FAIL-CLOSED (D-022)" → "contrato de dominio (D-022, terminología renombrada por
+     D-023)"; la cita literal entrecomillada de D-022 (*"un veto declarado no puede resolverse
+     mediante..."*) se conserva intacta, solo se renombra la ETIQUETA descriptiva alrededor de la
+     cita, no la cita en sí ni el asiento histórico D-022 de este archivo (append-only respetado).
+     Corrección adicional en el mismo banner (líneas 5-8, mismo commit `b542c279`, misma
+     obsolescencia): el texto afirmaba *"el ancla... no pasa por ningún punto de veto hoy... su
+     aplicación es asiento propio, fuera de alcance aquí"* — literalmente cierto bajo D-022, FALSO
+     desde esta misma entrada D-023. Corregido para reflejar que el ancla SÍ pasa por veto desde
+     D-023, por un mecanismo propio (`chooseAnchor`/`filterSurvivors`, no `computeVetoUniverse`).
+  - Suite tras el addendum: `npx vitest run src/engine2` → 32 archivos / 417 tests VERDE (sin
+    cambio de conteo: solo prosa de comentarios, ningún comportamiento tocado). `eslint` sobre
+    `vetoes.js` → 0 problemas.
+  - Autorización: con las 2 verificaciones resueltas, Javi autoriza push de la rama
+    `feature/f4-p2b-i-bis-veto-ancla` y apertura de PR. Sin merge — revisión de diff y merge quedan
+    en manos de Javi.

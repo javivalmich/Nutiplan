@@ -1,11 +1,13 @@
 // Vetos duros — Fase 4, Componente P2b-i (paso 2 del walk). Principio
 // ratificado (DECISIONS.md, D-022): "Los vetos actuan antes de cualquier
 // mecanismo de seleccion; un plato vetado no forma parte del espacio de
-// decision." Se aplica UNICAMENTE al espacio de decision del walk
-// (catalog con rol="rotativo"/"capricho") -- el ancla (F3, chooseAnchor +
-// colocacion en expandWeekArc) no pasa por ningun punto de veto hoy
-// (verificado en Fase 1 de esta sesion, sin filtros de ningun tipo); su
-// aplicacion es asiento propio, fuera de alcance aqui.
+// decision." computeVetoUniverse/evaluateVeto se aplican UNICAMENTE al
+// espacio de decision del walk (catalog con rol="rotativo"/"capricho").
+// El ancla SI pasa por veto desde D-023 (F4-P2b-i-bis) -- pero por un
+// mecanismo propio (chooseAnchor + filterSurvivors, ver mas abajo y
+// buildWeekArc.js), no por computeVetoUniverse: el filtrado del ancla
+// ocurre ANTES del sorteo por seed, sobre un catalogo de 6 referencias sin
+// campo "rol" relevante aqui, no sobre el catalogo de 241 platos del walk.
 //
 // Fuente de containsGluten/containsLactosa: EXCLUSIVAMENTE
 // CompositionResolver (D-021) via resolveDishComposition -- nunca una
@@ -14,10 +16,12 @@
 // verificada cuando existe una fuente editorial prevista para ese dato"
 // (la anotacion del cocinero via XLSX, ingesta en PR propio siguiente en
 // cola). Mientras esa ingesta no aterriza, scaffold (178/241) resuelve
-// estado="desconocida" en ambos campos -- politica FAIL-CLOSED (D-022):
-// "desconocida" se trata como vetado si el campo esta en la lista de
-// intolerancias activas ("desconocida" != "libre de"). Transitorio: la
-// ingesta reduce este universo al residuo real sin anotar.
+// estado="desconocida" en ambos campos -- contrato de dominio (D-022,
+// terminologia renombrada por D-023): "desconocida" se trata como vetado
+// si el campo esta en la lista de intolerancias activas ("desconocida" !=
+// "libre de") porque un estado desconocido no puede demostrarse compatible
+// con un requisito de exclusion. Transitorio: la ingesta reduce este
+// universo al residuo real sin anotar.
 
 import { resolveDishComposition } from '../dishes/compositionResolver.js';
 

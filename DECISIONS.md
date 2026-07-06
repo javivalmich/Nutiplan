@@ -649,3 +649,79 @@ Formato:
     (`a8fe0abb...`) — el resolver es vista, nunca escritura.
 - Decide: Javi (ratificación de sesión 2026-07-03/04, ejecutada en `feature/f4-p2a-composicion`;
   aclaración de valores 3/3/1 ratificada en sesión 2026-07-06).
+
+## D-022 — [2026-07-06] Fase 4, Componente P2b-i (paso 2 del walk): vetos duros
+- Decisión/Hallazgo: Fase 1 de esta sesión (mini-D0 read-only) confirmó dos STOPs antes de
+  implementar — (d) el camino del ancla (`chooseAnchor`, `src/engine2/skeleton/buildWeekArc.js:111-126`,
+  docstring literal "Ancla elegida ÚNICAMENTE por seed... Sin filtros de ningún tipo"; colocación en
+  `expandWeekArc.js:154`, lookup directo por id) no pasa por ningún punto de veto hoy — su aplicación
+  queda fuera de alcance, asiento propio futuro; (b) D-021 delega expresamente a P2b la derivación de
+  `containsGluten`/`containsLactosa` para scaffold (178/241, hoy `estado:"desconocida"` en ambos
+  campos). Javi resuelve ambos STOPs por ratificación explícita, cuatro asientos:
+  1. **Principio** (cita literal del prompt de sesión, gobierna el mecanismo): *"Los vetos actúan
+     antes de cualquier mecanismo de selección; un plato vetado no forma parte del espacio de
+     decisión."*
+  2. **Fuente canónica de `containsGluten`/`containsLactosa` para scaffold**: anotación editorial del
+     cocinero (XLSX, ingesta en PR propio, siguiente en cola — NO entra en este PR). Prohibida
+     cualquier derivación heurística (cita literal): *"un veto declarado no puede resolverse mediante
+     una inferencia no verificada cuando existe una fuente editorial prevista para ese dato."* Cierra
+     la delegación que D-021 hizo a P2b — no se deriva por `tmpl==="pasta"` ni heurística análoga en
+     `vetoes.js`.
+  3. **Política ante estado `"desconocida"` en campo vetado**: FAIL-CLOSED con causa
+     (`"desconocida" != "libre de"`). Transitoria sobre el catálogo real: la ingesta del cocinero
+     (asiento 2) la reduce al residuo sin anotar. Nota de secuencia: el PR de ingesta mergea
+     inmediatamente después de este.
+  4. **Frontera de `validateProfile` crece con su primer consumidor P2**: `intolerances` opcional,
+     enum cerrado `{gluten, lactosa}` (`INTOLERANCE_VALUES`, `src/engine2/contracts/profile.js`),
+     rechazo explícito de cualquier otro valor. Sin anticipación de vocabulario (mismo principio que
+     D-017 punto 1/6: no se valida nada que ningún consumidor use todavía).
+  - **Implementación**: `src/engine2/walk/vetoes.js` (módulo nuevo, único concern de esta sesión).
+    `evaluateVeto(dish, intolerancias)` — pura, invoca `resolveDishComposition` (D-021) UNA vez por
+    plato, devuelve TODAS las razones de veto que aplican (no solo la primera, necesario para el
+    conteo por campo); atajo estructural: con `intolerancias` vacío/ausente, NUNCA invoca el resolver
+    (preserva compatibilidad retro con fixtures de tests preexistentes que usan ids sintéticos no
+    resolubles). `computeVetoUniverse(catalog, intolerancias)` — construye el universo vetado UNA VEZ
+    por semana (no por hueco), restringido al espacio de decisión del walk (`rol="rotativo"` o
+    `"capricho"` — el ancla, `rol="ancla"`, queda fuera por construcción, coherente con el STOP (d) de
+    Fase 1); devuelve `{vetoedIds, conteo, activo}`.
+  - `runWalk.js` (`src/engine2/walk/runWalk.js`): recibe `profile` en su input (nuevo, opcional — sin
+    call-sites de producción que romper, único consumidor era su propio test); calcula el universo de
+    vetos una vez al principio (Paso 2 de la cascada, entre Paso 1 "respetar lo colocado" y Paso 3
+    "preferencia A" — hueco que ya existía en la numeración de D-019); añade `!vetoedIds.has(d.id)` a
+    los DOS únicos puntos de construcción de pool (capricho: línea `caprichoPool`; genérico: línea
+    `pool`) — mismo mecanismo para ambos, sin asimetría. Decision log: UNA entrada `causa:
+    "veto_universo_reducido"` por semana (no por hueco) cuando `intolerancias.length > 0`, con conteo
+    por campo y por motivo (`valor` vs `desconocida`) en la evidencia — los vetados existieron cero
+    veces en el espacio de decisión, la ausencia del log por-hueco es consecuencia del principio, no
+    cláusula del contrato.
+  - `validateProfile` (`src/engine2/contracts/profile.js`): exporta `INTOLERANCE_VALUES = ['gluten',
+    'lactosa']`; `intolerances` opcional (`'intolerances' in profile`), rechaza no-array y cualquier
+    valor fuera del enum, nombrando campo y valor ofensivo (mismo patrón que `trainingDays`).
+- Evidencia:
+  - Falsables demostrados ROJO→revert→VERDE con mutación deliberada sobre el módulo en construcción:
+    f13 (veto desactivado: se quita `!vetoedIds.has(d.id)` de ambos filtros de pool en `runWalk.js`
+    → `f13+f15` en `runWalk.test.js` falla, `gazpacho_huevo_atun` ocupa el hueco en vez del candidato
+    libre), f14 (asimetría: `evaluateVeto` devuelve `[]` temprano si `vista.origen === 'scaffold'`
+    → 4 tests caen en `vetoes.test.js`/`runWalk.test.js`), f15 (fail-open: rama `estado ===
+    "desconocida"` deja de empujar razón de veto → mismos 4 tests caen), f16 (enum abierto: chequeo
+    `!INTOLERANCE_VALUES.includes(valor)` sustituido por `typeof valor !== 'string'` → el test de
+    rechazo de `"marisco"` cae en `profile.test.js`). Las 4 mutaciones revertidas; `sha256sum` de
+    `runWalk.js` idéntico antes/después del ciclo f13 (restaurado desde backup exacto).
+  - Suite dirigida tras cada revert: `npx vitest run src/engine2` → 31 archivos / 401 tests VERDE.
+  - Fixtures de test sobre catálogo REAL (`loadCatalog()`, 241 platos: 235 `rol="rotativo"`, 6
+    `rol="ancla"`, 0 `rol="capricho"`) localizadas dinámicamente (nunca ids hardcodeados) vía
+    `resolveDishComposition`: freeform con `containsGluten=true` (`gazpacho_huevo_atun`), freeform con
+    `containsGluten=false` (`fabada_simplificada`), scaffold (`catalog[0]`, mismo plato "primer plato
+    del catálogo" de D-021, `estado:"desconocida"` en ambos campos).
+  - Tripwires verdes sin modificar su configuración: `-t "tripwire"` → 5 archivos / 34 tests VERDE.
+    Grep manual de `score|rank(ing)?|top-?N` sobre `vetoes.js` → limpio; grep de imports
+    `.../engine/` o `.../eval/` sobre `vetoes.js`/`runWalk.js`/`profile.js` → limpio.
+  - `git diff --stat origin/main -- src/engine src/engine2/skeleton src/engine2/walk/expandWeekArc.js
+    src/engine2/dishes/compositionResolver.js scripts src/engine2/memory dishes.json` → vacío (F3,
+    resolver, motor viejo y catálogo intactos — ninguno de los caminos prohibidos se tocó).
+  - `sha256sum scripts/phaseB2/output/dishes.json` idéntico (`a8fe0abb...`) — sin ingesta en este PR.
+  - Suite completa (`npx vitest run`): 640 VERDE / 2 timeout preexistentes en `analysis/
+    gate2_measure.test.js` y `analysis/gate4_protein_guard.test.js` — deuda ya registrada en D-015,
+    no tocados por esta sesión, no relacionados con `engine2`.
+- Decide: Javi (ratificación de sesión 2026-07-06, ejecutada en
+  `feature/f4-p2b-i-vetos-duros` sobre `test/f4-p2a-gluten-lactosa-cobertura`).

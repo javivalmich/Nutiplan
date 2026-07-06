@@ -5,7 +5,7 @@
 // skeleton, no duplicado).
 
 import { describe, it, expect } from 'vitest';
-import { validateProfile, ProfileValidationError } from '../profile.js';
+import { validateProfile, ProfileValidationError, INTOLERANCE_VALUES } from '../profile.js';
 import { DAYS_ORDER } from '../../skeleton/days.js';
 
 describe('validateProfile — v1: trainingDays valido acepta', () => {
@@ -46,5 +46,50 @@ describe('validateProfile — r2: trainingDays no-array rechaza igual de explici
 
   it('lanza cuando trainingDays esta ausente', () => {
     expect(() => validateProfile({})).toThrow(ProfileValidationError);
+  });
+});
+
+describe('validateProfile — f16: intolerances (D-022, primer consumidor P2), enum cerrado {gluten, lactosa}', () => {
+  it('vocabulario cerrado es exactamente [gluten, lactosa]', () => {
+    expect(INTOLERANCE_VALUES).toEqual(['gluten', 'lactosa']);
+  });
+
+  it('acepta intolerances ausente (campo opcional)', () => {
+    expect(validateProfile({ trainingDays: [] })).toBe(true);
+  });
+
+  it('acepta intolerances: []', () => {
+    expect(validateProfile({ trainingDays: [], intolerances: [] })).toBe(true);
+  });
+
+  it('acepta intolerances: ["gluten"]', () => {
+    expect(validateProfile({ trainingDays: [], intolerances: ['gluten'] })).toBe(true);
+  });
+
+  it('acepta intolerances: ["lactosa"]', () => {
+    expect(validateProfile({ trainingDays: [], intolerances: ['lactosa'] })).toBe(true);
+  });
+
+  it('acepta intolerances: ["gluten", "lactosa"]', () => {
+    expect(validateProfile({ trainingDays: [], intolerances: ['gluten', 'lactosa'] })).toBe(true);
+  });
+
+  it('rechaza un valor fuera del enum, nombrando el campo y el valor ofensivo', () => {
+    expect(() => validateProfile({ trainingDays: [], intolerances: ['marisco'] })).toThrow(ProfileValidationError);
+    try {
+      validateProfile({ trainingDays: [], intolerances: ['marisco'] });
+    } catch (err) {
+      expect(err.message).toContain('intolerances');
+      expect(err.message).toContain('marisco');
+    }
+  });
+
+  it('rechaza intolerances no-array (mismo patron que trainingDays r2)', () => {
+    expect(() => validateProfile({ trainingDays: [], intolerances: 'gluten' })).toThrow(ProfileValidationError);
+    try {
+      validateProfile({ trainingDays: [], intolerances: 'gluten' });
+    } catch (err) {
+      expect(err.message).toContain('intolerances');
+    }
   });
 });

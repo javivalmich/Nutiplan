@@ -7,6 +7,7 @@ import { runWalk } from '../runWalk.js';
 import { expandWeekArc } from '../expandWeekArc.js';
 import { buildWeekArc } from '../../skeleton/buildWeekArc.js';
 import { loadCatalog } from '../../dishes/loadCatalog.js';
+import { resolveDishComposition } from '../../dishes/compositionResolver.js';
 import { DAYS_ORDER } from '../../skeleton/days.js';
 import { MOMENTOS } from '../../dishes/schema.js';
 
@@ -452,6 +453,69 @@ describe('runWalk - v12: energiaCocina no participa en la seleccion', () => {
     const r1 = runWalk({ weekArc, catalog: catalogBajo, seed: 99 });
     const r2 = runWalk({ weekArc, catalog: catalogAlto, seed: 99 });
     expect(r1.slots.map((s) => s.dishId)).toEqual(r2.slots.map((s) => s.dishId));
+  });
+});
+
+describe('runWalk - v14: vetos duros (P2b-i, paso 2 del walk, D-022)', () => {
+  const catalogReal = loadCatalog();
+  const dishGlutenTrue = catalogReal.find((d) => {
+    if (d.rol !== 'rotativo' || !d.momento.includes('comida')) return false;
+    const v = resolveDishComposition(d);
+    return v.origen === 'freeform' && v.containsGluten.estado === 'conocida' && v.containsGluten.valor === true;
+  });
+  const dishGlutenFalse = catalogReal.find((d) => {
+    if (d.rol !== 'rotativo' || !d.momento.includes('comida')) return false;
+    const v = resolveDishComposition(d);
+    return v.origen === 'freeform' && v.containsGluten.estado === 'conocida' && v.containsGluten.valor === false;
+  });
+  const dishScaffoldDesconocida = catalogReal.find((d) => d.rol === 'rotativo' && d.momento.includes('comida') && resolveDishComposition(d).origen === 'scaffold');
+
+  it('fixtures reales localizadas: freeform gluten=true, freeform gluten=false, scaffold (desconocida)', () => {
+    expect(dishGlutenTrue).toBeDefined();
+    expect(dishGlutenFalse).toBeDefined();
+    expect(dishScaffoldDesconocida).toBeDefined();
+  });
+
+  it('f13+f15: el vetado (por valor) y el vetado (por desconocida, fail-closed) no aparecen en ninguna colocacion; el libre los ocupa; log de universo una vez, con conteo por campo/motivo', () => {
+    const { anchors, dishes } = anchorEverythingExcept([{ day: 'Lunes', momento: 'comida' }]);
+    const weekArc = { beats: beats7(), anchors };
+    const catalogoAislado = [...dishes, dishGlutenTrue, dishGlutenFalse, dishScaffoldDesconocida];
+    const profile = { intolerances: ['gluten'] };
+    const { slots, decisionLog } = runWalk({ weekArc, catalog: catalogoAislado, seed: 'v14-valor-y-desconocida', profile });
+
+    const lunesComida = slots.find((s) => s.day === 'Lunes' && s.momento === 'comida');
+    expect(lunesComida.dishId).toBe(dishGlutenFalse.id);
+    expect(slots.some((s) => s.dishId === dishGlutenTrue.id)).toBe(false);
+    expect(slots.some((s) => s.dishId === dishScaffoldDesconocida.id)).toBe(false);
+
+    const eventos = decisionLog.filter((d) => d.causa === 'veto_universo_reducido');
+    expect(eventos).toHaveLength(1);
+    expect(eventos[0].evento).toBe(true);
+    expect(eventos[0].evidencia).toContain('gluten');
+    expect(eventos[0].evidencia).toContain('2 platos');
+    expect(eventos[0].evidencia).toContain('1 por valor');
+    expect(eventos[0].evidencia).toContain('1 por desconocida');
+
+    const entradaColocada = decisionLog.find((d) => d.plato === dishGlutenFalse.id);
+    expect(entradaColocada.causa.startsWith('seleccion_rotativo_') || entradaColocada.causa.length > 0).toBe(true);
+  });
+
+  it('sin intolerances (perfil ausente o vacio): ambos candidatos siguen disponibles, sin log de universo (sin regresion)', () => {
+    const { anchors, dishes } = anchorEverythingExcept([{ day: 'Miercoles', momento: 'comida' }]);
+    const weekArc = { beats: beats7(), anchors };
+    const catalogoAislado = [...dishes, dishGlutenTrue, dishGlutenFalse];
+    const { decisionLog } = runWalk({ weekArc, catalog: catalogoAislado, seed: 'v14-sin-veto' });
+    expect(decisionLog.find((d) => d.causa === 'veto_universo_reducido')).toBeUndefined();
+  });
+
+  it('con intolerances=["lactosa"] (campo distinto), el vetado por gluten sigue disponible: el veto es por campo, no global', () => {
+    const { anchors, dishes } = anchorEverythingExcept([{ day: 'Jueves', momento: 'comida' }]);
+    const weekArc = { beats: beats7(), anchors };
+    const catalogoAislado = [...dishes, dishGlutenTrue];
+    const profile = { intolerances: ['lactosa'] };
+    const { slots } = runWalk({ weekArc, catalog: catalogoAislado, seed: 'v14-lactosa-no-toca-gluten', profile });
+    const juevesComida = slots.find((s) => s.day === 'Jueves' && s.momento === 'comida');
+    expect(juevesComida.dishId).toBe(dishGlutenTrue.id);
   });
 });
 

@@ -323,18 +323,47 @@ describe('contra fixtures reales: las 3 variantes de perfil de mantenimiento_equ
     }
   });
 
-  it('intolerancias e isSimple (que F3 no usa) NO cambian la estructura frente al perfil base, con la misma seed', () => {
+  it('isSimple (que F3 no usa) NO cambia la estructura frente al perfil base, con la misma seed', () => {
     const base = variantes.find((f) => f.name === 'mantenimiento_equilibrado (base)');
-    const intolerancias = variantes.find((f) => f.name.includes('intolerancias'));
     const isSimple = variantes.find((f) => f.name.includes('isSimple'));
 
     const seedComun = 'fixture-comparativa';
     const resBase = buildWeekArc({ profile: base.profile, seed: seedComun, strategy: 'mantenimiento_equilibrado' });
-    const resIntol = buildWeekArc({ profile: intolerancias.profile, seed: seedComun, strategy: 'mantenimiento_equilibrado' });
     const resSimple = buildWeekArc({ profile: isSimple.profile, seed: seedComun, strategy: 'mantenimiento_equilibrado' });
 
-    expect(JSON.stringify(resIntol.weekArc)).toBe(JSON.stringify(resBase.weekArc));
     expect(JSON.stringify(resSimple.weekArc)).toBe(JSON.stringify(resBase.weekArc));
+  });
+
+  // D-023 (F4-P2b-i-bis): desde este asiento, intolerancias SI cambia la
+  // estructura -- el veto ahora alcanza tambien el camino del ancla (antes
+  // de este PR, chooseAnchor no filtraba nada, ver D-022 STOP (d)). Con el
+  // catalogo real las 6 anclas resuelven "desconocida" en gluten/lactosa
+  // (D-021: CompositionResolver no deriva ese campo para scaffold), asi
+  // que CUALQUIER intolerancia activa produce cero supervivientes -- este
+  // fixture (["lactosa","gluten"]) es precisamente ese caso. La cobertura
+  // de "supervivientes parciales" (f17/f20) vive en
+  // buildWeekArc.vetoAncla.test.js con catalogos sinteticos, porque el
+  // catalogo real no puede ejercer esa rama hoy.
+  it('D-023: intolerancias activas sobre el catalogo real (las 6 anclas son "desconocida") producen semana SIN ancla, no una estructura identica a la base', () => {
+    const base = variantes.find((f) => f.name === 'mantenimiento_equilibrado (base)');
+    const intolerancias = variantes.find((f) => f.name.includes('intolerancias'));
+    const seedComun = 'fixture-comparativa';
+
+    const resBase = buildWeekArc({ profile: base.profile, seed: seedComun, strategy: 'mantenimiento_equilibrado' });
+    const resIntol = buildWeekArc({ profile: intolerancias.profile, seed: seedComun, strategy: 'mantenimiento_equilibrado' });
+
+    expect(resBase.weekArc.anchors).toHaveLength(1); // control: la base SI tiene ancla con esta seed
+    expect(JSON.stringify(resIntol.weekArc)).not.toBe(JSON.stringify(resBase.weekArc));
+
+    expect(resIntol.weekArc.anchors).toEqual([]);
+    expect(resIntol.weekArc).not.toHaveProperty('batchDay');
+    expect(resIntol.weekArc.beats.some((b) => b.slotRole === 'ancla')).toBe(false);
+    expect(resIntol.weekArc.beats).toHaveLength(7); // el arco sigue completo: 7 dias, ninguno se pierde por la ausencia
+
+    const causaAusencia = resIntol.decisionLog.find((d) => d.cause === 'ancla_ausente');
+    expect(causaAusencia).toBeDefined();
+    expect(causaAusencia.evidence).toContain('lactosa');
+    expect(causaAusencia.evidence).toContain('gluten');
   });
 
   it('trainingDays SI cambia la estructura (fixedRole=entreno aparece donde corresponde)', () => {
@@ -383,8 +412,16 @@ describe('invariante de diseño (DEFINITIVO): batchDay coherente con citas fijas
     }
   });
 
+  // D-023: batchDay solo existe si hay ancla. Con el catalogo real, un
+  // perfil con intolerancias activas (gluten/lactosa) produce cero
+  // supervivientes (las 6 anclas son "desconocida") -- ese perfil queda
+  // fuera de este barrido mecanico, que es sobre batchDay/shelfLife, no
+  // sobre el veto (esa cobertura vive en la describe de arriba y en
+  // buildWeekArc.vetoAncla.test.js).
+  const FIXTURES_CON_ANCLA = FIXTURES.filter((f) => !(f.profile.intolerances?.length));
+
   it('el batchDay resuelto es exactamente el primer dia no bloqueado de batchDayPreference (mecanico, no optimizado)', () => {
-    for (const fixture of FIXTURES) {
+    for (const fixture of FIXTURES_CON_ANCLA) {
       const fixedRoles = computeFixedRoles(fixture.profile, []);
       const esperado = TEMPLATE_C.batchDayPreference.find((day) => !BLOCKING.has(fixedRoles[day]));
       const { weekArc } = buildWeekArc({ profile: fixture.profile, seed: 0, strategy: fixture.expectedStrategy });
@@ -395,7 +432,7 @@ describe('invariante de diseño (DEFINITIVO): batchDay coherente con citas fijas
   it('sobre los 9 perfiles x las 6 anclas: las sobras respetan el techo y nunca caen en dia fijo (re-verificacion agregada)', () => {
     let conSobrasPositivas = 0;
     let conSobrasCero = 0;
-    for (const fixture of FIXTURES) {
+    for (const fixture of FIXTURES_CON_ANCLA) {
       for (const anchor of ANCHORS) {
         let seedQueEligeEstaAncla = null;
         for (let seed = 0; seed < 500 && seedQueEligeEstaAncla === null; seed++) {

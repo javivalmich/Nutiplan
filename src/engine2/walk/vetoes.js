@@ -73,6 +73,32 @@ export function evaluateVeto(dish, intolerancias) {
 }
 
 /**
+ * Filtro generico de candidatos por veto (D-023, asiento del camino del
+ * ancla): dado un array de candidatos y una funcion que resuelve la vista
+ * de composicion de cada uno, devuelve los supervivientes (aquellos cuyo
+ * evaluateVetoFromVista sale vacio). Atajo estructural identico a
+ * evaluateVeto/computeVetoUniverse: con intolerancias vacio/ausente,
+ * devuelve TODOS los candidatos SIN resolver ninguna vista (evita I/O
+ * cuando no hay veto activo, y preserva paridad byte a byte del camino
+ * feliz -- f19).
+ *
+ * getVista es el punto de inyeccion que permite testear el mecanismo con
+ * vistas sinteticas (mismo patron que evaluateVetoFromVista mas arriba):
+ * p.ej. para el ancla, un estado "conocida"+valor=true es hoy inalcanzable
+ * con el catalogo real (CompositionResolver resuelve scaffold siempre a
+ * "desconocida", D-021) pero el mecanismo debe tratarlo identico a
+ * freeform el dia que la ingesta del cocinero puebla ese campo.
+ * @param {ReadonlyArray<object>} candidates
+ * @param {string[]} [intolerancias]
+ * @param {(candidate: object) => object} getVista
+ * @returns {object[]}
+ */
+export function filterSurvivors(candidates, intolerancias, getVista) {
+  if (!intolerancias || intolerancias.length === 0) return candidates;
+  return candidates.filter((candidate) => evaluateVetoFromVista(getVista(candidate), intolerancias).length === 0);
+}
+
+/**
  * Construye el universo de vetos UNA VEZ por semana (no por hueco):
  * escanea el catalogo restringido al espacio de decision del walk
  * (rol="rotativo"/"capricho" -- el ancla no pasa por aqui, ver banner) y

@@ -742,3 +742,107 @@ Formato:
     consumido por `runWalk.js`/`computeVetoUniverse`) sin cambio de comportamiento.
 - Decide: Javi (ratificación de sesión 2026-07-06, ejecutada en
   `feature/f4-p2b-i-vetos-duros` sobre `test/f4-p2a-gluten-lactosa-cobertura`).
+
+## D-023 — [2026-07-06] Fase 4, Componente P2b-i-bis: veto sobre el camino del ancla
+- Decisión/Hallazgo: D-022 (STOP (d) de su Fase 1) dejó fuera de alcance, como asiento propio
+  futuro, el hecho de que `chooseAnchor` (`src/engine2/skeleton/buildWeekArc.js`) y su colocación
+  en `expandWeekArc.js` no pasan por ningún punto de veto. Ritual v2 de esta sesión (repetido:
+  actividad de repo desde D-022, PR #17 mergeado) confirmó que el repo sigue en silencio sobre el
+  ancla como invariante de validez: `git grep` sobre `weekArc.anchors` fuera de `tests/` no arroja
+  ninguna declaración de invariante ni lenguaje de truncamiento (`buildWeekArc.js` usa `flatMap`/
+  `for...of` sobre `weekArc.anchors`, ambos ya tolerantes a array vacío por construcción;
+  `expandWeekArc.js:153` itera `for (const anchor of weekArc.anchors)`, vacío también sin lanzar);
+  cero tests de presencia obligatoria (`weekArc.anchors).toHaveLength(1)` solo aparece atado a
+  fixtures/seeds concretas, nunca como aserción general del contrato). Javi ratifica cuatro asientos:
+  1. **Contrato del ancla** (decisión nueva, el silencio de arriba es la evidencia): *"La presencia
+     de un ancla en una semana no forma parte del contrato de validez del plan. Cuando no existe
+     ninguna ancla elegible, el motor genera igualmente un plan válido y registra explícitamente la
+     ausencia y sus consecuencias."* El ancla conserva su papel en el modelo; deja de ser requisito
+     de validez.
+  2. **Principio transversal**: *"Dato confirmado puede entrar al motor; propuesta editorial puede
+     ayudar al editor humano, nunca al motor."* Origen: hallazgo del cuaderno del cocinero
+     (`anotado_por="reglas cocinero v3 (revisar)"` en 242/242 filas, `ya-anotado="sí"` en solo 6/242,
+     y esas 6 por metadata de batchability ajena a alérgenos, no por confirmación editorial de
+     gluten/lactosa).
+  3. **Micro-ingesta de las 6 anclas: descartada.** Procedencia demostrada: `gluten`/`lactosa` de las
+     6 filas del cuaderno salen de `proposeGluten`/`proposeLactosa` (heurística), no de confirmación
+     humana; la marca `"(revisar)"` es evidencia textual de no-confirmación. Consecuencia: las 6
+     filas de ancla quedan como ítem de máxima prioridad del contrato de salida de la próxima sesión
+     editorial (no de este PR).
+  4. **Terminología**: el contrato semántico de exclusión por desconocida se formula como contrato de
+     dominio (*"un plato cuyo estado respecto al campo vetado es desconocido no puede demostrarse
+     compatible con un requisito de exclusión"*), no como mecanismo de seguridad. Los asientos
+     históricos que dicen "fail-closed" (D-022, este mismo archivo) NO se reescriben; la terminología
+     nueva rige desde aquí en adelante (comentarios/nombres de test, ver Implementación).
+  - **Implementación**: `src/engine2/walk/vetoes.js` gana `filterSurvivors(candidates, intolerancias,
+    getVista)` — filtro genérico que reutiliza `evaluateVetoFromVista` (cero duplicación de criterio
+    de veto); con intolerancias vacío/ausente devuelve `candidates` sin resolver ninguna vista (mismo
+    atajo estructural que `evaluateVeto`/`computeVetoUniverse`, preserva paridad byte a byte del
+    camino feliz). `getVista` es punto de inyección: producción resuelve por
+    `resolveDishComposition({id: anchor.identityKey})` (el `identityKey` de un ancla ES su `dish.id`
+    real, mismo mecanismo de join que CP2/D-021); los tests inyectan vistas sintéticas para ejercer
+    `estado="conocida"+valor=true`, hoy inalcanzable con el catálogo real (D-021: scaffold resuelve
+    siempre `"desconocida"` en gluten/lactosa).
+  - `src/engine2/skeleton/buildWeekArc.js`: `chooseAnchor` (ahora exportado) recibe
+    `(anchors, seed, intolerancias, decisionLog, getVista?)` — filtra ANTES del sorteo
+    (`filterSurvivors`), el RNG solo ve supervivientes, nunca el catálogo completo (invariante
+    preservado por construcción, no por descarte posterior). Cero supervivientes → registra causa
+    `"ancla_ausente"` (una entrada, ausencia + consecuencias) y devuelve `null`. `buildWeekArc()`:
+    `batchDay`/`leftoverDays` solo se calculan si hay ancla (`anchor ? ... : undefined/[]`); el resto
+    de la cascada (`chooseCapricho`, el `beats.map`) NO necesitó ninguna rama nueva — ya toleraba
+    `batchDay=undefined`/`leftoverDays=[]` por construcción (`día === undefined` nunca es cierto para
+    un día real; `Set` vacío nunca tiene coincidencias), confirmando "transición del modelo, no
+    colección de casos especiales". `weekArc.batchDay` pasa a ser ausencia ESTRUCTURAL (spread
+    condicional) cuando no hay ancla, no un valor centinela — mismo principio que "ausencia de
+    verdura" en D-021.
+  - `profile.intolerances` ya estaba en el contrato (D-022); ningún campo nuevo en `profile.js`.
+    `chooseAnchor` recibe `intolerancias` porque `profile` ya estaba en scope en `buildWeekArc()`
+    (cita del prompt de sesión: `buildWeekArc.js:257→267` en el estado pre-PR).
+  - Tests existentes actualizados (no re-escritos): `buildWeekArc.test.js` — el fixture
+    `"...+ intolerancias (lactosa+gluten)"` de `baselineFixtures.js` activa el veto sobre las 6 anclas
+    reales (todas `"desconocida"`), así que la aserción previa ("intolerancias NO cambia la
+    estructura") quedó reemplazada por una que afirma el NUEVO contrato (semana sin ancla, ver
+    D-023); dos barridos mecánicos de `batchDay`/sobras que iteraban las 9 fixtures excluyen
+    explícitamente esa fixture (comentario cita D-023) porque su premisa ("toda fixture tiene ancla
+    para alguna seed") deja de sostenerse bajo veto activo.
+- Evidencia:
+  - Falsables demostrados ROJO→revert→VERDE con mutación deliberada sobre el módulo real en
+    construcción (`sha256sum` de `buildWeekArc.js`/`vetoes.js` idéntico antes/después de cada ciclo,
+    `628627ef...`/`054de828...`):
+    f17+f20 (RNG sobre el catálogo completo, `anchors.length`/`anchors[index]` en vez de
+    `supervivientes` → 3 tests caen: la propiedad "el vetado nunca es elegido" y "la variación ocurre
+    solo entre supervivientes"); f18 (cascada incompleta: `batchDay` calculado y expuesto en
+    `weekArc` SIEMPRE, ignorando ausencia de ancla → 5 tests caen, incluido un `TypeError` al
+    intentar leer `anchor.identityKey` con `anchor=null` — la propia cascada revienta antes de que la
+    aserción llegue a evaluarse); f19 (log `"veto_ancla_universo_reducido"` emitido incondicionalmente,
+    también sin veto activo → cae la aserción de "cero regresión del camino feliz"). Las 3 mutaciones
+    revertidas una por una, checksum verificado idéntico tras cada reversión.
+  - f17/f20 usan catálogos SINTÉTICOS de ancla (mismo patrón que `vetoes.test.js` "f14 (refuerzo)"):
+    el catálogo real no puede ejercer `estado="conocida"+valor=true` (D-021, scaffold es
+    incondicionalmente `"desconocida"`), así que el mecanismo se prueba con vistas inyectadas vía
+    `getVista`, no con datos reales.
+  - f18/f19 usan el catálogo REAL (`ANCHORS`, 6 anclas) — es precisamente el caso donde las 6 son
+    `"desconocida"` el que dispara el contrato de ausencia (cualquier intolerancia activa → 0
+    supervivientes) o, sin veto, lo confirma intacto (ancla siempre presente, log sin nuevas
+    entradas, evidencia literal `"...(sin filtros)"` byte-idéntica a la de D-022/CP3A).
+  - Suite dirigida: `npx vitest run src/engine2` → 32 archivos / 417 tests VERDE (403 base + 1 test
+    nuevo de contrato en `buildWeekArc.test.js` + 13 de `buildWeekArc.vetoAncla.test.js`). Suite
+    completa del repo: `npx vitest run` → 60 archivos / 658 tests VERDE. Tripwires sin modificar su
+    configuración: `-t "tripwire"` → 5 archivos / 34 tests VERDE.
+  - `eslint` sobre los 6 archivos tocados/creados → 0 problemas.
+  - `git diff --stat origin/main` → exactamente 5 archivos modificados
+    (`buildWeekArc.js`, `buildWeekArc.test.js`, `runWalk.test.js`, `vetoes.test.js`, `vetoes.js`) + 1
+    archivo nuevo (`buildWeekArc.vetoAncla.test.js`); `expandWeekArc.js`, `runWalk.js`,
+    `compositionResolver.js`, `templateA/B/C.js`, `dishes/`, `memory/`, `contracts/`, `scripts/`,
+    motor viejo (`src/engine`) intactos. `sha256sum scripts/phaseB2/output/dishes.json` idéntico
+    (`a8fe0abb...`) — sin ingesta en este PR (asiento 3 la descarta explícitamente).
+  - Grep manual de `score|rank(ing)?|top-?N` sobre los archivos tocados → limpio; grep de imports
+    `.../engine/` o `.../eval/` → limpio (el único import nuevo entre carpetas de `engine2/` es
+    `buildWeekArc.js` → `../walk/vetoes.js` y `../dishes/compositionResolver.js`, ambos dentro de
+    `engine2/`, ninguno es `engine/` ni `eval/`).
+  - Renombradas las 3 ocurrencias de "fail-closed" en tests (`runWalk.test.js:479`,
+    `vetoes.test.js:4,44`) al vocabulario de contrato de dominio (asiento 4). El comentario de
+    producción en `vetoes.js:17` y el asiento histórico D-022 de este archivo NO se tocan (cita
+    literal del propio D-022 se conserva).
+- Decide: Javi (ratificación de sesión 2026-07-06, ejecutada en `feature/f4-p2b-i-bis-veto-ancla`
+  sobre `main` post-D-022).

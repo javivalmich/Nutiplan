@@ -27,20 +27,22 @@ const FIELD_TO_COMPOSITION_KEY = Object.freeze({
 });
 
 /**
- * Evalua un plato contra la lista de intolerancias activas. Devuelve
- * TODAS las razones que aplican (un plato puede violar mas de un campo a
- * la vez) -- necesario para el conteo por campo/motivo del universo, no
- * solo la primera causa de exclusion. Atajo estructural: con
- * intolerancias vacio/ausente, NUNCA invoca el resolver (evita I/O y
- * exigir platos resolubles cuando no hay veto activo).
- * @param {{id: string}} dish
- * @param {string[]} [intolerancias] subconjunto de INTOLERANCE_VALUES (profile.js)
+ * Nucleo puro del veto: evalua una VISTA de composicion ya resuelta (no un
+ * plato) contra la lista de intolerancias activas. Separado de
+ * evaluateVeto (que resuelve el plato) para que el mecanismo sea testeable
+ * con vistas sinteticas -- p.ej. origen="scaffold" + estado="conocida", un
+ * estado hoy inalcanzable con el catalogo real (CompositionResolver
+ * siempre resuelve scaffold a "desconocida", D-021) pero que el mecanismo
+ * debe tratar identico a freeform el dia que la ingesta del cocinero lo
+ * puebla -- sin esta funcion, esa simetria de codigo (no solo de datos) no
+ * tiene forma de probarse hoy.
+ * @param {object} vista salida de resolveDishComposition (o sintetica equivalente)
+ * @param {string[]} [intolerancias]
  * @returns {{campo: string, motivo: 'valor'|'desconocida'}[]}
  */
-export function evaluateVeto(dish, intolerancias) {
+export function evaluateVetoFromVista(vista, intolerancias) {
   if (!intolerancias || intolerancias.length === 0) return [];
 
-  const vista = resolveDishComposition(dish);
   const razones = [];
   for (const campo of intolerancias) {
     const estadoCampo = vista[FIELD_TO_COMPOSITION_KEY[campo]];
@@ -51,6 +53,23 @@ export function evaluateVeto(dish, intolerancias) {
     }
   }
   return razones;
+}
+
+/**
+ * Evalua un plato (resolviendo su vista via CompositionResolver, D-021)
+ * contra la lista de intolerancias activas. Devuelve TODAS las razones que
+ * aplican (un plato puede violar mas de un campo a la vez) -- necesario
+ * para el conteo por campo/motivo del universo, no solo la primera causa
+ * de exclusion. Atajo estructural: con intolerancias vacio/ausente, NUNCA
+ * invoca el resolver (evita I/O y exigir platos resolubles cuando no hay
+ * veto activo).
+ * @param {{id: string}} dish
+ * @param {string[]} [intolerancias] subconjunto de INTOLERANCE_VALUES (profile.js)
+ * @returns {{campo: string, motivo: 'valor'|'desconocida'}[]}
+ */
+export function evaluateVeto(dish, intolerancias) {
+  if (!intolerancias || intolerancias.length === 0) return [];
+  return evaluateVetoFromVista(resolveDishComposition(dish), intolerancias);
 }
 
 /**

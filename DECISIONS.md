@@ -723,5 +723,22 @@ Formato:
   - Suite completa (`npx vitest run`): 640 VERDE / 2 timeout preexistentes en `analysis/
     gate2_measure.test.js` y `analysis/gate4_protein_guard.test.js` — deuda ya registrada en D-015,
     no tocados por esta sesión, no relacionados con `engine2`.
+  - **Addendum (mismo PR, commit pequeño posterior)**: verificación pedida por Javi — ningún fixture
+    de `vetoes.test.js` cubría `origen="scaffold"` + `estado="conocida"` (vetado POR VALOR, no por
+    desconocida); los únicos fixtures scaffold eran datos reales, y `CompositionResolver` resuelve
+    scaffold a `"desconocida"` incondicionalmente (D-021, no depende de datos) — ese estado es hoy
+    estructuralmente inalcanzable con el catálogo real. Se separó `evaluateVeto` en un núcleo puro
+    `evaluateVetoFromVista(vista, intolerancias)` (recibe la vista ya resuelta) + un envoltorio
+    delgado `evaluateVeto(dish, intolerancias)` que la invoca sobre `resolveDishComposition(dish)` —
+    mismo patrón pureza/orquestador que `compositionResolver.js`. Con `evaluateVetoFromVista` se
+    añadieron 2 fixtures SINTÉTICOS (`vetoes.test.js`, describe "f14 (refuerzo)"): caso positivo
+    (`origen:"scaffold"`, `containsGluten:{estado:"conocida",valor:true}` → vetado motivo `"valor"`)
+    y caso negativo (`valor:false` → no vetado). Falsable demostrado ROJO→revert→VERDE: mutación
+    `estadoCampo.valor === true && vista.origen !== 'scaffold'` (scaffold escapa SOLO de la rama
+    "valor") → exactamente 1 test cae (el caso positivo nuevo); los 11 tests restantes de
+    `vetoes.test.js` (incluidos los de f15/desconocida) y los 28 de `runWalk.test.js` permanecen
+    VERDE — aislamiento f14/f15 confirmado. Revertido; `npx vitest run src/engine2` → 31 archivos /
+    403 tests VERDE (401 + 2 nuevos); `-t "tripwire"` → 5/34 VERDE. `evaluateVeto` (contrato público,
+    consumido por `runWalk.js`/`computeVetoUniverse`) sin cambio de comportamiento.
 - Decide: Javi (ratificación de sesión 2026-07-06, ejecutada en
   `feature/f4-p2b-i-vetos-duros` sobre `test/f4-p2a-gluten-lactosa-cobertura`).

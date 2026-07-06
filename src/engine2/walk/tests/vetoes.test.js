@@ -6,7 +6,7 @@
 // resuelven via CompositionResolver.
 
 import { describe, it, expect } from 'vitest';
-import { evaluateVeto, computeVetoUniverse } from '../vetoes.js';
+import { evaluateVeto, evaluateVetoFromVista, computeVetoUniverse } from '../vetoes.js';
 import { loadCatalog } from '../../dishes/loadCatalog.js';
 import { resolveDishComposition } from '../../dishes/compositionResolver.js';
 
@@ -50,6 +50,37 @@ describe('evaluateVeto — f14: uniformidad — scaffold y freeform via la MISMA
       { campo: 'gluten', motivo: 'desconocida' },
       { campo: 'lactosa', motivo: 'desconocida' },
     ]);
+  });
+});
+
+// f14 (refuerzo): el catalogo real NUNCA produce origen="scaffold" +
+// estado="conocida" -- CompositionResolver resuelve scaffold a
+// "desconocida" incondicionalmente (D-021, no depende de datos). Sin este
+// bloque, ningun fixture ejercia la rama "valor" del veto con
+// origen="scaffold": los tests de arriba prueban scaffold solo por la
+// rama "desconocida" (f15), nunca por la rama "valor" (f14). Vista
+// sintetica via evaluateVetoFromVista (nucleo puro, sin resolver) para
+// cubrir ese estado hoy inalcanzable con datos reales pero que el
+// mecanismo debe tratar identico a freeform (uniformidad de CODIGO, no
+// solo de datos, el dia que la ingesta del cocinero puebla scaffold).
+describe('evaluateVetoFromVista — f14 (refuerzo): scaffold con estado="conocida" (sintetico) se veta POR VALOR, misma rama que freeform', () => {
+  const vistaScaffoldConocidaVetada = {
+    origen: 'scaffold',
+    containsGluten: { estado: 'conocida', valor: true },
+    containsLactosa: { estado: 'conocida', valor: false },
+  };
+  const vistaScaffoldConocidaLibre = {
+    origen: 'scaffold',
+    containsGluten: { estado: 'conocida', valor: false },
+    containsLactosa: { estado: 'conocida', valor: false },
+  };
+
+  it('caso positivo: scaffold "conocida" + valor=true se veta con motivo "valor" (NO "desconocida")', () => {
+    expect(evaluateVetoFromVista(vistaScaffoldConocidaVetada, ['gluten'])).toEqual([{ campo: 'gluten', motivo: 'valor' }]);
+  });
+
+  it('caso negativo: scaffold "conocida" + valor=false NO se veta', () => {
+    expect(evaluateVetoFromVista(vistaScaffoldConocidaLibre, ['gluten'])).toEqual([]);
   });
 });
 

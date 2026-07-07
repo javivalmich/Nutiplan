@@ -1064,4 +1064,51 @@ Formato:
     **"Verificación limpia no autoriza implementación."** Un análisis que confirma "cero efecto" es
     INPUT para que Javi autorice, nunca sustituto de esa autorización explícita. Guardado como
     memoria de feedback para sesiones futuras.
+
+## D-025 — [2026-07-07] Contrato del adaptador humanScore (F4-P2c): criterio de
+  satisfacción de D-020 vía medición parcial tipificada
+- Decisión. D-020 queda satisfecho midiendo lo medible hoy, sin esperar
+  desbloqueos que el diagnóstico D0 demostró inexistentes: la asimetría
+  de tupla es permanente por diseño (D-021, freeform sin tupla), y
+  ninguna anotación pendiente de la sesión editorial alimenta
+  submétricas actuales.
+- Contrato de reporte. El adaptador produce, por cada submétrica, la
+  terna obligatoria valor / cobertura / estado, con motivo cuando el
+  estado no es `completa`. `estado` clasifica la observabilidad de la
+  métrica en engine2, no el resultado de la ejecución: un
+  `no_observable` nunca es interpretable como error. La cobertura sola
+  no discrimina — un 0/14 por limitación estructural y un 0/14 por
+  fallo de ejecución serían indistinguibles sin el estado. El estado
+  hace auditable la ausencia, no solo visible.
+- Enum de estado: {completa, parcial, no_observable, needs_history,
+  needs_engine2}. Los dos últimos reutilizan el vocabulario
+  preexistente de humanScore.js para las categorías que ya describía,
+  evitando sinónimos nuevos para estados ya nombrados.
+- Vocabulario de ausencia (dos categorías, con nombre propio):
+  - derivable_parcial: existe información relacionada pero incompleta.
+    Hoy: vocabulario de tupla (tmpl/S/cookM/C), recuperable solo para
+    origen scaffold vía resolveDishComposition → repeticionSalsa,
+    repeticionTecnica, platoCuchara, lado-plato de
+    continuidadEntrenoHidrato.
+  - no_observable: engine2 no contiene ningún dato equivalente, ni
+    derivable → effectiveMood (domingoReconfortante),
+    metadata.facilidad (diaFacilTrasElaborado).
+- Racional del vocabulario: evita que en el futuro se intente "subir
+  la cobertura" de una métrica de la segunda categoría — no hay dato
+  del que derivar. Análogo al escopado de precedencias: la limitación
+  queda declarada, no implícita.
+- Ubicación: scripts/ (subdirectorio de fase). El adaptador es
+  instrumento de evaluación, no pieza del motor: pertenece al tooling,
+  no al runtime. Precedente: F2 (scripts/phaseB1/). No importa
+  src/eval/**: el instrumento evalúa el contrato de engine2 sin
+  depender de las asunciones estructurales del instrumento legacy.
+- Deuda registrada (baja prioridad, fuera de este PR): no existe
+  actualmente un control automático que impida importar el adaptador
+  desde el motor.
+- Alcance de comparación: el baseline legacy (post-Fase-1, commit
+  3799dc1) nunca midió meals freeform (fixtures con freeFormPool: [],
+  isLegibleMeal excluye freeform). Toda comparación engine2↔baseline
+  debe reportar cobertura junto al valor; los denominadores diferirán
+  estructuralmente (engine2: 14 huecos fijos, sin
+  desayuno/almuerzo/merienda).
 - Decide: Javi (ratificación POST-HOC CON ENMIENDAS de sesión 2026-07-07, mismo PR/rama).

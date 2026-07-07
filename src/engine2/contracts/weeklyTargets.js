@@ -9,11 +9,14 @@
 //      NO es WEEKLY_CAP (motor viejo): un techo no produce ritmo, solo
 //      evita excesos. WeeklyTargets es un piso a alcanzar durante la
 //      semana, no un limite a no superar.
-//   2) DEFAULT_WEEKLY_TARGETS: valores provisionales — ratificacion de
-//      negocio pendiente para P2. Recordatorio F5: revisar legumbre a 4
-//      (AESAN).
+//   2) DEFAULT_WEEKLY_TARGETS: ratificados en D-024 (F4-P2b-ii, paso 4 del
+//      walk -- primer consumidor real, ver src/engine2/walk/frequencies.js).
+//      pescado=3 por AESAN, coincidente con el cap legacy por razon, no
+//      por herencia. legumbre->4 (AESAN) sigue como pregunta ABIERTA de
+//      F5, no como target actual: el universo real no la produce hoy.
 //
-// Sin consumidor en P0 por diseño (declarado, no accidental).
+// Consumido por primera vez en P2b-ii (D-024) -- antes, declarado sin
+// consumidor por diseño (P0).
 
 /**
  * @typedef {object} WeeklyTargets
@@ -25,13 +28,13 @@
 export const WEEKLY_TARGETS_FIELDS = Object.freeze(['pescado', 'legumbre', 'verduraDiaria']);
 
 /**
- * Valores provisionales — ratificacion de negocio pendiente para P2.
- * Recordatorio F5: revisar legumbre a 4 (AESAN).
+ * Ratificados en D-024 (F4-P2b-ii). Recordatorio F5: legumbre->4 (AESAN)
+ * es pregunta abierta, no target actual.
  * @type {WeeklyTargets}
  */
 export const DEFAULT_WEEKLY_TARGETS = Object.freeze({
-  pescado: 2,
-  legumbre: 2,
+  pescado: 3,
+  legumbre: 3,
   verduraDiaria: 1,
 });
 

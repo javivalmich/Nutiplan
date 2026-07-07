@@ -26,3 +26,12 @@ describe('WeeklyTargets — v2: el default cumple el shape declarado', () => {
     expect(Object.keys(DEFAULT_WEEKLY_TARGETS).sort()).toEqual([...WEEKLY_TARGETS_FIELDS].sort());
   });
 });
+
+// f10 (D-024, F4-P2b-ii): tripwire de politica -- valores LITERALES
+// ratificados. Solo este test se toca si la politica cambia (p.ej. la
+// pregunta abierta de F5 sobre legumbre->4 se resuelve).
+describe('WeeklyTargets — f10: tripwire de politica (D-024) — valores ratificados literales', () => {
+  it('DEFAULT_WEEKLY_TARGETS === {pescado:3, legumbre:3, verduraDiaria:1}', () => {
+    expect(DEFAULT_WEEKLY_TARGETS).toEqual({ pescado: 3, legumbre: 3, verduraDiaria: 1 });
+  });
+});

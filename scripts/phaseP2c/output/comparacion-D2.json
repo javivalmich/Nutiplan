@@ -1,0 +1,3565 @@
+{
+  "generadoPor": "scripts/phaseP2c/compareD2.js (F4-P2c-D2, D-025/D-020)",
+  "recordatorio": "estado clasifica OBSERVABILIDAD en engine2, no resultado de ejecucion: no_observable/needs_history/needs_engine2 nunca es error (D-025). Asimetria estructural de denominadores: legacy usa 2-5 meals/dia segun mealsPerDay del profile, engine2 usa 14 huecos fijos (7 dias x comida/cena) -- las coberturas de ambos lados NO son conmensurables entre si.",
+  "translationTable": [
+    {
+      "campo": "trainingDays",
+      "analogoEngine2": "fixedRole \"entreno\" via profile.trainingDays",
+      "ubicacion": "src/engine2/skeleton/buildWeekArc.js:100,105-113 (asignacion); src/engine2/walk/expandWeekArc.js:60-81 (propagacion a la cena del dia); src/engine2/contracts/profile.js:38-48 (validacion contra DAYS_ORDER exacto)",
+      "motivo": "Traduccion directa. Se despojan tildes (p.ej. \"Miércoles\" -> \"Miercoles\") porque DAYS_ORDER es ASCII por diseno (R7) y validateProfile compara contra ese vocabulario exacto -- no aplica la tolerancia a tildes de isSameDay. Es normalizacion de formato, no un cambio de concepto."
+    },
+    {
+      "campo": "intolerances",
+      "analogoEngine2": "profile.intolerances (veto de ancla y de rotativo/capricho)",
+      "ubicacion": "src/engine2/skeleton/buildWeekArc.js:332-333 (D-023, veto de ancla); src/engine2/walk/runWalk.js:177-178 (D-022, veto de rotativo/capricho); src/engine2/contracts/profile.js:17,50-60 (vocabulario cerrado gluten/lactosa)",
+      "motivo": "Traduccion directa, sin normalizacion: el vocabulario legacy ([\"lactosa\",\"gluten\"]) coincide exactamente con INTOLERANCE_VALUES."
+    },
+    {
+      "campo": "goal",
+      "analogoEngine2": "SIN_TRADUCCION",
+      "motivo": "engine2 no lee profile.goal en ningun archivo; confirmado por el test de control negativo de buildWeekArc.test.js que verifica que leer profile.goal romperia el desacoplo documentado (strategy es metadato pasivo)."
+    },
+    {
+      "campo": "weight",
+      "analogoEngine2": "SIN_TRADUCCION",
+      "motivo": "Sin referencia alguna a profile.weight en src/engine2/."
+    },
+    {
+      "campo": "activity",
+      "analogoEngine2": "SIN_TRADUCCION",
+      "motivo": "Sin referencia alguna a profile.activity en src/engine2/."
+    },
+    {
+      "campo": "hambre",
+      "analogoEngine2": "SIN_TRADUCCION",
+      "motivo": "engine2 no modela apetito/saciedad; no hay campo ni concepto analogo en el walk ni en el esqueleto."
+    },
+    {
+      "campo": "experiencia",
+      "analogoEngine2": "SIN_TRADUCCION",
+      "motivo": "engine2 no modela nivel de experiencia ni \"modo simple\" (simpleMode del motor viejo); sin campo ni concepto analogo."
+    }
+  ],
+  "fixtures": [
+    {
+      "name": "fat_loss_general",
+      "legacyProfile": {
+        "goal": "fatLossGeneral",
+        "weight": 90,
+        "activity": "moderate",
+        "intolerances": [],
+        "trainingDays": []
+      },
+      "engine2Profile": {
+        "trainingDays": [],
+        "intolerances": []
+      },
+      "seed": "baseline-fatlossgeneral10",
+      "submetrics": {
+        "densidadDiaria": {
+          "legacy": {
+            "valor": {
+              "Lunes": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Martes": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Miércoles": {
+                "status": "computed",
+                "density": 3,
+                "classification": "denso"
+              },
+              "Jueves": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Viernes": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Sábado": {
+                "status": "unknown",
+                "density": null,
+                "classification": null
+              },
+              "Domingo": {
+                "status": "computed",
+                "density": 0,
+                "classification": "ligero"
+              }
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "Lunes": {
+                "status": "computed",
+                "density": 3,
+                "classification": "denso"
+              },
+              "Martes": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Miercoles": {
+                "status": "computed",
+                "density": 0,
+                "classification": "ligero"
+              },
+              "Jueves": {
+                "status": "computed",
+                "density": 0,
+                "classification": "ligero"
+              },
+              "Viernes": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Sabado": {
+                "status": "computed",
+                "density": 3,
+                "classification": "denso"
+              },
+              "Domingo": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              }
+            },
+            "cobertura": {
+              "legibles": 14,
+              "total": 14
+            },
+            "estado": "completa"
+          },
+          "comparableDirecto": true
+        },
+        "repeticionSalsa": {
+          "legacy": {
+            "valor": {
+              "conteos": {
+                "ajillo": 2,
+                "curry_ligero": 2,
+                "limon_hierbas": 2,
+                "mostaza_miel": 2,
+                "pimenton_ajo": 2,
+                "provenzal": 1,
+                "vinagreta": 1
+              },
+              "repeticionesDestacadas": [],
+              "umbralDestacadaProvisional": 3
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "conteos": {
+                "ajillo": 3,
+                "curry_ligero": 3,
+                "limon_hierbas": 3,
+                "pimenton_ajo": 1
+              }
+            },
+            "cobertura": {
+              "legibles": 11,
+              "total": 14
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: vocabulario de tupla (S) solo recuperable para origen scaffold via resolveDishComposition; freeform no declara tupla (D-021)."
+          },
+          "comparableDirecto": false
+        },
+        "repeticionTecnica": {
+          "legacy": {
+            "valor": {
+              "conteos": {
+                "plancha": 5,
+                "crudo": 2,
+                "horno": 2,
+                "salteado": 2,
+                "guisado": 1,
+                "tortilla": 1
+              },
+              "repeticionesDestacadas": [
+                {
+                  "value": "plancha",
+                  "count": 5
+                }
+              ],
+              "umbralDestacadaProvisional": 3
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "conteos": {
+                "plancha": 2,
+                "horno": 3,
+                "salteado": 3,
+                "crudo": 2,
+                "guisado": 1
+              }
+            },
+            "cobertura": {
+              "legibles": 11,
+              "total": 14
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: vocabulario de tupla (cookM) solo recuperable para origen scaffold via resolveDishComposition; freeform no declara tupla (D-021)."
+          },
+          "comparableDirecto": false
+        },
+        "platoCuchara": {
+          "legacy": {
+            "valor": {
+              "count": 3,
+              "ocurrencias": [
+                {
+                  "day": "Martes",
+                  "time": "Comida"
+                },
+                {
+                  "day": "Martes",
+                  "time": "Cena"
+                },
+                {
+                  "day": "Domingo",
+                  "time": "Comida"
+                }
+              ],
+              "umbralDestacadaProvisional": 4
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "count": 4,
+              "ocurrencias": [
+                {
+                  "day": "Martes",
+                  "momento": "comida"
+                },
+                {
+                  "day": "Miercoles",
+                  "momento": "comida"
+                },
+                {
+                  "day": "Jueves",
+                  "momento": "comida"
+                },
+                {
+                  "day": "Domingo",
+                  "momento": "comida"
+                }
+              ]
+            },
+            "cobertura": {
+              "legibles": 11,
+              "total": 14
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: tmpl solo recuperable para origen scaffold via resolveDishComposition; freeform no declara tupla (D-021)."
+          },
+          "comparableDirecto": false
+        },
+        "continuidadEntrenoHidrato": {
+          "legacy": {
+            "valor": null,
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: no hay cenas con fixedRole=\"entreno\" en este plan (gate de dia simetrico, lado-plato/hidrato solo recuperable para origen scaffold)."
+          },
+          "comparableDirecto": false
+        },
+        "domingoReconfortante": {
+          "legacy": {
+            "valor": true,
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "no_observable",
+            "motivo": "no_observable: engine2 no tiene equivalente a day.effectiveMood (patron \"comfort domingo\" del motor viejo); ningun campo de slot/weekArc lo deriva."
+          },
+          "comparableDirecto": false
+        },
+        "diaFacilTrasElaborado": {
+          "legacy": {
+            "valor": [
+              {
+                "elaborado": "Martes",
+                "facilDespues": "Miércoles"
+              }
+            ],
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "no_observable",
+            "motivo": "no_observable: engine2 no tiene equivalente a meal.metadata.facilidad; el esquema de Dish (schema.js, 10 campos) no lo declara."
+          },
+          "comparableDirecto": false
+        },
+        "repeticionProteinaMismoDia": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_history"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_history",
+            "motivo": "needs_history: requiere historico multi-semana (proteina del mismo dia en semanas previas); sin MemoryStore (Fase 5) no hay historico que leer."
+          },
+          "comparableDirecto": false
+        },
+        "sorpresaEditorial": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_history"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_history",
+            "motivo": "needs_history: requiere historico multi-semana para comparar contra semanas previas; sin MemoryStore (Fase 5) no hay historico que leer."
+          },
+          "comparableDirecto": false
+        },
+        "usoSobrasVidaUtil": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_engine2"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_engine2",
+            "motivo": "needs_engine2: requiere modelar sobras/aprovechamiento a traves de MemoryStore (Fase 5); el walk actual es stateless (R4)."
+          },
+          "comparableDirecto": false
+        },
+        "alternanciaBatch": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_engine2"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_engine2",
+            "motivo": "needs_engine2: requiere modelar cocinado por lotes a traves de MemoryStore (Fase 5); el walk actual es stateless (R4)."
+          },
+          "comparableDirecto": false
+        },
+        "coherenciaCompraPerecederos": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_engine2"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_engine2",
+            "motivo": "needs_engine2: requiere modelar compra/caducidad a traves de MemoryStore (Fase 5); el walk actual es stateless (R4)."
+          },
+          "comparableDirecto": false
+        }
+      }
+    },
+    {
+      "name": "definicion_saciante",
+      "legacyProfile": {
+        "goal": "fatLoss",
+        "hambre": "alta",
+        "weight": 70,
+        "activity": "active",
+        "intolerances": [],
+        "trainingDays": [
+          "Lunes",
+          "Miércoles",
+          "Viernes"
+        ]
+      },
+      "engine2Profile": {
+        "trainingDays": [
+          "Lunes",
+          "Miercoles",
+          "Viernes"
+        ],
+        "intolerances": []
+      },
+      "seed": "baseline-defsaciante11",
+      "submetrics": {
+        "densidadDiaria": {
+          "legacy": {
+            "valor": {
+              "Lunes": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Martes": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Miércoles": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Jueves": {
+                "status": "computed",
+                "density": 0,
+                "classification": "ligero"
+              },
+              "Viernes": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Sábado": {
+                "status": "unknown",
+                "density": null,
+                "classification": null
+              },
+              "Domingo": {
+                "status": "computed",
+                "density": 0,
+                "classification": "ligero"
+              }
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "Lunes": {
+                "status": "computed",
+                "density": 0,
+                "classification": "ligero"
+              },
+              "Martes": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Miercoles": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Jueves": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Viernes": {
+                "status": "computed",
+                "density": 0,
+                "classification": "ligero"
+              },
+              "Sabado": {
+                "status": "computed",
+                "density": 3,
+                "classification": "denso"
+              },
+              "Domingo": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              }
+            },
+            "cobertura": {
+              "legibles": 14,
+              "total": 14
+            },
+            "estado": "completa"
+          },
+          "comparableDirecto": true
+        },
+        "repeticionSalsa": {
+          "legacy": {
+            "valor": {
+              "conteos": {
+                "ajillo": 2,
+                "curry_ligero": 2,
+                "pimenton_ajo": 2,
+                "vinagreta": 2,
+                "limon_hierbas": 1,
+                "mostaza_miel": 1,
+                "provenzal": 1,
+                "romero_limon": 1
+              },
+              "repeticionesDestacadas": [],
+              "umbralDestacadaProvisional": 3
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "conteos": {
+                "vinagreta": 2,
+                "soja_jengibre": 1,
+                "ajillo": 3,
+                "limon_hierbas": 2,
+                "tomate_casero": 1
+              }
+            },
+            "cobertura": {
+              "legibles": 11,
+              "total": 14
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: vocabulario de tupla (S) solo recuperable para origen scaffold via resolveDishComposition; freeform no declara tupla (D-021)."
+          },
+          "comparableDirecto": false
+        },
+        "repeticionTecnica": {
+          "legacy": {
+            "valor": {
+              "conteos": {
+                "plancha": 6,
+                "crudo": 2,
+                "horno": 2,
+                "guisado": 1,
+                "revuelto": 1,
+                "salteado": 1
+              },
+              "repeticionesDestacadas": [
+                {
+                  "value": "plancha",
+                  "count": 6
+                }
+              ],
+              "umbralDestacadaProvisional": 3
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "conteos": {
+                "plancha": 3,
+                "horno": 3,
+                "crudo": 1,
+                "guisado": 1,
+                "salteado": 2,
+                "revuelto": 1
+              }
+            },
+            "cobertura": {
+              "legibles": 11,
+              "total": 14
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: vocabulario de tupla (cookM) solo recuperable para origen scaffold via resolveDishComposition; freeform no declara tupla (D-021)."
+          },
+          "comparableDirecto": false
+        },
+        "platoCuchara": {
+          "legacy": {
+            "valor": {
+              "count": 3,
+              "ocurrencias": [
+                {
+                  "day": "Lunes",
+                  "time": "Comida"
+                },
+                {
+                  "day": "Miércoles",
+                  "time": "Comida"
+                },
+                {
+                  "day": "Domingo",
+                  "time": "Comida"
+                }
+              ],
+              "umbralDestacadaProvisional": 4
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "count": 3,
+              "ocurrencias": [
+                {
+                  "day": "Martes",
+                  "momento": "cena"
+                },
+                {
+                  "day": "Jueves",
+                  "momento": "comida"
+                },
+                {
+                  "day": "Viernes",
+                  "momento": "cena"
+                }
+              ]
+            },
+            "cobertura": {
+              "legibles": 11,
+              "total": 14
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: tmpl solo recuperable para origen scaffold via resolveDishComposition; freeform no declara tupla (D-021)."
+          },
+          "comparableDirecto": false
+        },
+        "continuidadEntrenoHidrato": {
+          "legacy": {
+            "valor": {
+              "diasEntrenamiento": 3,
+              "conHidrato": 3,
+              "deTotalComputados": 3,
+              "detalle": [
+                {
+                  "day": "Lunes",
+                  "status": "computed",
+                  "tieneHidrato": true,
+                  "carb": "arroz"
+                },
+                {
+                  "day": "Miércoles",
+                  "status": "computed",
+                  "tieneHidrato": true,
+                  "carb": "boniato"
+                },
+                {
+                  "day": "Viernes",
+                  "status": "computed",
+                  "tieneHidrato": true,
+                  "carb": "patata"
+                }
+              ]
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "diasEntrenamiento": 3,
+              "conHidrato": 0,
+              "deTotalLegibles": 1,
+              "detalle": [
+                {
+                  "day": "Lunes",
+                  "status": "unknown",
+                  "tieneHidrato": null,
+                  "carb": null
+                },
+                {
+                  "day": "Miercoles",
+                  "status": "unknown",
+                  "tieneHidrato": null,
+                  "carb": null
+                },
+                {
+                  "day": "Viernes",
+                  "status": "computed",
+                  "tieneHidrato": false,
+                  "carb": null
+                }
+              ]
+            },
+            "cobertura": {
+              "legibles": 1,
+              "total": 3
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: lado-plato (hidrato, tupla.C) solo recuperable para origen scaffold via resolveDishComposition; el gate de dia (fixedRole=\"entreno\") es simetrico."
+          },
+          "comparableDirecto": false
+        },
+        "domingoReconfortante": {
+          "legacy": {
+            "valor": true,
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "no_observable",
+            "motivo": "no_observable: engine2 no tiene equivalente a day.effectiveMood (patron \"comfort domingo\" del motor viejo); ningun campo de slot/weekArc lo deriva."
+          },
+          "comparableDirecto": false
+        },
+        "diaFacilTrasElaborado": {
+          "legacy": {
+            "valor": [
+              {
+                "elaborado": "Miércoles",
+                "facilDespues": "Jueves"
+              }
+            ],
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "no_observable",
+            "motivo": "no_observable: engine2 no tiene equivalente a meal.metadata.facilidad; el esquema de Dish (schema.js, 10 campos) no lo declara."
+          },
+          "comparableDirecto": false
+        },
+        "repeticionProteinaMismoDia": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_history"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_history",
+            "motivo": "needs_history: requiere historico multi-semana (proteina del mismo dia en semanas previas); sin MemoryStore (Fase 5) no hay historico que leer."
+          },
+          "comparableDirecto": false
+        },
+        "sorpresaEditorial": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_history"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_history",
+            "motivo": "needs_history: requiere historico multi-semana para comparar contra semanas previas; sin MemoryStore (Fase 5) no hay historico que leer."
+          },
+          "comparableDirecto": false
+        },
+        "usoSobrasVidaUtil": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_engine2"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_engine2",
+            "motivo": "needs_engine2: requiere modelar sobras/aprovechamiento a traves de MemoryStore (Fase 5); el walk actual es stateless (R4)."
+          },
+          "comparableDirecto": false
+        },
+        "alternanciaBatch": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_engine2"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_engine2",
+            "motivo": "needs_engine2: requiere modelar cocinado por lotes a traves de MemoryStore (Fase 5); el walk actual es stateless (R4)."
+          },
+          "comparableDirecto": false
+        },
+        "coherenciaCompraPerecederos": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_engine2"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_engine2",
+            "motivo": "needs_engine2: requiere modelar compra/caducidad a traves de MemoryStore (Fase 5); el walk actual es stateless (R4)."
+          },
+          "comparableDirecto": false
+        }
+      }
+    },
+    {
+      "name": "definicion_flexible",
+      "legacyProfile": {
+        "goal": "fatLoss",
+        "hambre": "media",
+        "weight": 65,
+        "activity": "moderate",
+        "intolerances": [],
+        "trainingDays": []
+      },
+      "engine2Profile": {
+        "trainingDays": [],
+        "intolerances": []
+      },
+      "seed": "baseline-defflexible12",
+      "submetrics": {
+        "densidadDiaria": {
+          "legacy": {
+            "valor": {
+              "Lunes": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Martes": {
+                "status": "computed",
+                "density": 0,
+                "classification": "ligero"
+              },
+              "Miércoles": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Jueves": {
+                "status": "computed",
+                "density": 3,
+                "classification": "denso"
+              },
+              "Viernes": {
+                "status": "computed",
+                "density": 0,
+                "classification": "ligero"
+              },
+              "Sábado": {
+                "status": "unknown",
+                "density": null,
+                "classification": null
+              },
+              "Domingo": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              }
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "Lunes": {
+                "status": "computed",
+                "density": 0,
+                "classification": "ligero"
+              },
+              "Martes": {
+                "status": "computed",
+                "density": 0,
+                "classification": "ligero"
+              },
+              "Miercoles": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Jueves": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Viernes": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Sabado": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Domingo": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              }
+            },
+            "cobertura": {
+              "legibles": 14,
+              "total": 14
+            },
+            "estado": "completa"
+          },
+          "comparableDirecto": true
+        },
+        "repeticionSalsa": {
+          "legacy": {
+            "valor": {
+              "conteos": {
+                "ajillo": 2,
+                "curry_ligero": 2,
+                "limon_hierbas": 2,
+                "pimenton_ajo": 2,
+                "mostaza_miel": 1,
+                "soja_jengibre": 1,
+                "tomate_casero": 1,
+                "vinagreta": 1
+              },
+              "repeticionesDestacadas": [],
+              "umbralDestacadaProvisional": 3
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "conteos": {
+                "limon_hierbas": 2,
+                "pimenton_ajo": 1,
+                "provenzal": 1,
+                "ajillo": 2,
+                "vinagreta": 1
+              }
+            },
+            "cobertura": {
+              "legibles": 10,
+              "total": 14
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: vocabulario de tupla (S) solo recuperable para origen scaffold via resolveDishComposition; freeform no declara tupla (D-021)."
+          },
+          "comparableDirecto": false
+        },
+        "repeticionTecnica": {
+          "legacy": {
+            "valor": {
+              "conteos": {
+                "horno": 4,
+                "plancha": 3,
+                "salteado": 3,
+                "crudo": 2,
+                "revuelto": 1
+              },
+              "repeticionesDestacadas": [
+                {
+                  "value": "horno",
+                  "count": 4
+                },
+                {
+                  "value": "plancha",
+                  "count": 3
+                },
+                {
+                  "value": "salteado",
+                  "count": 3
+                }
+              ],
+              "umbralDestacadaProvisional": 3
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "conteos": {
+                "crudo": 4,
+                "horno": 3,
+                "salteado": 1,
+                "guisado": 2
+              }
+            },
+            "cobertura": {
+              "legibles": 10,
+              "total": 14
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: vocabulario de tupla (cookM) solo recuperable para origen scaffold via resolveDishComposition; freeform no declara tupla (D-021)."
+          },
+          "comparableDirecto": false
+        },
+        "platoCuchara": {
+          "legacy": {
+            "valor": {
+              "count": 3,
+              "ocurrencias": [
+                {
+                  "day": "Martes",
+                  "time": "Comida"
+                },
+                {
+                  "day": "Viernes",
+                  "time": "Comida"
+                },
+                {
+                  "day": "Viernes",
+                  "time": "Cena"
+                }
+              ],
+              "umbralDestacadaProvisional": 4
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "count": 4,
+              "ocurrencias": [
+                {
+                  "day": "Lunes",
+                  "momento": "comida"
+                },
+                {
+                  "day": "Martes",
+                  "momento": "comida"
+                },
+                {
+                  "day": "Miercoles",
+                  "momento": "comida"
+                },
+                {
+                  "day": "Sabado",
+                  "momento": "comida"
+                }
+              ]
+            },
+            "cobertura": {
+              "legibles": 10,
+              "total": 14
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: tmpl solo recuperable para origen scaffold via resolveDishComposition; freeform no declara tupla (D-021)."
+          },
+          "comparableDirecto": false
+        },
+        "continuidadEntrenoHidrato": {
+          "legacy": {
+            "valor": null,
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: no hay cenas con fixedRole=\"entreno\" en este plan (gate de dia simetrico, lado-plato/hidrato solo recuperable para origen scaffold)."
+          },
+          "comparableDirecto": false
+        },
+        "domingoReconfortante": {
+          "legacy": {
+            "valor": true,
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "no_observable",
+            "motivo": "no_observable: engine2 no tiene equivalente a day.effectiveMood (patron \"comfort domingo\" del motor viejo); ningun campo de slot/weekArc lo deriva."
+          },
+          "comparableDirecto": false
+        },
+        "diaFacilTrasElaborado": {
+          "legacy": {
+            "valor": [],
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "no_observable",
+            "motivo": "no_observable: engine2 no tiene equivalente a meal.metadata.facilidad; el esquema de Dish (schema.js, 10 campos) no lo declara."
+          },
+          "comparableDirecto": false
+        },
+        "repeticionProteinaMismoDia": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_history"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_history",
+            "motivo": "needs_history: requiere historico multi-semana (proteina del mismo dia en semanas previas); sin MemoryStore (Fase 5) no hay historico que leer."
+          },
+          "comparableDirecto": false
+        },
+        "sorpresaEditorial": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_history"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_history",
+            "motivo": "needs_history: requiere historico multi-semana para comparar contra semanas previas; sin MemoryStore (Fase 5) no hay historico que leer."
+          },
+          "comparableDirecto": false
+        },
+        "usoSobrasVidaUtil": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_engine2"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_engine2",
+            "motivo": "needs_engine2: requiere modelar sobras/aprovechamiento a traves de MemoryStore (Fase 5); el walk actual es stateless (R4)."
+          },
+          "comparableDirecto": false
+        },
+        "alternanciaBatch": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_engine2"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_engine2",
+            "motivo": "needs_engine2: requiere modelar cocinado por lotes a traves de MemoryStore (Fase 5); el walk actual es stateless (R4)."
+          },
+          "comparableDirecto": false
+        },
+        "coherenciaCompraPerecederos": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_engine2"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_engine2",
+            "motivo": "needs_engine2: requiere modelar compra/caducidad a traves de MemoryStore (Fase 5); el walk actual es stateless (R4)."
+          },
+          "comparableDirecto": false
+        }
+      }
+    },
+    {
+      "name": "mantenimiento_equilibrado (base)",
+      "legacyProfile": {
+        "goal": "maintain",
+        "weight": 74,
+        "activity": "moderate",
+        "intolerances": [],
+        "trainingDays": []
+      },
+      "engine2Profile": {
+        "trainingDays": [],
+        "intolerances": []
+      },
+      "seed": "baseline-mantenimiento13",
+      "submetrics": {
+        "densidadDiaria": {
+          "legacy": {
+            "valor": {
+              "Lunes": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Martes": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Miércoles": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Jueves": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Viernes": {
+                "status": "computed",
+                "density": 3,
+                "classification": "denso"
+              },
+              "Sábado": {
+                "status": "unknown",
+                "density": null,
+                "classification": null
+              },
+              "Domingo": {
+                "status": "computed",
+                "density": 0,
+                "classification": "ligero"
+              }
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "Lunes": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Martes": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Miercoles": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Jueves": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Viernes": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Sabado": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Domingo": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              }
+            },
+            "cobertura": {
+              "legibles": 14,
+              "total": 14
+            },
+            "estado": "completa"
+          },
+          "comparableDirecto": true
+        },
+        "repeticionSalsa": {
+          "legacy": {
+            "valor": {
+              "conteos": {
+                "ajillo": 3,
+                "limon_hierbas": 3,
+                "pimenton_ajo": 2,
+                "curry_ligero": 1,
+                "romero_limon": 1,
+                "soja_jengibre": 1
+              },
+              "repeticionesDestacadas": [
+                {
+                  "value": "ajillo",
+                  "count": 3
+                },
+                {
+                  "value": "limon_hierbas",
+                  "count": 3
+                }
+              ],
+              "umbralDestacadaProvisional": 3
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "conteos": {
+                "ajillo": 5,
+                "vinagreta": 1,
+                "pimenton_ajo": 1
+              }
+            },
+            "cobertura": {
+              "legibles": 9,
+              "total": 14
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: vocabulario de tupla (S) solo recuperable para origen scaffold via resolveDishComposition; freeform no declara tupla (D-021)."
+          },
+          "comparableDirecto": false
+        },
+        "repeticionTecnica": {
+          "legacy": {
+            "valor": {
+              "conteos": {
+                "crudo": 3,
+                "horno": 3,
+                "plancha": 3,
+                "salteado": 2,
+                "guisado": 1,
+                "revuelto": 1
+              },
+              "repeticionesDestacadas": [
+                {
+                  "value": "crudo",
+                  "count": 3
+                },
+                {
+                  "value": "horno",
+                  "count": 3
+                },
+                {
+                  "value": "plancha",
+                  "count": 3
+                }
+              ],
+              "umbralDestacadaProvisional": 3
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "conteos": {
+                "crudo": 2,
+                "guisado": 5,
+                "horno": 1,
+                "plancha": 1
+              }
+            },
+            "cobertura": {
+              "legibles": 9,
+              "total": 14
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: vocabulario de tupla (cookM) solo recuperable para origen scaffold via resolveDishComposition; freeform no declara tupla (D-021)."
+          },
+          "comparableDirecto": false
+        },
+        "platoCuchara": {
+          "legacy": {
+            "valor": {
+              "count": 3,
+              "ocurrencias": [
+                {
+                  "day": "Jueves",
+                  "time": "Comida"
+                },
+                {
+                  "day": "Jueves",
+                  "time": "Cena"
+                },
+                {
+                  "day": "Domingo",
+                  "time": "Comida"
+                }
+              ],
+              "umbralDestacadaProvisional": 4
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "count": 2,
+              "ocurrencias": [
+                {
+                  "day": "Lunes",
+                  "momento": "comida"
+                },
+                {
+                  "day": "Domingo",
+                  "momento": "cena"
+                }
+              ]
+            },
+            "cobertura": {
+              "legibles": 9,
+              "total": 14
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: tmpl solo recuperable para origen scaffold via resolveDishComposition; freeform no declara tupla (D-021)."
+          },
+          "comparableDirecto": false
+        },
+        "continuidadEntrenoHidrato": {
+          "legacy": {
+            "valor": null,
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: no hay cenas con fixedRole=\"entreno\" en este plan (gate de dia simetrico, lado-plato/hidrato solo recuperable para origen scaffold)."
+          },
+          "comparableDirecto": false
+        },
+        "domingoReconfortante": {
+          "legacy": {
+            "valor": true,
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "no_observable",
+            "motivo": "no_observable: engine2 no tiene equivalente a day.effectiveMood (patron \"comfort domingo\" del motor viejo); ningun campo de slot/weekArc lo deriva."
+          },
+          "comparableDirecto": false
+        },
+        "diaFacilTrasElaborado": {
+          "legacy": {
+            "valor": [
+              {
+                "elaborado": "Martes",
+                "facilDespues": "Miércoles"
+              }
+            ],
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "no_observable",
+            "motivo": "no_observable: engine2 no tiene equivalente a meal.metadata.facilidad; el esquema de Dish (schema.js, 10 campos) no lo declara."
+          },
+          "comparableDirecto": false
+        },
+        "repeticionProteinaMismoDia": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_history"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_history",
+            "motivo": "needs_history: requiere historico multi-semana (proteina del mismo dia en semanas previas); sin MemoryStore (Fase 5) no hay historico que leer."
+          },
+          "comparableDirecto": false
+        },
+        "sorpresaEditorial": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_history"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_history",
+            "motivo": "needs_history: requiere historico multi-semana para comparar contra semanas previas; sin MemoryStore (Fase 5) no hay historico que leer."
+          },
+          "comparableDirecto": false
+        },
+        "usoSobrasVidaUtil": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_engine2"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_engine2",
+            "motivo": "needs_engine2: requiere modelar sobras/aprovechamiento a traves de MemoryStore (Fase 5); el walk actual es stateless (R4)."
+          },
+          "comparableDirecto": false
+        },
+        "alternanciaBatch": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_engine2"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_engine2",
+            "motivo": "needs_engine2: requiere modelar cocinado por lotes a traves de MemoryStore (Fase 5); el walk actual es stateless (R4)."
+          },
+          "comparableDirecto": false
+        },
+        "coherenciaCompraPerecederos": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_engine2"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_engine2",
+            "motivo": "needs_engine2: requiere modelar compra/caducidad a traves de MemoryStore (Fase 5); el walk actual es stateless (R4)."
+          },
+          "comparableDirecto": false
+        }
+      }
+    },
+    {
+      "name": "volumen_limpio",
+      "legacyProfile": {
+        "goal": "mildGain",
+        "weight": 80,
+        "activity": "moderate",
+        "intolerances": [],
+        "trainingDays": [
+          "Lunes",
+          "Jueves"
+        ]
+      },
+      "engine2Profile": {
+        "trainingDays": [
+          "Lunes",
+          "Jueves"
+        ],
+        "intolerances": []
+      },
+      "seed": "baseline-volumenlimpio14",
+      "submetrics": {
+        "densidadDiaria": {
+          "legacy": {
+            "valor": {
+              "Lunes": {
+                "status": "computed",
+                "density": 3,
+                "classification": "denso"
+              },
+              "Martes": {
+                "status": "computed",
+                "density": 3,
+                "classification": "denso"
+              },
+              "Miércoles": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Jueves": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Viernes": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Sábado": {
+                "status": "unknown",
+                "density": null,
+                "classification": null
+              },
+              "Domingo": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              }
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "Lunes": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Martes": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Miercoles": {
+                "status": "computed",
+                "density": 0,
+                "classification": "ligero"
+              },
+              "Jueves": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Viernes": {
+                "status": "computed",
+                "density": 0,
+                "classification": "ligero"
+              },
+              "Sabado": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Domingo": {
+                "status": "computed",
+                "density": 0,
+                "classification": "ligero"
+              }
+            },
+            "cobertura": {
+              "legibles": 14,
+              "total": 14
+            },
+            "estado": "completa"
+          },
+          "comparableDirecto": true
+        },
+        "repeticionSalsa": {
+          "legacy": {
+            "valor": {
+              "conteos": {
+                "pimenton_ajo": 3,
+                "ajillo": 2,
+                "curry_ligero": 2,
+                "mostaza_miel": 2,
+                "romero_limon": 2,
+                "vinagreta": 1
+              },
+              "repeticionesDestacadas": [
+                {
+                  "value": "pimenton_ajo",
+                  "count": 3
+                }
+              ],
+              "umbralDestacadaProvisional": 3
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "conteos": {
+                "pimenton_ajo": 1,
+                "ajillo": 6,
+                "curry_ligero": 2,
+                "vinagreta": 1,
+                "limon_hierbas": 1,
+                "tomate_casero": 1
+              }
+            },
+            "cobertura": {
+              "legibles": 12,
+              "total": 14
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: vocabulario de tupla (S) solo recuperable para origen scaffold via resolveDishComposition; freeform no declara tupla (D-021)."
+          },
+          "comparableDirecto": false
+        },
+        "repeticionTecnica": {
+          "legacy": {
+            "valor": {
+              "conteos": {
+                "plancha": 5,
+                "crudo": 3,
+                "horno": 2,
+                "salteado": 2,
+                "tortilla": 1
+              },
+              "repeticionesDestacadas": [
+                {
+                  "value": "plancha",
+                  "count": 5
+                },
+                {
+                  "value": "crudo",
+                  "count": 3
+                }
+              ],
+              "umbralDestacadaProvisional": 3
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "conteos": {
+                "guisado": 2,
+                "plancha": 3,
+                "revuelto": 1,
+                "horno": 3,
+                "salteado": 2,
+                "crudo": 1
+              }
+            },
+            "cobertura": {
+              "legibles": 12,
+              "total": 14
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: vocabulario de tupla (cookM) solo recuperable para origen scaffold via resolveDishComposition; freeform no declara tupla (D-021)."
+          },
+          "comparableDirecto": false
+        },
+        "platoCuchara": {
+          "legacy": {
+            "valor": {
+              "count": 2,
+              "ocurrencias": [
+                {
+                  "day": "Viernes",
+                  "time": "Comida"
+                },
+                {
+                  "day": "Domingo",
+                  "time": "Comida"
+                }
+              ],
+              "umbralDestacadaProvisional": 4
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "count": 4,
+              "ocurrencias": [
+                {
+                  "day": "Lunes",
+                  "momento": "comida"
+                },
+                {
+                  "day": "Miercoles",
+                  "momento": "comida"
+                },
+                {
+                  "day": "Viernes",
+                  "momento": "comida"
+                },
+                {
+                  "day": "Domingo",
+                  "momento": "comida"
+                }
+              ]
+            },
+            "cobertura": {
+              "legibles": 12,
+              "total": 14
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: tmpl solo recuperable para origen scaffold via resolveDishComposition; freeform no declara tupla (D-021)."
+          },
+          "comparableDirecto": false
+        },
+        "continuidadEntrenoHidrato": {
+          "legacy": {
+            "valor": {
+              "diasEntrenamiento": 2,
+              "conHidrato": 2,
+              "deTotalComputados": 2,
+              "detalle": [
+                {
+                  "day": "Lunes",
+                  "status": "computed",
+                  "tieneHidrato": true,
+                  "carb": "arroz"
+                },
+                {
+                  "day": "Jueves",
+                  "status": "computed",
+                  "tieneHidrato": true,
+                  "carb": "arroz"
+                }
+              ]
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "diasEntrenamiento": 2,
+              "conHidrato": 1,
+              "deTotalLegibles": 2,
+              "detalle": [
+                {
+                  "day": "Lunes",
+                  "status": "computed",
+                  "tieneHidrato": false,
+                  "carb": null
+                },
+                {
+                  "day": "Jueves",
+                  "status": "computed",
+                  "tieneHidrato": true,
+                  "carb": "arroz"
+                }
+              ]
+            },
+            "cobertura": {
+              "legibles": 2,
+              "total": 2
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: lado-plato (hidrato, tupla.C) solo recuperable para origen scaffold via resolveDishComposition; el gate de dia (fixedRole=\"entreno\") es simetrico."
+          },
+          "comparableDirecto": false
+        },
+        "domingoReconfortante": {
+          "legacy": {
+            "valor": true,
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "no_observable",
+            "motivo": "no_observable: engine2 no tiene equivalente a day.effectiveMood (patron \"comfort domingo\" del motor viejo); ningun campo de slot/weekArc lo deriva."
+          },
+          "comparableDirecto": false
+        },
+        "diaFacilTrasElaborado": {
+          "legacy": {
+            "valor": [
+              {
+                "elaborado": "Miércoles",
+                "facilDespues": "Jueves"
+              }
+            ],
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "no_observable",
+            "motivo": "no_observable: engine2 no tiene equivalente a meal.metadata.facilidad; el esquema de Dish (schema.js, 10 campos) no lo declara."
+          },
+          "comparableDirecto": false
+        },
+        "repeticionProteinaMismoDia": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_history"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_history",
+            "motivo": "needs_history: requiere historico multi-semana (proteina del mismo dia en semanas previas); sin MemoryStore (Fase 5) no hay historico que leer."
+          },
+          "comparableDirecto": false
+        },
+        "sorpresaEditorial": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_history"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_history",
+            "motivo": "needs_history: requiere historico multi-semana para comparar contra semanas previas; sin MemoryStore (Fase 5) no hay historico que leer."
+          },
+          "comparableDirecto": false
+        },
+        "usoSobrasVidaUtil": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_engine2"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_engine2",
+            "motivo": "needs_engine2: requiere modelar sobras/aprovechamiento a traves de MemoryStore (Fase 5); el walk actual es stateless (R4)."
+          },
+          "comparableDirecto": false
+        },
+        "alternanciaBatch": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_engine2"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_engine2",
+            "motivo": "needs_engine2: requiere modelar cocinado por lotes a traves de MemoryStore (Fase 5); el walk actual es stateless (R4)."
+          },
+          "comparableDirecto": false
+        },
+        "coherenciaCompraPerecederos": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_engine2"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_engine2",
+            "motivo": "needs_engine2: requiere modelar compra/caducidad a traves de MemoryStore (Fase 5); el walk actual es stateless (R4)."
+          },
+          "comparableDirecto": false
+        }
+      }
+    },
+    {
+      "name": "volumen_agresivo",
+      "legacyProfile": {
+        "goal": "muscleGain",
+        "weight": 85,
+        "activity": "active",
+        "intolerances": [],
+        "trainingDays": [
+          "Lunes",
+          "Martes",
+          "Jueves",
+          "Viernes"
+        ]
+      },
+      "engine2Profile": {
+        "trainingDays": [
+          "Lunes",
+          "Martes",
+          "Jueves",
+          "Viernes"
+        ],
+        "intolerances": []
+      },
+      "seed": "baseline-volumenagresivo15",
+      "submetrics": {
+        "densidadDiaria": {
+          "legacy": {
+            "valor": {
+              "Lunes": {
+                "status": "computed",
+                "density": 3,
+                "classification": "denso"
+              },
+              "Martes": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Miércoles": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Jueves": {
+                "status": "computed",
+                "density": 3,
+                "classification": "denso"
+              },
+              "Viernes": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Sábado": {
+                "status": "unknown",
+                "density": null,
+                "classification": null
+              },
+              "Domingo": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              }
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "Lunes": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Martes": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Miercoles": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Jueves": {
+                "status": "computed",
+                "density": 0,
+                "classification": "ligero"
+              },
+              "Viernes": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Sabado": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Domingo": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              }
+            },
+            "cobertura": {
+              "legibles": 14,
+              "total": 14
+            },
+            "estado": "completa"
+          },
+          "comparableDirecto": true
+        },
+        "repeticionSalsa": {
+          "legacy": {
+            "valor": {
+              "conteos": {
+                "pimenton_ajo": 3,
+                "romero_limon": 3,
+                "tomate_casero": 2,
+                "ajillo": 1,
+                "mostaza_miel": 1,
+                "soja_jengibre": 1,
+                "vinagreta": 1
+              },
+              "repeticionesDestacadas": [
+                {
+                  "value": "pimenton_ajo",
+                  "count": 3
+                },
+                {
+                  "value": "romero_limon",
+                  "count": 3
+                }
+              ],
+              "umbralDestacadaProvisional": 3
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "conteos": {
+                "limon_hierbas": 3,
+                "ajillo": 2,
+                "pimenton_ajo": 1,
+                "vinagreta": 1,
+                "romero_limon": 1
+              }
+            },
+            "cobertura": {
+              "legibles": 9,
+              "total": 14
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: vocabulario de tupla (S) solo recuperable para origen scaffold via resolveDishComposition; freeform no declara tupla (D-021)."
+          },
+          "comparableDirecto": false
+        },
+        "repeticionTecnica": {
+          "legacy": {
+            "valor": {
+              "conteos": {
+                "plancha": 6,
+                "crudo": 2,
+                "horno": 2,
+                "salteado": 2,
+                "guisado": 1
+              },
+              "repeticionesDestacadas": [
+                {
+                  "value": "plancha",
+                  "count": 6
+                }
+              ],
+              "umbralDestacadaProvisional": 3
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "conteos": {
+                "plancha": 4,
+                "horno": 2,
+                "guisado": 1,
+                "crudo": 2
+              }
+            },
+            "cobertura": {
+              "legibles": 9,
+              "total": 14
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: vocabulario de tupla (cookM) solo recuperable para origen scaffold via resolveDishComposition; freeform no declara tupla (D-021)."
+          },
+          "comparableDirecto": false
+        },
+        "platoCuchara": {
+          "legacy": {
+            "valor": {
+              "count": 2,
+              "ocurrencias": [
+                {
+                  "day": "Domingo",
+                  "time": "Comida"
+                },
+                {
+                  "day": "Domingo",
+                  "time": "Cena"
+                }
+              ],
+              "umbralDestacadaProvisional": 4
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "count": 3,
+              "ocurrencias": [
+                {
+                  "day": "Lunes",
+                  "momento": "comida"
+                },
+                {
+                  "day": "Miercoles",
+                  "momento": "comida"
+                },
+                {
+                  "day": "Jueves",
+                  "momento": "comida"
+                }
+              ]
+            },
+            "cobertura": {
+              "legibles": 9,
+              "total": 14
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: tmpl solo recuperable para origen scaffold via resolveDishComposition; freeform no declara tupla (D-021)."
+          },
+          "comparableDirecto": false
+        },
+        "continuidadEntrenoHidrato": {
+          "legacy": {
+            "valor": {
+              "diasEntrenamiento": 4,
+              "conHidrato": 4,
+              "deTotalComputados": 4,
+              "detalle": [
+                {
+                  "day": "Lunes",
+                  "status": "computed",
+                  "tieneHidrato": true,
+                  "carb": "arroz"
+                },
+                {
+                  "day": "Martes",
+                  "status": "computed",
+                  "tieneHidrato": true,
+                  "carb": "patata"
+                },
+                {
+                  "day": "Jueves",
+                  "status": "computed",
+                  "tieneHidrato": true,
+                  "carb": "arroz"
+                },
+                {
+                  "day": "Viernes",
+                  "status": "computed",
+                  "tieneHidrato": true,
+                  "carb": "patata"
+                }
+              ]
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "diasEntrenamiento": 4,
+              "conHidrato": 0,
+              "deTotalLegibles": 1,
+              "detalle": [
+                {
+                  "day": "Lunes",
+                  "status": "unknown",
+                  "tieneHidrato": null,
+                  "carb": null
+                },
+                {
+                  "day": "Martes",
+                  "status": "computed",
+                  "tieneHidrato": false,
+                  "carb": null
+                },
+                {
+                  "day": "Jueves",
+                  "status": "unknown",
+                  "tieneHidrato": null,
+                  "carb": null
+                },
+                {
+                  "day": "Viernes",
+                  "status": "unknown",
+                  "tieneHidrato": null,
+                  "carb": null
+                }
+              ]
+            },
+            "cobertura": {
+              "legibles": 1,
+              "total": 4
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: lado-plato (hidrato, tupla.C) solo recuperable para origen scaffold via resolveDishComposition; el gate de dia (fixedRole=\"entreno\") es simetrico."
+          },
+          "comparableDirecto": false
+        },
+        "domingoReconfortante": {
+          "legacy": {
+            "valor": true,
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "no_observable",
+            "motivo": "no_observable: engine2 no tiene equivalente a day.effectiveMood (patron \"comfort domingo\" del motor viejo); ningun campo de slot/weekArc lo deriva."
+          },
+          "comparableDirecto": false
+        },
+        "diaFacilTrasElaborado": {
+          "legacy": {
+            "valor": [],
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "no_observable",
+            "motivo": "no_observable: engine2 no tiene equivalente a meal.metadata.facilidad; el esquema de Dish (schema.js, 10 campos) no lo declara."
+          },
+          "comparableDirecto": false
+        },
+        "repeticionProteinaMismoDia": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_history"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_history",
+            "motivo": "needs_history: requiere historico multi-semana (proteina del mismo dia en semanas previas); sin MemoryStore (Fase 5) no hay historico que leer."
+          },
+          "comparableDirecto": false
+        },
+        "sorpresaEditorial": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_history"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_history",
+            "motivo": "needs_history: requiere historico multi-semana para comparar contra semanas previas; sin MemoryStore (Fase 5) no hay historico que leer."
+          },
+          "comparableDirecto": false
+        },
+        "usoSobrasVidaUtil": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_engine2"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_engine2",
+            "motivo": "needs_engine2: requiere modelar sobras/aprovechamiento a traves de MemoryStore (Fase 5); el walk actual es stateless (R4)."
+          },
+          "comparableDirecto": false
+        },
+        "alternanciaBatch": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_engine2"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_engine2",
+            "motivo": "needs_engine2: requiere modelar cocinado por lotes a traves de MemoryStore (Fase 5); el walk actual es stateless (R4)."
+          },
+          "comparableDirecto": false
+        },
+        "coherenciaCompraPerecederos": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_engine2"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_engine2",
+            "motivo": "needs_engine2: requiere modelar compra/caducidad a traves de MemoryStore (Fase 5); el walk actual es stateless (R4)."
+          },
+          "comparableDirecto": false
+        }
+      }
+    },
+    {
+      "name": "mantenimiento_equilibrado + intolerancias (lactosa+gluten)",
+      "legacyProfile": {
+        "goal": "maintain",
+        "weight": 74,
+        "activity": "moderate",
+        "intolerances": [
+          "lactosa",
+          "gluten"
+        ],
+        "trainingDays": []
+      },
+      "engine2Profile": {
+        "trainingDays": [],
+        "intolerances": [
+          "lactosa",
+          "gluten"
+        ]
+      },
+      "seed": "baseline-mant-intol16",
+      "submetrics": {
+        "densidadDiaria": {
+          "legacy": {
+            "valor": {
+              "Lunes": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Martes": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Miércoles": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Jueves": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Viernes": {
+                "status": "computed",
+                "density": 0,
+                "classification": "ligero"
+              },
+              "Sábado": {
+                "status": "unknown",
+                "density": null,
+                "classification": null
+              },
+              "Domingo": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              }
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "Lunes": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Martes": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Miercoles": {
+                "status": "computed",
+                "density": 3,
+                "classification": "denso"
+              },
+              "Jueves": {
+                "status": "computed",
+                "density": 0,
+                "classification": "ligero"
+              },
+              "Viernes": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Sabado": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Domingo": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              }
+            },
+            "cobertura": {
+              "legibles": 14,
+              "total": 14
+            },
+            "estado": "completa"
+          },
+          "comparableDirecto": true
+        },
+        "repeticionSalsa": {
+          "legacy": {
+            "valor": {
+              "conteos": {
+                "limon_hierbas": 3,
+                "curry_ligero": 2,
+                "mostaza_miel": 2,
+                "pimenton_ajo": 2,
+                "ajillo": 1
+              },
+              "repeticionesDestacadas": [
+                {
+                  "value": "limon_hierbas",
+                  "count": 3
+                }
+              ],
+              "umbralDestacadaProvisional": 3
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "conteos": {}
+            },
+            "cobertura": {
+              "legibles": 0,
+              "total": 14
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: vocabulario de tupla (S) solo recuperable para origen scaffold via resolveDishComposition; freeform no declara tupla (D-021)."
+          },
+          "comparableDirecto": false
+        },
+        "repeticionTecnica": {
+          "legacy": {
+            "valor": {
+              "conteos": {
+                "crudo": 3,
+                "plancha": 3,
+                "guisado": 2,
+                "horno": 2,
+                "salteado": 2,
+                "tortilla": 1
+              },
+              "repeticionesDestacadas": [
+                {
+                  "value": "crudo",
+                  "count": 3
+                },
+                {
+                  "value": "plancha",
+                  "count": 3
+                }
+              ],
+              "umbralDestacadaProvisional": 3
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "conteos": {}
+            },
+            "cobertura": {
+              "legibles": 0,
+              "total": 14
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: vocabulario de tupla (cookM) solo recuperable para origen scaffold via resolveDishComposition; freeform no declara tupla (D-021)."
+          },
+          "comparableDirecto": false
+        },
+        "platoCuchara": {
+          "legacy": {
+            "valor": {
+              "count": 5,
+              "ocurrencias": [
+                {
+                  "day": "Miércoles",
+                  "time": "Comida"
+                },
+                {
+                  "day": "Viernes",
+                  "time": "Comida"
+                },
+                {
+                  "day": "Viernes",
+                  "time": "Cena"
+                },
+                {
+                  "day": "Domingo",
+                  "time": "Comida"
+                },
+                {
+                  "day": "Domingo",
+                  "time": "Cena"
+                }
+              ],
+              "umbralDestacadaProvisional": 4
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "count": 0,
+              "ocurrencias": []
+            },
+            "cobertura": {
+              "legibles": 0,
+              "total": 14
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: tmpl solo recuperable para origen scaffold via resolveDishComposition; freeform no declara tupla (D-021)."
+          },
+          "comparableDirecto": false
+        },
+        "continuidadEntrenoHidrato": {
+          "legacy": {
+            "valor": null,
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: no hay cenas con fixedRole=\"entreno\" en este plan (gate de dia simetrico, lado-plato/hidrato solo recuperable para origen scaffold)."
+          },
+          "comparableDirecto": false
+        },
+        "domingoReconfortante": {
+          "legacy": {
+            "valor": true,
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "no_observable",
+            "motivo": "no_observable: engine2 no tiene equivalente a day.effectiveMood (patron \"comfort domingo\" del motor viejo); ningun campo de slot/weekArc lo deriva."
+          },
+          "comparableDirecto": false
+        },
+        "diaFacilTrasElaborado": {
+          "legacy": {
+            "valor": [
+              {
+                "elaborado": "Lunes",
+                "facilDespues": "Martes"
+              },
+              {
+                "elaborado": "Jueves",
+                "facilDespues": "Viernes"
+              }
+            ],
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "no_observable",
+            "motivo": "no_observable: engine2 no tiene equivalente a meal.metadata.facilidad; el esquema de Dish (schema.js, 10 campos) no lo declara."
+          },
+          "comparableDirecto": false
+        },
+        "repeticionProteinaMismoDia": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_history"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_history",
+            "motivo": "needs_history: requiere historico multi-semana (proteina del mismo dia en semanas previas); sin MemoryStore (Fase 5) no hay historico que leer."
+          },
+          "comparableDirecto": false
+        },
+        "sorpresaEditorial": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_history"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_history",
+            "motivo": "needs_history: requiere historico multi-semana para comparar contra semanas previas; sin MemoryStore (Fase 5) no hay historico que leer."
+          },
+          "comparableDirecto": false
+        },
+        "usoSobrasVidaUtil": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_engine2"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_engine2",
+            "motivo": "needs_engine2: requiere modelar sobras/aprovechamiento a traves de MemoryStore (Fase 5); el walk actual es stateless (R4)."
+          },
+          "comparableDirecto": false
+        },
+        "alternanciaBatch": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_engine2"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_engine2",
+            "motivo": "needs_engine2: requiere modelar cocinado por lotes a traves de MemoryStore (Fase 5); el walk actual es stateless (R4)."
+          },
+          "comparableDirecto": false
+        },
+        "coherenciaCompraPerecederos": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_engine2"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_engine2",
+            "motivo": "needs_engine2: requiere modelar compra/caducidad a traves de MemoryStore (Fase 5); el walk actual es stateless (R4)."
+          },
+          "comparableDirecto": false
+        }
+      }
+    },
+    {
+      "name": "mantenimiento_equilibrado + trainingDays",
+      "legacyProfile": {
+        "goal": "maintain",
+        "weight": 74,
+        "activity": "moderate",
+        "intolerances": [],
+        "trainingDays": [
+          "Lunes",
+          "Miércoles",
+          "Viernes"
+        ]
+      },
+      "engine2Profile": {
+        "trainingDays": [
+          "Lunes",
+          "Miercoles",
+          "Viernes"
+        ],
+        "intolerances": []
+      },
+      "seed": "baseline-mant-training17",
+      "submetrics": {
+        "densidadDiaria": {
+          "legacy": {
+            "valor": {
+              "Lunes": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Martes": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Miércoles": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Jueves": {
+                "status": "computed",
+                "density": 0,
+                "classification": "ligero"
+              },
+              "Viernes": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Sábado": {
+                "status": "unknown",
+                "density": null,
+                "classification": null
+              },
+              "Domingo": {
+                "status": "computed",
+                "density": 0,
+                "classification": "ligero"
+              }
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "Lunes": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Martes": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Miercoles": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Jueves": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Viernes": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Sabado": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Domingo": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              }
+            },
+            "cobertura": {
+              "legibles": 14,
+              "total": 14
+            },
+            "estado": "completa"
+          },
+          "comparableDirecto": true
+        },
+        "repeticionSalsa": {
+          "legacy": {
+            "valor": {
+              "conteos": {
+                "ajillo": 2,
+                "curry_ligero": 2,
+                "pimenton_ajo": 2,
+                "limon_hierbas": 1,
+                "mostaza_miel": 1,
+                "provenzal": 1,
+                "romero_limon": 1,
+                "soja_jengibre": 1,
+                "vinagreta": 1
+              },
+              "repeticionesDestacadas": [],
+              "umbralDestacadaProvisional": 3
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "conteos": {
+                "pimenton_ajo": 4,
+                "limon_hierbas": 1,
+                "provenzal": 2,
+                "vinagreta": 2,
+                "ajillo": 2
+              }
+            },
+            "cobertura": {
+              "legibles": 11,
+              "total": 14
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: vocabulario de tupla (S) solo recuperable para origen scaffold via resolveDishComposition; freeform no declara tupla (D-021)."
+          },
+          "comparableDirecto": false
+        },
+        "repeticionTecnica": {
+          "legacy": {
+            "valor": {
+              "conteos": {
+                "plancha": 6,
+                "horno": 2,
+                "crudo": 1,
+                "guisado": 1,
+                "salteado": 1,
+                "tortilla": 1
+              },
+              "repeticionesDestacadas": [
+                {
+                  "value": "plancha",
+                  "count": 6
+                }
+              ],
+              "umbralDestacadaProvisional": 3
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "conteos": {
+                "guisado": 4,
+                "horno": 2,
+                "salteado": 1,
+                "crudo": 1,
+                "plancha": 3
+              }
+            },
+            "cobertura": {
+              "legibles": 11,
+              "total": 14
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: vocabulario de tupla (cookM) solo recuperable para origen scaffold via resolveDishComposition; freeform no declara tupla (D-021)."
+          },
+          "comparableDirecto": false
+        },
+        "platoCuchara": {
+          "legacy": {
+            "valor": {
+              "count": 3,
+              "ocurrencias": [
+                {
+                  "day": "Jueves",
+                  "time": "Comida"
+                },
+                {
+                  "day": "Domingo",
+                  "time": "Comida"
+                },
+                {
+                  "day": "Domingo",
+                  "time": "Cena"
+                }
+              ],
+              "umbralDestacadaProvisional": 4
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "count": 4,
+              "ocurrencias": [
+                {
+                  "day": "Lunes",
+                  "momento": "comida"
+                },
+                {
+                  "day": "Martes",
+                  "momento": "comida"
+                },
+                {
+                  "day": "Jueves",
+                  "momento": "comida"
+                },
+                {
+                  "day": "Domingo",
+                  "momento": "comida"
+                }
+              ]
+            },
+            "cobertura": {
+              "legibles": 11,
+              "total": 14
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: tmpl solo recuperable para origen scaffold via resolveDishComposition; freeform no declara tupla (D-021)."
+          },
+          "comparableDirecto": false
+        },
+        "continuidadEntrenoHidrato": {
+          "legacy": {
+            "valor": {
+              "diasEntrenamiento": 3,
+              "conHidrato": 3,
+              "deTotalComputados": 3,
+              "detalle": [
+                {
+                  "day": "Lunes",
+                  "status": "computed",
+                  "tieneHidrato": true,
+                  "carb": "arroz"
+                },
+                {
+                  "day": "Miércoles",
+                  "status": "computed",
+                  "tieneHidrato": true,
+                  "carb": "boniato"
+                },
+                {
+                  "day": "Viernes",
+                  "status": "computed",
+                  "tieneHidrato": true,
+                  "carb": "patata"
+                }
+              ]
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "diasEntrenamiento": 3,
+              "conHidrato": 1,
+              "deTotalLegibles": 3,
+              "detalle": [
+                {
+                  "day": "Lunes",
+                  "status": "computed",
+                  "tieneHidrato": false,
+                  "carb": null
+                },
+                {
+                  "day": "Miercoles",
+                  "status": "computed",
+                  "tieneHidrato": false,
+                  "carb": null
+                },
+                {
+                  "day": "Viernes",
+                  "status": "computed",
+                  "tieneHidrato": true,
+                  "carb": "patata"
+                }
+              ]
+            },
+            "cobertura": {
+              "legibles": 3,
+              "total": 3
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: lado-plato (hidrato, tupla.C) solo recuperable para origen scaffold via resolveDishComposition; el gate de dia (fixedRole=\"entreno\") es simetrico."
+          },
+          "comparableDirecto": false
+        },
+        "domingoReconfortante": {
+          "legacy": {
+            "valor": true,
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "no_observable",
+            "motivo": "no_observable: engine2 no tiene equivalente a day.effectiveMood (patron \"comfort domingo\" del motor viejo); ningun campo de slot/weekArc lo deriva."
+          },
+          "comparableDirecto": false
+        },
+        "diaFacilTrasElaborado": {
+          "legacy": {
+            "valor": [
+              {
+                "elaborado": "Lunes",
+                "facilDespues": "Martes"
+              }
+            ],
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "no_observable",
+            "motivo": "no_observable: engine2 no tiene equivalente a meal.metadata.facilidad; el esquema de Dish (schema.js, 10 campos) no lo declara."
+          },
+          "comparableDirecto": false
+        },
+        "repeticionProteinaMismoDia": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_history"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_history",
+            "motivo": "needs_history: requiere historico multi-semana (proteina del mismo dia en semanas previas); sin MemoryStore (Fase 5) no hay historico que leer."
+          },
+          "comparableDirecto": false
+        },
+        "sorpresaEditorial": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_history"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_history",
+            "motivo": "needs_history: requiere historico multi-semana para comparar contra semanas previas; sin MemoryStore (Fase 5) no hay historico que leer."
+          },
+          "comparableDirecto": false
+        },
+        "usoSobrasVidaUtil": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_engine2"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_engine2",
+            "motivo": "needs_engine2: requiere modelar sobras/aprovechamiento a traves de MemoryStore (Fase 5); el walk actual es stateless (R4)."
+          },
+          "comparableDirecto": false
+        },
+        "alternanciaBatch": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_engine2"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_engine2",
+            "motivo": "needs_engine2: requiere modelar cocinado por lotes a traves de MemoryStore (Fase 5); el walk actual es stateless (R4)."
+          },
+          "comparableDirecto": false
+        },
+        "coherenciaCompraPerecederos": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_engine2"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_engine2",
+            "motivo": "needs_engine2: requiere modelar compra/caducidad a traves de MemoryStore (Fase 5); el walk actual es stateless (R4)."
+          },
+          "comparableDirecto": false
+        }
+      }
+    },
+    {
+      "name": "mantenimiento_equilibrado + isSimple (experiencia novato)",
+      "legacyProfile": {
+        "goal": "maintain",
+        "weight": 74,
+        "activity": "moderate",
+        "intolerances": [],
+        "trainingDays": [],
+        "experiencia": "novato"
+      },
+      "engine2Profile": {
+        "trainingDays": [],
+        "intolerances": []
+      },
+      "seed": "baseline-mant-simple18",
+      "submetrics": {
+        "densidadDiaria": {
+          "legacy": {
+            "valor": {
+              "Lunes": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Martes": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Miércoles": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Jueves": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Viernes": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Sábado": {
+                "status": "unknown",
+                "density": null,
+                "classification": null
+              },
+              "Domingo": {
+                "status": "computed",
+                "density": 0,
+                "classification": "ligero"
+              }
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "Lunes": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Martes": {
+                "status": "computed",
+                "density": 3,
+                "classification": "denso"
+              },
+              "Miercoles": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Jueves": {
+                "status": "computed",
+                "density": 2,
+                "classification": "intermedio"
+              },
+              "Viernes": {
+                "status": "computed",
+                "density": 3,
+                "classification": "denso"
+              },
+              "Sabado": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              },
+              "Domingo": {
+                "status": "computed",
+                "density": 1,
+                "classification": "ligero"
+              }
+            },
+            "cobertura": {
+              "legibles": 14,
+              "total": 14
+            },
+            "estado": "completa"
+          },
+          "comparableDirecto": true
+        },
+        "repeticionSalsa": {
+          "legacy": {
+            "valor": {
+              "conteos": {
+                "ajillo": 2,
+                "limon_hierbas": 2,
+                "pimenton_ajo": 2,
+                "vinagreta": 2,
+                "curry_ligero": 1,
+                "mostaza_miel": 1
+              },
+              "repeticionesDestacadas": [],
+              "umbralDestacadaProvisional": 3
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "conteos": {
+                "ajillo": 4,
+                "pimenton_ajo": 4,
+                "curry_ligero": 1,
+                "vinagreta": 2
+              }
+            },
+            "cobertura": {
+              "legibles": 12,
+              "total": 14
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: vocabulario de tupla (S) solo recuperable para origen scaffold via resolveDishComposition; freeform no declara tupla (D-021)."
+          },
+          "comparableDirecto": false
+        },
+        "repeticionTecnica": {
+          "legacy": {
+            "valor": {
+              "conteos": {
+                "plancha": 3,
+                "crudo": 2,
+                "horno": 2,
+                "salteado": 2,
+                "guisado": 1,
+                "revuelto": 1,
+                "tortilla": 1
+              },
+              "repeticionesDestacadas": [
+                {
+                  "value": "plancha",
+                  "count": 3
+                }
+              ],
+              "umbralDestacadaProvisional": 3
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "conteos": {
+                "crudo": 2,
+                "horno": 2,
+                "guisado": 5,
+                "plancha": 2,
+                "revuelto": 1
+              }
+            },
+            "cobertura": {
+              "legibles": 12,
+              "total": 14
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: vocabulario de tupla (cookM) solo recuperable para origen scaffold via resolveDishComposition; freeform no declara tupla (D-021)."
+          },
+          "comparableDirecto": false
+        },
+        "platoCuchara": {
+          "legacy": {
+            "valor": {
+              "count": 3,
+              "ocurrencias": [
+                {
+                  "day": "Miércoles",
+                  "time": "Cena"
+                },
+                {
+                  "day": "Sábado",
+                  "time": "Cena"
+                },
+                {
+                  "day": "Domingo",
+                  "time": "Comida"
+                }
+              ],
+              "umbralDestacadaProvisional": 4
+            },
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": {
+              "count": 5,
+              "ocurrencias": [
+                {
+                  "day": "Martes",
+                  "momento": "comida"
+                },
+                {
+                  "day": "Miercoles",
+                  "momento": "comida"
+                },
+                {
+                  "day": "Jueves",
+                  "momento": "comida"
+                },
+                {
+                  "day": "Viernes",
+                  "momento": "comida"
+                },
+                {
+                  "day": "Domingo",
+                  "momento": "cena"
+                }
+              ]
+            },
+            "cobertura": {
+              "legibles": 12,
+              "total": 14
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: tmpl solo recuperable para origen scaffold via resolveDishComposition; freeform no declara tupla (D-021)."
+          },
+          "comparableDirecto": false
+        },
+        "continuidadEntrenoHidrato": {
+          "legacy": {
+            "valor": null,
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "parcial",
+            "motivo": "derivable_parcial: no hay cenas con fixedRole=\"entreno\" en este plan (gate de dia simetrico, lado-plato/hidrato solo recuperable para origen scaffold)."
+          },
+          "comparableDirecto": false
+        },
+        "domingoReconfortante": {
+          "legacy": {
+            "valor": true,
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "no_observable",
+            "motivo": "no_observable: engine2 no tiene equivalente a day.effectiveMood (patron \"comfort domingo\" del motor viejo); ningun campo de slot/weekArc lo deriva."
+          },
+          "comparableDirecto": false
+        },
+        "diaFacilTrasElaborado": {
+          "legacy": {
+            "valor": [],
+            "status": "computed"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "no_observable",
+            "motivo": "no_observable: engine2 no tiene equivalente a meal.metadata.facilidad; el esquema de Dish (schema.js, 10 campos) no lo declara."
+          },
+          "comparableDirecto": false
+        },
+        "repeticionProteinaMismoDia": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_history"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_history",
+            "motivo": "needs_history: requiere historico multi-semana (proteina del mismo dia en semanas previas); sin MemoryStore (Fase 5) no hay historico que leer."
+          },
+          "comparableDirecto": false
+        },
+        "sorpresaEditorial": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_history"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_history",
+            "motivo": "needs_history: requiere historico multi-semana para comparar contra semanas previas; sin MemoryStore (Fase 5) no hay historico que leer."
+          },
+          "comparableDirecto": false
+        },
+        "usoSobrasVidaUtil": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_engine2"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_engine2",
+            "motivo": "needs_engine2: requiere modelar sobras/aprovechamiento a traves de MemoryStore (Fase 5); el walk actual es stateless (R4)."
+          },
+          "comparableDirecto": false
+        },
+        "alternanciaBatch": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_engine2"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_engine2",
+            "motivo": "needs_engine2: requiere modelar cocinado por lotes a traves de MemoryStore (Fase 5); el walk actual es stateless (R4)."
+          },
+          "comparableDirecto": false
+        },
+        "coherenciaCompraPerecederos": {
+          "legacy": {
+            "valor": null,
+            "status": "needs_engine2"
+          },
+          "engine2": {
+            "valor": null,
+            "cobertura": {
+              "legibles": 0,
+              "total": 0
+            },
+            "estado": "needs_engine2",
+            "motivo": "needs_engine2: requiere modelar compra/caducidad a traves de MemoryStore (Fase 5); el walk actual es stateless (R4)."
+          },
+          "comparableDirecto": false
+        }
+      }
+    }
+  ]
+}

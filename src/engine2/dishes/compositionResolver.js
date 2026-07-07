@@ -19,6 +19,16 @@
 // implementacion interna tiene dos mecanismos (tupla vs FREEFORM_COMBOS)
 // pero el shape de salida es indistinguible para el consumidor salvo por
 // el campo informativo "origen" y la presencia/ausencia de "tupla".
+//
+// UnresolvableOriginError (D-024, F4-P2b-ii, añadido sin cambio de
+// semantica): clase nombrada para el UNICO caso de origen indeterminado
+// (ni tupla scaffold ni entrada freeform) -- antes un Error generico. El
+// mensaje y la condicion de lanzamiento no cambian; el unico cambio es
+// que un consumidor puede distinguir este caso por TIPO (instanceof) en
+// vez de por texto del mensaje. Todo OTRO fallo del resolver (join de
+// density, P_TO_PROTEINTYPE incompleto, mapeo de energyDensity, etc.)
+// sigue siendo Error generico -- indican un bug real de catalogo, no un
+// caso a distinguir por un consumidor tolerante.
 
 import { FREEFORM_COMBOS } from '../../data/FREEFORM_COMBOS.js';
 import { LUNCH_COMBOS_RAW, DINNER_COMBOS_RAW, TRAINING_DINNERS_RAW } from './legacyCombos.data.js';
@@ -58,6 +68,9 @@ export const P_TO_PROTEINTYPE = Object.freeze({
 // Normalizacion LEXICA (freeform declara low/medium/high; el vocabulario
 // de la vista es baja/media/alta). Cambia vocabulario, no significado.
 const ENERGY_DENSITY_LEXICAL = Object.freeze({ low: 'baja', medium: 'media', high: 'alta' });
+
+/** Ver banner del modulo (D-024): unico lanzado cuando dish.id no es tupla scaffold ni tiene entrada freeform. */
+export class UnresolvableOriginError extends Error {}
 
 const freeformById = new Map(FREEFORM_COMBOS.map((combo) => [combo.identity.id, combo]));
 
@@ -196,7 +209,7 @@ export function resolveDishComposition(dish) {
 
   const combo = freeformById.get(dish.id);
   if (!combo) {
-    throw new Error(
+    throw new UnresolvableOriginError(
       `resolveDishComposition: plato "${dish.id}" no es una tupla scaffold y no tiene entrada ` +
       'en FREEFORM_COMBOS (origen indeterminado).'
     );

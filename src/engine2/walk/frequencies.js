@@ -55,13 +55,11 @@
 // RE-LANZA sin capturar: el resolver no se toca, y sus fallos reales no
 // se ocultan.
 
-import { resolveDishComposition } from '../dishes/compositionResolver.js';
+import { resolveDishComposition, UnresolvableOriginError } from '../dishes/compositionResolver.js';
 import { DAYS_ORDER } from '../skeleton/days.js';
 import { DEFAULT_WEEKLY_TARGETS } from '../contracts/weeklyTargets.js';
 
 export const PROTEIN_TARGET_ORDER = Object.freeze(['legumbre', 'pescado']);
-
-const ORIGEN_INDETERMINADO_RE = /origen indeterminado/;
 
 const VISTA_NEUTRAL = Object.freeze({
   proteinType: null,
@@ -70,16 +68,25 @@ const VISTA_NEUTRAL = Object.freeze({
 
 /**
  * Vista de composicion para el paso 4, tolerante a ids no resolubles (ver
- * banner del modulo). Re-lanza cualquier error que NO sea "origen
- * indeterminado" -- un bug real de catalogo no se enmascara.
+ * banner del modulo). Discrimina por TIPO (instanceof UnresolvableOriginError),
+ * no por texto de mensaje -- re-lanza cualquier OTRO error (un bug real de
+ * catalogo no se enmascara). onIrresoluble(dishId) se invoca UNA vez por
+ * sustitucion, para que el llamador (registerConsumption/chooseFrequencyLevel)
+ * pueda narrar la neutralizacion en el decision log (D-024 addendum, riesgo
+ * nombrado: un id corrupto en el catalogo REAL atravesaria como neutral sin
+ * lanzar -- este log es la alarma que lo hace visible).
  * @param {{id: string}} dish
+ * @param {(dishId: string) => void} [onIrresoluble]
  * @returns {object}
  */
-export function resolveFrequencyVista(dish) {
+export function resolveFrequencyVista(dish, onIrresoluble = () => {}) {
   try {
     return resolveDishComposition(dish);
   } catch (err) {
-    if (err instanceof Error && ORIGEN_INDETERMINADO_RE.test(err.message)) return VISTA_NEUTRAL;
+    if (err instanceof UnresolvableOriginError) {
+      onIrresoluble(dish.id);
+      return VISTA_NEUTRAL;
+    }
     throw err;
   }
 }
@@ -105,9 +112,11 @@ function diaAnterior(day) {
 /**
  * Estado local de frecuencias del walk (asiento 5): contadores semanales
  * (legumbre/pescado), dias de ultimo incremento por campo (para la veda,
- * asiento 4) y dias que ya tienen verdura (asiento 3). Recomputable desde
- * las colocaciones del propio paseo -- sin persistencia (MemoryStore no
- * se toca, R4).
+ * asiento 4), dias que ya tienen verdura (asiento 3) e ids que resultaron
+ * irresolubles (D-024 addendum: sustituidos por vista neutral -- narrados
+ * una vez por walk en runWalk.js, ver banner del modulo). Recomputable
+ * desde las colocaciones del propio paseo -- sin persistencia (MemoryStore
+ * no se toca, R4).
  * @returns {object}
  */
 export function createFrequencyState() {
@@ -117,7 +126,18 @@ export function createFrequencyState() {
     contadores[campo] = 0;
     incrementDays[campo] = new Set();
   }
-  return { contadores, incrementDays, diasConVerdura: new Set() };
+  return {
+    contadores, incrementDays, diasConVerdura: new Set(), idsIrresolubles: new Set(),
+  };
+}
+
+/**
+ * Vista por defecto de un dish dado un state: usa el catalogo real, y
+ * cualquier id irresoluble se acumula en state.idsIrresolubles (para la
+ * narracion de una linea por walk en runWalk.js).
+ */
+function vistaPorDefecto(state) {
+  return (dish) => resolveFrequencyVista(dish, (id) => state.idsIrresolubles.add(id));
 }
 
 /**
@@ -126,15 +146,15 @@ export function createFrequencyState() {
  * intencion del paso). Incrementa como maximo un contador semanal
  * (proteinType mutuamente excluyente) y marca el dia como "con verdura"
  * si el plato la satisface. getVista permite testear con vistas
- * sinteticas (mismo patron que filterSurvivors/D-023): default = catalogo
- * real via resolveFrequencyVista.
+ * sinteticas (mismo patron que filterSurvivors/D-023); sin getVista, usa
+ * el catalogo real y acumula ids irresolubles en el propio state.
  * @param {object} state salida de createFrequencyState (mutado in-place)
  * @param {{id: string}} dish
  * @param {string} day
  * @param {(dish: object) => object} [getVista]
  */
-export function registerConsumption(state, dish, day, getVista = resolveFrequencyVista) {
-  const vista = getVista(dish);
+export function registerConsumption(state, dish, day, getVista) {
+  const vista = (getVista || vistaPorDefecto(state))(dish);
   if (PROTEIN_TARGET_ORDER.includes(vista.proteinType)) {
     state.contadores[vista.proteinType] += 1;
     state.incrementDays[vista.proteinType].add(day);
@@ -150,7 +170,7 @@ export function registerConsumption(state, dish, day, getVista = resolveFrequenc
  * @param {(dish: object) => object} [getVista]
  * @returns {object}
  */
-export function initFrequencyState(p1aSlots, getVista = resolveFrequencyVista) {
+export function initFrequencyState(p1aSlots, getVista) {
   const state = createFrequencyState();
   for (const slot of p1aSlots) {
     if (!slot.abierto && slot.dishId) registerConsumption(state, { id: slot.dishId }, slot.day, getVista);
@@ -173,14 +193,16 @@ export function initFrequencyState(p1aSlots, getVista = resolveFrequencyVista) {
  * tiene candidatos (asiento 2: "la primera corta... CON CANDIDATOS
  * DISPONIBLES").
  * getVista permite testear con vistas sinteticas (mismo patron que
- * registerConsumption/D-023): default = catalogo real.
+ * registerConsumption/D-023); sin getVista, usa el catalogo real y
+ * acumula ids irresolubles en el propio state.
  * @param {{day: string, candidatesB: object[], state: object, getVista?: (dish: object) => object}} input
  * @returns {{nivel: object[], causa: string|null, evidencia: string|null}}
  */
 export function chooseFrequencyLevel({
-  day, candidatesB, state, getVista = resolveFrequencyVista,
+  day, candidatesB, state, getVista,
 }) {
-  const vistaPorId = new Map(candidatesB.map((d) => [d.id, getVista(d)]));
+  const resolver = getVista || vistaPorDefecto(state);
+  const vistaPorId = new Map(candidatesB.map((d) => [d.id, resolver(d)]));
   const nivelInferior = (nivel) => candidatesB.filter((d) => !nivel.includes(d)).map((d) => d.id);
 
   if (!state.diasConVerdura.has(day)) {

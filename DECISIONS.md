@@ -1002,3 +1002,66 @@ Formato:
     la suite verde sin modificar ni un `expect` de sesiones anteriores.
 - Decide: Javi (ratificación de sesión 2026-07-07, ejecutada en `feature/f4-p2b-ii-frecuencias`
   sobre `main` post-D-023).
+- **Addendum (mismo PR, previo a autorización de push) — ratificación POST-HOC CON ENMIENDAS de la
+  tolerancia a ids irresolubles (asiento previo: captura por regex de mensaje)**:
+  1. **Discriminación por tipo, no por mensaje**: `compositionResolver.js` gana
+     `export class UnresolvableOriginError extends Error {}` — AÑADIDO DE SUPERFICIE, sin cambio de
+     semántica: el único punto de lanzamiento del caso "origen indeterminado"
+     (`resolveDishComposition`, antes `new Error(...)`) pasa a `new UnresolvableOriginError(...)`,
+     mismo mensaje, misma condición. Verificado que ningún test de `compositionResolver.test.js`
+     dependía del tipo genérico (`r1` solo hace `.toThrow(/id_inventado_sin_mapeo_alguno/)`, regex
+     de mensaje). `frequencies.js` (`resolveFrequencyVista`) discrimina ahora por
+     `instanceof UnresolvableOriginError`, no por `/origen indeterminado/.test(err.message)`.
+  2. **Narración de la neutralización**: `createFrequencyState` gana `idsIrresolubles: new Set()`;
+     `resolveFrequencyVista(dish, onIrresoluble)` invoca el callback una vez por sustitución;
+     `registerConsumption`/`chooseFrequencyLevel` sin `getVista` explícito construyen su propio
+     resolver por defecto atado a `state.idsIrresolubles`. `runWalk.js`, al final del walk (una vez,
+     no por hueco): si `freqState.idsIrresolubles.size > 0`, una entrada `evento:true`,
+     `causa:'paso4_ids_irresolubles'`, evidencia con conteo + ids ordenados. Verificado (`runWalk.
+     frequencies.test.js`, describe "v16"): catálogo 100% sintético (patrón v6-v13) produce
+     EXACTAMENTE 1 entrada de este tipo citando los ids sintéticos; catálogo real produce 0. Cero
+     test preexistente afectado — confirmado con la suite completa VERDE (690 tests) y
+     específicamente: la entrada es `evento:true` (fuera de `rellenos`, no toca `toHaveLength(14)` de
+     v1/v11), causa distinta de toda causa preexistente (sin colisión con `.find` por causa), sin
+     `day`/`momento` (no colisiona con búsquedas por día). El punto 2 de la verificación de Fase 0
+     (`.toContain` tolerante a texto añadido) sigue cubriendo esto: la nueva entrada es aditiva, no
+     reescribe ninguna evidencia existente.
+  3. **Riesgo nombrado + invariante compensatorio**: la tolerancia (capturar `UnresolvableOriginError`
+     y sustituir vista neutral) tiene un riesgo real: un `id` CORRUPTO en el catálogo real (typo,
+     entrada mal generada) atravesaría el paso 4 como neutral — sin cobertura de target ni verdura —
+     EN SILENCIO si no fuera por el punto 2. Invariante compensatorio citado: D-021 verificó en
+     runtime *"241 platos, 178 resuelven como tupla... 63 hacen join limpio... 0 platos sin origen
+     determinable (`neither: 0`)"* — el catálogo real de HOY no tiene ids corruptos, por eso los 417
+     tests base + todos los de esta sesión sobre catálogo real (`loadCatalog()`) producen CERO
+     entradas `paso4_ids_irresolubles` (verificado, punto 2 de este addendum). Si el catálogo
+     cambiara y se colara un id corrupto, la entrada narrada del punto 2 ES la alarma — deja de ser
+     silencio. La tolerancia es, por tanto, aceptable HOY (protege tests, no oculta nada del catálogo
+     real) pero condicionada a que D-021 siga siendo cierto; si `neither` dejara de ser 0, este
+     addendum deja de sostenerse y requiere revisión.
+  4. **Falsables faltantes en el reporte anterior — f6 y f12, mutación dirty→red real sobre el módulo
+     (ausentes en la primera pasada; corregido aquí)**:
+     f6 (`frequencies.js`: condición de verdura mutada a
+     `!diasConVerdura.has(day) && !diasConVerdura.has(diaAnterior(day))` — veda errónea aplicada a
+     verdura — el test "Lunes y Martes... se atiende en AMBOS días" cae: Martes pasa de
+     `frecuencia_verdura_diaria` a `frecuencia_corta_sin_candidato`); f12 (`frequencies.js`: ambas
+     plantillas de evidencia mutadas para omitir `"descartados a nivel inferior: [...]"` — el test de
+     `runWalk.frequencies.test.js` que verifica `.toMatch(/descartados a nivel inferior/)` cae,
+     evidencia recibida sin esa cláusula). Ambas revertidas; `sha256sum` de `frequencies.js`
+     idéntico tras cada reversión (verificado junto con las 8 mutaciones previas + esta ronda: 3
+     mutaciones nuevas — narración, f6, f12 — 11 en total para esta componente).
+  5. **Delta de tripwires 5/34 → 6/35, explicado**: NO es un tripwire constitucional nuevo. Causa:
+     el describe de `weeklyTargets.test.js` para f10 se nombró *"...tripwire de política..."* — la
+     palabra "tripwire" en el NOMBRE del test coincidió con el filtro `-t "tripwire"` que el ritual
+     usa para correr los 4 guardianes de CI (`tripwire-no-score`, `tripwire-eval-isolation`,
+     `tripwire-engine2-engine-isolation`, `tripwire-platetype-enum`) — vitest filtra por substring de
+     nombre de test/describe, no por archivo. Ningún guardián nuevo se añadió. Corregido: renombrado
+     a *"guardarrail de política"* (comentario explícito en el archivo citando por qué se evita la
+     palabra) — el conteo vuelve a 5 archivos / 34 tests tras el rename, verificado.
+  - Suite tras el addendum completo: `npx vitest run` → 62 archivos / 690 tests VERDE (688 + 2 de
+    "v16: narración de neutralización"). `-t "tripwire"` → 5 archivos / 34 tests VERDE (delta
+    explicado y corregido, punto 5). `eslint` sobre los 6 archivos tocados → 0 problemas.
+  - Regla de proceso ratificada por Javi, efectiva desde ahora (no solo para esta sesión):
+    **"Verificación limpia no autoriza implementación."** Un análisis que confirma "cero efecto" es
+    INPUT para que Javi autorice, nunca sustituto de esa autorización explícita. Guardado como
+    memoria de feedback para sesiones futuras.
+- Decide: Javi (ratificación POST-HOC CON ENMIENDAS de sesión 2026-07-07, mismo PR/rama).

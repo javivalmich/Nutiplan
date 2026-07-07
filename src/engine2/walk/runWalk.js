@@ -353,6 +353,21 @@ export function runWalk(input) {
     }
   }
 
+  // Paso 4 (frecuencias, D-024 addendum): narracion de la neutralizacion,
+  // UNA VEZ por walk (no por hueco) -- si algun id resulto irresoluble
+  // (tolerancia de resolveFrequencyVista), se registra aqui con el conteo
+  // y los ids, para que un id corrupto de catalogo real (riesgo nombrado
+  // en D-024) sea visible en vez de deslizarse en silencio como neutral.
+  if (freqState.idsIrresolubles.size > 0) {
+    const ids = [...freqState.idsIrresolubles].sort();
+    pushEvent(
+      undefined,
+      'paso4_ids_irresolubles',
+      `${ids.length} id(s) no resolubles por CompositionResolver (origen indeterminado) fueron tratados `
+        + `como vista neutral (sin cobertura de target ni verdura) por el paso 4: [${ids.join(', ')}]`,
+    );
+  }
+
   const orderedSlots = DAYS_ORDER.flatMap((day) => MOMENTOS.map((momento) => slots.get(slotKey(day, momento))));
 
   return { slots: orderedSlots, decisionLog };

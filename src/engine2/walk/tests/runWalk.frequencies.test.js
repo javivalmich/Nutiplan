@@ -114,3 +114,41 @@ describe('runWalk - v15: frecuencias (P2b-ii, paso 4 del walk, D-024)', () => {
     expect(intervenido).toBe(true);
   });
 });
+
+describe('runWalk - v16: narracion de neutralizacion (D-024 addendum) -- ids irresolubles del paso 4, una entrada por walk', () => {
+  it('catalogo 100% sintetico (v6-style, ids no resolubles) -> UNA entrada "paso4_ids_irresolubles", conteo + ids, evento (no cuenta como relleno)', () => {
+    const catalog = [
+      { id: 'anclaX', rol: 'ancla', momento: ['comida'], energiaCocina: 'medio' },
+      ...Array.from({ length: 20 }, (_, i) => ({
+        id: `rotSintetico${i}`, rol: 'rotativo', momento: ['comida', 'cena'], tempFeel: 'caliente', plateType: `tipo${i % 5}`, energiaCocina: 'medio',
+      })),
+    ];
+    const weekArc = {
+      beats: DAYS_ORDER.map((day) => ({ day, density: 'medio', slotRole: day === 'Lunes' ? 'ancla' : 'rotativo' })),
+      anchors: [{ anchorId: 'anclaX', cookDay: 'Lunes', leftoverDays: [] }],
+    };
+    const { decisionLog } = runWalk({ weekArc, catalog, seed: 'v16-narracion' });
+
+    const entradas = decisionLog.filter((d) => d.causa === 'paso4_ids_irresolubles');
+    expect(entradas).toHaveLength(1); // UNA por walk, no por hueco
+    expect(entradas[0].evento).toBe(true); // no es un relleno
+    expect(entradas[0].evidencia).toMatch(/^\d+ id\(s\)/); // conteo
+    expect(entradas[0].evidencia).toContain('anclaX'); // el ancla sintetica tambien es irresoluble y se cuenta
+    expect(entradas[0].evidencia).toContain('rotSintetico0'); // al menos un rotativo sintetico citado por id
+
+    // Confirma que NINGUN test preexistente se ve afectado: la nueva
+    // entrada es evento:true (fuera de "rellenos"), y no colisiona con
+    // ningun causa/day/momento usado por aserciones .find() existentes
+    // (causa distinta de todas las conocidas: veto_universo_reducido,
+    // capricho_degradado_a_rotativo, colision_sin_hueco, seleccion_*).
+    const rellenos = decisionLog.filter((d) => !d.evento);
+    expect(rellenos).toHaveLength(14);
+  });
+
+  it('catalogo real (sin ids sinteticos) -> CERO entradas "paso4_ids_irresolubles"', () => {
+    const catalog = loadCatalog();
+    const { weekArc } = buildWeekArc({ profile: { trainingDays: [] }, seed: 0, strategy: 'x' });
+    const { decisionLog } = runWalk({ weekArc, catalog, seed: 0 });
+    expect(decisionLog.filter((d) => d.causa === 'paso4_ids_irresolubles')).toHaveLength(0);
+  });
+});

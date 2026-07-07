@@ -1112,3 +1112,32 @@ Formato:
   estructuralmente (engine2: 14 huecos fijos, sin
   desayuno/almuerzo/merienda).
 - Decide: Javi (ratificación POST-HOC CON ENMIENDAS de sesión 2026-07-07, mismo PR/rama).
+
+## D-026 — [2026-07-07] D-020 queda satisfecho: medición comparativa ejecutada (F4-P2c-D2)
+- Decisión/Hallazgo: D-020 queda satisfecho. La medición comparativa
+  engine2 vs baseline legacy, bajo el contrato de terna de D-025, se
+  ejecutó sobre las 9 fixtures del baseline aprobado
+  (`src/engine/tests/baselineFixtures.js`) mediante la estrategia de
+  comparación E1 (ratificada por Javi, sesión 2026-07-07): por cada
+  fixture legacy se construyó la entrada engine2 análoga donde el
+  concepto existe (`trainingDays`, `intolerances`); el resto del
+  profile legacy (`goal`, `weight`, `activity`, `hambre`,
+  `experiencia`) se declaró SIN_TRADUCCION, sin aproximaciones
+  forzadas.
+- Artefacto: `scripts/phaseP2c/output/comparacion-D2.{json,md}`,
+  introducido en el commit `02c30c77e8dc082e4f9d11c7226e5344dd9a3ef9`
+  (junto con `scripts/phaseP2c/compareD2.js` y
+  `scripts/phaseP2c/compareD2.test.js`).
+- Contrato de reporte: el de D-025 (terna valor/cobertura/estado por
+  submétrica). No se re-narra aquí; este asiento cita, no repite.
+- Controles falsables verificados en `compareD2.test.js`:
+  reproducibilidad por seed (misma seed → mismo artefacto; seed
+  mutada → artefacto distinto), honestidad de presentación
+  (no_observable/needs_history/needs_engine2 nunca lleva valor
+  numérico engine2, ni siquiera 0), y sha256 de
+  `humanScoreAdapter.js` sin cambios respecto a D1.
+- Fuera de alcance de este PR (por instrucción explícita, sin roadmap
+  vigente en el repo — ver Fork F1, sesión P2c-D2): la deuda de
+  control automático que impida importar el adaptador desde el motor
+  ya quedó registrada en D-025 y no se duplica aquí.
+- Decide: Javi.

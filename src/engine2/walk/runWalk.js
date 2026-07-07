@@ -1,5 +1,5 @@
 // Seleccion del walk — Fase 4, Componentes P1b + P2b-i (vetos duros,
-// D-022). Entrada: {weekArc, catalog, seed, memoryStore, profile}. Salida:
+// D-022) + P2b-ii (frecuencias, D-024). Entrada: {weekArc, catalog, seed, memoryStore, profile}. Salida:
 // {slots, decisionLog}. Rellena los huecos que
 // expandWeekArc (P1a, NO se toca aqui) deja abiertos: rotativo y capricho.
 // Prohibido score/ranking (CLAUDE.md invariante 1): solo pools por rol,
@@ -67,9 +67,21 @@
 //         regla de imposibilidad que A, aplicada SOBRE el conjunto
 //         post-A (por eso A tiene prioridad sobre B: la restriccion de A
 //         ya esta fijada cuando B evalua).
-//       - Paso 6: 1 candidato final -> directo, sin RNG. >1 -> RNG
-//         (stream "::walk::select"). El RNG NUNCA ve el pool pre-filtros:
-//         solo los candidatos que sobreviven pool+no-repeticion+A+B.
+//       - Paso 4 (frecuencias, D-024/frequencies.js): sobre candidatesB
+//         (post A/B), particion en niveles con fallback -- nunca suma.
+//         Verdura (sub-regla diaria, PREVIA a los contadores semanales):
+//         si el dia no tiene verdura y hay candidatos que la cubren, nivel
+//         preferente = esos. Si no, contadores semanales en orden
+//         declarado (legumbre->pescado): la primera frecuencia corta
+//         (contador < target), sin veda (dia de ultimo incremento = hoy o
+//         ayer) Y con candidatos que la cubran, es el nivel preferente.
+//         Ninguna corta con candidatos -> fallback HONESTO al conjunto
+//         completo, causa "frecuencia_corta_sin_candidato". Ninguna corta
+//         en absoluto -> el paso no interviene (sin entrada de log).
+//       - Paso 6: 1 candidato final (del nivel de paso 4) -> directo, sin
+//         RNG. >1 -> RNG (stream "::walk::select"). El RNG NUNCA ve el
+//         pool pre-filtros: solo los candidatos que sobreviven
+//         pool+no-repeticion+A+B+paso4.
 //
 // energiaCocina (D-018/D-019): no participa en ninguna decision de
 // seleccion; se registra en la entrada del log SOLO para los platos
@@ -84,6 +96,7 @@ import { DAYS_ORDER } from '../skeleton/days.js';
 import { mulberry32, seedFromString } from '../skeleton/rng.js';
 import { MOMENTOS } from '../dishes/schema.js';
 import { computeVetoUniverse } from './vetoes.js';
+import { initFrequencyState, registerConsumption, chooseFrequencyLevel } from './frequencies.js';
 
 function selectRng(seed) {
   return mulberry32(seedFromString(`${seed}::walk::select`));
@@ -163,6 +176,10 @@ export function runWalk(input) {
 
   const intolerancias = profile?.intolerances ?? [];
   const { vetoedIds, conteo: conteoVetos, activo: vetoActivo } = computeVetoUniverse(catalog, intolerancias);
+
+  // Paso 4 (frecuencias, D-024): el estado arranca desde lo que P1a ya
+  // coloco (ancla + sobras tambien son consumo, asiento 5).
+  const freqState = initFrequencyState(p1aSlots);
 
   function pushFill(day, momento, dishId, causa, evidencia, alternativasDescartadas) {
     const key = slotKey(day, momento);
@@ -259,6 +276,7 @@ export function runWalk(input) {
       }
 
       pushFill(caprichoDay, momento, chosen.id, causaDish, `${evidenciaDish}; ${evidenciaMomento}`, alternativasDish);
+      registerConsumption(freqState, chosen, caprichoDay); // asiento 5: capricho tambien es consumo
     }
   }
 
@@ -310,24 +328,44 @@ export function runWalk(input) {
         }
       }
 
+      // Paso 4 (frecuencias, D-024): opera sobre candidatesB (post A/B),
+      // ANTES del desempate final -- el RNG solo ve el nivel ganador.
+      const { nivel: candidatesFinal, causa: causaFreq, evidencia: notaFreq } = chooseFrequencyLevel({ day, candidatesB, state: freqState });
+
       let chosen;
       let causa;
       let alternativas;
       let notaRng = '';
-      if (candidatesB.length === 1) {
-        [chosen] = candidatesB;
+      if (candidatesFinal.length === 1) {
+        [chosen] = candidatesFinal;
         causa = 'seleccion_rotativo_candidato_unico';
         alternativas = [];
       } else {
-        const idx = Math.floor(rng() * candidatesB.length);
-        chosen = candidatesB[idx];
+        const idx = Math.floor(rng() * candidatesFinal.length);
+        chosen = candidatesFinal[idx];
         causa = 'seleccion_rotativo_desempate_rng';
-        alternativas = candidatesB.filter((d) => d.id !== chosen.id).map((d) => d.id);
-        notaRng = `; RNG namespace "::walk::select" -> indice ${idx} de ${candidatesB.length} candidatos equivalentes tras pool+A+B`;
+        alternativas = candidatesFinal.filter((d) => d.id !== chosen.id).map((d) => d.id);
+        notaRng = `; RNG namespace "::walk::select" -> indice ${idx} de ${candidatesFinal.length} candidatos equivalentes tras pool+A+B${causaFreq ? '+paso4' : ''}`;
       }
 
-      pushFill(day, momento, chosen.id, causa, `${notaA}; ${notaB}${notaRng}`, alternativas);
+      pushFill(day, momento, chosen.id, causa, `${notaA}; ${notaB}${notaFreq ? `; ${notaFreq}` : ''}${notaRng}`, alternativas);
+      registerConsumption(freqState, chosen, day);
     }
+  }
+
+  // Paso 4 (frecuencias, D-024 addendum): narracion de la neutralizacion,
+  // UNA VEZ por walk (no por hueco) -- si algun id resulto irresoluble
+  // (tolerancia de resolveFrequencyVista), se registra aqui con el conteo
+  // y los ids, para que un id corrupto de catalogo real (riesgo nombrado
+  // en D-024) sea visible en vez de deslizarse en silencio como neutral.
+  if (freqState.idsIrresolubles.size > 0) {
+    const ids = [...freqState.idsIrresolubles].sort();
+    pushEvent(
+      undefined,
+      'paso4_ids_irresolubles',
+      `${ids.length} id(s) no resolubles por CompositionResolver (origen indeterminado) fueron tratados `
+        + `como vista neutral (sin cobertura de target ni verdura) por el paso 4: [${ids.join(', ')}]`,
+    );
   }
 
   const orderedSlots = DAYS_ORDER.flatMap((day) => MOMENTOS.map((momento) => slots.get(slotKey(day, momento))));

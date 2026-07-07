@@ -886,3 +886,182 @@ Formato:
   - Autorización: con las 2 verificaciones resueltas, Javi autoriza push de la rama
     `feature/f4-p2b-i-bis-veto-ancla` y apertura de PR. Sin merge — revisión de diff y merge quedan
     en manos de Javi.
+
+## D-024 — [2026-07-07] Fase 4, Componente P2b-ii (paso 4 del walk): frecuencias, prioriza sin sumar
+- Decisión/Hallazgo: Fase 0 de esta sesión (verificación de superficie, read-only) confirmó sin
+  contradicción: (a) la cascada de `runWalk.js` es pool base → preferencia A → preferencia B →
+  desempate RNG (`runWalk.js:274-333` en el estado pre-PR), punto de inserción del paso 4 entre B y
+  el RNG; (b) `ejesVerdura`/`verdura.estado` (`compositionResolver.js:158,181,225-233`) — scaffold
+  `{estado:'conocida',ejes:[...]}`, freeform `{estado:'desconocida'}`, `ejesVerdura` lanza si
+  `estado!=='conocida'`; (c) `DEFAULT_WEEKLY_TARGETS` = `{pescado:2,legumbre:2,verduraDiaria:1}`
+  (`weeklyTargets.js:32-36`), archivo declarado *"sin consumidor en P0 por diseño"*. Javi ratifica
+  seis asientos:
+  1. **Mecanismo**: partición en niveles con fallback. Nivel preferente = supervivientes de A/B que
+     cubren la frecuencia atendida; si no-vacío, la selección ocurre solo dentro de él; si vacío,
+     conjunto completo con causa `frecuencia_corta_sin_candidato`. El RNG desempata solo dentro del
+     nivel ganador (invariante constitucional intacto: partición booleana, nunca suma).
+  2. **Concurrencia**: el paso atiende UNA frecuencia por hueco — la primera corta de la lista
+     declarada con candidatos disponibles. Cita literal: *"Orden de precedencia vigente para el
+     catálogo y objetivos actuales: legumbre ≻ pescado."* (Evidencia: barrido F1 de 1.200
+     combinaciones, legumbre nunca supera 2 de forma natural.) Contar cobertura de múltiples cortas
+     por plato = sumar = prohibido.
+  3. **Verdura**: sub-regla diaria PREVIA a los contadores semanales — si el día no tiene verdura y
+     hay candidatos que la cubren (`estado:'conocida'`, ejes no vacíos), ese es el nivel preferente.
+     Infraconteo declarado: freeform (`'desconocida'`) NUNCA satisface el predicado — sesgo
+     conservador, se prioriza de más, nunca de menos; el paso ramifica sobre `estado` y JAMÁS invoca
+     `ejesVerdura` sobre `'desconocida'` (el throw del resolver es contrato, no obstáculo).
+     Corrección futura: anotación editorial (sesión de ingesta ya en cola desde D-022/D-023).
+  4. **Activación y veda**: una frecuencia semanal "va corta" si su contador < target, evaluado en
+     cada hueco. Veda de un día por EVENTO de contador: el estado registra los días en que cada
+     contador se incrementó (por CUALQUIER vía: ancla, sobra, capricho o selección libre); la veda
+     está activa si ese día es hoy o el día anterior, y el paso 4 no atiende esa frecuencia mientras
+     dure. Verdura queda EXENTA de la veda (predicado diario: atenderla a diario es su trabajo).
+  5. **Contador**: consumo, no cocinado — incrementa una vez por colocación consumida, venga de
+     ancla, sobra, capricho o selección libre. Estado local del walk, recomputable desde las
+     colocaciones del propio paseo, sin persistencia (R4 intacto). Un plato incrementa como máximo
+     un contador semanal (`proteinType` mutuamente excluyente).
+  6. **Targets ratificados**: `DEFAULT_WEEKLY_TARGETS = {pescado:3, legumbre:3, verduraDiaria:1}`.
+     Semántica: SUELOS, no cuotas ni techos. Pescado 3 por AESAN (coincide con el cap legacy por
+     razón propia, no por herencia). Legumbre→4 (AESAN) queda como pregunta ABIERTA de F5, NO como
+     target actual (el universo real no la produce hoy: verificado, ninguna legumbre real supera 3).
+  - **STOP y resolución previa a implementar (contradicción encontrada, no en Fase 0 sino al mapear
+    el punto de inserción contra el catálogo de tests existente)**: `resolveDishComposition` es la
+    ÚNICA fuente de `proteinType`/`verdura` (no hay atajo, no es campo crudo del schema) y lanza
+    "origen indeterminado" sobre cualquier `id` no resoluble; `runWalk.test.js` v6-v13 usan ids
+    sintéticos (`rot()`/`genRotativos()`/`anchorEverythingExcept()` → `anchorFillN`) que NO resuelven
+    — con contadores en 0 al arrancar, el paso 4 habría lanzado antes de llegar a la aserción en la
+    mayoría del archivo (confirmado empíricamente: `resolveDishComposition({id:'rot0'})` y
+    `({id:'anchorFillN'})` lanzan). Javi pidió verificación en tres puntos antes de decidir:
+    1. **Inercia de selección**: tupla neutral diseñada — `{tmpl,P:'pollo',C,V:null,V2:null,S,cookM}`
+       → `P_TO_PROTEINTYPE.pollo==='ave'` (`compositionResolver.js:39`, fuera de
+       `{legumbre,pescado}`) y `ejes=[V,V2].filter(v=>v!==null)===[]` (`compositionResolver.js:158`,
+       no satisface verdura) → confirmado por citas: bajo los asientos 1-3, un pool 100%-neutral cae
+       SIEMPRE a fallback honesto (f2) en todo hueco de v6-v13 — cero efecto sobre qué plato gana.
+    2. **Sensibilidad de log**: enumeración exhaustiva de `toHaveLength`/igualdad estricta sobre
+       decisionLog en `runWalk.test.js` (líneas 75/99/130/139/362/430/492 en el estado pre-PR) —
+       ninguna se rompe si el paso 4 se pliega dentro de la MISMA entrada de relleno existente (no
+       entradas nuevas); cero uso de `.evidencia).toBe(...)` o `.causa).toBe(...)` sobre las causas
+       propias del bucle genérico. Cero igualdades estrictas en riesgo.
+    3. **Colisiones**: `comboIdentityKey` de la tupla neutral (`["caliente_clasico","pollo","arroz",
+       null,null,null,"guisado"]`) verificado contra los 241 platos reales (`dishes.json`) — sin
+       colisión.
+    - Resolución (ratificada, cero igualdades estrictas encontradas → nada que subir): la resolución
+      de composición se envuelve en captura DENTRO de `frequencies.js` únicamente (el resolver no se
+      toca); un `id` no resoluble ("origen indeterminado", único mensaje capturado — cualquier OTRO
+      error del resolver se re-lanza sin capturar, un bug real de catálogo no se enmascara) se trata
+      como la vista neutral verificada arriba. Confirmado en runtime: los 417 tests pre-existentes de
+      `src/engine2` siguieron VERDES sin modificar ni un test tras integrar el paso 4.
+  - **Implementación**: `src/engine2/walk/frequencies.js` (módulo nuevo). `resolveFrequencyVista`
+    (captura tolerante, ver arriba), `satisfaceVerdura` (lee `estado` directo, nunca invoca
+    `ejesVerdura`), `createFrequencyState`/`registerConsumption`/`initFrequencyState` (estado
+    recomputable: contadores, días de incremento por campo, días con verdura), `chooseFrequencyLevel`
+    (núcleo puro de la cascada, `getVista` inyectable para tests — mismo patrón que
+    `filterSurvivors`/D-023). `runWalk.js`: `initFrequencyState(p1aSlots)` tras calcular `usedIds`;
+    `registerConsumption` tras la colocación del capricho Y tras cada selección genérica;
+    `chooseFrequencyLevel` entre `candidatesB` (fin de B) y la selección final — el RNG solo ve
+    `candidatesFinal` (el nivel). `weeklyTargets.js`: valores actualizados a `{pescado:3,legumbre:3,
+    verduraDiaria:1}`, docstring corregido (ya no "sin consumidor": paso 4 es su primer consumidor).
+- Evidencia:
+  - Falsables demostrados ROJO→revert→VERDE con mutación deliberada sobre el módulo real en
+    construcción (`sha256sum` de `frequencies.js`/`runWalk.js`/`weeklyTargets.js` idéntico
+    antes/después de CADA ciclo — `1c50003f...`/`a9b05466...`/`744d43e1...`):
+    f1+f3 (ignorar `nivel`, RNG sobre `candidatesB` completo en `runWalk.js` → el neutro sin target
+    ni verdura gana en el fixture real de `runWalk.frequencies.test.js`); f2 (fallback devuelve
+    `nivel:[]` en vez de `candidatesB` → cae la aserción de conjunto completo); f4 (orden
+    `['pescado','legumbre']` invertido → legumbre deja de atenderse primero, 2 tests caen); f5
+    (`vedado=false` siempre → ambas vías de incremento, sobra/ancla Y selección propia, dejan de
+    vedar el día siguiente); f7 (sub-regla de verdura desactivada → legumbre gana en vez de verdura
+    pese a evaluarse primero por asiento); f8 (`ejesVerdura(vista)` en vez de leer `estado` → lanza
+    literalmente sobre `'desconocida'`, 2 tests caen con el mismo mensaje que el resolver real); f9
+    (`initFrequencyState` deduplica por `dishId`, "cocinado" en vez de "consumo" → 3 incrementos
+    esperados bajan a 1); f10 (`weeklyTargets.js` revertido a `{pescado:2,legumbre:2}` → tripwire
+    literal cae). Las 8 mutaciones revertidas una por una; checksums idénticos tras cada reversión.
+  - Suite dirigida: `npx vitest run src/engine2` → 34 archivos / 447 tests VERDE (417 base + 24 en
+    `frequencies.test.js` + 5 en `runWalk.frequencies.test.js` + 1 tripwire en `weeklyTargets.test.js`).
+    Suite completa: `npx vitest run` → 62 archivos / 688 tests VERDE. Tripwires (`-t "tripwire"`) → 6
+    archivos / 35 tests VERDE. `eslint` sobre los 6 archivos tocados/creados → 0 problemas.
+  - `git diff --stat origin/main -- src/engine src/engine2/dishes src/engine2/memory
+    src/engine2/skeleton src/engine2/walk/expandWeekArc.js src/engine2/walk/vetoes.js scripts` →
+    vacío (resolver, F3, ancla/veto del walk, motor viejo, scripts intactos — ninguna ruta prohibida
+    tocada). `sha256sum scripts/phaseB2/output/dishes.json` idéntico (`a8fe0abb...`).
+  - Grep manual de `score|rank(ing)?|top-?N` sobre `frequencies.js` → limpio (confirmado también por
+    el tripwire automático `tripwire-no-score.test.js`, que escanea `src/engine2/` recursivo sin lista
+    manual); grep de imports `.../engine/` o `.../eval/` sobre `frequencies.js`/`runWalk.js` → limpio.
+  - Fixtures reales localizadas dinámicamente (nunca ids hardcodeados) vía `loadCatalog()` +
+    `resolveDishComposition`: 18 platos `proteinType==='legumbre'` con `momento` incluye `'comida'`;
+    plato neutro sin verdura (`["pasta","huevo","pasta",null,null,"ajillo","revuelto"]`) — único
+    hallado en el catálogo real sin ejes de verdura. Verificado por barrido: NINGÚN plato real de
+    legumbre/pescado carece de verdura — los tests de la veda a nivel de mecanismo puro (f5) usan
+    vistas sintéticas para aislar el layer semanal de la sub-regla de verdura; el nivel de
+    integración (f3/f12) usa el catálogo real aceptando que la narración puede ser
+    `frecuencia_verdura_diaria` en vez de `frecuencia_semanal_atendida` cuando ambas coinciden — la
+    propiedad probada (RNG restringido al nivel, narrabilidad) es válida en cualquiera de los dos
+    casos.
+  - Cero aserciones preexistentes tocadas (v1-v14 de `runWalk.test.js`, todo `expandWeekArc.test.js`,
+    todo `buildWeekArc.test.js`/`buildWeekArc.vetoAncla.test.js`, `vetoes.test.js`) — confirmado por
+    la suite verde sin modificar ni un `expect` de sesiones anteriores.
+- Decide: Javi (ratificación de sesión 2026-07-07, ejecutada en `feature/f4-p2b-ii-frecuencias`
+  sobre `main` post-D-023).
+- **Addendum (mismo PR, previo a autorización de push) — ratificación POST-HOC CON ENMIENDAS de la
+  tolerancia a ids irresolubles (asiento previo: captura por regex de mensaje)**:
+  1. **Discriminación por tipo, no por mensaje**: `compositionResolver.js` gana
+     `export class UnresolvableOriginError extends Error {}` — AÑADIDO DE SUPERFICIE, sin cambio de
+     semántica: el único punto de lanzamiento del caso "origen indeterminado"
+     (`resolveDishComposition`, antes `new Error(...)`) pasa a `new UnresolvableOriginError(...)`,
+     mismo mensaje, misma condición. Verificado que ningún test de `compositionResolver.test.js`
+     dependía del tipo genérico (`r1` solo hace `.toThrow(/id_inventado_sin_mapeo_alguno/)`, regex
+     de mensaje). `frequencies.js` (`resolveFrequencyVista`) discrimina ahora por
+     `instanceof UnresolvableOriginError`, no por `/origen indeterminado/.test(err.message)`.
+  2. **Narración de la neutralización**: `createFrequencyState` gana `idsIrresolubles: new Set()`;
+     `resolveFrequencyVista(dish, onIrresoluble)` invoca el callback una vez por sustitución;
+     `registerConsumption`/`chooseFrequencyLevel` sin `getVista` explícito construyen su propio
+     resolver por defecto atado a `state.idsIrresolubles`. `runWalk.js`, al final del walk (una vez,
+     no por hueco): si `freqState.idsIrresolubles.size > 0`, una entrada `evento:true`,
+     `causa:'paso4_ids_irresolubles'`, evidencia con conteo + ids ordenados. Verificado (`runWalk.
+     frequencies.test.js`, describe "v16"): catálogo 100% sintético (patrón v6-v13) produce
+     EXACTAMENTE 1 entrada de este tipo citando los ids sintéticos; catálogo real produce 0. Cero
+     test preexistente afectado — confirmado con la suite completa VERDE (690 tests) y
+     específicamente: la entrada es `evento:true` (fuera de `rellenos`, no toca `toHaveLength(14)` de
+     v1/v11), causa distinta de toda causa preexistente (sin colisión con `.find` por causa), sin
+     `day`/`momento` (no colisiona con búsquedas por día). El punto 2 de la verificación de Fase 0
+     (`.toContain` tolerante a texto añadido) sigue cubriendo esto: la nueva entrada es aditiva, no
+     reescribe ninguna evidencia existente.
+  3. **Riesgo nombrado + invariante compensatorio**: la tolerancia (capturar `UnresolvableOriginError`
+     y sustituir vista neutral) tiene un riesgo real: un `id` CORRUPTO en el catálogo real (typo,
+     entrada mal generada) atravesaría el paso 4 como neutral — sin cobertura de target ni verdura —
+     EN SILENCIO si no fuera por el punto 2. Invariante compensatorio citado: D-021 verificó en
+     runtime *"241 platos, 178 resuelven como tupla... 63 hacen join limpio... 0 platos sin origen
+     determinable (`neither: 0`)"* — el catálogo real de HOY no tiene ids corruptos, por eso los 417
+     tests base + todos los de esta sesión sobre catálogo real (`loadCatalog()`) producen CERO
+     entradas `paso4_ids_irresolubles` (verificado, punto 2 de este addendum). Si el catálogo
+     cambiara y se colara un id corrupto, la entrada narrada del punto 2 ES la alarma — deja de ser
+     silencio. La tolerancia es, por tanto, aceptable HOY (protege tests, no oculta nada del catálogo
+     real) pero condicionada a que D-021 siga siendo cierto; si `neither` dejara de ser 0, este
+     addendum deja de sostenerse y requiere revisión.
+  4. **Falsables faltantes en el reporte anterior — f6 y f12, mutación dirty→red real sobre el módulo
+     (ausentes en la primera pasada; corregido aquí)**:
+     f6 (`frequencies.js`: condición de verdura mutada a
+     `!diasConVerdura.has(day) && !diasConVerdura.has(diaAnterior(day))` — veda errónea aplicada a
+     verdura — el test "Lunes y Martes... se atiende en AMBOS días" cae: Martes pasa de
+     `frecuencia_verdura_diaria` a `frecuencia_corta_sin_candidato`); f12 (`frequencies.js`: ambas
+     plantillas de evidencia mutadas para omitir `"descartados a nivel inferior: [...]"` — el test de
+     `runWalk.frequencies.test.js` que verifica `.toMatch(/descartados a nivel inferior/)` cae,
+     evidencia recibida sin esa cláusula). Ambas revertidas; `sha256sum` de `frequencies.js`
+     idéntico tras cada reversión (verificado junto con las 8 mutaciones previas + esta ronda: 3
+     mutaciones nuevas — narración, f6, f12 — 11 en total para esta componente).
+  5. **Delta de tripwires 5/34 → 6/35, explicado**: NO es un tripwire constitucional nuevo. Causa:
+     el describe de `weeklyTargets.test.js` para f10 se nombró *"...tripwire de política..."* — la
+     palabra "tripwire" en el NOMBRE del test coincidió con el filtro `-t "tripwire"` que el ritual
+     usa para correr los 4 guardianes de CI (`tripwire-no-score`, `tripwire-eval-isolation`,
+     `tripwire-engine2-engine-isolation`, `tripwire-platetype-enum`) — vitest filtra por substring de
+     nombre de test/describe, no por archivo. Ningún guardián nuevo se añadió. Corregido: renombrado
+     a *"guardarrail de política"* (comentario explícito en el archivo citando por qué se evita la
+     palabra) — el conteo vuelve a 5 archivos / 34 tests tras el rename, verificado.
+  - Suite tras el addendum completo: `npx vitest run` → 62 archivos / 690 tests VERDE (688 + 2 de
+    "v16: narración de neutralización"). `-t "tripwire"` → 5 archivos / 34 tests VERDE (delta
+    explicado y corregido, punto 5). `eslint` sobre los 6 archivos tocados → 0 problemas.
+  - Regla de proceso ratificada por Javi, efectiva desde ahora (no solo para esta sesión):
+    **"Verificación limpia no autoriza implementación."** Un análisis que confirma "cero efecto" es
+    INPUT para que Javi autorice, nunca sustituto de esa autorización explícita. Guardado como
+    memoria de feedback para sesiones futuras.
+- Decide: Javi (ratificación POST-HOC CON ENMIENDAS de sesión 2026-07-07, mismo PR/rama).

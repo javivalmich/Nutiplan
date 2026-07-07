@@ -26,3 +26,16 @@ describe('WeeklyTargets — v2: el default cumple el shape declarado', () => {
     expect(Object.keys(DEFAULT_WEEKLY_TARGETS).sort()).toEqual([...WEEKLY_TARGETS_FIELDS].sort());
   });
 });
+
+// f10 (D-024, F4-P2b-ii): guardarrail de politica -- valores LITERALES
+// ratificados. Solo este test se toca si la politica cambia (p.ej. la
+// pregunta abierta de F5 sobre legumbre->4 se resuelve). NO es uno de los
+// tripwires constitucionales de CI (no-score/eval-isolation/
+// engine-isolation/platetype-enum) -- deliberadamente sin la palabra
+// "tripwire" en el nombre para no colisionar con el filtro
+// `-t "tripwire"` que el ritual usa para verificar esos 4 guardianes.
+describe('WeeklyTargets — f10: guardarrail de politica (D-024) — valores ratificados literales', () => {
+  it('DEFAULT_WEEKLY_TARGETS === {pescado:3, legumbre:3, verduraDiaria:1}', () => {
+    expect(DEFAULT_WEEKLY_TARGETS).toEqual({ pescado: 3, legumbre: 3, verduraDiaria: 1 });
+  });
+});

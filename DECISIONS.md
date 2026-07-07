@@ -1156,3 +1156,83 @@ Formato:
 - Evidencia: comparacion-D2.{md,json} (HEAD a62c935); lectura
   interpretativa en scripts/phaseP2c/output/insumo-cierre-F4.md.
 - Decide: Javi.
+
+## D-028 — [2026-07-08] Contrato de consumo de composición confirmada + secuencia de la cadena editorial (enmienda a D-021)
+- Decisión/Hallazgo: se fija el contrato que gobierna cómo el motor consume gluten/lactosa/verdura
+  cuando existe confirmación humana del cocinero, y se corrige el orden de trabajo de la cadena
+  editorial. Nace de un D0 read-only (EDITORIAL-D0) que demostró que el material de anotación
+  existente (Anotacion_cocinero_242_v4.xlsx) no tiene consumidor en el motor: aunque el cocinero
+  anote alérgenos, ninguna ruta de código los persiste, y compositionResolver fija "desconocida"
+  incondicional para scaffold. Recoger confirmaciones sin consumidor es coste humano al vacío.
+
+  PRINCIPIO DE SECUENCIA (registro como invariante de la fase editorial):
+  la cadena correcta es contrato de consumo -> generador reproducible -> sesión editorial ->
+  ingesta -> motor. El trabajo humano de anotación NO se solicita hasta que existe un contrato
+  que define qué campos se consumen, cómo se representan y qué garantías exige. Unifica dos
+  principios previos: "dato confirmado entra al motor solo con consumidor definido" +
+  "verificar, nunca deducir procedencia". Corolario: un XLSX no es una fuente; una fuente es
+  reproducible desde un generador conocido; una discrepancia de procedencia no se resuelve
+  adoptando el artefacto.
+
+  CONTRATO DE COMPOSICIÓN (gluten, lactosa, verdura):
+
+  1. Tres estados con precedencia estricta: confirmada > derivada > desconocida. La confirmación
+     es una capa que cubre la derivación donde existe; la derivación de D-021 NO se deroga, sigue
+     siendo el defecto. Esto es una ENMIENDA a D-021: se admite un tercer origen (confirmado) con
+     precedencia sobre el derivado. La composición sigue sin almacenarse como campo del dish; lo
+     que se almacena es la confirmación, aparte.
+
+  2. Valor efectivo vs. traza: el resolver expone valorEfectivo + origen (confirmada|derivada|
+     desconocida) + valorDerivado (presente solo si hubo derivación sobreescrita por confirmación).
+     Propósito: hacer detectable por barrido el caso confirmado != derivado — la señal de
+     divergencia que habría cazado la discrepancia D-1 de las 6 anclas antes de producción.
+
+  3. Asimetría scaffold/freeform declarada como parte del contrato, no detalle de implementación:
+     - gluten:  scaffold=desconocida (SE ANOTA) | freeform=derivada (conocida)
+     - lactosa: scaffold=desconocida (SE ANOTA) | freeform=derivada (conocida)
+     - verdura: scaffold=derivada (slot V)      | freeform=desconocida (SE ANOTA)
+     El cuaderno NO pide el lado ya derivado (sería trabajo redundante). Excepción por iniciativa
+     del cocinero: el contrato admite una confirmación que corrija un derivado que el cocinero
+     considere erróneo, pero el cuaderno no lo solicita. El lado derivado se MUESTRA en modo
+     lectura (bloqueado) junto a la celda activa, para que el cocinero vea el punto de partida sin
+     abrir otro fichero.
+
+  4. Almacén lateral, no campo del esquema: las confirmaciones viven en
+     dishCompositionConfirmations.json (nombre que describe el dato — colección de confirmaciones
+     sobre composición — no su efecto). Estructura: { "version": 1, "confirmed": { "<dishId>":
+     { "gluten": {valor, por, fecha}, ... } } }. Solo aparecen campos efectivamente confirmados;
+     ausencia = cae a derivada/desconocida. Razón: la confirmación editorial no describe el plato,
+     describe nuestro conocimiento del plato — es metadato, no dato estructural. dishes.json
+     conserva sus 10 REQUIRED_FIELDS intactos; validateDish, schema.js y el tripwire de esquema no
+     se tocan; snapshots antiguos no se rompen. La regla "el esquema crece por demanda" se respeta
+     sin hacer crecer el esquema: el consumidor demandado se satisface con tabla lateral.
+
+  5. Comportamiento del resolver (sin fijar firma — eso es implementación): el resolver consulta
+     opcionalmente el almacén de confirmaciones antes de aplicar la derivación estructural. Sin
+     almacén, se comporta byte a byte como hoy (garantía de no-regresión, testeable dirty->red).
+
+  INVARIANTE DE CUSTODIA EDITORIAL: al almacén de confirmaciones solo entra dato con confirmación
+  humana explícita (ya anotado=sí AND por no vacío). Ninguna propuesta heurística, ningún
+  pre-relleno, ninguna derivación cruza a la capa confirmada. La derivación vive en el resolver;
+  la confirmación vive en el lateral; nunca se copia una en la otra. Testeable: control que
+  intenta ingerir una fila "ya anotado=no" y verifica rechazo.
+
+  FRONTERAS (lo que este contrato NO decide): no fija la representación interna de un eje de
+  verdura (sub-contrato posterior); no rescata congelable/proteinType/glutenFreeAdaptable ni los
+  demás tags huérfanos del scaffold (D-4 del D0) — siguen sin consumidor y fuera; es contrato de
+  composición-para-consumo, no un rescate general de tags.
+
+- Evidencia: EDITORIAL-D0 read-only, ritual verificado (HEAD==origin/main==bace88a, 0 archivos
+  tocados). Hallazgos citados en vivo: la sesión editorial no tiene consumidor
+  (importAnotacion.js:23-26 descarta gluten/lactosa "fuera de contrato — no se promueven";
+  compositionResolver.js:168-169/194 fija desconocida incondicional para scaffold/freeform);
+  esquema hoy = 10 REQUIRED_FIELDS (schema.js:33-44), composición nunca almacenada
+  (compositionResolver.js:1-5, ratificado en D-021); asimetría verificada en vivo sobre el
+  catálogo real (hash a8fe0abb…): gluten/lactosa desconocida=178 scaffold, verdura desconocida=63
+  freeform; el v4 no tiene columna verdura (D-2 del D0); procedencia del v4 no reproducible desde
+  el exportCocinero.js del árbol (D-1/D-5 del D0: nombre sin _v4, 18 vs 17 columnas, anotado_por
+  y "reglas cocinero v3" ausentes en todo el repo, PREVIOUS_ANNOTATIONS divergente de xlsx y de
+  dishes.json). Contrato ratificado punto por punto: §1 coexistencia, §2 asimetría, §3 lateral,
+  §4 sin firma, §5 invariante, más cuatro ajustes (valorEfectivo/traza; derivados en lectura;
+  renombre a dishCompositionConfirmations.json; campo version).
+- Decide: Javi.

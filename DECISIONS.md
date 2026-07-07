@@ -1141,3 +1141,18 @@ Formato:
   control automático que impida importar el adaptador desde el motor
   ya quedó registrada en D-025 y no se duplica aquí.
 - Decide: Javi.
+
+## D-027 — [2026-07-07] Cierre del gate F4: comparabilidad de métricas parciales en D2
+- Decisión/Hallazgo: Las submetricas con estado `parcial` solo son
+  comparables entre engine2 y la fixture legacy correspondiente
+  (comparación vertical). No son comparables transversalmente entre
+  fixtures: la cobertura depende de la combinación seed × legibilidad del
+  plan generado. Adicionalmente, toda fixture cuyo único diferenciador
+  legacy sea un campo SIN_TRADUCCION (goal, hambre, experiencia, weight,
+  activity) es, del lado engine2, otra realización del mismo espacio de
+  generación que su fixture base — cualquier comparación entre ambas
+  mediría varianza de seed, no el efecto del campo. Alcance: catálogo y
+  fixtures actuales de D2.
+- Evidencia: comparacion-D2.{md,json} (HEAD a62c935); lectura
+  interpretativa en scripts/phaseP2c/output/insumo-cierre-F4.md.
+- Decide: Javi.

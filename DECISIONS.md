@@ -1236,3 +1236,83 @@ Formato:
   §4 sin firma, §5 invariante, más cuatro ajustes (valorEfectivo/traza; derivados en lectura;
   renombre a dishCompositionConfirmations.json; campo version).
 - Decide: Javi.
+## D-029 — [2026-07-08] Vocabulario cerrado de verdura y criterio de clasificación de dominio
+- Decisión/Hallazgo: se asienta el vocabulario canónico de ejes de verdura
+  definido en verduraVocabulary.json (versión 1) y el criterio de dominio que lo
+  gobierna, ratificado por consulta al cocinero (experto de dominio) e
+  implementado en el eslabón 4 de D-028 (PR fase-editorial-d3-ingesta). Este
+  asiento registra decisiones YA consolidadas por implementación y validación;
+  no introduce interpretación nueva.
+
+  CRITERIO DE DOMINIO (regirá casos futuros de clasificación):
+  - Función culinaria en el plato por encima de la naturaleza botánica.
+  - Coherencia entre ingredientes análogos por encima de la precisión individual:
+    ingredientes con la misma función culinaria se clasifican igual.
+  - Los ejes del vocabulario son CONVENCIONES LÉXICAS de este proyecto, NO
+    afirmaciones botánicas. Que un token pertenezca al vocabulario de verdura
+    significa "en este proyecto este token se clasifica como eje de verdura",
+    no una aseveración sobre su naturaleza botánica.
+  - Cuando un mismo token puede desempeñar más de un papel culinario y el
+    vocabulario no distingue esos roles, se clasifica según el papel culinario
+    que se adopta como convención para este proyecto.
+
+  VOCABULARIO: el conjunto vigente es el contenido de verduraVocabulary.json
+  (versión 1). El fichero es la fuente canónica; este asiento fija el criterio y
+  las causas, no la enumeración.
+
+  CASOS FRONTERA QUE MOTIVARON EL CRITERIO (los nombres son ejemplos
+  ilustrativos del tipo de caso, no parte de la norma; el conjunto vigente vive
+  en verduraVocabulary.json):
+  - Función culinaria por encima de la botánica — un token cuya naturaleza
+    botánica difiere de su uso culinario dominante (ej.: maíz cuando se emplea
+    como grano dulce en ensalada/salteado, botánicamente cereal): se clasifica
+    por función, y la Leyenda instruye sobre la forma que NO cuenta (ej.: el
+    mismo token como harina o tortilla).
+  - Coherencia entre análogos — un ingrediente análogo a otro ya presente en el
+    vocabulario (ej.: edamame respecto a los guisantes, ambos legumbre fresca de
+    vaina con la misma función): entra por coherencia entre análogos.
+  - Eje propio — un ingrediente con perfil y papel en plato propios, distinto de
+    cualquier hortaliza (ej.: setas, hongo con perfil umami, a menudo sustituto
+    de proteína): eje propio, separado del eje hortícola más cercano (ej.:
+    champiñones queda como eje distinto).
+  - Exclusión por dominio — ingredientes que aportan sabor/acidez en dosis
+    pequeñas y no son componente hortícola del plato (ejs.: aceitunas
+    —condimento—, pepinillos —encurtido—, chile/guindilla —picante—): fuera del
+    vocabulario v1 por criterio de dominio. Un plato cuya única "verdura" sea uno
+    de estos se confirma como [] (sin verdura).
+  - Colapso a un eje existente — una mezcla comercial de hojas (ej.: mezclum):
+    no es eje propio en v1; colapsa por instrucción de Leyenda hacia el eje de
+    hoja más cercano (ej.: lechuga), documentando que representa el concepto
+    "hojas de ensalada".
+
+  VERSIONADO Y CRECIMIENTO: verduraVocabulary.json lleva { "version": 1, ... };
+  version !== 1 -> throw al cargar (misma regla C3 que el lateral de D-028). El
+  vocabulario crece por PR de datos ratificado, nunca por anticipación. La
+  asimetría de coste es intencional: ampliar es barato (el código nuevo rechaza
+  -> se añade el eje -> re-ingesta sobre lateral aún vacío), encoger o re-mapear
+  es caro (tocaría confirmaciones ya custodiadas). Por eso las decisiones "fuera
+  del v1" son revisables por evidencia futura, no inmutables.
+
+  DEUDAS REGISTRADAS (no resueltas aquí):
+  - Mezcla de hojas: posible separación futura en un eje de "hojas de ensalada"
+    distinto del eje de lechuga (v2 del vocabulario).
+  - Token de doble rol: el vocabulario léxico plano no expresa el papel
+    culinario; la clasificación por papel-convención basta mientras un uso
+    predomine. Si un token pasa a tener dos usos co-dominantes, la aproximación
+    deja de bastar y requeriría decisión arquitectónica (ejes con rol, o canon
+    por-plato). Trigger de revisión: alta de platos que introduzcan un token en
+    un papel culinario no contemplado por su clasificación actual.
+
+- Evidencia:
+  DOMINIO — consulta al cocinero (experto de dominio) sobre los casos frontera;
+  criterio adoptado: función culinaria sobre botánica, coherencia entre análogos,
+  ejes como convención léxica del proyecto. Las decisiones de inclusión,
+  exclusión y colapso recogidas arriba son las respuestas del experto ratificadas
+  por Javi.
+  IMPLEMENTACIÓN — verduraVocabulary.json y verduraVocabulary.js creados en el
+  commit 6c68d5c (PR #22, merge 3e76b16); criterio de dominio documentado en la
+  cabecera de verduraVocabulary.js; version !== 1 -> throw. Consumido por la
+  ingesta con validación estricta (importCuadernoV5.js: código fuera del canon ->
+  VerduraVocabularyError; [] aceptado como "sin verdura confirmado" distinguible
+  de ausencia).
+- Decide: Javi.

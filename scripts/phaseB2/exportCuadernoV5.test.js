@@ -242,12 +242,27 @@ describe('Leyenda: contenido añadido en la enmienda (fecha, 32 ejes, nota no-ve
     expect(text).toContain('pepinillos (encurtido)');
     expect(text).toContain('chile/guindilla (picante)');
     expect(text).toContain('Edamame y setas SÍ cuentan');
-    expect(text).toContain('vacío/[]');
   });
 
   it('dirty: un texto de Leyenda sin la nota de no-verdura NO pasaría este control (el control SI discrimina)', () => {
     const textoIncompleto = 'CÓMO ANOTAR — cuaderno v5 (D-028)\nsolo texto viejo, sin nota de no-verdura';
     expect(textoIncompleto).not.toContain('aceitunas (condimento)');
+  });
+
+  it('deja explícitos los tres estados de confirmación de verdura (blanco / códigos / sentinela vacío·[])', async () => {
+    const text = await leyendaLines();
+    expect(text).toContain('Deja la celda en blanco si no has revisado ese plato.');
+    expect(text).toContain('Escribe uno o varios códigos separados por comas si confirmas las verduras.');
+    expect(text).toContain('escribe exactamente «vacío» o «[]»');
+    expect(text).toContain('No dejes la celda en blanco para indicar "sin verdura"');
+  });
+
+  it('dirty: un texto de Leyenda con solo dos de los tres estados NO pasaría este control (el control SI discrimina)', () => {
+    const textoIncompleto =
+      'Verdura (confirmación):\n' +
+      '- Deja la celda en blanco si no has revisado ese plato.\n' +
+      '- Escribe uno o varios códigos separados por comas si confirmas las verduras.';
+    expect(textoIncompleto).not.toContain('escribe exactamente «vacío» o «[]»');
   });
 });
 

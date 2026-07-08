@@ -199,9 +199,13 @@ EXCEPCIÓN POR INICIATIVA: si ves un valor derivado (celda gris) que crees que e
 
 VERDURA — códigos internos: la columna "valor actual" de Verdura muestra los ejes tal como los usa el catálogo por dentro (p. ej. "brocoli", "zanahoria"), sin traducir a nombres bonitos. No es un error ni un dato roto -- la forma final de representar verdura es un sub-contrato futuro de D-028, todavía no decidido. "(ninguna)" significa que ese plato no tiene verdura derivada, no que falte un dato.
 
-VERDURA — cómo confirmar: en la celda de confirmación escribe los ejes separados por coma (p. ej. "brocoli, zanahoria"), usando SOLO los códigos de esta lista cerrada de ${ejesVerdura.length} ejes (cualquier otro código se rechaza):
+Verdura (confirmación):
+- Deja la celda en blanco si no has revisado ese plato.
+- Escribe uno o varios códigos separados por comas si confirmas las verduras.
+- Si confirmas que el plato no lleva ninguna verdura, escribe exactamente «vacío» o «[]». No dejes la celda en blanco para indicar "sin verdura".
+
+Códigos válidos -- lista cerrada de ${ejesVerdura.length} ejes (cualquier otro código se rechaza):
 ${ejesVerdura.join(', ')}.
-Si un plato solo lleva ingredientes que no cuentan como verdura, confirma su verdura como vacío/[] (sin verdura) -- es una confirmación válida, distinta de dejar la celda en blanco (que significa "no confirmado").
 
 VERDURA — qué cuenta y qué no: No cuentan como verdura del plato: aceitunas (condimento), pepinillos (encurtido), chile/guindilla (picante). El maíz cuenta como verdura solo cuando es grano dulce (ensalada, salteado); NO cuando es tortilla o harina de maíz. Edamame y setas SÍ cuentan.
 

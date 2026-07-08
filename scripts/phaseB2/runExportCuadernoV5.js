@@ -40,7 +40,7 @@ async function main() {
   const counts = countActiveCells(rows);
   const dumpHash = hashRows(rows);
 
-  const wb = await buildWorkbook(rows);
+  const wb = await buildWorkbook(rows, { catalogSha256: catalogHash });
   await wb.xlsx.writeFile(OUTPUT_XLSX);
 
   const lateral = ensureConfirmationsLateral(OUTPUT_LATERAL);

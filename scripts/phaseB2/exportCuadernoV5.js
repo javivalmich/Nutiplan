@@ -31,6 +31,7 @@ import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import { CATALOG_PATH, loadCatalog } from '../../src/engine2/dishes/loadCatalog.js';
 import { resolveCatalogComposition } from '../../src/engine2/dishes/compositionResolver.js';
+import { loadVerduraVocabulary } from './verduraVocabulary.js';
 
 /** Hash ratificado en D-028 para dishes.json canónico (241 platos: 178 scaffold + 63 freeform). */
 export const EXPECTED_CATALOG_SHA256 =
@@ -170,7 +171,18 @@ export function buildEmptyConfirmationsLateral() {
 const FIELD_LABELS = Object.freeze({ gluten: 'Gluten', lactosa: 'Lactosa', verdura: 'Verdura' });
 const GREY_FILL = Object.freeze({ type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0E0E0' } });
 
-const LEYENDA_TEXT = `CÓMO ANOTAR — cuaderno v5 (D-028)
+export const META_SHEET_NAME = 'Meta';
+export const META_HASH_KEY = 'sha256_dishes_json';
+
+/**
+ * Construye el texto de la Leyenda, interpolando los ejes canónicos de
+ * verdura desde el vocabulario cerrado (fuente única -- ningún listado
+ * duplicado a mano que pueda driftear del archivo real).
+ * @param {ReadonlyArray<string>} ejesVerdura
+ * @returns {string}
+ */
+function buildLeyendaText(ejesVerdura) {
+  return `CÓMO ANOTAR — cuaderno v5 (D-028)
 
 INVARIANTE DE CUSTODIA: lo que no marques en una columna "confirmar" NO entra al motor. Una fila con las celdas de confirmación vacías se queda en su valor derivado (o "desconocida" si no hay derivación) tal cual está hoy -- no se pierde nada por dejarla en blanco, y nada se activa hasta que tú lo confirmes.
 
@@ -187,19 +199,25 @@ EXCEPCIÓN POR INICIATIVA: si ves un valor derivado (celda gris) que crees que e
 
 VERDURA — códigos internos: la columna "valor actual" de Verdura muestra los ejes tal como los usa el catálogo por dentro (p. ej. "brocoli", "zanahoria"), sin traducir a nombres bonitos. No es un error ni un dato roto -- la forma final de representar verdura es un sub-contrato futuro de D-028, todavía no decidido. "(ninguna)" significa que ese plato no tiene verdura derivada, no que falte un dato.
 
-por / fecha — una vez por fila: quién confirmó y cuándo, para la fila entera (no hace falta repetir por cada campo).
+VERDURA — cómo confirmar: en la celda de confirmación escribe los ejes separados por coma (p. ej. "brocoli, zanahoria"), usando SOLO los códigos de esta lista cerrada de ${ejesVerdura.length} ejes (cualquier otro código se rechaza):
+${ejesVerdura.join(', ')}.
+Si un plato solo lleva ingredientes que no cuentan como verdura, confirma su verdura como vacío/[] (sin verdura) -- es una confirmación válida, distinta de dejar la celda en blanco (que significa "no confirmado").
+
+VERDURA — qué cuenta y qué no: No cuentan como verdura del plato: aceitunas (condimento), pepinillos (encurtido), chile/guindilla (picante). El maíz cuenta como verdura solo cuando es grano dulce (ensalada, salteado); NO cuando es tortilla o harina de maíz. Edamame y setas SÍ cuentan.
+
+por / fecha — una vez por fila: quién confirmó y cuándo, para la fila entera (no hace falta repetir por cada campo). fecha es la fecha de tu confirmación; si la dejas vacía, se registrará la fecha de ingesta.
 
 DEUDA REGISTRADA: la cadena vieja (exportCocinero.js + importAnotacion.js + el v4.xlsx) sigue viva para su propio flujo y no se toca en este PR; muere en el PR de ingesta (eslabón 4 de D-028). Este cuaderno v5 es un flujo aparte, no sustituye a esa cadena todavía.`;
+}
 
 /**
- * Construye el workbook ExcelJS del cuaderno v5 (hojas "Platos" + "Leyenda").
- * @param {object[]} rows salida de buildPlatosRows()
- * @returns {Promise<ExcelJS.Workbook>}
+ * Columnas de la hoja "Platos", en orden. Fuente única compartida con la
+ * ingesta (importCuadernoV5.js) para el contrato estructural -- ningún
+ * literal de cabecera duplicado a mano que pueda driftear del generador
+ * real.
+ * @returns {{header: string, key: string, width: number}[]}
  */
-export async function buildWorkbook(rows) {
-  const wb = new ExcelJS.Workbook();
-  const wsPlatos = wb.addWorksheet('Platos');
-
+export function buildPlatosColumns() {
   const columns = [
     { header: 'Nº', key: 'n', width: 6 },
     { header: 'nombre', key: 'nombre', width: 46 },
@@ -213,6 +231,29 @@ export async function buildWorkbook(rows) {
     );
   }
   columns.push({ header: 'por', key: 'por', width: 16 }, { header: 'fecha', key: 'fecha', width: 14 });
+  return columns;
+}
+
+/**
+ * Construye el workbook ExcelJS del cuaderno v5 (hojas "Platos" + "Meta" +
+ * "Leyenda"). NOTA sobre validación de datos: se evaluó un dropdown de
+ * ExcelJS para las celdas activas de verdura contra los 32 ejes, pero
+ * "list" data validation de Excel es de selección ÚNICA -- no encaja con
+ * el formato real de la celda (varios ejes separados por coma, más el
+ * sentinela "vacío"/"[]" para "confirmado: sin verdura", C7). Forzarlo
+ * sugeriría al cocinero un selector de un solo valor que no es el
+ * contrato real. Se documenta solo en la Leyenda, sin dropdown (D-028,
+ * eslabón 4: "si choca, solo Leyenda y decláralo explícitamente").
+ * @param {object[]} rows salida de buildPlatosRows()
+ * @param {{catalogSha256?: string}} [opts] catalogSha256 para la hoja Meta (por defecto, el hash ratificado en D-028)
+ * @returns {Promise<ExcelJS.Workbook>}
+ */
+export async function buildWorkbook(rows, opts = {}) {
+  const catalogSha256 = opts.catalogSha256 ?? EXPECTED_CATALOG_SHA256;
+  const wb = new ExcelJS.Workbook();
+  const wsPlatos = wb.addWorksheet('Platos');
+
+  const columns = buildPlatosColumns();
   wsPlatos.columns = columns;
   wsPlatos.getRow(1).font = { bold: true };
   wsPlatos.views = [{ state: 'frozen', ySplit: 1 }];
@@ -245,9 +286,14 @@ export async function buildWorkbook(rows) {
 
   await wsPlatos.protect('', { selectLockedCells: true, selectUnlockedCells: true });
 
+  const wsMeta = wb.addWorksheet(META_SHEET_NAME);
+  wsMeta.addRow(['clave', 'valor']);
+  wsMeta.addRow([META_HASH_KEY, catalogSha256]);
+
+  const { ejes } = loadVerduraVocabulary();
   const wsLeyenda = wb.addWorksheet('Leyenda');
   wsLeyenda.getColumn(1).width = 110;
-  LEYENDA_TEXT.split('\n').forEach((line) => {
+  buildLeyendaText(ejes).split('\n').forEach((line) => {
     const row = wsLeyenda.addRow([line]);
     row.getCell(1).alignment = { wrapText: true };
   });

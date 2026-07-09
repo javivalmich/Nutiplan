@@ -461,12 +461,12 @@ describe('runWalk - v14: vetos duros (P2b-i, paso 2 del walk, D-022)', () => {
   const dishGlutenTrue = catalogReal.find((d) => {
     if (d.rol !== 'rotativo' || !d.momento.includes('comida')) return false;
     const v = resolveDishComposition(d);
-    return v.origen === 'freeform' && v.containsGluten.estado === 'conocida' && v.containsGluten.valor === true;
+    return v.origen === 'freeform' && v.containsGluten.origen === 'derivada' && v.containsGluten.valorEfectivo === true;
   });
   const dishGlutenFalse = catalogReal.find((d) => {
     if (d.rol !== 'rotativo' || !d.momento.includes('comida')) return false;
     const v = resolveDishComposition(d);
-    return v.origen === 'freeform' && v.containsGluten.estado === 'conocida' && v.containsGluten.valor === false;
+    return v.origen === 'freeform' && v.containsGluten.origen === 'derivada' && v.containsGluten.valorEfectivo === false;
   });
   const dishScaffoldDesconocida = catalogReal.find((d) => d.rol === 'rotativo' && d.momento.includes('comida') && resolveDishComposition(d).origen === 'scaffold');
 

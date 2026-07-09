@@ -14,8 +14,12 @@ import { describe, it, expect } from 'vitest';
 import { buildWeekArc, chooseAnchor } from '../buildWeekArc.js';
 import { ANCHORS } from '../../dishes/anchors.js';
 
-function vistaConocida(valor) {
-  return { origen: 'scaffold', containsGluten: { estado: 'conocida', valor }, containsLactosa: { estado: 'conocida', valor: false } };
+function vistaConocida(valorEfectivo) {
+  return {
+    origen: 'scaffold',
+    containsGluten: { origen: 'derivada', valorEfectivo },
+    containsLactosa: { origen: 'derivada', valorEfectivo: false },
+  };
 }
 
 function syntheticAnchor(id, vista, overrides = {}) {

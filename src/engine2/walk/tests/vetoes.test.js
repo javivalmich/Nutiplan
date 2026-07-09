@@ -19,11 +19,11 @@ function find(pred) {
 describe('evaluateVeto — f14: uniformidad — scaffold y freeform via la MISMA funcion, el mismo resolver', () => {
   const freeformGlutenTrue = find((d) => {
     const v = resolveDishComposition(d);
-    return v.origen === 'freeform' && v.containsGluten.estado === 'conocida' && v.containsGluten.valor === true;
+    return v.origen === 'freeform' && v.containsGluten.origen === 'derivada' && v.containsGluten.valorEfectivo === true;
   });
   const freeformGlutenFalse = find((d) => {
     const v = resolveDishComposition(d);
-    return v.origen === 'freeform' && v.containsGluten.estado === 'conocida' && v.containsGluten.valor === false;
+    return v.origen === 'freeform' && v.containsGluten.origen === 'derivada' && v.containsGluten.valorEfectivo === false;
   });
   const scaffoldDish = find((d) => resolveDishComposition(d).origen === 'scaffold');
 
@@ -41,7 +41,7 @@ describe('evaluateVeto — f14: uniformidad — scaffold y freeform via la MISMA
     expect(evaluateVeto(freeformGlutenFalse, ['gluten'])).toEqual([]);
   });
 
-  it('f15: scaffold (estado "desconocida") se veta con motivo "desconocida" — contrato de dominio (D-023: un estado desconocido no puede demostrarse compatible con la exclusion), MISMA funcion, sin heuristica propia (p.ej. por tmpl)', () => {
+  it('f15: scaffold (origen "desconocida") se veta con motivo "desconocida" — contrato de dominio (D-023: un origen desconocido no puede demostrarse compatible con la exclusion), MISMA funcion, sin heuristica propia (p.ej. por tmpl)', () => {
     expect(evaluateVeto(scaffoldDish, ['gluten'])).toEqual([{ campo: 'gluten', motivo: 'desconocida' }]);
   });
 
@@ -54,33 +54,33 @@ describe('evaluateVeto — f14: uniformidad — scaffold y freeform via la MISMA
 });
 
 // f14 (refuerzo): el catalogo real NUNCA produce origen="scaffold" +
-// estado="conocida" -- CompositionResolver resuelve scaffold a
-// "desconocida" incondicionalmente (D-021, no depende de datos). Sin este
-// bloque, ningun fixture ejercia la rama "valor" del veto con
-// origen="scaffold": los tests de arriba prueban scaffold solo por la
-// rama "desconocida" (f15), nunca por la rama "valor" (f14). Vista
-// sintetica via evaluateVetoFromVista (nucleo puro, sin resolver) para
-// cubrir ese estado hoy inalcanzable con datos reales pero que el
-// mecanismo debe tratar identico a freeform (uniformidad de CODIGO, no
-// solo de datos, el dia que la ingesta del cocinero puebla scaffold).
-describe('evaluateVetoFromVista — f14 (refuerzo): scaffold con estado="conocida" (sintetico) se veta POR VALOR, misma rama que freeform', () => {
-  const vistaScaffoldConocidaVetada = {
+// campo.origen="derivada" para gluten/lactosa sin fuente editorial --
+// CompositionResolver resuelve scaffold a "desconocida" incondicionalmente
+// sin ella (D-021, no depende de datos). Sin este bloque, ningun fixture
+// ejercia la rama "valor" del veto con origen="scaffold": los tests de
+// arriba prueban scaffold solo por la rama "desconocida" (f15), nunca por
+// la rama "valor" (f14). Vista sintetica via evaluateVetoFromVista (nucleo
+// puro, sin resolver) para cubrir ese caso hoy inalcanzable con datos
+// reales pero que el mecanismo debe tratar identico a freeform
+// (uniformidad de CODIGO, no solo de datos).
+describe('evaluateVetoFromVista — f14 (refuerzo): scaffold con campo.origen="derivada" (sintetico) se veta POR VALOR, misma rama que freeform', () => {
+  const vistaScaffoldDerivadaVetada = {
     origen: 'scaffold',
-    containsGluten: { estado: 'conocida', valor: true },
-    containsLactosa: { estado: 'conocida', valor: false },
+    containsGluten: { origen: 'derivada', valorEfectivo: true },
+    containsLactosa: { origen: 'derivada', valorEfectivo: false },
   };
-  const vistaScaffoldConocidaLibre = {
+  const vistaScaffoldDerivadaLibre = {
     origen: 'scaffold',
-    containsGluten: { estado: 'conocida', valor: false },
-    containsLactosa: { estado: 'conocida', valor: false },
+    containsGluten: { origen: 'derivada', valorEfectivo: false },
+    containsLactosa: { origen: 'derivada', valorEfectivo: false },
   };
 
-  it('caso positivo: scaffold "conocida" + valor=true se veta con motivo "valor" (NO "desconocida")', () => {
-    expect(evaluateVetoFromVista(vistaScaffoldConocidaVetada, ['gluten'])).toEqual([{ campo: 'gluten', motivo: 'valor' }]);
+  it('caso positivo: scaffold "derivada" + valorEfectivo=true se veta con motivo "valor" (NO "desconocida")', () => {
+    expect(evaluateVetoFromVista(vistaScaffoldDerivadaVetada, ['gluten'])).toEqual([{ campo: 'gluten', motivo: 'valor' }]);
   });
 
-  it('caso negativo: scaffold "conocida" + valor=false NO se veta', () => {
-    expect(evaluateVetoFromVista(vistaScaffoldConocidaLibre, ['gluten'])).toEqual([]);
+  it('caso negativo: scaffold "derivada" + valorEfectivo=false NO se veta', () => {
+    expect(evaluateVetoFromVista(vistaScaffoldDerivadaLibre, ['gluten'])).toEqual([]);
   });
 });
 
@@ -107,7 +107,7 @@ describe('computeVetoUniverse — construccion de universo, restringida al espac
   it('ignora platos rol="ancla" (fuera del espacio de decision del walk — ver Fase 1: chooseAnchor/colocacion sin filtros)', () => {
     const freeformGlutenTrue = find((d) => {
       const v = resolveDishComposition(d);
-      return v.origen === 'freeform' && v.containsGluten.valor === true;
+      return v.origen === 'freeform' && v.containsGluten.valorEfectivo === true;
     });
     const catalogoMixto = [
       { id: 'no_parseable_ancla', rol: 'ancla' },
@@ -122,7 +122,7 @@ describe('computeVetoUniverse — construccion de universo, restringida al espac
   it('conteo por campo/motivo: separa "valor" de "desconocida"', () => {
     const freeformGlutenTrue = find((d) => {
       const v = resolveDishComposition(d);
-      return v.origen === 'freeform' && v.containsGluten.valor === true;
+      return v.origen === 'freeform' && v.containsGluten.valorEfectivo === true;
     });
     const scaffoldDish = find((d) => resolveDishComposition(d).origen === 'scaffold' && d.rol === 'rotativo');
     const catalogoAislado = [freeformGlutenTrue, scaffoldDish];
@@ -131,5 +131,41 @@ describe('computeVetoUniverse — construccion de universo, restringida al espac
     expect(activo).toBe(true);
     expect(vetoedIds.size).toBe(2);
     expect(conteo.gluten).toEqual({ valor: 1, desconocida: 1 });
+  });
+});
+
+describe('S2 (D-028 §2) — T5 [D.2] evaluateVetoFromVista es CONSUMIDOR DE DOMINIO: LANZA sobre confirmada', () => {
+  // Doctrina Fork D.2 (ratificada, adenda Fase 1 EDITORIAL-S2): un
+  // consumidor que interpreta el origen y tiene consecuencia observable
+  // (aqui: si un plato queda vetado o no) LANZA sobre origen="confirmada"
+  // -- frontera arquitectonica, no un bug: declara que este consumidor aun
+  // no ha negociado S3.
+  it('lanza, nombrando evaluateVetoFromVista y S3, al recibir un campo con origen="confirmada"', () => {
+    const vistaConConfirmacion = {
+      origen: 'scaffold',
+      containsGluten: { origen: 'confirmada', valorEfectivo: true },
+      containsLactosa: { origen: 'desconocida' },
+    };
+    let thrown;
+    try {
+      evaluateVetoFromVista(vistaConConfirmacion, ['gluten']);
+    } catch (err) {
+      thrown = err;
+    }
+    expect(thrown).toBeDefined();
+    expect(thrown.message).toMatch(/evaluateVetoFromVista/);
+    expect(thrown.message).toMatch(/S3/);
+  });
+
+  it('sigue funcionando sin cambios para derivada/desconocida (comportamiento actual, sin cambio) -- [3.3] verifica el RESULTADO, no solo ausencia de throw', () => {
+    const vistaSinConfirmar = {
+      origen: 'freeform',
+      containsGluten: { origen: 'derivada', valorEfectivo: true },
+      containsLactosa: { origen: 'desconocida' },
+    };
+    expect(evaluateVetoFromVista(vistaSinConfirmar, ['gluten', 'lactosa'])).toEqual([
+      { campo: 'gluten', motivo: 'valor' },
+      { campo: 'lactosa', motivo: 'desconocida' },
+    ]);
   });
 });

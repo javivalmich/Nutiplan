@@ -61,22 +61,43 @@ export function verifyCatalogHash(catalogPath = CATALOG_PATH) {
 
 export const COMPOSITION_FIELDS = Object.freeze(['gluten', 'lactosa', 'verdura']);
 
-/** origen_actual del contrato D-028 usa derivada/desconocida (no el vocabulario interno conocida/desconocida del resolver). */
-function estadoAOrigenActual(estado) {
-  return estado === 'desconocida' ? 'desconocida' : 'derivada';
+/**
+ * LANZA si un campo de composicion (D-028 §2, contrato del resolver) trae
+ * origen="confirmada" (Fork D.2, EDITORIAL-S2): este generador es un
+ * CONSUMIDOR DE DOMINIO -- interpreta el origen para decidir que se
+ * escribe en el cuaderno exportado, consecuencia observable. Frontera
+ * arquitectonica declarada, no un bug: S3 la retira cuando decida como se
+ * exporta un plato ya confirmado (¿se sigue pidiendo confirmacion?
+ * ¿se muestra de otro modo?). Con fuenteEditorial ausente (unico camino de
+ * produccion hoy, ver T6/invariante central del PR), esto nunca se dispara.
+ * @param {string} origen
+ * @param {string} nombreCampo solo para el mensaje de error
+ */
+function assertNoConfirmada(origen, nombreCampo) {
+  if (origen === 'confirmada') {
+    throw new Error(
+      `buildPlatosRows: campo "${nombreCampo}" trae origen="confirmada" -- este consumidor aun no ha ` +
+      'negociado S3 (D-028 §2, EDITORIAL-S2, Fork D.2: consumidor de dominio, frontera arquitectonica).'
+    );
+  }
 }
 
+// origen_actual del cuaderno (D-028 §4) usa el mismo vocabulario
+// derivada/desconocida que D-028 §2 ya usa para estos dos estados -- una
+// vez descartada 'confirmada' (assertNoConfirmada), vista.containsX.origen
+// se escribe TAL CUAL en *_origen_actual, sin traduccion.
+
 function valorActualBooleano(campo) {
-  if (campo.estado === 'desconocida') return 'desconocida';
-  return campo.valor ? 'sí' : 'no';
+  if (campo.origen === 'desconocida') return 'desconocida';
+  return campo.valorEfectivo ? 'sí' : 'no';
 }
 
 function valorActualVerdura(verdura) {
-  if (verdura.estado === 'desconocida') return 'desconocida';
+  if (verdura.origen === 'desconocida') return 'desconocida';
   // Ejes crudos del catálogo (códigos internos, p. ej. "brocoli"), sin
   // diccionario de labels -- D-028 no fija la representación de verdura
   // (sub-contrato futuro); ver Leyenda.
-  return verdura.ejes.length ? verdura.ejes.join(', ') : '(ninguna)';
+  return verdura.valorEfectivo.length ? verdura.valorEfectivo.join(', ') : '(ninguna)';
 }
 
 /**
@@ -101,18 +122,21 @@ export function buildPlatosRows(opts = {}) {
   for (let i = 0; i < dishes.length; i++) {
     const dish = dishes[i];
     const vista = vistas[i];
+    assertNoConfirmada(vista.containsGluten.origen, 'gluten');
+    assertNoConfirmada(vista.containsLactosa.origen, 'lactosa');
+    assertNoConfirmada(vista.verdura.origen, 'verdura');
     rows.push({
       n: i + 1,
       nombre: dish.nombre,
       fuente: vista.origen,
       gluten_valor_actual: valorActualBooleano(vista.containsGluten),
-      gluten_origen_actual: estadoAOrigenActual(vista.containsGluten.estado),
+      gluten_origen_actual: vista.containsGluten.origen,
       gluten_confirmar_valor: '',
       lactosa_valor_actual: valorActualBooleano(vista.containsLactosa),
-      lactosa_origen_actual: estadoAOrigenActual(vista.containsLactosa.estado),
+      lactosa_origen_actual: vista.containsLactosa.origen,
       lactosa_confirmar_valor: '',
       verdura_valor_actual: valorActualVerdura(vista.verdura),
-      verdura_origen_actual: estadoAOrigenActual(vista.verdura.estado),
+      verdura_origen_actual: vista.verdura.origen,
       verdura_confirmar_valor: '',
       por: '',
       fecha: '',

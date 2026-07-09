@@ -1,0 +1,11 @@
+{
+  "fechaIngesta": "2026-07-08",
+  "sha256Cuaderno": "0cc1149a8a51155a9d61229774dcafffd3ec25f4cf3d78fc6d7a7f4244665649",
+  "sha256Catalogo": "a8fe0abb0ff6509dd0a2d9b11ebdc5627674bace395b099bb624ddcc8c2c25c7",
+  "conteos": {
+    "gluten": 178,
+    "lactosa": 178,
+    "verdura": 63
+  },
+  "estampadas": []
+}

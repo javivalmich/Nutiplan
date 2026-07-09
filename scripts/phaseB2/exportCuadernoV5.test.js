@@ -10,6 +10,7 @@
 // scripts/phaseP2c/compareD2.test.js, controles 1/1b).
 
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { execSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -36,7 +37,6 @@ import { loadVerduraVocabulary } from './verduraVocabulary.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '../..');
 const SOURCE_PATH = path.resolve(__dirname, './exportCuadernoV5.js');
-const LATERAL_PATH = path.resolve(__dirname, './output/dishCompositionConfirmations.json');
 
 describe('verificación de hash del catálogo canónico', () => {
   it('el hash de dishes.json coincide con el ratificado en D-028', () => {
@@ -173,8 +173,12 @@ describe('almacén lateral vacío-versionado', () => {
     expect(JSON.stringify(buildEmptyConfirmationsLateral())).toBe('{"version":1,"confirmed":{}}');
   });
 
-  it('el fichero escrito en disco es ese literal exacto', () => {
-    const written = fs.readFileSync(LATERAL_PATH, 'utf8');
+  it('el fichero escrito en disco es ese literal exacto (en tmpdir, no en output/ de producción)', () => {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'exportCuadernoV5-lateral-'));
+    const tmpLateralPath = path.join(tmpDir, 'dishCompositionConfirmations.json');
+    fs.writeFileSync(tmpLateralPath, JSON.stringify(buildEmptyConfirmationsLateral()));
+
+    const written = fs.readFileSync(tmpLateralPath, 'utf8');
     expect(written).toBe('{"version":1,"confirmed":{}}');
   });
 

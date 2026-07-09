@@ -2,8 +2,13 @@
 // del generador del cuaderno v5: reproducibilidad (vía B, dump+hash),
 // asimetría de conteos (241/178/178/63) y de activación (lock estructural),
 // custodia (cero filas nacen confirmadas), aislamiento estático respecto a
-// exportCocinero.js (patrón estrangulador, G3), el almacén lateral vacío-
-// versionado, y no-regresión de alcance sobre la lista NO-TOCAR completa.
+// exportCocinero.js (patrón estrangulador, G3), y el almacén lateral vacío-
+// versionado.
+//
+// El bloque "no-regresión de alcance" (guard de git diff --stat contra
+// origin/main) se retiró en EDITORIAL-S2-0: comparaba contra una referencia
+// móvil de git, no una propiedad del código, y su "dirty" mutaba un archivo
+// de producción para probarse a sí mismo. Ver mensaje del commit de retirada.
 //
 // Cada describe incluye un control positivo + un control "dirty" que
 // demuestra que el test discrimina de verdad (mismo idioma que
@@ -12,7 +17,6 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { execSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { describe, it, expect } from 'vitest';
 import {
@@ -35,7 +39,6 @@ import { resolveCatalogComposition } from '../../src/engine2/dishes/compositionR
 import { loadVerduraVocabulary } from './verduraVocabulary.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const REPO_ROOT = path.resolve(__dirname, '../..');
 const SOURCE_PATH = path.resolve(__dirname, './exportCuadernoV5.js');
 
 describe('verificación de hash del catálogo canónico', () => {
@@ -267,40 +270,5 @@ describe('Leyenda: contenido añadido en la enmienda (fecha, 32 ejes, nota no-ve
       '- Deja la celda en blanco si no has revisado ese plato.\n' +
       '- Escribe uno o varios códigos separados por comas si confirmas las verduras.';
     expect(textoIncompleto).not.toContain('escribe exactamente «vacío» o «[]»');
-  });
-});
-
-describe('no-regresión de alcance: la lista NO-TOCAR queda sin diff frente a origin/main', () => {
-  const NO_TOCAR = [
-    'scripts/phaseB2/exportCocinero.js',
-    'scripts/phaseB2/importAnotacion.js',
-    'scripts/phaseB2/runImportAnotacion.js',
-    'scripts/phaseB2/freeformPromote.js',
-    'scripts/phaseB2/runFreeformPromote.js',
-    'scripts/phaseB2/output/dishes.json',
-    'src/engine2',
-  ];
-
-  it('git diff --stat contra origin/main está vacío para todos los archivos/carpetas NO-TOCAR', () => {
-    const out = execSync(`git diff --stat origin/main -- ${NO_TOCAR.join(' ')}`, {
-      cwd: REPO_ROOT,
-      encoding: 'utf8',
-    });
-    expect(out.trim()).toBe('');
-  });
-
-  it('dirty: un archivo de la lista con una línea añadida SI aparece en el diff (el control SI discrimina)', () => {
-    const probe = path.resolve(REPO_ROOT, 'scripts/phaseB2/importAnotacion.js');
-    const original = fs.readFileSync(probe, 'utf8');
-    fs.writeFileSync(probe, `${original}\n// dirty probe temporal\n`);
-    try {
-      const out = execSync(`git diff --stat origin/main -- ${NO_TOCAR.join(' ')}`, {
-        cwd: REPO_ROOT,
-        encoding: 'utf8',
-      });
-      expect(out.trim()).not.toBe('');
-    } finally {
-      fs.writeFileSync(probe, original);
-    }
   });
 });

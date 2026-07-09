@@ -13,12 +13,38 @@
 //                                    de origen freeform.
 //   - legacyCombos.data.js        -> density, join por identidad, los 178
 //                                    de origen scaffold.
+//   - fuenteEditorial (D-028 §2, EDITORIAL-S2, opcional, INYECTADA -- este
+//                                    modulo NUNCA la carga de disco. Shape
+//                                    D-028 §4: {version, confirmed:
+//                                    {"<dishId>": {gluten?, lactosa?,
+//                                    verdura?: {valor, por, fecha}}}}, la
+//                                    misma clave dish.id que assemble.js
+//                                    (comboIdentityKey, scaffold) y
+//                                    freeformPromote.js (identity.id,
+//                                    freeform) ya usan en todo el catalogo
+//                                    -- ningun mecanismo de identidad
+//                                    nuevo, ninguna reimplementacion.
 //
 // Contrato de vista: EL MISMO shape para los 241 platos, independiente
 // del origen (scaffold/freeform) — ver CLAUDE.md, D-021. La
 // implementacion interna tiene dos mecanismos (tupla vs FREEFORM_COMBOS)
 // pero el shape de salida es indistinguible para el consumidor salvo por
-// el campo informativo "origen" y la presencia/ausencia de "tupla".
+// el campo informativo "origen" (vista.origen, TOP-LEVEL: 'scaffold'|
+// 'freeform') y la presencia/ausencia de "tupla".
+//
+// CONTRATO DE COMPOSICION gluten/lactosa/verdura (D-028 §2, enmienda a
+// D-021, EDITORIAL-S2): cada campo es { origen, valorEfectivo?,
+// valorDerivado? } con origen ∈ {'confirmada','derivada','desconocida'} --
+// NO confundir con vista.origen de arriba (mismo nombre lexico, objeto
+// contractual distinto: uno es scaffold/freeform, el otro es la
+// procedencia del DATO de composicion de un eje). valorEfectivo presente
+// ⟺ origen !== 'desconocida' (I1). valorDerivado presente solo cuando
+// origen='confirmada' Y existia una derivacion que la confirmacion
+// sobreescribe (I2) -- por eso NUNCA aparece si el eje era 'desconocida'
+// antes de confirmarse. Precedencia: confirmada > derivada > desconocida.
+// Sin fuenteEditorial inyectada, ningun campo puede resolver 'confirmada'
+// -- comportamiento identico al de antes de D-028 §2 (garantia de
+// no-regresion, C2).
 //
 // UnresolvableOriginError (D-024, F4-P2b-ii, añadido sin cambio de
 // semantica): clase nombrada para el UNICO caso de origen indeterminado
@@ -143,14 +169,42 @@ function resolveFreeformDensity(combo, dishId) {
 }
 
 /**
+ * Construye un campo del contrato de composicion D-028 §2:
+ * { origen, valorEfectivo?, valorDerivado? }. Nucleo unico compartido por
+ * gluten/lactosa/verdura, scaffold/freeform -- la precedencia
+ * confirmada > derivada > desconocida se decide UNA vez, aqui, no en cada
+ * call-site.
+ * @param {*} valorDerivado el valor que la derivacion estructural resuelve
+ *   para este eje, o undefined si ese eje no deriva para este origen
+ *   (p.ej. gluten en scaffold, verdura en freeform).
+ * @param {{valor: *, por: string, fecha: string}|undefined} confirmado
+ *   entrada de fuenteEditorial.confirmed[dishId][campo], o undefined si no
+ *   hay confirmacion para ese eje.
+ * @returns {{origen: string, valorEfectivo?: *, valorDerivado?: *}}
+ */
+function buildCampoComposicion(valorDerivado, confirmado) {
+  const hayDerivacion = valorDerivado !== undefined;
+  if (confirmado) {
+    const campo = { origen: 'confirmada', valorEfectivo: confirmado.valor };
+    if (hayDerivacion) campo.valorDerivado = valorDerivado;
+    return campo;
+  }
+  if (hayDerivacion) return { origen: 'derivada', valorEfectivo: valorDerivado };
+  return { origen: 'desconocida' };
+}
+
+/**
  * Resuelve la vista de composicion de un plato de origen scaffold, dada
- * su tupla ya parseada. Pura: no lee dish.id, no hace I/O propio salvo el
- * join de density contra legacyCombos.data.js (modulo, no disco).
+ * su tupla ya parseada. Pura salvo el join de density contra
+ * legacyCombos.data.js (modulo, no disco) y la lectura de fuenteEditorial
+ * (objeto ya en memoria, nunca disco -- ver banner del modulo).
  * @param {{tmpl, P, C, V, V2, S, cookM}} tupla
- * @param {string} dishId solo para mensajes de error
+ * @param {string} dishId clave de identidad (dish.id) -- para mensajes de
+ *   error y para indexar fuenteEditorial.confirmed
+ * @param {{version: number, confirmed: object}} [fuenteEditorial]
  * @returns {object} vista, congelada en profundidad
  */
-export function resolveScaffoldComposition(tupla, dishId) {
+export function resolveScaffoldComposition(tupla, dishId, fuenteEditorial) {
   const claveP = tupla.P;
   const proteinType = P_TO_PROTEINTYPE[claveP];
   if (!proteinType) {
@@ -160,38 +214,46 @@ export function resolveScaffoldComposition(tupla, dishId) {
   }
   assertProteinTypeVocabulary(proteinType, dishId);
 
+  const confirmadoPlato = fuenteEditorial?.confirmed?.[dishId];
+  const ejesVerduraDerivados = [tupla.V, tupla.V2].filter((v) => v !== null);
+
   const vista = {
     origen: 'scaffold',
     tupla,
     claveP,
     proteinType,
-    containsGluten: { estado: 'desconocida' },
-    containsLactosa: { estado: 'desconocida' },
+    containsGluten: buildCampoComposicion(undefined, confirmadoPlato?.gluten),
+    containsLactosa: buildCampoComposicion(undefined, confirmadoPlato?.lactosa),
     density: resolveScaffoldDensity(dishId),
-    verdura: { estado: 'conocida', ejes: [tupla.V, tupla.V2].filter((v) => v !== null) },
+    verdura: buildCampoComposicion(ejesVerduraDerivados, confirmadoPlato?.verdura),
   };
   return deepFreeze(vista);
 }
 
 /**
  * Resuelve la vista de composicion de un plato de origen freeform, dado
- * su combo de FREEFORM_COMBOS.js ya localizado. Pura: recibe el combo
- * como dato, no busca en el modulo de datos.
+ * su combo de FREEFORM_COMBOS.js ya localizado. Pura salvo la lectura de
+ * fuenteEditorial (objeto ya en memoria, nunca disco -- ver banner del
+ * modulo).
  * @param {object} combo entrada de FREEFORM_COMBOS.js
- * @param {string} dishId solo para mensajes de error
+ * @param {string} dishId clave de identidad (dish.id) -- para mensajes de
+ *   error y para indexar fuenteEditorial.confirmed
+ * @param {{version: number, confirmed: object}} [fuenteEditorial]
  * @returns {object} vista, congelada en profundidad
  */
-export function resolveFreeformComposition(combo, dishId) {
+export function resolveFreeformComposition(combo, dishId, fuenteEditorial) {
   assertProteinTypeVocabulary(combo.identity.proteinType, dishId);
+
+  const confirmadoPlato = fuenteEditorial?.confirmed?.[dishId];
 
   const vista = {
     origen: 'freeform',
     claveP: combo.identity.protein,
     proteinType: combo.identity.proteinType,
-    containsGluten: { estado: 'conocida', valor: combo.identity.containsGluten },
-    containsLactosa: { estado: 'conocida', valor: combo.identity.containsLactosa },
+    containsGluten: buildCampoComposicion(combo.identity.containsGluten, confirmadoPlato?.gluten),
+    containsLactosa: buildCampoComposicion(combo.identity.containsLactosa, confirmadoPlato?.lactosa),
     density: resolveFreeformDensity(combo, dishId),
-    verdura: { estado: 'desconocida' },
+    verdura: buildCampoComposicion(undefined, confirmadoPlato?.verdura),
   };
   return deepFreeze(vista);
 }
@@ -200,12 +262,20 @@ export function resolveFreeformComposition(combo, dishId) {
  * Resuelve la vista de composicion de un plato individual, localizando
  * su fuente (tupla scaffold o FREEFORM_COMBOS) por dish.id. Mismo shape
  * de salida para scaffold y freeform (ver banner del modulo).
+ *
+ * fuenteEditorial (D-028 §2, EDITORIAL-S2) es OPCIONAL e INYECTADA: sin
+ * ella, resultado identico al de antes de D-028 §2 (C2, no-regresion).
+ * Este modulo NUNCA la carga de disco -- ver banner. La clave de
+ * fuenteEditorial.confirmed es dish.id, la MISMA identidad que assemble.js
+ * (comboIdentityKey, scaffold) y freeformPromote.js (identity.id,
+ * freeform) ya asignan en todo el catalogo -- ningun mecanismo nuevo.
  * @param {{id: string}} dish plato tal y como lo devuelve loadCatalog()
+ * @param {{fuenteEditorial?: {version: number, confirmed: object}}} [opts]
  * @returns {object} vista de composicion, congelada en profundidad
  */
-export function resolveDishComposition(dish) {
+export function resolveDishComposition(dish, { fuenteEditorial } = {}) {
   const tupla = parseScaffoldTuple(dish.id);
-  if (tupla) return resolveScaffoldComposition(tupla, dish.id);
+  if (tupla) return resolveScaffoldComposition(tupla, dish.id, fuenteEditorial);
 
   const combo = freeformById.get(dish.id);
   if (!combo) {
@@ -214,7 +284,7 @@ export function resolveDishComposition(dish) {
       'en FREEFORM_COMBOS (origen indeterminado).'
     );
   }
-  return resolveFreeformComposition(combo, dish.id);
+  return resolveFreeformComposition(combo, dish.id, fuenteEditorial);
 }
 
 /**
@@ -222,25 +292,29 @@ export function resolveDishComposition(dish) {
  * salida de loadCatalog()). Orden estable: la vista en la posicion i
  * corresponde al plato en la posicion i de dishes.
  * @param {ReadonlyArray<{id: string}>} dishes
+ * @param {{fuenteEditorial?: {version: number, confirmed: object}}} [opts]
  * @returns {object[]}
  */
-export function resolveCatalogComposition(dishes) {
-  return dishes.map((dish) => resolveDishComposition(dish));
+export function resolveCatalogComposition(dishes, { fuenteEditorial } = {}) {
+  return dishes.map((dish) => resolveDishComposition(dish, { fuenteEditorial }));
 }
 
 /**
- * Lectura segura de los ejes de verdura de una vista. LANZA sobre
- * estado "desconocida" — nunca devuelve [] (la ausencia de contribucion
- * refleja ausencia de informacion, no ausencia de verdura).
+ * Lectura segura de los ejes de verdura de una vista. ACCESSOR (Fork F.2,
+ * EDITORIAL-S2): expone el payload (valorEfectivo) sin interpretar el
+ * origen -- 'derivada' y 'confirmada' devuelven igual. LANZA UNICAMENTE
+ * sobre origen "desconocida" -- no hay valorEfectivo que devolver (la
+ * ausencia de contribucion refleja ausencia de informacion, no ausencia
+ * de verdura).
  * @param {object} vista
  * @returns {string[]}
  */
 export function ejesVerdura(vista) {
-  if (vista.verdura.estado !== 'conocida') {
+  if (vista.verdura.origen === 'desconocida') {
     throw new Error(
-      'ejesVerdura: estado "desconocida" — no hay ejes que leer (freeform no declara verdura ' +
+      'ejesVerdura: origen "desconocida" — no hay ejes que leer (freeform no declara verdura ' +
       'estructuralmente; desconocida no equivale a sin verdura).'
     );
   }
-  return vista.verdura.ejes;
+  return vista.verdura.valorEfectivo;
 }

@@ -17,10 +17,10 @@ import {
 import { DEFAULT_WEEKLY_TARGETS } from '../../contracts/weeklyTargets.js';
 
 function vista({ proteinType = null, ejes = [] } = {}) {
-  return { proteinType, verdura: { estado: 'conocida', ejes } };
+  return { proteinType, verdura: { origen: 'derivada', valorEfectivo: ejes } };
 }
 function vistaVerduraDesconocida(proteinType = null) {
-  return { proteinType, verdura: { estado: 'desconocida' } };
+  return { proteinType, verdura: { origen: 'desconocida' } };
 }
 function cand(id, v) {
   return { id, __vista: v };
@@ -298,5 +298,30 @@ describe('sin intervencion (f12, mitad "silencio"): ningun target corto ni verdu
     expect(causa).toBeNull();
     expect(evidencia).toBeNull();
     expect(nivel).toBe(candidatesB);
+  });
+});
+
+describe('S2 (D-028 §2) — T5 [D.2] satisfaceVerdura es CONSUMIDOR DE DOMINIO: LANZA sobre confirmada', () => {
+  // Doctrina Fork D.2 (ratificada, adenda Fase 1 EDITORIAL-S2): satisfaceVerdura
+  // tiene consecuencia observable (si el dia cuenta como "con verdura" o
+  // no) -- LANZA sobre origen="confirmada", frontera arquitectonica, no bug.
+  it('lanza, nombrando satisfaceVerdura y S3, al recibir verdura.origen="confirmada"', () => {
+    const vistaConConfirmacion = { proteinType: null, verdura: { origen: 'confirmada', valorEfectivo: ['tomate'] } };
+    let thrown;
+    try {
+      satisfaceVerdura(vistaConConfirmacion);
+    } catch (err) {
+      thrown = err;
+    }
+    expect(thrown).toBeDefined();
+    expect(thrown.message).toMatch(/satisfaceVerdura/);
+    expect(thrown.message).toMatch(/S3/);
+  });
+
+  it('sigue funcionando sin cambios para derivada/desconocida (comportamiento actual, sin cambio) -- [3.3] verifica el RESULTADO, no solo ausencia de throw', () => {
+    const vistaDerivada = { proteinType: null, verdura: { origen: 'derivada', valorEfectivo: ['tomate'] } };
+    const vistaDesconocida = { proteinType: null, verdura: { origen: 'desconocida' } };
+    expect(satisfaceVerdura(vistaDerivada)).toBe(true);
+    expect(satisfaceVerdura(vistaDesconocida)).toBe(false);
   });
 });

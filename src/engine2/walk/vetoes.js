@@ -14,14 +14,21 @@
 // derivacion heuristica propia (p.ej. por tmpl="pasta"). Asiento D-022:
 // "un veto declarado no puede resolverse mediante una inferencia no
 // verificada cuando existe una fuente editorial prevista para ese dato"
-// (la anotacion del cocinero via XLSX, ingesta en PR propio siguiente en
-// cola). Mientras esa ingesta no aterriza, scaffold (178/241) resuelve
-// estado="desconocida" en ambos campos -- contrato de dominio (D-022,
-// terminologia renombrada por D-023): "desconocida" se trata como vetado
-// si el campo esta en la lista de intolerancias activas ("desconocida" !=
-// "libre de") porque un estado desconocido no puede demostrarse compatible
-// con un requisito de exclusion. Transitorio: la ingesta reduce este
-// universo al residuo real sin anotar.
+// (la anotacion del cocinero via XLSX). Cada campo llega con la forma
+// D-028 §2: { origen: 'confirmada'|'derivada'|'desconocida', valorEfectivo? }.
+// Sin fuente editorial inyectada en el resolver, scaffold (178/241)
+// resuelve origen="desconocida" en ambos campos -- contrato de dominio
+// (D-022, terminologia renombrada por D-023): "desconocida" se trata como
+// vetado si el campo esta en la lista de intolerancias activas
+// ("desconocida" != "libre de") porque un origen desconocido no puede
+// demostrarse compatible con un requisito de exclusion.
+//
+// origen="confirmada" (EDITORIAL-S2, D-028 §2): este modulo AUN NO lo
+// consume -- evaluateVetoFromVista LANZA si lo recibe (Fork D.2,
+// consumidor de dominio: interpreta el origen, tiene consecuencia
+// observable sobre si un plato queda vetado). Es una frontera
+// arquitectonica declarada, no un bug: S3 la retira cuando decida la
+// semantica de veto sobre confirmaciones.
 
 import { resolveDishComposition } from '../dishes/compositionResolver.js';
 
@@ -34,12 +41,16 @@ const FIELD_TO_COMPOSITION_KEY = Object.freeze({
  * Nucleo puro del veto: evalua una VISTA de composicion ya resuelta (no un
  * plato) contra la lista de intolerancias activas. Separado de
  * evaluateVeto (que resuelve el plato) para que el mecanismo sea testeable
- * con vistas sinteticas -- p.ej. origen="scaffold" + estado="conocida", un
- * estado hoy inalcanzable con el catalogo real (CompositionResolver
- * siempre resuelve scaffold a "desconocida", D-021) pero que el mecanismo
- * debe tratar identico a freeform el dia que la ingesta del cocinero lo
- * puebla -- sin esta funcion, esa simetria de codigo (no solo de datos) no
- * tiene forma de probarse hoy.
+ * con vistas sinteticas -- p.ej. origen="scaffold" + campo.origen="derivada",
+ * un origen hoy inalcanzable con el catalogo real sin fuente editorial
+ * (CompositionResolver siempre resuelve scaffold a "desconocida" sin ella,
+ * D-021) pero que el mecanismo debe tratar identico a freeform el dia que
+ * la ingesta del cocinero lo puebla -- sin esta funcion, esa simetria de
+ * codigo (no solo de datos) no tiene forma de probarse hoy.
+ *
+ * LANZA si algun campo.origen==="confirmada" (D-028 §2, EDITORIAL-S2, Fork
+ * D.2): este consumidor de dominio aun no ha negociado que significa vetar
+ * (o no) sobre una confirmacion editorial -- ver banner del modulo.
  * @param {object} vista salida de resolveDishComposition (o sintetica equivalente)
  * @param {string[]} [intolerancias]
  * @returns {{campo: string, motivo: 'valor'|'desconocida'}[]}
@@ -49,10 +60,16 @@ export function evaluateVetoFromVista(vista, intolerancias) {
 
   const razones = [];
   for (const campo of intolerancias) {
-    const estadoCampo = vista[FIELD_TO_COMPOSITION_KEY[campo]];
-    if (estadoCampo.estado === 'desconocida') {
+    const campoComposicion = vista[FIELD_TO_COMPOSITION_KEY[campo]];
+    if (campoComposicion.origen === 'confirmada') {
+      throw new Error(
+        `evaluateVetoFromVista: campo "${campo}" trae origen="confirmada" -- este consumidor aun no ha ` +
+        'negociado S3 (D-028 §2, EDITORIAL-S2, Fork D.2: consumidor de dominio, frontera arquitectonica).'
+      );
+    }
+    if (campoComposicion.origen === 'desconocida') {
       razones.push({ campo, motivo: 'desconocida' });
-    } else if (estadoCampo.valor === true) {
+    } else if (campoComposicion.valorEfectivo === true) {
       razones.push({ campo, motivo: 'valor' });
     }
   }
@@ -88,10 +105,10 @@ export function evaluateVeto(dish, intolerancias) {
  *
  * getVista es el punto de inyeccion que permite testear el mecanismo con
  * vistas sinteticas (mismo patron que evaluateVetoFromVista mas arriba):
- * p.ej. para el ancla, un estado "conocida"+valor=true es hoy inalcanzable
- * con el catalogo real (CompositionResolver resuelve scaffold siempre a
- * "desconocida", D-021) pero el mecanismo debe tratarlo identico a
- * freeform el dia que la ingesta del cocinero puebla ese campo.
+ * p.ej. para el ancla, un origen "derivada"+valorEfectivo=true es hoy
+ * inalcanzable con el catalogo real sin fuente editorial (CompositionResolver
+ * resuelve scaffold siempre a "desconocida" sin ella, D-021) pero el
+ * mecanismo debe tratarlo identico a freeform.
  * @param {ReadonlyArray<object>} candidates
  * @param {string[]} [intolerancias]
  * @param {(candidate: object) => object} getVista

@@ -18,12 +18,17 @@
 //
 // Verdura (asiento 3): sub-regla DIARIA, evaluada ANTES que los
 // contadores semanales -- si el dia no tiene verdura aun y hay candidatos
-// que la cubren (estado "conocida", ejes no vacios), ese es el nivel
-// preferente del hueco. Infraconteo declarado: freeform ("desconocida")
-// JAMAS satisface el predicado -- sesgo conservador, nunca de menos. El
-// paso ramifica sobre estado y JAMAS invoca ejesVerdura sobre
-// "desconocida" (ver satisfaceVerdura: lee vista.verdura.estado
+// que la cubren (origen "derivada", valorEfectivo no vacio), ese es el
+// nivel preferente del hueco. Infraconteo declarado: freeform
+// ("desconocida") JAMAS satisface el predicado -- sesgo conservador, nunca
+// de menos. El paso ramifica sobre origen y JAMAS invoca ejesVerdura sobre
+// "desconocida" (ver satisfaceVerdura: lee vista.verdura.origen
 // directamente, nunca llama al helper que lanza).
+//
+// origen="confirmada" (D-028 §2, EDITORIAL-S2): satisfaceVerdura AUN NO lo
+// consume -- LANZA si lo recibe (Fork D.2, consumidor de dominio: si un
+// dia cuenta como "con verdura" o no es consecuencia observable). Frontera
+// arquitectonica declarada, no un bug.
 //
 // Activacion y veda (asiento 4): una frecuencia semanal "va corta" si su
 // contador < target, evaluado en cada hueco. Veda de un dia por EVENTO de
@@ -61,9 +66,18 @@ import { DEFAULT_WEEKLY_TARGETS } from '../contracts/weeklyTargets.js';
 
 export const PROTEIN_TARGET_ORDER = Object.freeze(['legumbre', 'pescado']);
 
+// VISTA_NEUTRAL construye el shape de composicion a mano (D-028 §2:
+// { origen, valorEfectivo }), fuera del resolver -- decision S2 (delegada,
+// sin asiento): NO se centraliza en un constructor exportado por
+// compositionResolver.js. Esta vista no es una resolucion real: es la
+// politica de FALLBACK propia de frequencies.js para el caso degenerado
+// "id no resoluble" (ver banner del modulo) -- nunca afirma venir del
+// resolver, así que atarla a un constructor del resolver sugeriria una
+// procedencia que no tiene. El mapeo es trivial (dos campos, contrato ya
+// documentado en compositionResolver.js:17-36) y de un unico uso.
 const VISTA_NEUTRAL = Object.freeze({
   proteinType: null,
-  verdura: Object.freeze({ estado: 'conocida', ejes: Object.freeze([]) }),
+  verdura: Object.freeze({ origen: 'derivada', valorEfectivo: Object.freeze([]) }),
 });
 
 /**
@@ -92,16 +106,26 @@ export function resolveFrequencyVista(dish, onIrresoluble = () => {}) {
 }
 
 /**
- * Predicado de verdura del dia (asiento 3): "conocida" y con al menos un
- * eje. NUNCA invoca ejesVerdura (que lanza sobre "desconocida") -- lee
- * vista.verdura.estado directamente, ramificando sobre el estado.
+ * Predicado de verdura del dia (asiento 3): origen "derivada" y con al
+ * menos un eje. NUNCA invoca ejesVerdura (que lanza sobre "desconocida")
+ * -- lee vista.verdura.origen directamente, ramificando sobre el origen.
  * Freeform ("desconocida") siempre da false aqui -- infraconteo
  * declarado, sesgo conservador.
+ *
+ * LANZA si vista.verdura.origen==="confirmada" (D-028 §2, EDITORIAL-S2,
+ * Fork D.2): este consumidor de dominio aun no ha negociado si una verdura
+ * confirmada cuenta para la sub-regla diaria -- ver banner del modulo.
  * @param {object} vista
  * @returns {boolean}
  */
 export function satisfaceVerdura(vista) {
-  return vista.verdura.estado === 'conocida' && vista.verdura.ejes.length > 0;
+  if (vista.verdura.origen === 'confirmada') {
+    throw new Error(
+      'satisfaceVerdura: verdura trae origen="confirmada" -- este consumidor aun no ha negociado S3 ' +
+      '(D-028 §2, EDITORIAL-S2, Fork D.2: consumidor de dominio, frontera arquitectonica).'
+    );
+  }
+  return vista.verdura.origen === 'derivada' && vista.verdura.valorEfectivo.length > 0;
 }
 
 function diaAnterior(day) {

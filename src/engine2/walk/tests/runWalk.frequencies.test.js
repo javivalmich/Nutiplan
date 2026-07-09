@@ -54,7 +54,7 @@ describe('runWalk - v15: frecuencias (P2b-ii, paso 4 del walk, D-024)', () => {
     expect(legumbre2).toBeDefined();
     expect(legumbre1.id).not.toBe(legumbre2.id);
     expect(neutroSinVerdura).toBeDefined();
-    expect(resolveDishComposition(neutroSinVerdura).verdura.ejes).toEqual([]);
+    expect(resolveDishComposition(neutroSinVerdura).verdura.valorEfectivo).toEqual([]);
   });
 
   it('f3: invariante RNG forma fuerte -- sobre >=8 seeds, el neutro NUNCA gana; la variacion ocurre solo entre los 2 supervivientes del nivel', () => {

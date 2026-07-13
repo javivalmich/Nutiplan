@@ -23,12 +23,12 @@
 // ("desconocida" != "libre de") porque un origen desconocido no puede
 // demostrarse compatible con un requisito de exclusion.
 //
-// origen="confirmada" (EDITORIAL-S2, D-028 §2): este modulo AUN NO lo
-// consume -- evaluateVetoFromVista LANZA si lo recibe (Fork D.2,
-// consumidor de dominio: interpreta el origen, tiene consecuencia
-// observable sobre si un plato queda vetado). Es una frontera
-// arquitectonica declarada, no un bug: S3 la retira cuando decida la
-// semantica de veto sobre confirmaciones.
+// origen="confirmada" (EDITORIAL-S2, D-028 §2): D-032 (F-V1, opcion A1,
+// 2026-07-13) ratifica que evaluateVetoFromVista es consumidor PURO de
+// valorEfectivo -- no ramifica por origen. La precedencia confirmada >
+// derivada > desconocida ya la resolvio buildCampoComposicion aguas
+// arriba (compositionResolver.js:185-194); este modulo solo lee el
+// valorEfectivo resultante, misma rama para "confirmada" y "derivada".
 
 import { resolveDishComposition } from '../dishes/compositionResolver.js';
 
@@ -48,9 +48,9 @@ const FIELD_TO_COMPOSITION_KEY = Object.freeze({
  * la ingesta del cocinero lo puebla -- sin esta funcion, esa simetria de
  * codigo (no solo de datos) no tiene forma de probarse hoy.
  *
- * LANZA si algun campo.origen==="confirmada" (D-028 §2, EDITORIAL-S2, Fork
- * D.2): este consumidor de dominio aun no ha negociado que significa vetar
- * (o no) sobre una confirmacion editorial -- ver banner del modulo.
+ * Consumidor PURO de valorEfectivo (D-032, F-V1→A1): no ramifica por
+ * campo.origen -- "confirmada" y "derivada" se tratan identico, ver banner
+ * del modulo.
  * @param {object} vista salida de resolveDishComposition (o sintetica equivalente)
  * @param {string[]} [intolerancias]
  * @returns {{campo: string, motivo: 'valor'|'desconocida'}[]}
@@ -61,12 +61,6 @@ export function evaluateVetoFromVista(vista, intolerancias) {
   const razones = [];
   for (const campo of intolerancias) {
     const campoComposicion = vista[FIELD_TO_COMPOSITION_KEY[campo]];
-    if (campoComposicion.origen === 'confirmada') {
-      throw new Error(
-        `evaluateVetoFromVista: campo "${campo}" trae origen="confirmada" -- este consumidor aun no ha ` +
-        'negociado S3 (D-028 §2, EDITORIAL-S2, Fork D.2: consumidor de dominio, frontera arquitectonica).'
-      );
-    }
     if (campoComposicion.origen === 'desconocida') {
       razones.push({ campo, motivo: 'desconocida' });
     } else if (campoComposicion.valorEfectivo === true) {

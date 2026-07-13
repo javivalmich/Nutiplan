@@ -1316,3 +1316,87 @@ Formato:
   VerduraVocabularyError; [] aceptado como "sin verdura confirmado" distinguible
   de ausencia).
 - Decide: Javi.
+
+## D-030 — [2026-07-13] Reconstrucción documental de la cadena editorial (EDITORIAL-D0..D6)
+
+RECONSTRUCCIÓN, fecha 2026-07-09. Este asiento se escribe hoy sobre hechos
+verificados en git; NO preserva el rationale del momento de cada decisión.
+Fuente del diagnóstico: docs/auditoria-registro-2026-07-09.md.
+
+  Mapa de los siete eslabones de la cadena editorial, cada uno con lo que
+  produjo y su merge:
+  - EDITORIAL-D0: diagnóstico read-only. Sin PR ni commit propio — es
+    diagnóstico, no cambio. Su prosa quedó recogida en D-028
+    (DECISIONS.md:1163-1225 de este mismo archivo).
+  - EDITORIAL-D1: contrato de consumo de composición confirmada. PR #20,
+    merge a9c0c06364a2c48d1e5fdf82bc0f391c9436f6b3 — produjo la entrada D-028.
+  - EDITORIAL-D2: generador reproducible del cuaderno de anotación v5. PR #21,
+    merge 35169c7d4c66da451a9c8e6705e76e0cd137e1a3 — creó
+    scripts/phaseB2/exportCuadernoV5.js (D-028 lo describía sin nombrarlo;
+    nombrarlo explícitamente es un hallazgo del informe de PR-1,
+    docs/auditoria-registro-2026-07-09.md).
+  - EDITORIAL-D3: ingesta del cuaderno hacia el almacén lateral, más el
+    vocabulario cerrado de verdura. PR #22, merge
+    3e76b162919b55fb39b51c76508f6ca87762cf27 — creó
+    scripts/phaseB2/importCuadernoV5.js y verduraVocabulary.{js,json}.
+  - EDITORIAL-D4: vocabulario cerrado de verdura y criterio de clasificación
+    de dominio. PR #23, merge 70cd8ceb9992f7f4dfb0d726962559c126c86c6a —
+    produjo la entrada D-029.
+  - EDITORIAL-D5: sesión editorial humana con el cocinero. Sin commit por
+    naturaleza — es sesión humana, no cambio de código. Confirmada
+    factualmente por el propietario. Sin huella directa propia: la huella de
+    D5 es la misma que la de D6, las 419 confirmaciones que D6 ingirió.
+  - EDITORIAL-D6: ingesta real de las confirmaciones producidas en D5. PR #24,
+    merge 2bb31c4a7a325e40855ab92bb14aa406e0806e03 — ingesta real de 419
+    campos confirmados (241 platos) hacia
+    scripts/phaseB2/output/dishCompositionConfirmations.json.
+
+  Este asiento no clasifica ni deroga nada. Es un mapa, no un juicio.
+
+- Evidencia: hashes de merge re-verificados en vivo (`git show <hash> --stat`)
+  contra el estado real del repositorio en el momento de escribir este
+  asiento; docs/auditoria-registro-2026-07-09.md (informe de PR-1, fuente del
+  diagnóstico y del hallazgo de D2).
+- Decide: Javi.
+
+## D-031 — [2026-07-13] La ingesta real materializa "confirmado entra al motor"
+
+RECONSTRUCCIÓN, fecha 2026-07-09. Este asiento se escribe hoy sobre hechos
+verificados en git; NO preserva el rationale del momento de cada decisión.
+Fuente del diagnóstico: docs/auditoria-registro-2026-07-09.md.
+
+  Entrada separada de D-030 porque su objeto no es un eslabón más de la
+  cadena, sino el principio que la cadena existía para hacer verdadero: los
+  datos confirmados por el cocinero entran al motor; las propuestas
+  editoriales nunca.
+
+  Hito: PR #24, merge 2bb31c4a7a325e40855ab92bb14aa406e0806e03 — 419 campos
+  confirmados (241 platos) ingeridos vía scripts/phaseB2/importCuadernoV5.js
+  hacia el almacén lateral (scripts/phaseB2/output/dishCompositionConfirmations.json).
+
+  PUNTO DE MATERIALIZACIÓN EN CÓDIGO (lo que hace de esto un principio y no
+  un fichero): src/engine2/dishes/compositionResolver.js:247 lee el
+  confirmado por dishId (`fuenteEditorial?.confirmed?.[dishId]`);
+  :253-256 construyen cada campo de composición (containsGluten,
+  containsLactosa, verdura) pasando el valor confirmado a
+  buildCampoComposicion junto al valor derivado. buildCampoComposicion
+  (líneas 185-194) da precedencia al confirmado sobre el derivado: si hay
+  confirmado, origen='confirmada' y ese es el valorEfectivo, exista o no
+  derivación; solo cuando no hay confirmado se usa el derivado. El hito no es
+  "existe un JSON con datos" sino "el confirmado gana al derivado en la
+  construcción de cada campo de composición".
+
+  CONSECUENCIA REGISTRADA, NO DECIDIDA: la condición temporal que sostenía la
+  congelación de exportCocinero.js — "coexiste con este generador sin
+  tocarse" hasta que la cadena legacy muriera "en el PR de ingesta, eslabón 4
+  de D-028" (comentario en scripts/phaseB2/exportCuadernoV5.js:9-19) — venció
+  con este hito. La decisión sobre el futuro de la cadena legacy
+  (exportCocinero.js + importAnotacion.js + runImportAnotacion.js + el
+  v4.xlsx) queda para roadmap. No se decide aquí.
+
+- Evidencia: PR #24, merge 2bb31c4a7a325e40855ab92bb14aa406e0806e03, re-
+  verificado en vivo (`git show 2bb31c4 --stat`; conteos en
+  scripts/phaseB2/output/ingestaReport.json: gluten 178 + lactosa 178 +
+  verdura 63 = 419); src/engine2/dishes/compositionResolver.js:185-194,247,253-256
+  leído en vivo; scripts/phaseB2/exportCuadernoV5.js:9-19 leído en vivo.
+- Decide: Javi.

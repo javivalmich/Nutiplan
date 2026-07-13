@@ -97,7 +97,7 @@ function valorActualVerdura(verdura) {
   // Ejes crudos del catálogo (códigos internos, p. ej. "brocoli"), sin
   // diccionario de labels -- D-028 no fija la representación de verdura
   // (sub-contrato futuro); ver Leyenda.
-  return verdura.valorEfectivo.length ? verdura.valorEfectivo.join(', ') : '(ninguna)';
+  return verdura.valorEfectivo.length ? verdura.valorEfectivo.join(', ') : 'sin verdura';
 }
 
 /**

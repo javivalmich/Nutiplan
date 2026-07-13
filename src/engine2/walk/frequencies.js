@@ -18,17 +18,19 @@
 //
 // Verdura (asiento 3): sub-regla DIARIA, evaluada ANTES que los
 // contadores semanales -- si el dia no tiene verdura aun y hay candidatos
-// que la cubren (origen "derivada", valorEfectivo no vacio), ese es el
-// nivel preferente del hueco. Infraconteo declarado: freeform
+// que la cubren (origen "derivada" o "confirmada", valorEfectivo no
+// vacio -- D-033, F-SV1->A: pie de igualdad), ese es el nivel preferente
+// del hueco. Infraconteo declarado: freeform sin confirmar
 // ("desconocida") JAMAS satisface el predicado -- sesgo conservador, nunca
 // de menos. El paso ramifica sobre origen y JAMAS invoca ejesVerdura sobre
 // "desconocida" (ver satisfaceVerdura: lee vista.verdura.origen
 // directamente, nunca llama al helper que lanza).
 //
-// origen="confirmada" (D-028 §2, EDITORIAL-S2): satisfaceVerdura AUN NO lo
-// consume -- LANZA si lo recibe (Fork D.2, consumidor de dominio: si un
-// dia cuenta como "con verdura" o no es consecuencia observable). Frontera
-// arquitectonica declarada, no un bug.
+// origen="confirmada" (D-028 §2, EDITORIAL-S2, Fork D.2): satisfaceVerdura
+// la consume en pie de igualdad con "derivada" (D-033, F-SV1->A, retira el
+// throw declarado en EDITORIAL-S2 -- "conocida" tiene dos formas). La
+// frontera se reubica (D-033, F-SV2->A2, enumeracion positiva): lanza
+// sobre cualquier origen fuera de {derivada, confirmada, desconocida}.
 //
 // Activacion y veda (asiento 4): una frecuencia semanal "va corta" si su
 // contador < target, evaluado en cada hueco. Veda de un dia por EVENTO de
@@ -106,26 +108,32 @@ export function resolveFrequencyVista(dish, onIrresoluble = () => {}) {
 }
 
 /**
- * Predicado de verdura del dia (asiento 3): origen "derivada" y con al
- * menos un eje. NUNCA invoca ejesVerdura (que lanza sobre "desconocida")
- * -- lee vista.verdura.origen directamente, ramificando sobre el origen.
- * Freeform ("desconocida") siempre da false aqui -- infraconteo
- * declarado, sesgo conservador.
+ * Predicado de verdura del dia (asiento 3, D-033 F-SV1->A/F-SV2->A2):
+ * "derivada" y "confirmada" conocen la verdura en pie de igualdad --
+ * satisface con al menos un eje. NUNCA invoca ejesVerdura (que lanza
+ * sobre "desconocida") -- lee vista.verdura.origen directamente,
+ * ramificando sobre el origen. "desconocida" retorna false ANTES de
+ * leer valorEfectivo (disciplina f8: ese campo no existe en ese origen,
+ * compositionResolver.js:193).
  *
- * LANZA si vista.verdura.origen==="confirmada" (D-028 §2, EDITORIAL-S2,
- * Fork D.2): este consumidor de dominio aun no ha negociado si una verdura
- * confirmada cuenta para la sub-regla diaria -- ver banner del modulo.
+ * LANZA sobre cualquier origen fuera de {derivada, confirmada,
+ * desconocida} (D-033, F-SV2->A2: enumeracion positiva con frontera --
+ * las fronteras se declaran, no se heredan por omision; mismo principio
+ * que instalo el throw retirado de EDITORIAL-S2).
  * @param {object} vista
  * @returns {boolean}
  */
 export function satisfaceVerdura(vista) {
-  if (vista.verdura.origen === 'confirmada') {
-    throw new Error(
-      'satisfaceVerdura: verdura trae origen="confirmada" -- este consumidor aun no ha negociado S3 ' +
-      '(D-028 §2, EDITORIAL-S2, Fork D.2: consumidor de dominio, frontera arquitectonica).'
-    );
+  const { origen } = vista.verdura;
+  if (origen === 'desconocida') return false;
+  if (origen === 'derivada' || origen === 'confirmada') {
+    return vista.verdura.valorEfectivo.length > 0;
   }
-  return vista.verdura.origen === 'derivada' && vista.verdura.valorEfectivo.length > 0;
+  throw new Error(
+    `satisfaceVerdura: origen no contemplado "${origen}" ` +
+    '(D-033, F-SV2->A2: enumeracion positiva con frontera; '
+    + 'D-028 §2 define derivada|confirmada|desconocida).'
+  );
 }
 
 function diaAnterior(day) {

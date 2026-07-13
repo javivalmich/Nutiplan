@@ -301,27 +301,48 @@ describe('sin intervencion (f12, mitad "silencio"): ningun target corto ni verdu
   });
 });
 
-describe('S2 (D-028 §2) — T5 [D.2] satisfaceVerdura es CONSUMIDOR DE DOMINIO: LANZA sobre confirmada', () => {
-  // Doctrina Fork D.2 (ratificada, adenda Fase 1 EDITORIAL-S2): satisfaceVerdura
-  // tiene consecuencia observable (si el dia cuenta como "con verdura" o
-  // no) -- LANZA sobre origen="confirmada", frontera arquitectonica, no bug.
-  it('lanza, nombrando satisfaceVerdura y S3, al recibir verdura.origen="confirmada"', () => {
-    const vistaConConfirmacion = { proteinType: null, verdura: { origen: 'confirmada', valorEfectivo: ['tomate'] } };
+describe('D-033 [F-SV1→A, F-SV2→A2] satisfaceVerdura: confirmada cuenta como conocida', () => {
+  // Sucesora de "S2 (D-028 §2) — T5 [D.2] satisfaceVerdura es CONSUMIDOR DE
+  // DOMINIO: LANZA sobre confirmada" (retirada por D-033: la frontera que
+  // antes lanzaba sobre origen="confirmada" se retira -- "conocida" tiene
+  // dos formas, derivada y confirmada, pie de igualdad (F-SV1->A). La
+  // frontera se reubica: ahora lanza sobre CUALQUIER origen no
+  // contemplado por D-028 §2 (F-SV2->A2, enumeracion positiva).
+  it('T1: confirmada + ejes no vacios -> true', () => {
+    const vistaConfirmada = { proteinType: null, verdura: { origen: 'confirmada', valorEfectivo: ['tomate'] } };
+    expect(satisfaceVerdura(vistaConfirmada)).toBe(true);
+  });
+
+  it('T2: confirmada + ejes vacios -> false', () => {
+    const vistaConfirmadaVacia = { proteinType: null, verdura: { origen: 'confirmada', valorEfectivo: [] } };
+    expect(satisfaceVerdura(vistaConfirmadaVacia)).toBe(false);
+  });
+
+  it('T3: derivada + ejes no vacios -> true (regresion: el mundo A no rompe el mundo derivado)', () => {
+    const vistaDerivada = { proteinType: null, verdura: { origen: 'derivada', valorEfectivo: ['tomate'] } };
+    expect(satisfaceVerdura(vistaDerivada)).toBe(true);
+  });
+
+  it('T4: derivada + ejes vacios -> false', () => {
+    const vistaDerivadaVacia = { proteinType: null, verdura: { origen: 'derivada', valorEfectivo: [] } };
+    expect(satisfaceVerdura(vistaDerivadaVacia)).toBe(false);
+  });
+
+  it('T5: desconocida -> false, sin lanzar, sin leer valorEfectivo (patron f8: sin el campo en la vista)', () => {
+    expect(() => satisfaceVerdura(vistaVerduraDesconocida())).not.toThrow();
+    expect(satisfaceVerdura(vistaVerduraDesconocida())).toBe(false);
+  });
+
+  it('T6: origen no contemplado -> lanza, nombrando satisfaceVerdura y el origen recibido', () => {
+    const vistaOrigenInventado = { proteinType: null, verdura: { origen: 'estado-inventado', valorEfectivo: ['x'] } };
     let thrown;
     try {
-      satisfaceVerdura(vistaConConfirmacion);
+      satisfaceVerdura(vistaOrigenInventado);
     } catch (err) {
       thrown = err;
     }
     expect(thrown).toBeDefined();
     expect(thrown.message).toMatch(/satisfaceVerdura/);
-    expect(thrown.message).toMatch(/S3/);
-  });
-
-  it('sigue funcionando sin cambios para derivada/desconocida (comportamiento actual, sin cambio) -- [3.3] verifica el RESULTADO, no solo ausencia de throw', () => {
-    const vistaDerivada = { proteinType: null, verdura: { origen: 'derivada', valorEfectivo: ['tomate'] } };
-    const vistaDesconocida = { proteinType: null, verdura: { origen: 'desconocida' } };
-    expect(satisfaceVerdura(vistaDerivada)).toBe(true);
-    expect(satisfaceVerdura(vistaDesconocida)).toBe(false);
+    expect(thrown.message).toMatch(/estado-inventado/);
   });
 });

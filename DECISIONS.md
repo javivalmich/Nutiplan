@@ -1400,3 +1400,46 @@ Fuente del diagnóstico: docs/auditoria-registro-2026-07-09.md.
   verdura 63 = 419); src/engine2/dishes/compositionResolver.js:185-194,247,253-256
   leído en vivo; scripts/phaseB2/exportCuadernoV5.js:9-19 leído en vivo.
 - Decide: Javi.
+
+## D-032 — [2026-07-13] evaluateVetoFromVista como consumidor puro de valorEfectivo (F-V1→A1)
+
+Decisión (fork F-V1, opción A1, ratificada 2026-07-13):
+`evaluateVetoFromVista` (src/engine2/walk/vetoes.js) pasa a ser un
+consumidor puro de `valorEfectivo`. No ramifica por `origen`. El throw
+sobre `origen="confirmada"` (vetoes.js:65-68 al HEAD a0d95c0) se retira
+porque la decisión que custodiaba ya no está pendiente: la precedencia
+entre confirmada, derivada y desconocida es responsabilidad exclusiva de
+`buildCampoComposicion` (compositionResolver.js:185-194 al mismo HEAD),
+aguas arriba del veto, conforme al contrato D-028 §2.
+
+Consecuencia de dominio: un plato con `gluten=false` confirmado por el
+cocinero sobrevive al veto de un intolerante al gluten; con `gluten=true`
+confirmado, es vetado con motivo "valor". El eje lactosa se comporta de
+forma simétrica. La ausencia de valor mantiene el comportamiento vigente
+(veto con motivo "desconocida") — no se decide aquí, ya estaba en código.
+
+Causa en el momento de la decisión: el reconocimiento R-0 (2026-07-13,
+sobre HEAD a0d95c0) verificó que el veto ya consume la vista con
+precedencia resuelta (evaluateVetoFromVista recibe el resultado de
+resolveDishComposition, vetoes.js:93) y que el camino confirmada es
+estructuralmente inalcanzable en producción sin el cableado de
+fuenteEditorial (tripwire de aridad en
+src/engine2/dishes/tests/s2-fuenteEditorial-callsites.test.js:156-169).
+Mantener una rama por origen en el consumidor reintroduciría lógica de
+precedencia fuera de su función de custodia.
+
+Fuera de alcance de esta decisión: (1) el cableado de
+dishCompositionConfirmations.json a call-sites de producción — concern
+separado, PR posterior; (2) el eje verdura, que no participa del veto
+(FIELD_TO_COMPOSITION_KEY, vetoes.js:35-38) y pertenece al throw
+`satisfaceVerdura`; (3) cualquier cambio al tratamiento de vistas
+derivadas, que es comportamiento vigente.
+
+Precondición registrada para el PR de código (PR-3): verificar y citar
+cómo `buildCampoComposicion` puebla `valorEfectivo` para cada origen
+(confirmada y derivada) antes de fijar criterios de aceptación, de modo
+que estos descansen sobre comportamiento observado y no sobre suposición
+implícita.
+
+Referencias: D-028 §2 (contrato {origen, valorEfectivo?, valorDerivado?}),
+D-023 (anclas), informe R-0 de 2026-07-13.

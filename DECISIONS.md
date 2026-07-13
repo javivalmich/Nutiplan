@@ -1509,3 +1509,111 @@ verdura ya lanzan ante estado no contemplado.
    `valorEfectivo: []` → false.
 
 Ratificado por Javi el 2026-07-13 sobre reporte R-0 en vivo.
+
+## D-034 — buildPlatosRows: render de la fila confirmada (BP-1→A, BP-2a, BP-2b) [2026-07-13]
+
+**Contexto.** Tercer y último throw de S3 (frontera arquitectónica
+declarada en EDITORIAL-S2, Fork D.2). `buildPlatosRows`
+(scripts/phaseB2/exportCuadernoV5.js) lanza vía `assertNoConfirmada`
+ante `origen === 'confirmada'` en cada campo de cada fila. La pregunta
+—qué muestra el cuaderno en una fila ya confirmada— es editorial: la
+respondió el cocinero desde el oficio; la cara de custodia la ratificó
+el arquitecto.
+
+**Hechos verificados en R-0 (HEAD e434faf, 805/805):**
+- El throw sigue vivo (exportCuadernoV5.js:76-83, llamado :125-127) y
+  es inalcanzable en producción: el runner llama buildPlatosRows() sin
+  fuenteEditorial (runExportCuadernoV5.js:39), luego ningún campo
+  resuelve 'confirmada'. El propio código lo documenta (:71-72).
+- El render de origen='confirmada' NO existe hoy: el throw corta antes
+  de ensamblar la fila (:128). No es una modificación de comportamiento
+  sino la definición primera de un estado nunca renderizado.
+- confirmar_valor nace en blanco por literal incondicional '' (:134,
+  137,140), vigilado por el test de custodia (:143-160). El lateral
+  real (419 confirmaciones, 178 gluten + 178 lactosa + 63 verdura,
+  15 de ellas verdura con valor:[], commit 2c5d4bb) NUNCA se lee de
+  vuelta hacia el generador: lo escribe runImportCuadernoV5.js, no el
+  export. No existe ruta import→export, ni para prellenar ni para
+  vaciar.
+- El bit de activación de la celda de confirmación es hoy
+  origen_actual === 'desconocida' (:296-315): solo desconocida se
+  desbloquea.
+- valorActualVerdura usa hoy '(ninguna)' para el vacío derivado (:100).
+- Hueco de cobertura: assertNoConfirmada se prueba para gluten y
+  verdura, no para lactosa (:277-320).
+
+**Decisión BP-1 → A (display por inyección) — arquitecto.** El valor
+confirmado llega a valor_actual porque el runner inyecta el lateral
+como fuenteEditorial y el resolver ejecuta la precedencia que ya sabe
+hacer (buildCampoComposicion, compositionResolver.js:185-193). El
+lateral NO se reescribe; 'confirmada' permanece distinguible en la
+fuente; confirmar_valor sigue siendo el literal ''. Causa verdadera:
+es la única lectura compatible con la guarda de idempotencia del runner
+y con la doctrina de custodia de los dos throws previos. Se descarta B
+(promoción: escribir el confirmado de vuelta en dishes.json y consumir
+la entrada del lateral) porque colapsaría 'confirmada' en 'derivada',
+destruiría el rastro de origen que PR-3/PR-4 protegen, y contradiría
+el hash-gate del catálogo canónico.
+
+**Decisión BP-2a → valor "sin verdura" — cocinero.** valor_actual de
+una verdura confirmada muestra el valor confirmado. Para el vacío
+confirmado (los 15 con valor:[]), la celda dice "sin verdura" como
+afirmación culinaria sobre el plato — NO '(ninguna)', NO
+"sin verdura — confirmado por ti". Causa verdadera (palabra del
+cocinero): (1) '(ninguna)', con su paréntesis-comodín, colisiona
+tipográficamente con 'desconocida', el estado del que precisamente hay
+que distinguirlo en un repaso en diagonal; (2) añadir la procedencia a
+la celda de valor viola la separación que el cuaderno ya sostiene —una
+verdura confirmada con contenido dice "brócoli, zanahoria", no
+"brócoli, zanahoria — confirmado por ti"; la procedencia se lee en las
+columnas por/fecha. El vacío confirmado no es excepción a esa regla.
+Corolario de coherencia: "sin verdura" reemplaza a '(ninguna)' para
+AMBOS orígenes (derivada y confirmada), porque la afirmación es sobre
+el plato, no sobre quién la hizo; derivada-vacía y confirmada-vacía
+dicen lo mismo en valor_actual y se separan por origen_actual. Si el
+diseño necesita marcar el vacío como valor especial frente a una lista
+de códigos, se distingue por estilo (cursiva, otro tono de gris), no
+por más palabras.
+
+**Decisión BP-2b → celda editable siempre — cocinero.** La celda de
+confirmación de una fila confirmada nace en blanco Y editable. El
+predicado de activación pasa de `origen === 'desconocida'` a
+`origen !== 'derivada'`: se desbloquean desconocida y confirmada; solo
+la derivada firme queda gris-bloqueada. Causa verdadera (palabra del
+cocinero): la protección contra el error accidental no es el candado
+sino el ritual de firma ya existente —una escritura sin `por` no se
+importa; un blanco no hace nada porque blanco significa "no tocado"—.
+El candado solo añadiría fricción a la corrección, y la fricción en las
+correcciones produce el peor resultado: datos que se saben mal y se
+quedan mal por pereza. Analogía del oficio: corregir un escandallo es
+tachar y escribir encima con firma y fecha, no pedir la llave. Cláusula
+de reapertura: el candado tendría sentido el día que haya varios
+anotadores y se quiera impedir que uno pise la firma de otro sin
+ceremonia. Ese día no es hoy; cuando llegue, esta decisión se revisa.
+
+**Límite de custodia para el lado ingesta (fuera de este PR;
+gobierna el futuro PR de re-ingesta).** En el mundo de segunda pasada,
+una celda de confirmación en blanco sobre una fila ya confirmada
+significa "no tocado en esta ronda", NUNCA revocación de la
+confirmación existente. El importador no debe interpretar blanco como
+borrado. Es la regla que el propio cocinero estableció ("blanco
+significa no tocado"), no una restricción impuesta. Hoy es inobservable
+porque el ciclo de re-ingesta no existe; se asienta ahora para cerrar
+la puerta antes de que se abra.
+
+**Salvaguardas para el PR de implementación (PR-5):**
+1. Retirada segura por construcción: sin fuenteEditorial en el runner,
+   'confirmada' es inalcanzable en producción. El cableado del runner
+   (inyectar el lateral) es PR posterior e independiente; el render se
+   define y testea con vistas sintéticas.
+2. El sucesor del test del throw cubre los TRES campos (gluten,
+   lactosa, verdura), cerrando el hueco de lactosa observado en R-0.
+3. El test de custodia (confirmar_valor nace '') debe permanecer verde
+   sin cambios: BP-1→A no toca esa celda.
+4. Casos de render a fijar por test: verdura confirmada con contenido
+   → join de ejes; verdura confirmada vacía → "sin verdura"; derivada
+   vacía → "sin verdura" (unificación BP-2a); activación desbloqueada
+   para confirmada (BP-2b).
+
+Ratificado por Javi (BP-1) y el cocinero (BP-2a, BP-2b) el 2026-07-13
+sobre reporte R-0 en vivo.

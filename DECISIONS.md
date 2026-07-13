@@ -1443,3 +1443,69 @@ implícita.
 
 Referencias: D-028 §2 (contrato {origen, valorEfectivo?, valorDerivado?}),
 D-023 (anclas), informe R-0 de 2026-07-13.
+
+## D-033 — satisfaceVerdura: confirmada cuenta como conocida (F-SV1→A, F-SV2→A2) [2026-07-13]
+
+**Contexto.** Segundo throw de S3 (frontera arquitectónica declarada
+en EDITORIAL-S2, Fork D.2). `satisfaceVerdura` (src/engine2/walk/
+frequencies.js) lanzaba ante `origen === 'confirmada'` porque el
+predicado se escribió en el mundo de dos estados, donde
+`origen === 'derivada'` significaba "conocida". Tras D-028 §2,
+"conocida" tiene dos formas: derivada y confirmada.
+
+**Hechos verificados en R-0 (HEAD 64bdc6e, 801/801):**
+- El predicado actual es `origen === 'derivada' &&
+  valorEfectivo.length > 0`. `origen` es portante, no accesorio:
+  `desconocida` no trae `valorEfectivo` (compositionResolver.js:193),
+  por lo que alguna guarda sobre origen debe sobrevivir (disciplina
+  f8: nunca leer el valor sobre desconocida).
+- Territorios disjuntos por construcción: en scaffold, verdura nunca
+  es `desconocida` (derivación siempre presente,
+  compositionResolver.js:218,228); en freeform, nunca es `derivada`
+  (valorDerivado siempre undefined, compositionResolver.js:256).
+  No existe conflicto derivada-vs-confirmada que arbitrar en este eje.
+- El lateral contiene 63/63 confirmaciones de verdura sobre freeform;
+  cero sobre scaffold. Una creencia previa de que cubrían dos
+  poblaciones quedó falsificada por el reconocimiento.
+- Únicos call-sites: registerConsumption y chooseFrequencyLevel
+  (walk runtime). Sin consumidores de tooling.
+
+**Decisión F-SV1 → A.** Una verdura confirmada satisface el predicado
+del día en pie de igualdad con una derivada. Causa verdadera: la
+confirmación es la palabra del cocinero sobre la composición real del
+plato, con autoridad igual o mayor que una derivación de tupla; el
+principio rector de la cadena EDITORIAL es que el dato confirmado
+entra al motor. Consecuencia observable (solo tras el futuro PR de
+cableado de fuenteEditorial, no antes): los platos freeform con
+verdura confirmada dejan de ser invisibles para el cómputo semanal
+(diasConVerdura) y para la preferencia de candidatos con verdura.
+
+**Decisión F-SV2 → A2.** Formulación por enumeración positiva con
+frontera: `derivada` y `confirmada` se enumeran como orígenes que
+conocen la verdura; un origen no contemplado lanza. Causa verdadera:
+misma doctrina que instaló el throw de S2 — las fronteras se declaran,
+no se heredan por omisión. Si D-028 §2 creciera, este punto volvería
+a preguntar en vez de suponer. Se descarta A1
+(`origen !== 'desconocida'`) porque dejaría pasar en silencio
+cualquier origen futuro como "conocido". Precedente: los helpers de
+verdura ya lanzan ante estado no contemplado.
+
+**Salvaguardas registradas para el PR de implementación (PR-4):**
+1. Retirada segura por construcción: sin cableado de fuenteEditorial
+   a call-sites de producción, `origen='confirmada'` es inalcanzable
+   en runtime (corroborado: runWalk.frequencies.test.js sin
+   ocurrencias). El wiring es PR posterior e independiente.
+2. Precondición verificada: comprobar en el lateral si existe alguna
+   confirmación de verdura con `valor: []` (cocinero afirmando
+   "sin verdura"). El predicado la maneja (`length > 0` → false),
+   pero los criterios de aceptación deben citar el caso observado,
+   no supuesto.
+3. VISTA_NEUTRAL (frequencies.js:78-81) queda fuera de alcance:
+   política de fallback para irresolubles, shape `derivada`, no toca
+   `confirmada`. NO TOCAR.
+4. Test discriminante ratificado: vista sintética
+   `{origen:'confirmada', valorEfectivo:['tomate']}` → true bajo A
+   (false bajo la alternativa B descartada); control por mutación
+   `valorEfectivo: []` → false.
+
+Ratificado por Javi el 2026-07-13 sobre reporte R-0 en vivo.

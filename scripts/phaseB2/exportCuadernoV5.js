@@ -63,29 +63,28 @@ export const COMPOSITION_FIELDS = Object.freeze(['gluten', 'lactosa', 'verdura']
 
 /**
  * LANZA si un campo de composicion (D-028 §2, contrato del resolver) trae
- * origen="confirmada" (Fork D.2, EDITORIAL-S2): este generador es un
- * CONSUMIDOR DE DOMINIO -- interpreta el origen para decidir que se
- * escribe en el cuaderno exportado, consecuencia observable. Frontera
- * arquitectonica declarada, no un bug: S3 la retira cuando decida como se
- * exporta un plato ya confirmado (¿se sigue pidiendo confirmacion?
- * ¿se muestra de otro modo?). Con fuenteEditorial ausente (unico camino de
- * produccion hoy, ver T6/invariante central del PR), esto nunca se dispara.
+ * un origen no contemplado (ni derivada, ni confirmada, ni desconocida).
+ * D-034 (BP-1→A, BP-2b) negoció S3: 'confirmada' ya es un caso válido de
+ * render, con el mismo vocabulario de display que 'derivada' -- la
+ * frontera de Fork D.2 no desaparece, se reubica de 'confirmada' a
+ * "origen no contemplado" (doctrina D-033/F-SV2→A2, frontera positiva).
  * @param {string} origen
  * @param {string} nombreCampo solo para el mensaje de error
  */
-function assertNoConfirmada(origen, nombreCampo) {
-  if (origen === 'confirmada') {
+function assertOrigenContemplado(origen, nombreCampo) {
+  if (origen !== 'derivada' && origen !== 'confirmada' && origen !== 'desconocida') {
     throw new Error(
-      `buildPlatosRows: campo "${nombreCampo}" trae origen="confirmada" -- este consumidor aun no ha ` +
-      'negociado S3 (D-028 §2, EDITORIAL-S2, Fork D.2: consumidor de dominio, frontera arquitectonica).'
+      `buildPlatosRows: campo "${nombreCampo}" trae origen="${origen}" no contemplado ` +
+      '(D-034: solo derivada, confirmada o desconocida).'
     );
   }
 }
 
 // origen_actual del cuaderno (D-028 §4) usa el mismo vocabulario
-// derivada/desconocida que D-028 §2 ya usa para estos dos estados -- una
-// vez descartada 'confirmada' (assertNoConfirmada), vista.containsX.origen
-// se escribe TAL CUAL en *_origen_actual, sin traduccion.
+// derivada/desconocida que D-028 §2 ya usa para estos dos estados --
+// 'confirmada' (D-034, BP-1→A) entra por la misma rama que 'derivada':
+// vista.containsX.origen se escribe TAL CUAL en *_origen_actual, sin
+// traduccion.
 
 function valorActualBooleano(campo) {
   if (campo.origen === 'desconocida') return 'desconocida';
@@ -122,9 +121,9 @@ export function buildPlatosRows(opts = {}) {
   for (let i = 0; i < dishes.length; i++) {
     const dish = dishes[i];
     const vista = vistas[i];
-    assertNoConfirmada(vista.containsGluten.origen, 'gluten');
-    assertNoConfirmada(vista.containsLactosa.origen, 'lactosa');
-    assertNoConfirmada(vista.verdura.origen, 'verdura');
+    assertOrigenContemplado(vista.containsGluten.origen, 'gluten');
+    assertOrigenContemplado(vista.containsLactosa.origen, 'lactosa');
+    assertOrigenContemplado(vista.verdura.origen, 'verdura');
     rows.push({
       n: i + 1,
       nombre: dish.nombre,
@@ -288,15 +287,16 @@ export async function buildWorkbook(rows, opts = {}) {
 
   for (const r of rows) wsPlatos.addRow(r);
 
-  // Asimetría estructural (lectura B, D-028 enmendada): confirmar_valor
-  // desbloqueado SOLO en el lado solicitado (origen_actual="desconocida").
-  // El lado derivado queda bloqueado + gris; la excepción por iniciativa
-  // se documenta en la Leyenda como desprotección manual, no como celda
-  // desbloqueada por defecto -- así la asimetría es discriminable por test.
+  // Asimetría estructural (lectura B, D-028 enmendada; BP-2b D-034):
+  // confirmar_valor desbloqueado cuando origen_actual !== 'derivada'
+  // (desconocida Y confirmada activas). Solo el lado derivado firme queda
+  // bloqueado + gris; la excepción por iniciativa se documenta en la
+  // Leyenda como desprotección manual, no como celda desbloqueada por
+  // defecto -- así la asimetría es discriminable por test.
   for (let i = 0; i < rows.length; i++) {
     const excelRow = wsPlatos.getRow(i + 2); // +1 cabecera, +1 base-1
     for (const field of COMPOSITION_FIELDS) {
-      const activo = excelRow.getCell(`${field}_origen_actual`).value === 'desconocida';
+      const activo = excelRow.getCell(`${field}_origen_actual`).value !== 'derivada';
       const valorCell = excelRow.getCell(`${field}_valor_actual`);
       const confirmCell = excelRow.getCell(`${field}_confirmar_valor`);
       valorCell.protection = { locked: true };

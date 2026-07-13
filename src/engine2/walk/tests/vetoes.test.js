@@ -134,30 +134,67 @@ describe('computeVetoUniverse — construccion de universo, restringida al espac
   });
 });
 
-describe('S2 (D-028 §2) — T5 [D.2] evaluateVetoFromVista es CONSUMIDOR DE DOMINIO: LANZA sobre confirmada', () => {
-  // Doctrina Fork D.2 (ratificada, adenda Fase 1 EDITORIAL-S2): un
-  // consumidor que interpreta el origen y tiene consecuencia observable
-  // (aqui: si un plato queda vetado o no) LANZA sobre origen="confirmada"
-  // -- frontera arquitectonica, no un bug: declara que este consumidor aun
-  // no ha negociado S3.
-  it('lanza, nombrando evaluateVetoFromVista y S3, al recibir un campo con origen="confirmada"', () => {
-    const vistaConConfirmacion = {
+describe('D-032 (F-V1→A1) — evaluateVetoFromVista es CONSUMIDOR PURO de valorEfectivo, incluida origen="confirmada"', () => {
+  // Doctrina previa (Fork D.2, S2) lanzaba sobre origen="confirmada": el
+  // consumidor aun no habia negociado que significa vetar sobre una
+  // confirmacion editorial. D-032 (F-V1, opcion A1, ratificada 2026-07-13)
+  // retira esa frontera: el consumidor NO ramifica por origen, solo lee
+  // valorEfectivo -- misma rama que "derivada" (buildCampoComposicion,
+  // compositionResolver.js:185-194, puebla valorEfectivo en ambos casos).
+
+  it('confirmada + valorEfectivo=true se veta con motivo "valor" (A1)', () => {
+    const vista = {
       origen: 'scaffold',
       containsGluten: { origen: 'confirmada', valorEfectivo: true },
       containsLactosa: { origen: 'desconocida' },
     };
-    let thrown;
-    try {
-      evaluateVetoFromVista(vistaConConfirmacion, ['gluten']);
-    } catch (err) {
-      thrown = err;
-    }
-    expect(thrown).toBeDefined();
-    expect(thrown.message).toMatch(/evaluateVetoFromVista/);
-    expect(thrown.message).toMatch(/S3/);
+    expect(evaluateVetoFromVista(vista, ['gluten'])).toEqual([{ campo: 'gluten', motivo: 'valor' }]);
   });
 
-  it('sigue funcionando sin cambios para derivada/desconocida (comportamiento actual, sin cambio) -- [3.3] verifica el RESULTADO, no solo ausencia de throw', () => {
+  it('confirmada + valorEfectivo=false NO veta (A1)', () => {
+    const vista = {
+      origen: 'scaffold',
+      containsGluten: { origen: 'confirmada', valorEfectivo: false },
+      containsLactosa: { origen: 'desconocida' },
+    };
+    expect(evaluateVetoFromVista(vista, ['gluten'])).toEqual([]);
+  });
+
+  it('discriminacion en ambos sentidos: mutar la MISMA vista confirmada de false a true a false transiciona el resultado en cada paso', () => {
+    const vista = {
+      origen: 'scaffold',
+      containsGluten: { origen: 'confirmada', valorEfectivo: false },
+      containsLactosa: { origen: 'desconocida' },
+    };
+    // Paso 1: false confirmado -> no veta.
+    expect(evaluateVetoFromVista(vista, ['gluten'])).toEqual([]);
+
+    // Paso 2: mutar a true -> veta con motivo "valor".
+    vista.containsGluten.valorEfectivo = true;
+    expect(evaluateVetoFromVista(vista, ['gluten'])).toEqual([{ campo: 'gluten', motivo: 'valor' }]);
+
+    // Paso 3: revertir a false -> vuelve a no vetar.
+    vista.containsGluten.valorEfectivo = false;
+    expect(evaluateVetoFromVista(vista, ['gluten'])).toEqual([]);
+  });
+
+  it('simetria en lactosa: confirmada + valorEfectivo=true veta, valorEfectivo=false no veta', () => {
+    const vistaVetada = {
+      origen: 'scaffold',
+      containsGluten: { origen: 'desconocida' },
+      containsLactosa: { origen: 'confirmada', valorEfectivo: true },
+    };
+    expect(evaluateVetoFromVista(vistaVetada, ['lactosa'])).toEqual([{ campo: 'lactosa', motivo: 'valor' }]);
+
+    const vistaLibre = {
+      origen: 'scaffold',
+      containsGluten: { origen: 'desconocida' },
+      containsLactosa: { origen: 'confirmada', valorEfectivo: false },
+    };
+    expect(evaluateVetoFromVista(vistaLibre, ['lactosa'])).toEqual([]);
+  });
+
+  it('sigue funcionando sin cambios para derivada/desconocida (comportamiento vigente, D-032 no lo toca) -- verifica el RESULTADO, no solo ausencia de throw', () => {
     const vistaSinConfirmar = {
       origen: 'freeform',
       containsGluten: { origen: 'derivada', valorEfectivo: true },

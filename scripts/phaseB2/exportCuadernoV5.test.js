@@ -306,21 +306,102 @@ describe('Leyenda: contenido añadido en la enmienda (fecha, 32 ejes, nota no-ve
     expect(textoIncompleto).not.toContain('escribe exactamente «vacío» o «[]»');
   });
 });
-describe('S2 (D-028 §2) — T5 [D.2] buildPlatosRows es CONSUMIDOR DE DOMINIO: LANZA sobre confirmada', () => {
-  // Doctrina Fork D.2 (adenda Fase 1 EDITORIAL-S2, generalizada mas alla de
-  // los 3 sitios nombrados en el prompt de sesion): estadoAOrigenActual/
-  // valorActualBooleano/valorActualVerdura tienen consecuencia observable
-  // (el contenido del cuaderno exportado) -- LANZAN sobre origen=
-  // "confirmada". Se testea a nivel de buildPlatosRows (la funcion
-  // exportada) inyectando vistas via el override opts.vistas ya existente
-  // en el modulo, mismo patron que el "dirty" de linea 80-90.
-  it('lanza, nombrando el generador y S3, si una vista trae containsGluten.origen="confirmada"', () => {
+describe('D-034 [BP-1→A, BP-2b] buildPlatosRows: render de la fila confirmada', () => {
+  // Sucesora del describe retirado "S2 (D-028 §2) — T5 [D.2] ... LANZA sobre
+  // confirmada" (S3 ya negoció: 'confirmada' se renderiza con el mismo
+  // vocabulario que 'derivada', BP-1→A). La frontera no desaparece: se
+  // reubica de 'confirmada' a "origen no contemplado" (ver bloque FRONTERA).
+
+  // VALOR confirmado (BP-1→A): mismo vocabulario que derivada.
+  it('V6: gluten confirmado true -> valor_actual "sí"', () => {
     const dishes = loadCatalog();
     const baseVistas = resolveCatalogComposition(dishes);
     const idx = baseVistas.findIndex((v) => v.origen === 'scaffold');
     const vistas = baseVistas.slice();
     vistas[idx] = { ...vistas[idx], containsGluten: { origen: 'confirmada', valorEfectivo: true } };
 
+    const rows = buildPlatosRows({ dishes, vistas });
+    expect(rows[idx].gluten_valor_actual).toBe('sí');
+  });
+
+  it('V7: lactosa confirmada false -> valor_actual "no"', () => {
+    const dishes = loadCatalog();
+    const baseVistas = resolveCatalogComposition(dishes);
+    const idx = baseVistas.findIndex((v) => v.origen === 'scaffold');
+    const vistas = baseVistas.slice();
+    vistas[idx] = { ...vistas[idx], containsLactosa: { origen: 'confirmada', valorEfectivo: false } };
+
+    const rows = buildPlatosRows({ dishes, vistas });
+    expect(rows[idx].lactosa_valor_actual).toBe('no');
+  });
+
+  it('V8: verdura confirmada [brocoli, zanahoria] -> valor_actual "brocoli, zanahoria"', () => {
+    const dishes = loadCatalog();
+    const baseVistas = resolveCatalogComposition(dishes);
+    const idx = baseVistas.findIndex((v) => v.origen === 'freeform');
+    const vistas = baseVistas.slice();
+    vistas[idx] = { ...vistas[idx], verdura: { origen: 'confirmada', valorEfectivo: ['brocoli', 'zanahoria'] } };
+
+    const rows = buildPlatosRows({ dishes, vistas });
+    expect(rows[idx].verdura_valor_actual).toBe('brocoli, zanahoria');
+  });
+
+  it('V9: verdura confirmada [] -> valor_actual "sin verdura"', () => {
+    const dishes = loadCatalog();
+    const baseVistas = resolveCatalogComposition(dishes);
+    const idx = baseVistas.findIndex((v) => v.origen === 'freeform');
+    const vistas = baseVistas.slice();
+    vistas[idx] = { ...vistas[idx], verdura: { origen: 'confirmada', valorEfectivo: [] } };
+
+    const rows = buildPlatosRows({ dishes, vistas });
+    expect(rows[idx].verdura_valor_actual).toBe('sin verdura');
+  });
+
+  // ACTIVACIÓN (BP-2b): origen_actual !== 'derivada' desbloquea la celda de
+  // confirmación (desconocida Y confirmada activas; solo derivada firme
+  // queda gris-bloqueada). Se verifica sobre el workbook en memoria.
+  it('A5: fila con campo confirmado -> confirmar_valor desbloqueada', async () => {
+    const dishes = loadCatalog();
+    const baseVistas = resolveCatalogComposition(dishes);
+    const idx = baseVistas.findIndex((v) => v.origen === 'scaffold');
+    const vistas = baseVistas.slice();
+    vistas[idx] = { ...vistas[idx], containsGluten: { origen: 'confirmada', valorEfectivo: true } };
+
+    const rows = buildPlatosRows({ dishes, vistas });
+    const wb = await buildWorkbook(rows);
+    const ws = wb.getWorksheet('Platos');
+    const cell = ws.getRow(idx + 2).getCell('gluten_confirmar_valor');
+    expect(cell.protection.locked).toBe(false);
+  });
+
+  it('A6: fila derivada -> confirmar_valor bloqueada y gris (regresión)', async () => {
+    const rows = buildPlatosRows();
+    const idx = rows.findIndex((r) => r.gluten_origen_actual === 'derivada');
+    const wb = await buildWorkbook(rows);
+    const ws = wb.getWorksheet('Platos');
+    const cell = ws.getRow(idx + 2).getCell('gluten_confirmar_valor');
+    expect(cell.protection.locked).toBe(true);
+    expect(cell.fill?.fgColor?.argb).toBe('FFE0E0E0');
+  });
+
+  it('A7: fila desconocida -> confirmar_valor desbloqueada (regresión)', async () => {
+    const rows = buildPlatosRows();
+    const idx = rows.findIndex((r) => r.gluten_origen_actual === 'desconocida');
+    const wb = await buildWorkbook(rows);
+    const ws = wb.getWorksheet('Platos');
+    const cell = ws.getRow(idx + 2).getCell('gluten_confirmar_valor');
+    expect(cell.protection.locked).toBe(false);
+  });
+
+  // FRONTERA positiva (doctrina D-033/F-SV2→A2): la frontera se reubica de
+  // 'confirmada' a "origen no contemplado".
+  it('F1: origen no contemplado ("estado-inventado") lanza, nombrando buildPlatosRows y el origen', () => {
+    const dishes = loadCatalog();
+    const baseVistas = resolveCatalogComposition(dishes);
+    const idx = baseVistas.findIndex((v) => v.origen === 'scaffold');
+    const vistas = baseVistas.slice();
+    vistas[idx] = { ...vistas[idx], containsGluten: { origen: 'estado-inventado', valorEfectivo: true } };
+
     let thrown;
     try {
       buildPlatosRows({ dishes, vistas });
@@ -329,25 +410,111 @@ describe('S2 (D-028 §2) — T5 [D.2] buildPlatosRows es CONSUMIDOR DE DOMINIO: 
     }
     expect(thrown).toBeDefined();
     expect(thrown.message).toMatch(/buildPlatosRows/);
-    expect(thrown.message).toMatch(/S3/);
+    expect(thrown.message).toMatch(/estado-inventado/);
   });
 
-  it('lanza tambien sobre verdura (no extrapolado de gluten: assertNoConfirmada se llama por separado para verdura, ver exportCuadernoV5.js)', () => {
+  it('F2: origen no contemplado ("estado-inventado") en verdura lanza, nombrando buildPlatosRows y el origen', () => {
+    const dishes = loadCatalog();
+    const baseVistas = resolveCatalogComposition(dishes);
+    const idx = baseVistas.findIndex((v) => v.origen === 'freeform');
+    const vistas = baseVistas.slice();
+    vistas[idx] = { ...vistas[idx], verdura: { origen: 'estado-inventado', valorEfectivo: ['tomate'] } };
+
+    let thrown;
+    try {
+      buildPlatosRows({ dishes, vistas });
+    } catch (err) {
+      thrown = err;
+    }
+    expect(thrown).toBeDefined();
+    expect(thrown.message).toMatch(/buildPlatosRows/);
+    expect(thrown.message).toMatch(/estado-inventado/);
+  });
+
+  it('F3: origen no contemplado ("estado-inventado") en lactosa lanza, nombrando buildPlatosRows y el origen', () => {
+    const dishes = loadCatalog();
+    const baseVistas = resolveCatalogComposition(dishes);
+    const idx = baseVistas.findIndex((v) => v.origen === 'scaffold');
+    const vistas = baseVistas.slice();
+    vistas[idx] = { ...vistas[idx], containsLactosa: { origen: 'estado-inventado', valorEfectivo: true } };
+
+    let thrown;
+    try {
+      buildPlatosRows({ dishes, vistas });
+    } catch (err) {
+      thrown = err;
+    }
+    expect(thrown).toBeDefined();
+    expect(thrown.message).toMatch(/buildPlatosRows/);
+    expect(thrown.message).toMatch(/estado-inventado/);
+  });
+
+  // VERDE explícito: 'confirmada' no lanza, en los tres campos donde se
+  // invoca assertOrigenContemplado -- convierte la cobertura implícita de
+  // V6-V9/C1-C3 (ausencia de try/catch) en aserción directa.
+  it('NL1: gluten confirmado no lanza (verde explícito)', () => {
+    const dishes = loadCatalog();
+    const baseVistas = resolveCatalogComposition(dishes);
+    const idx = baseVistas.findIndex((v) => v.origen === 'scaffold');
+    const vistas = baseVistas.slice();
+    vistas[idx] = { ...vistas[idx], containsGluten: { origen: 'confirmada', valorEfectivo: true } };
+
+    expect(() => buildPlatosRows({ dishes, vistas })).not.toThrow();
+  });
+
+  it('NL2: lactosa confirmada no lanza (verde explícito)', () => {
+    const dishes = loadCatalog();
+    const baseVistas = resolveCatalogComposition(dishes);
+    const idx = baseVistas.findIndex((v) => v.origen === 'scaffold');
+    const vistas = baseVistas.slice();
+    vistas[idx] = { ...vistas[idx], containsLactosa: { origen: 'confirmada', valorEfectivo: false } };
+
+    expect(() => buildPlatosRows({ dishes, vistas })).not.toThrow();
+  });
+
+  it('NL3: verdura confirmada no lanza (verde explícito)', () => {
     const dishes = loadCatalog();
     const baseVistas = resolveCatalogComposition(dishes);
     const idx = baseVistas.findIndex((v) => v.origen === 'freeform');
     const vistas = baseVistas.slice();
     vistas[idx] = { ...vistas[idx], verdura: { origen: 'confirmada', valorEfectivo: ['tomate'] } };
 
-    let thrown;
-    try {
-      buildPlatosRows({ dishes, vistas });
-    } catch (err) {
-      thrown = err;
-    }
-    expect(thrown).toBeDefined();
-    expect(thrown.message).toMatch(/buildPlatosRows/);
-    expect(thrown.message).toMatch(/S3/);
+    expect(() => buildPlatosRows({ dishes, vistas })).not.toThrow();
+  });
+
+  // CUSTODIA en los tres campos: confirmar_valor nace '' aunque el campo
+  // llegue confirmado (cierra el hueco de lactosa del R-0).
+  it("C1: fila confirmada de gluten -> gluten_confirmar_valor nace ''", () => {
+    const dishes = loadCatalog();
+    const baseVistas = resolveCatalogComposition(dishes);
+    const idx = baseVistas.findIndex((v) => v.origen === 'scaffold');
+    const vistas = baseVistas.slice();
+    vistas[idx] = { ...vistas[idx], containsGluten: { origen: 'confirmada', valorEfectivo: true } };
+
+    const rows = buildPlatosRows({ dishes, vistas });
+    expect(rows[idx].gluten_confirmar_valor).toBe('');
+  });
+
+  it("C2: fila confirmada de lactosa -> lactosa_confirmar_valor nace ''", () => {
+    const dishes = loadCatalog();
+    const baseVistas = resolveCatalogComposition(dishes);
+    const idx = baseVistas.findIndex((v) => v.origen === 'scaffold');
+    const vistas = baseVistas.slice();
+    vistas[idx] = { ...vistas[idx], containsLactosa: { origen: 'confirmada', valorEfectivo: false } };
+
+    const rows = buildPlatosRows({ dishes, vistas });
+    expect(rows[idx].lactosa_confirmar_valor).toBe('');
+  });
+
+  it("C3: fila confirmada de verdura -> verdura_confirmar_valor nace ''", () => {
+    const dishes = loadCatalog();
+    const baseVistas = resolveCatalogComposition(dishes);
+    const idx = baseVistas.findIndex((v) => v.origen === 'freeform');
+    const vistas = baseVistas.slice();
+    vistas[idx] = { ...vistas[idx], verdura: { origen: 'confirmada', valorEfectivo: ['tomate'] } };
+
+    const rows = buildPlatosRows({ dishes, vistas });
+    expect(rows[idx].verdura_confirmar_valor).toBe('');
   });
 });
 

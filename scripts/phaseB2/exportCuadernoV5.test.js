@@ -95,6 +95,38 @@ describe('asimetría de conteos sobre dishes.json canónico (D-028)', () => {
   });
 });
 
+describe('D-034 (BP-2a) — verdura vacía en valor_actual: "sin verdura"', () => {
+  it('verdura derivada con valorEfectivo:[] → valor_actual = "sin verdura"', () => {
+    const dishes = loadCatalog();
+    const baseVistas = resolveCatalogComposition(dishes);
+    const idx = baseVistas.findIndex((v) => v.verdura.origen === 'derivada');
+    const vistas = baseVistas.slice();
+    vistas[idx] = { ...vistas[idx], verdura: { origen: 'derivada', valorEfectivo: [] } };
+
+    const rows = buildPlatosRows({ dishes, vistas });
+    expect(rows[idx].verdura_valor_actual).toBe('sin verdura');
+  });
+
+  it('regresión: verdura derivada con ejes no vacíos conserva el join', () => {
+    const dishes = loadCatalog();
+    const baseVistas = resolveCatalogComposition(dishes);
+    const idx = baseVistas.findIndex((v) => v.verdura.origen === 'derivada');
+    const vistas = baseVistas.slice();
+    vistas[idx] = { ...vistas[idx], verdura: { origen: 'derivada', valorEfectivo: ['brocoli', 'zanahoria'] } };
+
+    const rows = buildPlatosRows({ dishes, vistas });
+    expect(rows[idx].verdura_valor_actual).toBe('brocoli, zanahoria');
+  });
+
+  it('regresión: verdura desconocida sigue mostrando "desconocida"', () => {
+    const dishes = loadCatalog();
+    const baseVistas = resolveCatalogComposition(dishes);
+    const idx = baseVistas.findIndex((v) => v.verdura.origen === 'desconocida');
+    const rows = buildPlatosRows({ dishes, vistas: baseVistas });
+    expect(rows[idx].verdura_valor_actual).toBe('desconocida');
+  });
+});
+
 describe('asimetría de activación (lock estructural) en el cuaderno', () => {
   it('confirmar_valor de gluten: desbloqueada en scaffold, bloqueada en freeform', async () => {
     const rows = buildPlatosRows();
@@ -391,7 +423,10 @@ describe('S2 (D-028 §2) — T7 [C2-bis, REFORMULADO] gate independiente de cont
   // el baseline de Fase 1) sobre el mismo generador de HEAD (229a491),
   // con este lector independiente, verificado estable en 2 ciclos
   // generar->escribir->leer->volcar consecutivos (ver informe de PR).
-  const BASELINE_SHA256_HEAD = '47969a538e141c94a299595854d35b598ca9ee6674600a4c92d9163272e12436';
+  // Recapturado en PR-5a (D-034, BP-2a): el vacío de verdura
+  // pasa de "(ninguna)" a "sin verdura". Afecta 1 plato
+  // derivada-vacía del catálogo. Hash previo: 47969a538e141c94a299595854d35b598ca9ee6674600a4c92d9163272e12436.
+  const BASELINE_SHA256_HEAD = '5fc6c30c8ca26050704a8405811e2a6de7453f9f9e693f18849cf95fbcff1a55';
 
   it('sha256 del dump independiente del .xlsx generado coincide con el baseline de HEAD', async () => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'exportCuadernoV5-g3-'));

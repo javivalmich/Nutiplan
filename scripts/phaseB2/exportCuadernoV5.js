@@ -103,14 +103,15 @@ function valorActualVerdura(verdura) {
  * Construye las filas del cuaderno a partir del catálogo y su vista de
  * composición. Orden estable: fila i corresponde a dishes[i] (mismo
  * contrato posicional que loadCatalog()/resolveCatalogComposition()).
- * @param {{dishes?: ReadonlyArray<object>, vistas?: object[]}} [opts]
+ * @param {{dishes?: ReadonlyArray<object>, vistas?: object[], fuenteEditorial?: {version: number, confirmed: object}}} [opts]
  *   Overrides para tests; por defecto lee dishes.json canónico vía
  *   loadCatalog() y resuelve su composición vía resolveCatalogComposition().
  * @returns {object[]} filas, cero campos de confirmación rellenados (invariante de custodia)
  */
 export function buildPlatosRows(opts = {}) {
   const dishes = opts.dishes ?? loadCatalog();
-  const vistas = opts.vistas ?? resolveCatalogComposition(dishes);
+  // Precedencia: si el llamador pasa opts.vistas, fuenteEditorial NO se aplica (las vistas ya vienen resueltas).
+  const vistas = opts.vistas ?? resolveCatalogComposition(dishes, { fuenteEditorial: opts.fuenteEditorial });
   if (dishes.length !== vistas.length) {
     throw new Error(
       `buildPlatosRows: dishes (${dishes.length}) y vistas (${vistas.length}) desalineados.`

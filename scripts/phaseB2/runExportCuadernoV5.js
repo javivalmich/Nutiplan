@@ -36,14 +36,18 @@ function ensureConfirmationsLateral(destPath) {
 async function main() {
   const catalogHash = verifyCatalogHash();
 
-  const rows = buildPlatosRows();
+  // Ensure-then-read: si el lateral no existe nace vacío-versionado
+  // (buildEmptyConfirmationsLateral, {version:1,confirmed:{}}) -- equivalente
+  // a no inyectar fuenteEditorial (comportamiento previo, C2).
+  const lateral = ensureConfirmationsLateral(OUTPUT_LATERAL);
+  const fuenteEditorial = JSON.parse(fs.readFileSync(OUTPUT_LATERAL, 'utf8'));
+
+  const rows = buildPlatosRows({ fuenteEditorial });
   const counts = countActiveCells(rows);
   const dumpHash = hashRows(rows);
 
   const wb = await buildWorkbook(rows, { catalogSha256: catalogHash });
   await wb.xlsx.writeFile(OUTPUT_XLSX);
-
-  const lateral = ensureConfirmationsLateral(OUTPUT_LATERAL);
 
   console.log(`dishes.json sha256: ${catalogHash}`);
   console.log(`Total filas: ${rows.length} (esperado ${EXPECTED_TOTAL_ROWS})`);

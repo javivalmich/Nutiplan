@@ -42,6 +42,10 @@ import { loadVerduraVocabulary } from './verduraVocabulary.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SOURCE_PATH = path.resolve(__dirname, './exportCuadernoV5.js');
+// Mismo lateral que lee runExportCuadernoV5.js en produccion (PR-1a, D-035,
+// F-W2->A) -- el objeto COMPLETO {version, confirmed}, no solo .confirmed
+// (ver compositionResolver.js:217/247, que accede fuenteEditorial.confirmed).
+const LATERAL_PATH = path.resolve(__dirname, './output/dishCompositionConfirmations.json');
 
 describe('verificación de hash del catálogo canónico', () => {
   it('el hash de dishes.json coincide con el ratificado en D-028', () => {
@@ -593,13 +597,18 @@ describe('S2 (D-028 §2) — T7 [C2-bis, REFORMULADO] gate independiente de cont
   // Recapturado en PR-5a (D-034, BP-2a): el vacío de verdura
   // pasa de "(ninguna)" a "sin verdura". Afecta 1 plato
   // derivada-vacía del catálogo. Hash previo: 47969a538e141c94a299595854d35b598ca9ee6674600a4c92d9163272e12436.
-  const BASELINE_SHA256_HEAD = '5fc6c30c8ca26050704a8405811e2a6de7453f9f9e693f18849cf95fbcff1a55';
+  // Recapturado por PR-1a (D-035, F-W2->A): buildPlatosRows ahora recibe el
+  // lateral real (LATERAL_PATH), 419 confirmaciones-eje pasan de
+  // origen "desconocida"/"derivada" a "confirmada". Valor anterior
+  // (pre-wiring): 5fc6c30c8ca26050704a8405811e2a6de7453f9f9e693f18849cf95fbcff1a55.
+  const BASELINE_SHA256_HEAD = '7ebb70cc6c6b85d0d2a794ce924845782cbc486023f1bd3e26ec9bfa84c7ce27';
 
   it('sha256 del dump independiente del .xlsx generado coincide con el baseline de HEAD', async () => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'exportCuadernoV5-g3-'));
     const tmpXlsx = path.join(tmpDir, 'cuaderno.xlsx');
     try {
-      const rows = buildPlatosRows();
+      const fuenteEditorial = JSON.parse(fs.readFileSync(LATERAL_PATH, 'utf8'));
+      const rows = buildPlatosRows({ fuenteEditorial });
       const wb = await buildWorkbook(rows);
       await wb.xlsx.writeFile(tmpXlsx);
 
@@ -662,5 +671,47 @@ describe('S2 (D-028 §2) — T7 [C2-bis, REFORMULADO] gate independiente de cont
     } finally {
       fs.rmSync(tmpDir, { recursive: true, force: true });
     }
+  });
+});
+
+describe('PR-1a (D-035, F-W2->A) — wiring de fuenteEditorial: conteos sobre el lateral real', () => {
+  // Criterios de aceptación anticipados #2 y #3 del asiento D-035, contra
+  // el lateral REAL de producción (LATERAL_PATH), no una vista sintética:
+  // los 241 platos tienen hoy 178 confirmaciones de gluten, 178 de lactosa
+  // y 63 de verdura (biyección completa con las celdas activas de
+  // EXPECTED_ACTIVE_COUNTS -- ver countActiveCells), de las cuales 15 de
+  // verdura son valor:[] y deben renderizar "sin verdura" confirmado.
+  function buildWiredRows() {
+    const fuenteEditorial = JSON.parse(fs.readFileSync(LATERAL_PATH, 'utf8'));
+    return buildPlatosRows({ fuenteEditorial });
+  }
+
+  it('filas con origen_actual "confirmada" por eje: gluten 178, lactosa 178, verdura 63', () => {
+    const rows = buildWiredRows();
+    const porEje = {
+      gluten: rows.filter((r) => r.gluten_origen_actual === 'confirmada').length,
+      lactosa: rows.filter((r) => r.lactosa_origen_actual === 'confirmada').length,
+      verdura: rows.filter((r) => r.verdura_origen_actual === 'confirmada').length,
+    };
+    expect(porEje).toEqual({ gluten: 178, lactosa: 178, verdura: 63 });
+  });
+
+  it('exactamente 15 filas renderizan "sin verdura" con origen_actual "confirmada"', () => {
+    const rows = buildWiredRows();
+    const sinVerduraConfirmado = rows.filter(
+      (r) => r.verdura_origen_actual === 'confirmada' && r.verdura_valor_actual === 'sin verdura'
+    );
+    expect(sinVerduraConfirmado.length).toBe(15);
+  });
+
+  it('dirty: sin fuenteEditorial, cero filas resuelven "confirmada" (no-regresión C2)', () => {
+    const rows = buildPlatosRows();
+    const confirmadas = rows.filter(
+      (r) =>
+        r.gluten_origen_actual === 'confirmada' ||
+        r.lactosa_origen_actual === 'confirmada' ||
+        r.verdura_origen_actual === 'confirmada'
+    );
+    expect(confirmadas.length).toBe(0);
   });
 });

@@ -1617,3 +1617,78 @@ la puerta antes de que se abra.
 
 Ratificado por Javi (BP-1) y el cocinero (BP-2a, BP-2b) el 2026-07-13
 sobre reporte R-0 en vivo.
+
+## D-035 — Plan de wiring de fuenteEditorial: dos PRs, costura por opts, resolución de unidad del lateral [2026-07-14]
+
+**Contexto.** Tras D-034 el motor y el cuaderno saben tratar el mundo
+confirmado, pero ningún camino de producción inyecta el lateral
+(verificado en R-0 sobre HEAD 8dac5f8: `runExportCuadernoV5.js:39`
+llama `buildPlatosRows()` sin argumentos; el test
+`s2-fuenteEditorial-callsites.test.js:156` afirma que ningún
+call-site de producción pasa `fuenteEditorial` al resolver).
+
+**F-W1 → A (ratificado): dos PRs separados.**
+- PR-1a — wiring del cuaderno: inyección del lateral en la cadena
+  del export V5. Superficie de test: cuaderno. Rojo esperado:
+  recaptura de `BASELINE_SHA256_HEAD` (`exportCuadernoV5.test.js:596`,
+  valor pre-wiring `5fc6c30c8ca26050704a8405811e2a6de7453f9f9e693f18849cf95fbcff1a55`)
+  y el tripwire de aridad S2. La recaptura es la razón de ser
+  declarada del PR, no colateral.
+- PR-1b — wiring del motor: inyección del lateral en el runtime del
+  walk. Superficie de test: planes. Arrastra derogaciones de registro
+  (las 6 anclas cuya justificación era la ausencia de confirmación,
+  y D-023), que tendrán su propia ronda de forks antes de código.
+Causa real: superficies observables distintas con rojos distintos;
+evidencia R-0 de que el walk no tiene hoy ningún camino receptor;
+precedente de un concern por PR (D-032).
+Rechazada la opción B (PR único): mezclaba cableado mecánico con
+derogaciones de decisiones y acoplaba el revert de ambas superficies.
+
+**F-W2 → A (ratificado): costura por `opts.fuenteEditorial` en
+`buildPlatosRows`.**
+El runner carga el lateral y llama
+`buildPlatosRows({ fuenteEditorial })`; internamente
+`exportCuadernoV5.js` pasa la fuente a `resolveCatalogComposition`.
+Esto extiende de forma aditiva el módulo asentado en D-034 — se
+declara aquí explícitamente.
+Rechazada la opción B (runner construye vistas por `opts.vistas`):
+duplicaba la lógica de defaults de `exportCuadernoV5.js:112-113` en
+un segundo lugar (riesgo de drift) y resignificaba una costura de
+test como vía de inyección de producción sin declararlo.
+
+**Tripwire de aridad: reescritura declarada.**
+`s2-fuenteEditorial-callsites.test.js` pasa de "ningún call-site de
+producción pasa fuenteEditorial" a allowlist explícita con un único
+call-site ratificado (la cadena del export V5). Conserva su función
+de tripwire para el resto del árbol: en particular, el walk no puede
+cablearse silenciosamente antes de PR-1b. La retirada total fue
+rechazada. La reescritura viaja en PR-1a.
+
+**Resolución de unidad del lateral (cierra la discrepancia B5 del
+R-0 de 2026-07-14).**
+El lateral `dishCompositionConfirmations.json` contiene
+**241 registros-plato** que suman **419 confirmaciones-eje**
+(gluten 178, lactosa 178, verdura 63). Verificado en vivo sobre
+`d.confirmed`. Vocabulario vinculante a partir de este asiento:
+"registros-plato" y "confirmaciones-eje" son unidades distintas y
+todo conteo debe declarar la suya. Corrección de una derivación
+errónea en notas de sesión previas: las 178 anotaciones scaffold de
+verdura NO son confirmaciones (no llevan `por`); solo las 63
+freeform de verdura lo son.
+
+**Adenda: los 15 `valor:[]` de verdura.**
+De las 63 confirmaciones-eje de verdura, 15 tienen
+`valor: []`. Semántica asentada: `valor:[]` confirmado significa
+"sin verdura" **confirmado por el cocinero** — es información
+positiva, distinta de `desconocida` (`desconocida ≠ sin-verdura`,
+criterio ya vigente del vocabulario v1). En el cuaderno de segunda
+pasada estos 15 deben renderizar "sin verdura" como valor confirmado,
+no como ausencia.
+
+**Criterios de aceptación anticipados para PR-1a (falsables,
+rojo→verde observado):**
+1. `BASELINE_SHA256_HEAD` recapturado tras verificación del dump.
+2. Filas con confirmación desbloqueadas por eje: gluten 178,
+   lactosa 178, verdura 63.
+3. Exactamente 15 renders de "sin verdura" confirmado.
+4. Tripwire de aridad en verde con allowlist de un solo call-site.

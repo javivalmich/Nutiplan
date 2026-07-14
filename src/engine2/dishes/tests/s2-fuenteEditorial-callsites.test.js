@@ -45,8 +45,10 @@ const RESOLVER_MODULE_SUFFIX = 'dishes/compositionResolver.js';
 
 // Aridad MAXIMA permitida en produccion, por funcion exportada -- el
 // argumento siguiente (fuenteEditorial, directo o via {fuenteEditorial})
-// esta reservado a S3. resolveScaffoldComposition/resolveFreeformComposition
-// tienen 2 args REQUERIDOS (tupla|combo, dishId) antes del 3o opcional.
+// esta reservado a los call-sites ratificados en
+// ALLOWLISTED_FUENTE_EDITORIAL_CALLSITES. resolveScaffoldComposition/
+// resolveFreeformComposition tienen 2 args REQUERIDOS (tupla|combo, dishId)
+// antes del 3o opcional.
 const MAX_PRODUCTION_ARITY = Object.freeze({
   resolveDishComposition: 1,
   resolveCatalogComposition: 1,
@@ -54,6 +56,34 @@ const MAX_PRODUCTION_ARITY = Object.freeze({
   resolveFreeformComposition: 2,
   ejesVerdura: 1,
 });
+
+// Allowlist de call-sites de produccion ratificados para pasar
+// fuenteEditorial (D-035, PR-1a, F-W2->A): el UNICO camino de produccion
+// que hoy inyecta el lateral es la cadena del export V5
+// (buildPlatosRows -> resolveCatalogComposition). Cualquier OTRO call-site
+// que pase fuenteEditorial -- en particular el walk del motor, reservado a
+// PR-1b -- sigue siendo una violacion. Clave por (file, name) EXACTO: no
+// basta con el nombre de funcion, asi un futuro call-site en OTRO archivo
+// con la misma funcion no hereda la allowlist silenciosamente.
+const ALLOWLISTED_FUENTE_EDITORIAL_CALLSITES = Object.freeze([
+  Object.freeze({ file: 'scripts/phaseB2/exportCuadernoV5.js', name: 'resolveCatalogComposition', maxArity: 2 }),
+]);
+
+/**
+ * Aridad maxima efectiva para una llamada dada: la allowlisted si (file,
+ * name) coincide EXACTO con una entrada, si no la baseline de
+ * MAX_PRODUCTION_ARITY. Extraida como funcion pura para poder probar el
+ * scoping por archivo sin depender del arbol versionado real.
+ * @param {string} relPath
+ * @param {{name: string}} call
+ * @returns {number}
+ */
+export function effectiveMaxArity(relPath, call) {
+  const allowed = ALLOWLISTED_FUENTE_EDITORIAL_CALLSITES.find(
+    (entry) => entry.file === relPath && entry.name === call.name
+  );
+  return allowed ? allowed.maxArity : MAX_PRODUCTION_ARITY[call.name];
+}
 
 /**
  * Analiza codigo fuente por AST (nunca texto) buscando invocaciones de las
@@ -153,19 +183,40 @@ describe('S2 — T6 [invariante central, GENERATIVO] barrido del arbol versionad
     expect(total).toBeGreaterThan(0);
   });
 
-  it('TODA invocacion de produccion del resolver (arbol versionado, excluidos *.test.js) tiene aridad <= la maxima declarada -- ninguna pasa fuenteEditorial', () => {
+  it('TODA invocacion de produccion del resolver (arbol versionado, excluidos *.test.js) tiene aridad <= la maxima declarada -- ninguna pasa fuenteEditorial salvo el call-site ratificado en ALLOWLISTED_FUENTE_EDITORIAL_CALLSITES', () => {
     const files = listVersionedJsFiles().filter((f) => !isExemptFromResolverArityCheck(f));
     const violaciones = [];
     for (const relPath of files) {
       const code = fs.readFileSync(path.resolve(REPO_ROOT, relPath), 'utf8');
       for (const call of findResolverCalls(code)) {
-        const max = MAX_PRODUCTION_ARITY[call.name];
+        const max = effectiveMaxArity(relPath, call);
         if (call.argCount > max) {
           violaciones.push(`${relPath}:${call.line} ${call.name}(...${call.argCount} args, max ${max})`);
         }
       }
     }
     expect(violaciones).toEqual([]);
+  });
+
+  it('scoping de la allowlist: (file, name) debe coincidir EXACTO -- el mismo nombre de funcion en OTRO archivo no hereda la aridad ampliada', () => {
+    expect(effectiveMaxArity('src/engine2/dishes/walk.js', { name: 'resolveCatalogComposition' })).toBe(
+      MAX_PRODUCTION_ARITY.resolveCatalogComposition
+    );
+    expect(
+      effectiveMaxArity('scripts/phaseB2/exportCuadernoV5.js', { name: 'resolveCatalogComposition' })
+    ).toBe(2);
+  });
+
+  it('control positivo: el call-site allowlisted (cadena del export V5) SIGUE presente en el arbol versionado -- una allowlist obsoleta no pasa desapercibida', () => {
+    const files = listVersionedJsFiles().filter((f) => !isExemptFromResolverArityCheck(f));
+    for (const entry of ALLOWLISTED_FUENTE_EDITORIAL_CALLSITES) {
+      expect(files).toContain(entry.file);
+      const code = fs.readFileSync(path.resolve(REPO_ROOT, entry.file), 'utf8');
+      const calls = findResolverCalls(code).filter(
+        (c) => c.name === entry.name && c.argCount === entry.maxArity
+      );
+      expect(calls.length).toBeGreaterThan(0);
+    }
   });
 
   it('control positivo (exencion): un *.test.js con una invocacion de aridad excedida NO se escanea', () => {

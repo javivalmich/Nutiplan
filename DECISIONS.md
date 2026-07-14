@@ -1692,3 +1692,113 @@ rojo→verde observado):**
    lactosa 178, verdura 63.
 3. Exactamente 15 renders de "sin verdura" confirmado.
 4. Tripwire de aridad en verde con allowlist de un solo call-site.
+
+## D-036 — Topología de inyección de fuenteEditorial en el walk (F-1b-1 → A) [2026-07-14]
+
+**Decisión.** fuenteEditorial entra al motor exclusivamente por su frontera
+pública: como campo opcional del input de runWalk y de buildWeekArc, cargado
+por el caller. engine2 no importa directamente el soporte físico de la fuente
+editorial ni conoce su ubicación; la recibe exclusivamente como dato de
+entrada.
+
+La construcción de vistas se concentra en los productores: computeVetoUniverse
+(veto), anchorVista (ancla) y vistaPorDefecto (frecuencias). Los predicados de
+dominio —hoy evaluateVetoFromVista y satisfaceVerdura— permanecen
+completamente ajenos a fuenteEditorial: consumen vistas ya resueltas, conforme
+al límite construido en D-032/D-033 (los consumidores reciben vistas; los
+productores las construyen).
+
+**Invariante canónico.** Toda resolución de composición durante una ejecución
+del walk utiliza exactamente la misma instancia de fuenteEditorial,
+suministrada desde la frontera del motor. La propiedad protegida es observable
+(unicidad lógica de la instancia por ejecución), no el mecanismo por el que el
+caller la obtenga.
+
+**Consecuencia sobre evaluateVeto.** La resolución de composición deja de
+formar parte de sus responsabilidades. Cualquier supervivencia de evaluateVeto
+deberá respetar esa separación de responsabilidades y quedar fuera del camino
+de producción cuando actúe únicamente como adaptador o helper de pruebas. La
+forma concreta se decidirá en el PR de código.
+
+**Causa.** El R-0 de 1b identificó tres productores independientes de vistas
+que cierran hoy sobre resolveDishComposition(dish) sin opts (vetoes.js:87,
+buildWeekArc.js:126, frequencies.js:100) y verificó que ningún módulo de src/
+importa el lateral (dishCompositionConfirmations.json). La topología adoptada
+preserva esa separación: el lateral es un dato de entrada del motor, no
+conocimiento interno del motor. Las alternativas —inyección local por costura
+y singleton interno del motor— fueron descartadas por romper esa propiedad o
+por impedir que el tripwire pudiera seguir observando la apertura de la
+frontera.
+
+## D-037 — Contrato dual del tripwire de fuenteEditorial (F-1b-2 → C) [2026-07-14]
+
+**Decisión.** El tripwire de aridad (s2-fuenteEditorial-callsites.test.js) se
+reescribe en dos bloques independientes, cada uno demostrando una propiedad
+distinta:
+
+1. **Tripwire positivo (enumerativo).** Únicamente los call-sites expresamente
+ratificados pueden suministrar fuenteEditorial. Allowlist tras PR-1b:
+computeVetoUniverse, anchorVista, vistaPorDefecto (los tres productores de
+D-036) más el call-site ya ratificado del export (exportCuadernoV5.js →
+resolveCatalogComposition). Toda apertura futura de la frontera exige
+modificación visible del test: la fricción es deliberada y es parte del
+mecanismo de gobernanza.
+
+2. **Tripwire negativo (estructural).** La propiedad se define por rol, no por
+nombre: los predicados del dominio no reciben dependencias editoriales. Hoy la
+materializan evaluateVetoFromVista y satisfaceVerdura; si un predicado se
+divide o se renombra, el asiento sigue describiendo la propiedad correcta y el
+test actualiza qué funciones implementan el rol. Este bloque no depende de la
+allowlist.
+
+**Exclusión de alcance.** La rama de medición
+(scripts/phaseP2c/humanScoreAdapter.js) queda deliberadamente fuera del
+dominio de fuenteEditorial en PR-1b. Es una decisión de alcance de este PR, no
+una prohibición arquitectónica permanente: cualquier incorporación futura
+requerirá su propia decisión y la actualización correspondiente del tripwire
+positivo.
+
+**Causa.** D-036 fija dos propiedades independientes —quién puede suministrar
+la fuente y quién jamás la toca— y ambas deben ser falsables por separado. Un
+contrato solo enumerativo dejaría la segunda protegida por convención; un
+contrato solo estructural (por capas) perdería la granularidad del gate de
+ratificación. La separación en dos bloques hace además que el motivo de un
+fallo sea inmediatamente evidente.
+
+## D-038 — Actualización del asiento 3 de D-023 a la luz de la ingesta D6 [2026-07-14]
+
+**Decisión.** Se actualiza el alcance del asiento 3 de D-023 ("micro-ingesta
+de las 6 anclas: descartada"). Su justificación —procedencia heurística de
+gluten/lactosa vía proposeGluten/proposeLactosa, marca "(revisar)" como
+evidencia de no-confirmación— dejó de ser una descripción correcta del estado
+del sistema tras la ingesta real (D6): las 6 anclas tienen hoy entrada
+confirmada limpia en el lateral (gluten:false, lactosa:false, fecha
+2026-07-08, sin marcas). La decisión de D-023 fue correcta con los datos
+disponibles en su momento; lo que se asienta es el cambio del mundo, no un
+error de la decisión.
+
+**Consecuencia observable.** Con el wiring de D-036, las 6 anclas dejan de
+vetarse por "desconocida" para perfiles con intolerancia a gluten o lactosa y
+pasan a sobrevivir conforme a la composición confirmada disponible en el
+lateral (mecanismo introducido por D-032). La fixture del test f18 ("las 6
+anclas son desconocida, cero supervivientes") deja de sostenerse sobre el
+catálogo real; su reescritura corresponde al diseño de PR-1b.
+
+**Lo que permanece vigente.** Permanecen vigentes sin modificación los
+siguientes apartados de D-023: (1) El contrato del ancla: la ausencia de ancla
+elegible sigue sin invalidar el plan — cae la fixture, no el contrato. (2) El
+principio transversal "dato confirmado puede entrar al motor; propuesta
+editorial puede ayudar al editor humano, nunca al motor": PR-1b no lo deroga,
+lo cumple por primera vez. (4) La terminología de D-022: intacta.
+
+**Campo por del lateral.** Contrato verificado en exportCuadernoV5.js ("quién
+confirmó y cuándo, para la fila entera") y reforzado por el invariante de
+custodia del importador (rechaza confirmaciones sin firma): el campo por
+identifica al autor del acto de confirmación registrado en el cuaderno. No
+identifica al ejecutor de la ingesta ni expresa, por sí mismo, la procedencia
+del criterio o conocimiento que motivó dicha confirmación.
+
+**Causa.** Tabla U5 del micro-R-0 de cruce anclas↔lateral (sesión 2026-07-14):
+las 6 identityKey de ANCHORS presentes en dishCompositionConfirmations.json
+con confirmación en ambos ejes de veto, sin eje verdura (consistente con el
+particionado del lateral: verdura solo existe en el subconjunto freeform).

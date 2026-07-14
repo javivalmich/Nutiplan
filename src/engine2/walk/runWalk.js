@@ -154,13 +154,23 @@ function reshapeP1aEntry(entry) {
 /**
  * Rellena los huecos abiertos que expandWeekArc (P1a) deja tras colocar
  * ancla+sobras. No reestructura P1a, no lo modifica: lo consume tal cual.
- * @param {{weekArc: object, catalog: ReadonlyArray<object>, seed: (number|string), memoryStore?: object, profile?: {intolerances?: string[]}}} input
+ *
+ * fuenteEditorial (D-036, dato de entrada del walk, OPCIONAL): ausente ⇒
+ * comportamiento identico al actual (todas las composiciones resuelven sin
+ * fuente, C2/no-regresion). Este modulo NUNCA la carga de disco -- la
+ * recibe por inyeccion del caller y la reenvia a los DOS productores de
+ * vista que gobierna (computeVetoUniverse, vistaPorDefecto vía
+ * initFrequencyState/registerConsumption/chooseFrequencyLevel); el tercer
+ * productor (anchorVista) vive en buildWeekArc.js, fuera de este modulo.
+ * @param {{weekArc: object, catalog: ReadonlyArray<object>, seed: (number|string), memoryStore?: object, profile?: {intolerances?: string[]}, fuenteEditorial?: {version: number, confirmed: object}}} input
  * @returns {{slots: object[], decisionLog: object[]}}
  */
 export function runWalk(input) {
   // input.memoryStore se recibe por inyeccion y NUNCA se lee ni se invoca aqui (D-019, v13):
   // no se desestructura para que quede estructuralmente imposible tocarlo por accidente.
-  const { weekArc, catalog, seed, profile } = input;
+  const {
+    weekArc, catalog, seed, profile, fuenteEditorial,
+  } = input;
   const { slots: p1aSlots, decisionLog: p1aRawLog } = expandWeekArc({ weekArc, catalog, seed });
 
   const slots = new Map();
@@ -175,11 +185,11 @@ export function runWalk(input) {
   const rng = selectRng(seed);
 
   const intolerancias = profile?.intolerances ?? [];
-  const { vetoedIds, conteo: conteoVetos, activo: vetoActivo } = computeVetoUniverse(catalog, intolerancias);
+  const { vetoedIds, conteo: conteoVetos, activo: vetoActivo } = computeVetoUniverse(catalog, intolerancias, { fuenteEditorial });
 
   // Paso 4 (frecuencias, D-024): el estado arranca desde lo que P1a ya
   // coloco (ancla + sobras tambien son consumo, asiento 5).
-  const freqState = initFrequencyState(p1aSlots);
+  const freqState = initFrequencyState(p1aSlots, undefined, fuenteEditorial);
 
   function pushFill(day, momento, dishId, causa, evidencia, alternativasDescartadas) {
     const key = slotKey(day, momento);
@@ -276,7 +286,7 @@ export function runWalk(input) {
       }
 
       pushFill(caprichoDay, momento, chosen.id, causaDish, `${evidenciaDish}; ${evidenciaMomento}`, alternativasDish);
-      registerConsumption(freqState, chosen, caprichoDay); // asiento 5: capricho tambien es consumo
+      registerConsumption(freqState, chosen, caprichoDay, undefined, fuenteEditorial); // asiento 5: capricho tambien es consumo
     }
   }
 
@@ -330,7 +340,9 @@ export function runWalk(input) {
 
       // Paso 4 (frecuencias, D-024): opera sobre candidatesB (post A/B),
       // ANTES del desempate final -- el RNG solo ve el nivel ganador.
-      const { nivel: candidatesFinal, causa: causaFreq, evidencia: notaFreq } = chooseFrequencyLevel({ day, candidatesB, state: freqState });
+      const { nivel: candidatesFinal, causa: causaFreq, evidencia: notaFreq } = chooseFrequencyLevel({
+        day, candidatesB, state: freqState, fuenteEditorial,
+      });
 
       let chosen;
       let causa;
@@ -349,7 +361,7 @@ export function runWalk(input) {
       }
 
       pushFill(day, momento, chosen.id, causa, `${notaA}; ${notaB}${notaFreq ? `; ${notaFreq}` : ''}${notaRng}`, alternativas);
-      registerConsumption(freqState, chosen, day);
+      registerConsumption(freqState, chosen, day, undefined, fuenteEditorial);
     }
   }
 

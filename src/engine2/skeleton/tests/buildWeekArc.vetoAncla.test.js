@@ -119,6 +119,12 @@ describe('chooseAnchor - f20: invariante RNG sobre supervivientes (el vetado nun
   });
 });
 
+// D-038: estos tests (f18) ejercitan el camino SIN fuenteEditorial
+// inyectada -- ninguno la pasa a buildWeekArc, asi que preservan el
+// comportamiento anterior a D-036/D-037 sin cambios (frontera ausente =>
+// identico al actual). Son complementarios del test nuevo mas abajo (D-038:
+// consecuencia observable), que SI inyecta la fuente y prueba la rama
+// contraria (supervivencia) sobre el mismo catalogo real de 6 anclas.
 describe('buildWeekArc - f18: contrato de ausencia sobre el catalogo REAL (las 6 anclas son "desconocida", cero supervivientes)', () => {
   const profileBase = { trainingDays: ['Lunes', 'Miercoles', 'Viernes'], intolerances: ['gluten'] };
 
@@ -178,6 +184,56 @@ describe('buildWeekArc - f18: contrato de ausencia sobre el catalogo REAL (las 6
   it('con intolerances=["lactosa"] (el otro campo del enum) tambien produce cero supervivientes -- las 6 anclas son "desconocida" en AMBOS campos', () => {
     const { weekArc } = buildWeekArc({ profile: { trainingDays: [], intolerances: ['lactosa'] }, seed: 0, strategy: 'x' });
     expect(weekArc.anchors).toEqual([]);
+  });
+});
+
+// D-038 (consecuencia observable de la ingesta real D6, ver DECISIONS.md):
+// con fuenteEditorial inyectada confirmando gluten:false/lactosa:false para
+// las 6 anclas (mismo shape que el lateral real,
+// scripts/phaseB2/output/dishCompositionConfirmations.json, verificado en
+// sesion), las anclas dejan de vetarse por "desconocida" y SOBREVIVEN --
+// contraste directo con f18 (mismo catalogo real de 6 anclas, mismo perfil
+// intolerante, la UNICA variable es la fuente inyectada).
+describe('buildWeekArc - D-038: consecuencia observable -- con fuenteEditorial inyectada, las 6 anclas reales SOBREVIVEN al veto', () => {
+  const fuenteEditorialAnclasLimpias = {
+    version: 1,
+    confirmed: Object.fromEntries(
+      ANCHORS.map((a) => [a.identityKey, {
+        gluten: { valor: false, por: 'D-038-test', fecha: '2026-07-14' },
+        lactosa: { valor: false, por: 'D-038-test', fecha: '2026-07-14' },
+      }]),
+    ),
+  };
+
+  it('intolerances=["gluten"] + fuente inyectada: ancla presente (contraste con f18(a), que sin fuente da weekArc.anchors=[])', () => {
+    const profile = { trainingDays: [], intolerances: ['gluten'] };
+    const { weekArc } = buildWeekArc({
+      profile, seed: 'D-038-gluten', strategy: 'x', fuenteEditorial: fuenteEditorialAnclasLimpias,
+    });
+    expect(weekArc.anchors).toHaveLength(1);
+    expect(weekArc).toHaveProperty('batchDay');
+  });
+
+  it('intolerances=["lactosa"] + fuente inyectada: ancla presente (contraste con f18, ultimo test, que sin fuente da weekArc.anchors=[])', () => {
+    const profile = { trainingDays: [], intolerances: ['lactosa'] };
+    const { weekArc } = buildWeekArc({
+      profile, seed: 'D-038-lactosa', strategy: 'x', fuenteEditorial: fuenteEditorialAnclasLimpias,
+    });
+    expect(weekArc.anchors).toHaveLength(1);
+  });
+
+  it('sobre las 6 anclas: cada una sigue siendo alcanzable con la fuente inyectada (ninguna quedo vetada por otra via)', () => {
+    const profile = { trainingDays: [], intolerances: ['gluten'] };
+    for (let targetIndex = 0; targetIndex < ANCHORS.length; targetIndex++) {
+      let found = false;
+      for (let seed = 0; seed < 500 && !found; seed++) {
+        const { weekArc } = buildWeekArc({
+          profile, seed, strategy: 'x', fuenteEditorial: fuenteEditorialAnclasLimpias,
+        });
+        if (weekArc.anchors[0]?.anchorId === ANCHORS[targetIndex].identityKey) found = true;
+      }
+      expect(found, `ancla #${targetIndex} nunca alcanzada en 500 seeds con fuente inyectada`).toBe(true);
+    }
   });
 });
 

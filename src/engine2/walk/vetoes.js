@@ -1,8 +1,12 @@
 // Vetos duros — Fase 4, Componente P2b-i (paso 2 del walk). Principio
 // ratificado (DECISIONS.md, D-022): "Los vetos actuan antes de cualquier
 // mecanismo de seleccion; un plato vetado no forma parte del espacio de
-// decision." computeVetoUniverse/evaluateVeto se aplican UNICAMENTE al
-// espacio de decision del walk (catalog con rol="rotativo"/"capricho").
+// decision." computeVetoUniverse se aplica UNICAMENTE al espacio de
+// decision del walk (catalog con rol="rotativo"/"capricho"). Es uno de los
+// TRES productores de vista ratificados por D-036 (PR-1b): recibe
+// fuenteEditorial (dato de entrada del walk, nunca cargado de disco por
+// este modulo) y la pasa al resolver -- evaluateVeto (mas abajo) sobrevive
+// solo como helper de test SIN fuente, ver su propio banner.
 // El ancla SI pasa por veto desde D-023 (F4-P2b-i-bis) -- pero por un
 // mecanismo propio (chooseAnchor + filterSurvivors, ver mas abajo y
 // buildWeekArc.js), no por computeVetoUniverse: el filtrado del ancla
@@ -71,13 +75,24 @@ export function evaluateVetoFromVista(vista, intolerancias) {
 }
 
 /**
+ * HELPER FUERA DEL CAMINO DE PRODUCCION (D-036, F-1b-1->A, PR-1b): con la
+ * introduccion de fuenteEditorial como dato de entrada del walk,
+ * computeVetoUniverse ya no delega en esta funcion -- resuelve la vista y
+ * llama evaluateVetoFromVista directamente (ver mas abajo), unico camino
+ * autorizado a inyectar la fuente (D-037, allowlist). evaluateVeto
+ * sobrevive EXCLUSIVAMENTE para tests que ejercitan la unidad
+ * resolver+predicado sobre el camino SIN fuente (f14/f15,
+ * vetoes.test.js) -- NUNCA aceptara fuenteEditorial: la version con fuente,
+ * si algun test la necesitara, se escribe inline (resolveDishComposition +
+ * evaluateVetoFromVista), no reintroduciendo un tercer parametro aqui.
+ * Cero call-sites de produccion (verificado por el tripwire de aridad,
+ * s2-fuenteEditorial-callsites.test.js).
+ *
  * Evalua un plato (resolviendo su vista via CompositionResolver, D-021)
  * contra la lista de intolerancias activas. Devuelve TODAS las razones que
- * aplican (un plato puede violar mas de un campo a la vez) -- necesario
- * para el conteo por campo/motivo del universo, no solo la primera causa
- * de exclusion. Atajo estructural: con intolerancias vacio/ausente, NUNCA
- * invoca el resolver (evita I/O y exigir platos resolubles cuando no hay
- * veto activo).
+ * aplican (un plato puede violar mas de un campo a la vez). Atajo
+ * estructural: con intolerancias vacio/ausente, NUNCA invoca el resolver
+ * (evita I/O y exigir platos resolubles cuando no hay veto activo).
  * @param {{id: string}} dish
  * @param {string[]} [intolerancias] subconjunto de INTOLERANCE_VALUES (profile.js)
  * @returns {{campo: string, motivo: 'valor'|'desconocida'}[]}
@@ -120,11 +135,18 @@ export function filterSurvivors(candidates, intolerancias, getVista) {
  * devuelve los ids vetados mas el conteo por campo/motivo para el
  * decision log. Con intolerancias vacio/ausente, el catalogo NUNCA se
  * escanea (activo:false).
+ *
+ * PRODUCTOR de vista (D-036, F-1b-1->A): resuelve la vista de cada plato
+ * pasando fuenteEditorial (campo opcional de entrada del walk, D-036) al
+ * resolver directamente -- ya NO delega en evaluateVeto (ver banner de esa
+ * funcion). Call-site ratificado en la allowlist del tripwire de aridad
+ * (D-037, s2-fuenteEditorial-callsites.test.js).
  * @param {ReadonlyArray<{id: string, rol: string}>} catalog
  * @param {string[]} [intolerancias]
+ * @param {{fuenteEditorial?: {version: number, confirmed: object}}} [opts]
  * @returns {{vetoedIds: Set<string>, conteo: object, activo: boolean}}
  */
-export function computeVetoUniverse(catalog, intolerancias) {
+export function computeVetoUniverse(catalog, intolerancias, { fuenteEditorial } = {}) {
   if (!intolerancias || intolerancias.length === 0) {
     return { vetoedIds: new Set(), conteo: {}, activo: false };
   }
@@ -135,7 +157,7 @@ export function computeVetoUniverse(catalog, intolerancias) {
 
   for (const dish of catalog) {
     if (dish.rol !== 'rotativo' && dish.rol !== 'capricho') continue;
-    const razones = evaluateVeto(dish, intolerancias);
+    const razones = evaluateVetoFromVista(resolveDishComposition(dish, { fuenteEditorial }), intolerancias);
     if (razones.length === 0) continue;
     vetoedIds.add(dish.id);
     for (const { campo, motivo } of razones) conteo[campo][motivo]++;

@@ -6,6 +6,13 @@
 // nunca ve el pool completo cuando hay nivel preferente, solo el nivel
 // ganador (mismo invariante que el veto de paso 2 y el ancla de D-023).
 //
+// vistaPorDefecto (D-036, PR-1b) es uno de los TRES productores de vista
+// ratificados: recibe fuenteEditorial (dato de entrada del walk, nunca
+// cargado de disco por este modulo) y la pasa al resolver. satisfaceVerdura
+// (predicado de dominio) permanece completamente ajeno a fuenteEditorial --
+// consume la vista ya resuelta, ver su propio banner y D-037 (tripwire
+// estructural).
+//
 // Mecanismo (D-024, asiento 1): nivel preferente = supervivientes de A/B
 // que cubren la frecuencia atendida; si no-vacio, la seleccion ocurre solo
 // dentro de el; si vacio para TODAS las frecuencias cortas, fallback al
@@ -93,11 +100,12 @@ const VISTA_NEUTRAL = Object.freeze({
  * lanzar -- este log es la alarma que lo hace visible).
  * @param {{id: string}} dish
  * @param {(dishId: string) => void} [onIrresoluble]
+ * @param {{fuenteEditorial?: {version: number, confirmed: object}}} [opts]
  * @returns {object}
  */
-export function resolveFrequencyVista(dish, onIrresoluble = () => {}) {
+export function resolveFrequencyVista(dish, onIrresoluble = () => {}, { fuenteEditorial } = {}) {
   try {
-    return resolveDishComposition(dish);
+    return resolveDishComposition(dish, { fuenteEditorial });
   } catch (err) {
     if (err instanceof UnresolvableOriginError) {
       onIrresoluble(dish.id);
@@ -167,9 +175,16 @@ export function createFrequencyState() {
  * Vista por defecto de un dish dado un state: usa el catalogo real, y
  * cualquier id irresoluble se acumula en state.idsIrresolubles (para la
  * narracion de una linea por walk en runWalk.js).
+ *
+ * PRODUCTOR de vista (D-036, F-1b-1->A): recibe fuenteEditorial (dato de
+ * entrada del walk, nunca cargado de disco por este modulo) y la pasa al
+ * resolver. Call-site ratificado en la allowlist del tripwire de aridad
+ * (D-037, s2-fuenteEditorial-callsites.test.js).
+ * @param {object} state
+ * @param {{version: number, confirmed: object}} [fuenteEditorial]
  */
-function vistaPorDefecto(state) {
-  return (dish) => resolveFrequencyVista(dish, (id) => state.idsIrresolubles.add(id));
+function vistaPorDefecto(state, fuenteEditorial) {
+  return (dish) => resolveFrequencyVista(dish, (id) => state.idsIrresolubles.add(id), { fuenteEditorial });
 }
 
 /**
@@ -179,14 +194,16 @@ function vistaPorDefecto(state) {
  * (proteinType mutuamente excluyente) y marca el dia como "con verdura"
  * si el plato la satisface. getVista permite testear con vistas
  * sinteticas (mismo patron que filterSurvivors/D-023); sin getVista, usa
- * el catalogo real y acumula ids irresolubles en el propio state.
+ * el catalogo real (con fuenteEditorial si se inyecta, D-036) y acumula
+ * ids irresolubles en el propio state.
  * @param {object} state salida de createFrequencyState (mutado in-place)
  * @param {{id: string}} dish
  * @param {string} day
  * @param {(dish: object) => object} [getVista]
+ * @param {{version: number, confirmed: object}} [fuenteEditorial]
  */
-export function registerConsumption(state, dish, day, getVista) {
-  const vista = (getVista || vistaPorDefecto(state))(dish);
+export function registerConsumption(state, dish, day, getVista, fuenteEditorial) {
+  const vista = (getVista || vistaPorDefecto(state, fuenteEditorial))(dish);
   if (PROTEIN_TARGET_ORDER.includes(vista.proteinType)) {
     state.contadores[vista.proteinType] += 1;
     state.incrementDays[vista.proteinType].add(day);
@@ -200,12 +217,13 @@ export function registerConsumption(state, dish, day, getVista) {
  * asiento 5: esas colocaciones tambien son consumo.
  * @param {ReadonlyArray<{day: string, abierto: boolean, dishId?: string}>} p1aSlots
  * @param {(dish: object) => object} [getVista]
+ * @param {{version: number, confirmed: object}} [fuenteEditorial]
  * @returns {object}
  */
-export function initFrequencyState(p1aSlots, getVista) {
+export function initFrequencyState(p1aSlots, getVista, fuenteEditorial) {
   const state = createFrequencyState();
   for (const slot of p1aSlots) {
-    if (!slot.abierto && slot.dishId) registerConsumption(state, { id: slot.dishId }, slot.day, getVista);
+    if (!slot.abierto && slot.dishId) registerConsumption(state, { id: slot.dishId }, slot.day, getVista, fuenteEditorial);
   }
   return state;
 }
@@ -225,15 +243,16 @@ export function initFrequencyState(p1aSlots, getVista) {
  * tiene candidatos (asiento 2: "la primera corta... CON CANDIDATOS
  * DISPONIBLES").
  * getVista permite testear con vistas sinteticas (mismo patron que
- * registerConsumption/D-023); sin getVista, usa el catalogo real y
- * acumula ids irresolubles en el propio state.
- * @param {{day: string, candidatesB: object[], state: object, getVista?: (dish: object) => object}} input
+ * registerConsumption/D-023); sin getVista, usa el catalogo real (con
+ * fuenteEditorial si se inyecta, D-036) y acumula ids irresolubles en el
+ * propio state.
+ * @param {{day: string, candidatesB: object[], state: object, getVista?: (dish: object) => object, fuenteEditorial?: {version: number, confirmed: object}}} input
  * @returns {{nivel: object[], causa: string|null, evidencia: string|null}}
  */
 export function chooseFrequencyLevel({
-  day, candidatesB, state, getVista,
+  day, candidatesB, state, getVista, fuenteEditorial,
 }) {
-  const resolver = getVista || vistaPorDefecto(state);
+  const resolver = getVista || vistaPorDefecto(state, fuenteEditorial);
   const vistaPorId = new Map(candidatesB.map((d) => [d.id, resolver(d)]));
   const nivelInferior = (nivel) => candidatesB.filter((d) => !nivel.includes(d)).map((d) => d.id);
 

@@ -121,9 +121,16 @@ export function computeFixedRoles(profile, decisionLog) {
  * de wiring por defecto de chooseAnchor -- los tests pueden inyectar un
  * getVista sintetico (ver vetoes.js:filterSurvivors) para ejercer estados
  * hoy inalcanzables con el catalogo real.
+ *
+ * PRODUCTOR de vista (D-036, F-1b-1->A): recibe fuenteEditorial (dato de
+ * entrada de buildWeekArc, nunca cargado de disco por este modulo) y la
+ * pasa al resolver. Call-site ratificado en la allowlist del tripwire de
+ * aridad (D-037, s2-fuenteEditorial-callsites.test.js).
+ * @param {object} anchor
+ * @param {{version: number, confirmed: object}} [fuenteEditorial]
  */
-function anchorVista(anchor) {
-  return resolveDishComposition({ id: anchor.identityKey });
+function anchorVista(anchor, fuenteEditorial) {
+  return resolveDishComposition({ id: anchor.identityKey }, { fuenteEditorial });
 }
 
 /**
@@ -315,10 +322,17 @@ function chooseCapricho(caprichoPreference, fixedRoles, batchDay, leftoverDays, 
 }
 
 /**
- * @param {{profile: object, seed: (number|string), strategy: string}} input
+ * fuenteEditorial (D-036, dato de entrada del walk, OPCIONAL): ausente ⇒
+ * comportamiento identico al actual (todas las composiciones del ancla
+ * resuelven sin fuente, C2/no-regresion). Este modulo NUNCA la carga de
+ * disco -- la recibe por inyeccion del caller y la reenvia UNICAMENTE al
+ * productor de vista del ancla (anchorVista, ver mas arriba).
+ * @param {{profile: object, seed: (number|string), strategy: string, fuenteEditorial?: {version: number, confirmed: object}}} input
  * @returns {{weekArc: object, decisionLog: object[]}}
  */
-export function buildWeekArc({ profile, seed, strategy }) {
+export function buildWeekArc({
+  profile, seed, strategy, fuenteEditorial,
+}) {
   const decisionLog = [];
 
   // 0. Esqueleto (plantilla A/B/C) por seed, sin filtros.
@@ -330,7 +344,13 @@ export function buildWeekArc({ profile, seed, strategy }) {
   // 2. Ancla por seed, filtrada por veto (D-023) antes del sorteo. Puede
   // no haber superviviente -- ver contrato de ausencia en chooseAnchor.
   const intolerancias = profile?.intolerances ?? [];
-  const anchor = chooseAnchor(ANCHORS, seed, intolerancias, decisionLog);
+  const anchor = chooseAnchor(
+    ANCHORS,
+    seed,
+    intolerancias,
+    decisionLog,
+    (candidate) => anchorVista(candidate, fuenteEditorial),
+  );
 
   // batchDay/leftoverDays solo tienen sentido si hay algo que cocinar: sin
   // ancla superviviente, ambos quedan vacios por construccion (D-023,

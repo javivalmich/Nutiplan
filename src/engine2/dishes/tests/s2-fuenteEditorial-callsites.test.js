@@ -58,15 +58,24 @@ const MAX_PRODUCTION_ARITY = Object.freeze({
 });
 
 // Allowlist de call-sites de produccion ratificados para pasar
-// fuenteEditorial (D-035, PR-1a, F-W2->A): el UNICO camino de produccion
-// que hoy inyecta el lateral es la cadena del export V5
-// (buildPlatosRows -> resolveCatalogComposition). Cualquier OTRO call-site
-// que pase fuenteEditorial -- en particular el walk del motor, reservado a
-// PR-1b -- sigue siendo una violacion. Clave por (file, name) EXACTO: no
-// basta con el nombre de funcion, asi un futuro call-site en OTRO archivo
-// con la misma funcion no hereda la allowlist silenciosamente.
+// fuenteEditorial. Clave por (file, name) EXACTO: no basta con el nombre de
+// funcion, asi un futuro call-site en OTRO archivo con la misma funcion no
+// hereda la allowlist silenciosamente.
+//
+// (D-035, PR-1a, F-W2->A): la cadena del export V5
+// (buildPlatosRows -> resolveCatalogComposition).
+//
+// (D-036/D-037, PR-1b, F-1b-1->A/F-1b-2->C): los TRES productores de vista
+// del walk que D-036 identifica como los unicos autorizados a inyectar la
+// fuente -- computeVetoUniverse (vetoes.js), anchorVista (buildWeekArc.js) y
+// vistaPorDefecto (frequencies.js). Toda apertura futura de la frontera
+// exige modificacion visible de esta lista: la friccion es deliberada (ver
+// D-037).
 const ALLOWLISTED_FUENTE_EDITORIAL_CALLSITES = Object.freeze([
   Object.freeze({ file: 'scripts/phaseB2/exportCuadernoV5.js', name: 'resolveCatalogComposition', maxArity: 2 }),
+  Object.freeze({ file: 'src/engine2/walk/vetoes.js', name: 'resolveDishComposition', maxArity: 2 }),
+  Object.freeze({ file: 'src/engine2/skeleton/buildWeekArc.js', name: 'resolveDishComposition', maxArity: 2 }),
+  Object.freeze({ file: 'src/engine2/walk/frequencies.js', name: 'resolveDishComposition', maxArity: 2 }),
 ]);
 
 /**
@@ -238,5 +247,58 @@ describe('S2 — T6 [invariante central, GENERATIVO] barrido del arbol versionad
     } finally {
       fs.rmSync(selfTestDir, { recursive: true, force: true });
     }
+  });
+});
+
+// T-TRIP-NEG (D-037 bloque 2, GENERATIVO por rol, no por nombre): los
+// predicados de dominio -- hoy evaluateVetoFromVista (vetoes.js) y
+// satisfaceVerdura (frequencies.js) -- jamas reciben fuenteEditorial. La
+// propiedad se define por firma (AST, no texto): ningun parametro ni
+// propiedad desestructurada de su parametro se llama "fuenteEditorial". No
+// depende de ALLOWLISTED_FUENTE_EDITORIAL_CALLSITES -- es independiente del
+// bloque positivo de arriba (D-036: "quien puede suministrar la fuente" y
+// "quien jamas la toca" son propiedades distintas, cada una falsable por
+// separado).
+export function findFunctionParamNames(code, functionName) {
+  const ast = parse(code, { ecmaVersion: 'latest', sourceType: 'module' });
+  let params = null;
+  walkSimple(ast, {
+    FunctionDeclaration(node) {
+      if (node.id && node.id.name === functionName) params = node.params;
+    },
+  });
+  if (!params) {
+    throw new Error(`findFunctionParamNames: funcion "${functionName}" no encontrada en el codigo dado`);
+  }
+  function namesOf(param) {
+    if (param.type === 'AssignmentPattern') return namesOf(param.left);
+    if (param.type === 'Identifier') return [param.name];
+    if (param.type === 'ObjectPattern') {
+      return param.properties.filter((p) => p.type === 'Property' && p.key.type === 'Identifier').map((p) => p.key.name);
+    }
+    return [];
+  }
+  return params.flatMap(namesOf);
+}
+
+describe('T-TRIP-NEG (D-037 bloque 2) -- los predicados de dominio nunca reciben fuenteEditorial (estructural, por rol)', () => {
+  it('evaluateVetoFromVista no declara fuenteEditorial en su firma', () => {
+    const code = fs.readFileSync(path.resolve(REPO_ROOT, 'src/engine2/walk/vetoes.js'), 'utf8');
+    expect(findFunctionParamNames(code, 'evaluateVetoFromVista')).not.toContain('fuenteEditorial');
+  });
+
+  it('satisfaceVerdura no declara fuenteEditorial en su firma', () => {
+    const code = fs.readFileSync(path.resolve(REPO_ROOT, 'src/engine2/walk/frequencies.js'), 'utf8');
+    expect(findFunctionParamNames(code, 'satisfaceVerdura')).not.toContain('fuenteEditorial');
+  });
+
+  it('MUTACION dirty->red (reproduccion local, sin tocar los modulos reales): si evaluateVetoFromVista declarara fuenteEditorial, el checker SI lo detectaria', () => {
+    const mutado = 'export function evaluateVetoFromVista(vista, intolerancias, { fuenteEditorial } = {}) { return []; }';
+    expect(findFunctionParamNames(mutado, 'evaluateVetoFromVista')).toContain('fuenteEditorial');
+  });
+
+  it('MUTACION dirty->red (reproduccion local, sin tocar los modulos reales): si satisfaceVerdura declarara fuenteEditorial como identificador directo, el checker SI lo detectaria', () => {
+    const mutado = 'export function satisfaceVerdura(vista, fuenteEditorial) { return false; }';
+    expect(findFunctionParamNames(mutado, 'satisfaceVerdura')).toContain('fuenteEditorial');
   });
 });

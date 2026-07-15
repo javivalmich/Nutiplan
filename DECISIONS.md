@@ -1882,3 +1882,83 @@ particionado del lateral: verdura solo existe en el subconjunto freeform).
     reportó ninguna línea sobre esa ruta (era untracked + ignorada; su
     borrado es invisible a git, tal como predicho).
 - **Decide.** Javi.
+
+## D-041 — [2026-07-15] Reformulación del criterio C de la Fase 4 y cierre formal de la fase
+
+- Decisión/Hallazgo: el criterio de aceptación C de la Fase 4
+  ("humanScore(engine2) > baseline en repetición y continuidad")
+  presuponía un universo de datos homogéneo que el proyecto nunca
+  adoptó, y quedó doblemente obsoleto por decisiones posteriores ya
+  asentadas: (1) la infraestructura de medición ratificada en
+  D-025/D-026 produce ternas tipificadas valor/cobertura/estado, no
+  veredictos comparativos "mejor/peor" — ningún formato del artefacto
+  puede expresar "engine2 > baseline" literalmente; (2) las cuatro
+  submétricas de repetición/continuidad (repeticionSalsa,
+  repeticionTecnica, platoCuchara, continuidadEntrenoHidrato) leen
+  ejes de la tupla combinatoria {tmpl,S,cookM,C} que por contrato
+  (D-021) solo existen para los 178 platos scaffold: los 63 freeform
+  no carecen de esos ejes por deuda de implementación sino porque
+  fueron modelados de otra forma (combos curados sin descomposición
+  combinatoria; D-025 declaró la asimetría "permanente por diseño").
+  Un reconocimiento read-only sobre la fuente freeform
+  (src/data/FREEFORM_COMBOS.js) confirmó que la carencia no es
+  levantable sin modelado nuevo: S no tiene campo estructurado (solo
+  texto de receta); cookM no tiene campo dedicado (tags[] abierto y
+  esporádico); C tiene como candidato más próximo scaling.primario,
+  que es texto libre cuya semántica ("ingrediente primario de
+  escalado") mezcla carbohidratos con legumbres y exige juicio de
+  dominio caso por caso. Para tmpl existe un dato relacionado: el
+  instrumento consume tupla.tmpl; el dato disponible en freeform es
+  identity.plateType (remapeado sin heurística por tabla curada,
+  freeformEditorial.js); existe al menos una transformación
+  documentada en la que ambos difieren
+  (legacyCombos.plateTypeCorrections.js:38: tmpl='sopa_crema' ->
+  plateType final 'plancha_verdura'), por lo que no pueden
+  considerarse equivalentes por contrato — sustituir uno por otro
+  redefiniría la métrica, y aun redefinida, el valor 'legumbre' de
+  CUCHARA_TMPLS es inalcanzable desde el mapa freeform existente
+  (cero vías de salida hacia 'legumbre'). Diseñar un vocabulario de
+  ejes para freeform (análogo a lo hecho con gluten/lactosa/verdura
+  en D-028) sería una decisión de modelado nueva, no el completado de
+  un campo definido, y queda explícitamente fuera del cierre de F4.
+  SE DECIDE: (a) el criterio C se reformula así — "las submétricas de
+  repetición y continuidad producen lecturas tipificadas honestas
+  (terna valor/cobertura/estado, contrato D-025) sobre el subconjunto
+  del catálogo para el que el instrumento fue diseñado y cuyos datos
+  existen conforme al contrato vigente (origen scaffold), con la
+  cobertura declarada explícitamente en el artefacto; el origen
+  freeform queda fuera de estas métricas por contrato de datos, no
+  por deuda"; (b) con el criterio así reformulado, la Fase 4 queda
+  CERRADA: A (semana completa con causa por comida) y B (determinismo)
+  verdes por test; C satisfecho por el artefacto
+  scripts/phaseP2c/output/comparacion-D2.{md,json} (generado en
+  02c30c77, verificado VÁLIDO a HEAD b11cb0b por reconocimiento
+  read-only: los cambios posteriores en la cadena productora son
+  ortogonales a la tipificación, y humanScoreAdapter.js — único
+  módulo que tipifica — no tiene commits en el rango), que reporta
+  las cuatro submétricas en estado parcial|computed con valores
+  extraídos y cobertura scaffold declarada, más densidadDiaria en
+  completa|computed sobre los 241; D (tripwires) verde en suite
+  836/836. Fronteras que F4 cierra SIN incluir, por diseño y no por
+  olvido: el walk es stateless — no lee MemoryStore (D-019, blindado
+  por test con store envenenado); la variación inter-semana y las
+  submétricas needs_history (repeticionProteinaMismoDia,
+  sorpresaEditorial) quedan para la fase que conecte el histórico; la
+  energía de cocina no participa en la selección (banner y test de
+  control en runWalk); la gramática de variación (T4, condicional) no
+  fue necesitada por la cascada.
+- Evidencia: enum de estados y clasificación estática:
+  humanScoreAdapter.js:22-28,13-17. Asimetría de tupla por contrato:
+  D-021 (tupla ausente en freeform, verificado estructuralmente),
+  D-025 ("permanente por diseño"; contrato de terna sin veredicto).
+  No-derivabilidad freeform: reconocimiento read-only sobre
+  FREEFORM_COMBOS.js a HEAD b11cb0b (S/cookM sin campo; C:
+  scaling.primario con contraejemplos garbanzos/fabes; tmpl:
+  divergencia documentada legacyCombos.plateTypeCorrections.js:38 y
+  'legumbre' sin vía de salida en FREEFORM_PLATE_TYPE_MAP,
+  freeformEditorial.js:18-55). Validez del artefacto a HEAD:
+  reconocimiento read-only 02c30c77..b11cb0b (productores ortogonales,
+  humanScoreAdapter.js sin commits). Mecanismo F4: runWalk.js:168
+  (entrada), 14/14 slots con causa (runWalk.test.js), determinismo por
+  JSON idéntico, tripwires en suite 836/836.
+- Decide: Javi.

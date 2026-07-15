@@ -41,3 +41,8 @@ main_buildPlan_tmp.js
 # Scripts de análisis/medición ad-hoc (no producción, no tests CI). Evidencia
 # que se quiera conservar va versionada en docs/evidence/, no aquí.
 analysis/
+
+# Scratch y diagnóstico (no versionado)
+scripts/diag/
+# Salida generada del cuaderno editorial (no versionada)
+scripts/phaseB2/output/

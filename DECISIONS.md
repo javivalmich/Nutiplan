@@ -1802,3 +1802,48 @@ del criterio o conocimiento que motivó dicha confirmación.
 las 6 identityKey de ANCHORS presentes en dishCompositionConfirmations.json
 con confirmación en ambos ejes de veto, sin eje verdura (consistente con el
 particionado del lateral: verdura solo existe en el subconjunto freeform).
+
+## D-039 — [2026-07-15] Excepción de negación para el lateral en .gitignore; reubicación registrada como deuda
+
+- **Decisión/Hallazgo.** El R-0 de buildPlatosRows detectó que
+  `scripts/phaseB2/output/` está ignorado mientras el lateral
+  `dishCompositionConfirmations.json` sigue tracked solo porque git no
+  re-ignora archivos ya trackeados — trampa latente sobre el activo bajo
+  invariante de custodia. Se ratifica la opción A: reescribir la regla a
+  contenidos (`output/*`) y negar explícitamente el lateral. El directorio
+  conserva su semántica de artefactos generados; el lateral es excepción
+  deliberada mientras resida ahí. La opción B (reubicar el lateral fuera de
+  `output/`) queda como deuda arquitectónica futura; al ejecutarse, la
+  excepción desaparece con el traslado.
+- **Evidencia (roja, antes del cambio — `.gitignore:48` = `scripts/phaseB2/output/`).**
+  ```
+  $ git check-ignore --no-index -v scripts/phaseB2/output/dishCompositionConfirmations.json
+  .gitignore:48:scripts/phaseB2/output/	scripts/phaseB2/output/dishCompositionConfirmations.json
+  (exit 0)
+  $ git check-ignore --no-index -v scripts/phaseB2/output/dummy_prueba.xlsx
+  .gitignore:48:scripts/phaseB2/output/	scripts/phaseB2/output/dummy_prueba.xlsx
+  (exit 0)
+  ```
+- **Evidencia (verde, tras el cambio — `.gitignore:51-52` = `scripts/phaseB2/output/*` + negación del lateral).**
+  ```
+  $ git check-ignore --no-index -v scripts/phaseB2/output/dishCompositionConfirmations.json
+  .gitignore:52:!scripts/phaseB2/output/dishCompositionConfirmations.json	scripts/phaseB2/output/dishCompositionConfirmations.json
+  (exit 0 -- ver nota)
+  $ git check-ignore --no-index -v scripts/phaseB2/output/dummy_prueba.xlsx
+  .gitignore:51:scripts/phaseB2/output/*	scripts/phaseB2/output/dummy_prueba.xlsx
+  (exit 0)
+  ```
+  **Nota sobre el exit code de `-v`:** `git check-ignore -v` (git 2.54.0)
+  devuelve exit 0 en ambos casos (antes y después) porque imprime *cualquier*
+  patrón que coincida, incluida una negación — el exit code de `-v` no
+  distingue "ignorado" de "excluido por negación". Sin `-v`, el exit code SÍ
+  es el correcto y falsable: `git check-ignore --no-index -q
+  dishCompositionConfirmations.json` → exit 1 (no ignorado) tras el cambio;
+  `dummy_prueba.xlsx` → exit 0 (sigue ignorado) en ambos momentos.
+  Corroborado funcionalmente con el mecanismo real que importa (`git add` /
+  `git status --ignored`): un archivo nuevo en `output/` sigue marcado `!!`
+  (ignorado) y `git add -n` lo rechaza ("ignored by one of your .gitignore
+  files", exit 1); `git add -n
+  scripts/phaseB2/output/dishCompositionConfirmations.json` tiene éxito
+  (exit 0) -- el lateral deja de estar atrapado por la regla de directorio.
+- **Decide.** Javi.

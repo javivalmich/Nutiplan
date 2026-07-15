@@ -1847,3 +1847,38 @@ particionado del lateral: verdura solo existe en el subconjunto freeform).
   scripts/phaseB2/output/dishCompositionConfirmations.json` tiene éxito
   (exit 0) -- el lateral deja de estar atrapado por la regla de directorio.
 - **Decide.** Javi.
+
+## D-040 — [2026-07-15] La anotación original del cocinero es activo canónico y vive bajo control de versiones
+
+- **Decisión/Hallazgo.** La anotación original del cocinero
+  (`Anotacion_cocinero_242_v4.xlsx`) constituye un activo canónico del
+  proyecto: es insustituible (no hay generador que la reproduzca; es
+  captura única de la sesión editorial del cocinero) y forma parte de los
+  datos necesarios para reproducir el catálogo (los 63 platos freeform de
+  `dishes.json`, D-009) y la suite de pruebas (leída en vivo por
+  `freeformPromote.test.js` y `tripwire-platetype-enum.test.js`). Por tanto
+  debe permanecer bajo control de versiones en su ubicación canónica,
+  `scripts/phaseB2/input/`. Hasta ahora vivía solo en disco, sin rastrear:
+  un `git clean` o un clon limpio la habría perdido y roto la suite. Se
+  versiona. Consecuencia adicional: existía una copia byte-idéntica (sha256
+  `655f0a55567b48ff9f557c917467094a7382634e2c59b824346d0ec113d6e417`) en
+  `scripts/phaseB2/output/`, sin lector ni escritor conocido en el árbol de
+  código (verificado por recon read-only, R-0b), ignorada por `output/*`
+  (D-039). Se elimina para no mantener el activo duplicado con dos estatus
+  distintos (uno versionado, otro ignorado) sin procedencia. La fuente
+  única y versionada queda en `input/`.
+- **Evidencia.**
+  - sha256 idéntico confirmado en vivo (P3, `certutil -hashfile`, ambas
+    rutas): `655f0a55567b48ff9f557c917467094a7382634e2c59b824346d0ec113d6e417`.
+  - `.gitattributes` — línea añadida `*.xlsx binary` (no existía cobertura
+    previa para `.xlsx`; el archivo ya cubría `*.snap`/`*.js`/`*.jsx`).
+  - `git add -f scripts/phaseB2/input/Anotacion_cocinero_242_v4.xlsx` →
+    `git status --porcelain` sobre esa ruta: `A  scripts/phaseB2/input/Anotacion_cocinero_242_v4.xlsx`.
+  - Borrado de la copia huérfana (`del`/`rm` sobre
+    `scripts/phaseB2/output/Anotacion_cocinero_242_v4.xlsx`, no
+    `git rm`: no estaba tracked): `dir`/`ls` posterior de `output/` ya no la
+    lista (siguen `Anotacion_cocinero_v5.xlsx` y
+    `dishCompositionConfirmations.json`); `git status --porcelain` no
+    reportó ninguna línea sobre esa ruta (era untracked + ignorada; su
+    borrado es invisible a git, tal como predicho).
+- **Decide.** Javi.

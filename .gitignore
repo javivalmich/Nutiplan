@@ -44,5 +44,9 @@ analysis/
 
 # Scratch y diagnóstico (no versionado)
 scripts/diag/
-# Salida generada del cuaderno editorial (no versionada)
-scripts/phaseB2/output/
+# Salida generada del cuaderno editorial (no versionada). Excepción D-039:
+# el lateral dishCompositionConfirmations.json se niega explícitamente --
+# ignorar el directorio (con /) no re-ignora un archivo ya tracked, pero
+# negarlo aquí cierra la trampa latente si alguna vez se destrackeara.
+scripts/phaseB2/output/*
+!scripts/phaseB2/output/dishCompositionConfirmations.json

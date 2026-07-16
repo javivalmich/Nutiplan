@@ -2104,7 +2104,7 @@ particionado del lateral: verdura solo existe en el subconjunto freeform).
      `veg_variety_engine2_v2diag.mjs`/D-043, `veg_variety_engine2_freq.md`,
      `veg_variety_engine2_intensity.md`) sostienen el trazado causal del
      fenómeno gobernado: la repetición de identidad producida por anclas
-     (`shelfLifeDays` culinarios, CP3A) es diseño ya ratificado y queda
+     (`shelfLifeDays` culinarios, CP2b) es diseño ya ratificado y queda
      fuera del alcance de esta política — no es un defecto a corregir, es
      aprovechamiento de sobras funcionando como se diseñó. El fenómeno que
      esta política gobierna es la acumulación de identidades en la ruta
@@ -2136,7 +2136,7 @@ particionado del lateral: verdura solo existe en el subconjunto freeform).
   reproducible como única referencia válida); D-043 (V2 descartado como
   condicionante de diseño); D-024 (precedente arquitectónico de partición
   por niveles y su fallback ante nivel vacío); D-023 (contrato de ausencia
-  del ancla; CP3A como origen ratificado de la repetición por sobras).
+  del ancla; CP2b como origen ratificado de la repetición por sobras).
   Reconocimiento read-only previo de esta sesión (R-0, 2026-07-16) sobre
   `src/engine2/walk/frequencies.js`, `vetoes.js`, `runWalk.js`,
   `expandWeekArc.js`, `buildWeekArc.js` y `compositionResolver.js`:

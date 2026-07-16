@@ -55,8 +55,10 @@ inyección de FreeForm).
     ellos — guard obligatorio).
   - legacy: huecos cuyo `vegKey` resuelve a `'none'`, `'freeform'` o
     `'libre'`.
-  - Ambos motores excluyen días marcados como libres (`day.libre` /
-    `day.special === 'libre'`).
+  - Ambos motores excluyen días marcados como libres: engine2 vía el campo
+    canónico `slot.fixedRole === 'libre'` (el runner lo agrega en una
+    variable local `day.libre` por conveniencia de iteración, pero el campo
+    de origen es `fixedRole`); legacy vía `day.special === 'libre'`.
 - **Regla de identidad:** cada identidad de `valorEfectivo` cuenta como una
   observación de presencia independiente, sin importar el eje del que
   provenga (V, V2, o ejes futuros). La unidad es la identidad, no la

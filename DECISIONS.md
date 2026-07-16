@@ -1962,3 +1962,32 @@ particionado del lateral: verdura solo existe en el subconjunto freeform).
   (entrada), 14/14 slots con causa (runWalk.test.js), determinismo por
   JSON idéntico, tripwires en suite 836/836.
 - Decide: Javi.
+
+## D-042 — [2026-07-16] Retiro del ~49,8% como referencia de variedad de verdura; sustitución por artefacto reproducible
+
+- Contexto: existía una cifra conversacional (~49,8% de semanas con alguna
+  verdura repetida >=3 días) usada informalmente como referencia de variedad
+  de verdura. Se verificó que esa cifra NO está versionada en el repo y NO es
+  reproducible con el estado actual: el gate legacy (`analysis/gate4_veg_baseline.test.js`,
+  N=500) produce 69,6% para "alguna verdura >=3 días" y 38,0% para
+  "calabacín específico >=3 días" — ninguna de las dos coincide con 49,8%.
+- Decisión/Hallazgo: se retira el ~49,8% como referencia de variedad de
+  verdura. NO se afirma que fuera "incorrecto" — no se sabe y no hace falta —
+  se retira porque no es reproducible ni está sustentado por artefacto
+  versionado. La nueva referencia oficial de variedad de verdura pasa a ser
+  la campaña reproducible anclada en
+  `docs/evidence/variedad-verdura/baseline-variedad-verdura.md` (commit
+  9b8d489), con sus dos ejecutables regenerables
+  (`veg_variety_engine2.mjs`, `veg_variety_legacy.mjs`). Este asiento
+  referencia esa ruta; no duplica sus cifras (evidencia y norma viven
+  separadas).
+- Causa/Principio: una cifra usada como ancla de decisión debe existir como
+  artefacto reproducible versionado antes de construir sobre ella. El
+  ~49,8% violaba ese principio; el artefacto de
+  `docs/evidence/variedad-verdura/` lo satisface (dos ejecutables `.mjs`
+  regenerables con `node`, fuera del test runner, con contrato de
+  reproducción explícito en la sección 5 del artefacto).
+- Evidencia: `analysis/gate4_veg_baseline.test.js` (N=500) → "% semanas con
+  calabacín >=3 días: 38.0%", "% semanas con ALGUNA verdura >=3 días: 69.6%".
+  Artefacto de referencia: `docs/evidence/variedad-verdura/baseline-variedad-verdura.md`.
+- Decide: Javi.

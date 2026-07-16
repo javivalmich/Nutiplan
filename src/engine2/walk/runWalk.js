@@ -1,5 +1,6 @@
 // Seleccion del walk — Fase 4, Componentes P1b + P2b-i (vetos duros,
-// D-022) + P2b-ii (frecuencias, D-024). Entrada: {weekArc, catalog, seed, memoryStore, profile}. Salida:
+// D-022) + P2b-ii (frecuencias, D-024) + P2b-iii (identidad de verdura,
+// D-044). Entrada: {weekArc, catalog, seed, memoryStore, profile}. Salida:
 // {slots, decisionLog}. Rellena los huecos que
 // expandWeekArc (P1a, NO se toca aqui) deja abiertos: rotativo y capricho.
 // Prohibido score/ranking (CLAUDE.md invariante 1): solo pools por rol,
@@ -78,10 +79,18 @@
 //         Ninguna corta con candidatos -> fallback HONESTO al conjunto
 //         completo, causa "frecuencia_corta_sin_candidato". Ninguna corta
 //         en absoluto -> el paso no interviene (sin entrada de log).
-//       - Paso 6: 1 candidato final (del nivel de paso 4) -> directo, sin
+//       - Paso 5 (identidad de verdura, D-044/frequencies.js): sobre el
+//         nivel ganador de paso 4, particion por coste minimo de
+//         repeticion de identidad -- memoria GLOBAL (observa P1a y P1b
+//         sin distincion), politica LOCAL (solo aqui, en candidatos del
+//         rotativo). INV-1: particion vacia -> revierte al nivel de paso
+//         4 completo, misma semantica que frecuencia_corta_sin_candidato.
+//         Pool de 1 candidato (ya resuelto por paso 4) -> paso 5 no se
+//         evalua. Sin efecto (todos empatan) -> sin entrada de log.
+//       - Paso 6: 1 candidato final (del nivel de paso 5) -> directo, sin
 //         RNG. >1 -> RNG (stream "::walk::select"). El RNG NUNCA ve el
 //         pool pre-filtros: solo los candidatos que sobreviven
-//         pool+no-repeticion+A+B+paso4.
+//         pool+no-repeticion+A+B+paso4+paso5.
 //
 // energiaCocina (D-018/D-019): no participa en ninguna decision de
 // seleccion; se registra en la entrada del log SOLO para los platos
@@ -96,7 +105,9 @@ import { DAYS_ORDER } from '../skeleton/days.js';
 import { mulberry32, seedFromString } from '../skeleton/rng.js';
 import { MOMENTOS } from '../dishes/schema.js';
 import { computeVetoUniverse } from './vetoes.js';
-import { initFrequencyState, registerConsumption, chooseFrequencyLevel } from './frequencies.js';
+import {
+  initFrequencyState, registerConsumption, chooseFrequencyLevel, chooseIdentityLevel,
+} from './frequencies.js';
 
 function selectRng(seed) {
   return mulberry32(seedFromString(`${seed}::walk::select`));
@@ -160,8 +171,10 @@ function reshapeP1aEntry(entry) {
  * fuente, C2/no-regresion). Este modulo NUNCA la carga de disco -- la
  * recibe por inyeccion del caller y la reenvia a los DOS productores de
  * vista que gobierna (computeVetoUniverse, vistaPorDefecto vía
- * initFrequencyState/registerConsumption/chooseFrequencyLevel); el tercer
- * productor (anchorVista) vive en buildWeekArc.js, fuera de este modulo.
+ * initFrequencyState/registerConsumption/chooseFrequencyLevel/
+ * chooseIdentityLevel -- paso 5, D-044, mismo productor, cero nueva
+ * entrada en la allowlist); el tercer productor (anchorVista) vive en
+ * buildWeekArc.js, fuera de este modulo.
  * @param {{weekArc: object, catalog: ReadonlyArray<object>, seed: (number|string), memoryStore?: object, profile?: {intolerances?: string[]}, fuenteEditorial?: {version: number, confirmed: object}}} input
  * @returns {{slots: object[], decisionLog: object[]}}
  */
@@ -344,23 +357,39 @@ export function runWalk(input) {
         day, candidatesB, state: freqState, fuenteEditorial,
       });
 
+      // Paso 5 (identidad de verdura, D-044): opera sobre candidatesFinal
+      // (post paso4), ANTES del desempate final -- mismo principio que
+      // paso4: el RNG solo ve el nivel ganador. Paso separado del de
+      // frecuencias (ejes independientes, D-044 punto 5): lee freqState
+      // pero nunca lo muta (chooseIdentityLevel es de solo lectura).
+      const { nivel: candidatesIdentidad, causa: causaIdentidad, evidencia: notaIdentidad } = chooseIdentityLevel({
+        candidatesFinal, state: freqState, fuenteEditorial,
+      });
+
       let chosen;
       let causa;
       let alternativas;
       let notaRng = '';
-      if (candidatesFinal.length === 1) {
-        [chosen] = candidatesFinal;
+      if (candidatesIdentidad.length === 1) {
+        [chosen] = candidatesIdentidad;
         causa = 'seleccion_rotativo_candidato_unico';
         alternativas = [];
       } else {
-        const idx = Math.floor(rng() * candidatesFinal.length);
-        chosen = candidatesFinal[idx];
+        const idx = Math.floor(rng() * candidatesIdentidad.length);
+        chosen = candidatesIdentidad[idx];
         causa = 'seleccion_rotativo_desempate_rng';
-        alternativas = candidatesFinal.filter((d) => d.id !== chosen.id).map((d) => d.id);
-        notaRng = `; RNG namespace "::walk::select" -> indice ${idx} de ${candidatesFinal.length} candidatos equivalentes tras pool+A+B${causaFreq ? '+paso4' : ''}`;
+        alternativas = candidatesIdentidad.filter((d) => d.id !== chosen.id).map((d) => d.id);
+        notaRng = `; RNG namespace "::walk::select" -> indice ${idx} de ${candidatesIdentidad.length} candidatos equivalentes tras pool+A+B${causaFreq ? '+paso4' : ''}${causaIdentidad ? '+paso5' : ''}`;
       }
 
-      pushFill(day, momento, chosen.id, causa, `${notaA}; ${notaB}${notaFreq ? `; ${notaFreq}` : ''}${notaRng}`, alternativas);
+      pushFill(
+        day,
+        momento,
+        chosen.id,
+        causa,
+        `${notaA}; ${notaB}${notaFreq ? `; ${notaFreq}` : ''}${notaIdentidad ? `; ${notaIdentidad}` : ''}${notaRng}`,
+        alternativas,
+      );
       registerConsumption(freqState, chosen, day, undefined, fuenteEditorial);
     }
   }

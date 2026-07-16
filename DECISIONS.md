@@ -1991,3 +1991,33 @@ particionado del lateral: verdura solo existe en el subconjunto freeform).
   calabacín >=3 días: 38.0%", "% semanas con ALGUNA verdura >=3 días: 69.6%".
   Artefacto de referencia: `docs/evidence/variedad-verdura/baseline-variedad-verdura.md`.
 - Decide: Javi.
+
+## D-043 — [2026-07-16] Diagnóstico F-E2: el eje V2 no condiciona el headline de variedad de verdura
+
+- Contexto: tras anclar la baseline de variedad de verdura (D-042), quedaba
+  abierta la pregunta pre-registrada de si la métrica headline (semanas con
+  `maxVegDays>=3`) dependía del eje secundario V2, dado que el extractor
+  cuenta ambos ejes de verdura (V y V2) fusionados en una sola observación
+  por hueco, lo cual solo puede inflar la métrica, nunca desinflarla. El
+  gatillo pre-registrado ("si la primera medición deja pregunta abierta")
+  se cumplió y motivó este diagnóstico.
+- Método: campaña doble apareada por semana/semilla — brazo control (V+V2)
+  frente a brazo V-solo, ambos extraídos de la MISMA secuencia de planes
+  generados — con gate interno que exige que el brazo control reproduzca
+  la baseline anclada en D-042 como condición de validez del diagnóstico.
+- Decisión/Hallazgo: la incertidumbre sobre la contribución de V2 queda
+  resuelta. El fenómeno de repetición de identidad que mide la baseline
+  existe prácticamente íntegro en el eje primario V, con o sin V2. El
+  diagnóstico elimina V2 como incertidumbre principal para el diseño del
+  mecanismo de variedad: el mecanismo podrá diseñarse tomando el eje
+  primario como objeto de control, sin necesidad de modelar V2 como factor
+  determinante del headline. Esto NO declara V2 irrelevante — declara que
+  deja de condicionar la arquitectura del mecanismo.
+- Evidencia: `docs/evidence/variedad-verdura/veg_variety_engine2_v2diag.mjs`
+  (commit d076ce7), autoverificante (gate de brazo control + determinismo
+  por doble corrida, exit code). Este asiento referencia esa ruta; no
+  duplica sus cifras (evidencia y norma viven separadas).
+- Alcance: decisión documental; ningún cambio de código. El diseño del
+  mecanismo de identidad de variedad queda habilitado y se abrirá como
+  frente propio con su propio reconocimiento previo.
+- Decide: Javi.

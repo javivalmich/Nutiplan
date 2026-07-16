@@ -2021,3 +2021,135 @@ particionado del lateral: verdura solo existe en el subconjunto freeform).
   mecanismo de identidad de variedad queda habilitado y se abrirá como
   frente propio con su propio reconocimiento previo.
 - Decide: Javi.
+
+## D-044 — [2026-07-16] Contrato del mecanismo de identidad de variedad (Fase 4, Componente P2b-iii): memoria global, política local
+
+- Contexto: D-042/D-043 cerraron la caracterización del fenómeno (la
+  referencia de variedad de verdura pasó a ser el artefacto reproducible de
+  `docs/evidence/variedad-verdura/`, y el eje V2 quedó descartado como
+  condicionante del diseño). Un reconocimiento read-only posterior (R-0,
+  sesión 2026-07-16) auditó el terreno arquitectónico que recibiría un
+  mecanismo de identidad — estado de `FrequencyState`, contrato de vetos,
+  puntos de contacto con P1a/P1b — sin encontrar contradicciones ni
+  bloqueos. Este asiento ratifica el contrato del mecanismo sobre ese
+  terreno, previo a su implementación (que se abre como frente propio).
+- Decisión/Hallazgo: Javi ratifica el contrato en diez asientos:
+  1. **Principio rector**: la memoria de identidad es global; la política
+     de decisión es local. La memoria observa todo compromiso de identidad
+     de verdura — las colocaciones de ancla y sobras de P1a y las
+     selecciones libres de P1b, sin distinción de origen. La política
+     interviene únicamente donde la arquitectura aún permite elegir: la
+     fase de candidatos de la ruta rotativa. Todo lo demás en este asiento
+     es consecuencia de este principio.
+  2. **Naturaleza**: el mecanismo es una política de priorización, no de
+     exclusión — responde "¿cuáles preferimos primero?", nunca "¿está
+     permitido?". El precedente arquitectónico es la partición por niveles
+     del paso de frecuencias (D-024), no el sistema de vetos: los vetos
+     existentes eliminan candidatos antes del sorteo sin consultar ningún
+     estado semanal; el mecanismo de identidad, como el de frecuencias, sí
+     consulta memoria acumulada durante el paseo.
+  3. **Estado**: memoria intra-semana, misma vida que el estado de
+     frecuencias — nace y muere dentro de una única ejecución del walk,
+     recomputable desde las colocaciones del propio paseo, sin persistencia
+     entre semanas (MemoryStore queda intacto). Unidad de observación: cada
+     identidad de verdura presente en `valorEfectivo` de un plato
+     comprometido, con independencia del eje del que provenga (V, V2 o ejes
+     futuros) — norma ya ratificada en
+     `docs/evidence/variedad-verdura/baseline-variedad-verdura.md`: "la
+     unidad estadística es la identidad de verdura, no la posición del eje
+     en el plato". Unidad temporal: el día — días distintos con la
+     identidad comprometida, no la aparición. El día es la unidad
+     narrativa del motor (decision log, veda de frecuencias, ejes de la
+     campaña de evidencia); un contrato expresado en días sobrevive a
+     cualquier cambio futuro en cómo el batch-cooking reparte una misma
+     identidad entre momentos o raciones del mismo día.
+  4. **Lectura**: la política consulta exclusivamente el resumen de días
+     distintos con la identidad comprometida; no conoce ni depende de cómo
+     la memoria representa ese resumen internamente.
+  5. **Política**: entre los candidatos del nivel vigente (el que entrega
+     el paso de frecuencias), se prefieren aquellos cuya incorporación
+     aumente menos la repetición de identidades ya comprometidas. Partición
+     binaria preferentes/resto — sin ranking total, sin umbrales absolutos,
+     sin acumulación numérica entre candidatos (mismo invariante
+     constitucional que gobierna frecuencias: priorizar sin sumar). Se
+     inserta como paso posterior y separado del paso de frecuencias: son
+     ejes independientes — frecuencia/cobertura de un lado,
+     identidad/variedad del otro — y el mecanismo debe poder apagarse sin
+     afectar el comportamiento de frecuencias.
+  6. **INV-1 (degradación)**: la política nunca reduce el pool a cero. Si
+     la partición preferente queda vacía, revierte al conjunto completo del
+     nivel vigente con la MISMA semántica de reversión que el fallback ya
+     existente del paso de frecuencias (D-024, asiento 1: nivel preferente
+     vacío → conjunto completo, causa declarada) — la misma, no una análoga
+     nueva. La reversión opera exclusivamente sobre el subconjunto ya
+     entregado por los pasos anteriores (veto, no-repetición, preferencias
+     A/B, frecuencias); nunca reabre candidatos que un paso previo ya
+     descartó. Consecuencia contractual: un plan generado con el mecanismo
+     activo existe si y solo si existía sin él — el mecanismo no puede ser
+     la causa de que un hueco quede sin candidato.
+  7. **INV-2 (monotonía)**: la función de coste de repetición queda abierta
+     a la implementación — el contrato exige la propiedad, no el
+     algoritmo. La propiedad exigida: una identidad con más días
+     comprometidos nunca produce un coste menor que la misma identidad con
+     menos días comprometidos.
+  8. **Observabilidad**: el mecanismo registra en el log de decisiones
+     existente únicamente dos causas — preferencia aplicada (con los
+     tamaños de pool antes/después de la partición) y degradación por
+     reversión (INV-1). La ausencia de entrada del mecanismo en un hueco
+     significa ausencia de intervención; "se evaluó y no tuvo efecto" no
+     genera entrada (mismo principio ya vigente en frecuencias: huecos sin
+     intervención no llevan entrada del paso).
+  9. **Fundamento en evidencia**: los cuatro artefactos anclados en
+     `docs/evidence/variedad-verdura/` (`baseline-variedad-verdura.md`,
+     `veg_variety_engine2_v2diag.mjs`/D-043, `veg_variety_engine2_freq.md`,
+     `veg_variety_engine2_intensity.md`) sostienen el trazado causal del
+     fenómeno gobernado: la repetición de identidad producida por anclas
+     (`shelfLifeDays` culinarios, CP2b) es diseño ya ratificado y queda
+     fuera del alcance de esta política — no es un defecto a corregir, es
+     aprovechamiento de sobras funcionando como se diseñó. El fenómeno que
+     esta política gobierna es la acumulación de identidades en la ruta
+     ROTATIVA, la única donde la arquitectura deja margen de elección.
+  10. **Criterios de aceptación** (falsables, a nivel de contrato): (i) el
+     mecanismo nunca vacía un pool no vacío (INV-1, verificable por
+     construcción); (ii) el coste de repetición es monótono en días
+     comprometidos (INV-2, verificable con vistas sintéticas); (iii) el
+     mecanismo es apagable sin alterar ningún resultado del paso de
+     frecuencias; (iv) toda intervención queda narrada con tamaños
+     antes/después, toda no-intervención queda muda; (v) observación
+     cruzada P1a→rotativo: una identidad presente ÚNICAMENTE en
+     colocaciones de ancla/sobra debe influir en la priorización de las
+     selecciones rotativas posteriores de la misma semana (la memoria es
+     global, no se reinicia al entrar en P1b); (vi) impacto: una
+     re-ejecución de la campaña anclada (D-042) con el mecanismo activo
+     debe mostrar la dirección de cambio esperada (menos concentración de
+     identidad en la ruta rotativa) — artefacto futuro, no exigible en este
+     asiento; (vii) discriminación básica: ante dos candidatos del mismo
+     nivel donde uno incorpora una identidad ya comprometida en la semana y
+     el otro no, la política prefiere al que no la repite (rojo sin
+     mecanismo, verde con él) — el caso mínimo de la semántica de
+     preferencia; (viii) mutación de control de INV-1: una variante del
+     mecanismo que, ante partición preferente vacía, lanzara en lugar de
+     revertir, debe fallar los tests de INV-1 — demostrando que la suite
+     discrimina la reversión contractual de su alternativa rechazada.
+- Evidencia: `docs/evidence/variedad-verdura/baseline-variedad-verdura.md`
+  (norma de unidad de identidad, independiente de V/V2); D-042 (artefacto
+  reproducible como única referencia válida); D-043 (V2 descartado como
+  condicionante de diseño); D-024 (precedente arquitectónico de partición
+  por niveles y su fallback ante nivel vacío); D-023 (contrato de ausencia
+  del ancla; CP2b como origen ratificado de la repetición por sobras).
+  Reconocimiento read-only previo de esta sesión (R-0, 2026-07-16) sobre
+  `src/engine2/walk/frequencies.js`, `vetoes.js`, `runWalk.js`,
+  `expandWeekArc.js`, `buildWeekArc.js` y `compositionResolver.js`:
+  confirmó que ningún veto existente consulta estado mutable (el
+  precedente de estado es frecuencias, no vetos); que la información que
+  llega a P1a no trae composición resuelta — solo `dishId` crudo — y que
+  la identidad de verdura se obtiene recién en `registerConsumption`,
+  mediante la vista ya resuelta allí (`vistaPorDefecto`), tanto para las
+  colocaciones de P1a (vía `initFrequencyState`) como para las selecciones
+  de P1b, por lo que el mecanismo no requiere ninguna nueva resolución ni
+  nueva entrada en la allowlist D-036/D-037: reutiliza el productor de
+  vista ya autorizado; y que ningún gate de la suite exige estabilidad
+  byte-a-byte del plan de engine2 — el mecanismo no colisiona con ningún
+  tripwire existente por esa vía. Ningún cambio de código en este asiento.
+- Decide: Javi (ratificación de sesión 2026-07-16, PR documental en rama
+  `docs/asiento-contrato-identidad-variedad` sobre `main` post-D-043).

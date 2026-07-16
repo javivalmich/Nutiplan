@@ -2104,7 +2104,7 @@ particionado del lateral: verdura solo existe en el subconjunto freeform).
      `veg_variety_engine2_v2diag.mjs`/D-043, `veg_variety_engine2_freq.md`,
      `veg_variety_engine2_intensity.md`) sostienen el trazado causal del
      fenómeno gobernado: la repetición de identidad producida por anclas
-     (`shelfLifeDays` culinarios, CP2b) es diseño ya ratificado y queda
+     (`shelfLifeDays` culinarios, CP3A) es diseño ya ratificado y queda
      fuera del alcance de esta política — no es un defecto a corregir, es
      aprovechamiento de sobras funcionando como se diseñó. El fenómeno que
      esta política gobierna es la acumulación de identidades en la ruta
@@ -2123,22 +2123,33 @@ particionado del lateral: verdura solo existe en el subconjunto freeform).
      re-ejecución de la campaña anclada (D-042) con el mecanismo activo
      debe mostrar la dirección de cambio esperada (menos concentración de
      identidad en la ruta rotativa) — artefacto futuro, no exigible en este
-     asiento.
+     asiento; (vii) discriminación básica: ante dos candidatos del mismo
+     nivel donde uno incorpora una identidad ya comprometida en la semana y
+     el otro no, la política prefiere al que no la repite (rojo sin
+     mecanismo, verde con él) — el caso mínimo de la semántica de
+     preferencia; (viii) mutación de control de INV-1: una variante del
+     mecanismo que, ante partición preferente vacía, lanzara en lugar de
+     revertir, debe fallar los tests de INV-1 — demostrando que la suite
+     discrimina la reversión contractual de su alternativa rechazada.
 - Evidencia: `docs/evidence/variedad-verdura/baseline-variedad-verdura.md`
   (norma de unidad de identidad, independiente de V/V2); D-042 (artefacto
   reproducible como única referencia válida); D-043 (V2 descartado como
   condicionante de diseño); D-024 (precedente arquitectónico de partición
   por niveles y su fallback ante nivel vacío); D-023 (contrato de ausencia
-  del ancla; CP2b como origen ratificado de la repetición por sobras).
+  del ancla; CP3A como origen ratificado de la repetición por sobras).
   Reconocimiento read-only previo de esta sesión (R-0, 2026-07-16) sobre
   `src/engine2/walk/frequencies.js`, `vetoes.js`, `runWalk.js`,
   `expandWeekArc.js`, `buildWeekArc.js` y `compositionResolver.js`:
   confirmó que ningún veto existente consulta estado mutable (el
-  precedente de estado es frecuencias, no vetos), que la información que
-  llega a P1a no trae composición resuelta (la identidad es directamente
-  `dish.id`, sin necesidad de nueva resolución), y que ningún gate de la
-  suite exige estabilidad byte-a-byte del plan de engine2 — el mecanismo no
-  colisiona con ningún tripwire existente por esa vía. Ningún cambio de
-  código en este asiento.
+  precedente de estado es frecuencias, no vetos); que la información que
+  llega a P1a no trae composición resuelta — solo `dishId` crudo — y que
+  la identidad de verdura se obtiene recién en `registerConsumption`,
+  mediante la vista ya resuelta allí (`vistaPorDefecto`), tanto para las
+  colocaciones de P1a (vía `initFrequencyState`) como para las selecciones
+  de P1b, por lo que el mecanismo no requiere ninguna nueva resolución ni
+  nueva entrada en la allowlist D-036/D-037: reutiliza el productor de
+  vista ya autorizado; y que ningún gate de la suite exige estabilidad
+  byte-a-byte del plan de engine2 — el mecanismo no colisiona con ningún
+  tripwire existente por esa vía. Ningún cambio de código en este asiento.
 - Decide: Javi (ratificación de sesión 2026-07-16, PR documental en rama
   `docs/asiento-contrato-identidad-variedad` sobre `main` post-D-043).

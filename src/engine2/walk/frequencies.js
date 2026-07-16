@@ -68,6 +68,38 @@
 // incompleto, etc. -- todos indicando un bug real de catalogo) se
 // RE-LANZA sin capturar: el resolver no se toca, y sus fallos reales no
 // se ocultan.
+//
+// PASO 5 -- identidad de verdura (D-044, Componente P2b-iii). Memoria
+// GLOBAL (observa todo compromiso de identidad, P1a y P1b, sin
+// distincion de origen -- D-044 punto 1) + politica LOCAL (interviene
+// solo en la fase de candidatos del rotativo -- D-044 punto 1). Vive en
+// este modulo: reutiliza el mismo recorrido de registerConsumption/
+// initFrequencyState que puebla el resto del estado (D-044 punto 3:
+// "cero recorridos nuevos"), y el mismo productor de vista ya ratificado
+// (vistaPorDefecto, D-036/D-037) -- cero nueva entrada en la allowlist
+// de s2-fuenteEditorial-callsites.test.js.
+//
+// Poblacion (D-044 puntos 3-4): por cada colocacion consumida que
+// satisface verdura (mismo predicado satisfaceVerdura, eje-agnostico --
+// V y V2 fusionados en valorEfectivo, norma de
+// docs/evidence/variedad-verdura/baseline-variedad-verdura.md), cada
+// identidad de valorEfectivo suma el DIA (no la aparicion) al resumen
+// interno. Lectura expuesta EXCLUSIVAMENTE via diasConIdentidad -- la
+// politica no conoce la representacion interna (D-044 punto 4).
+//
+// Politica (D-044 puntos 5-8): paso 5, posterior y separado de paso 4
+// (chooseFrequencyLevel) -- opera sobre candidatesFinal (su nivel
+// ganador), particion binaria preferentes (coste minimo de repeticion,
+// D-044 asiento 5: minimo es comparacion, no acumulacion) / resto. INV-1
+// (D-044 asiento 6): particion vacia -> revierte al conjunto completo,
+// MISMA semantica que frecuencia_corta_sin_candidato (D-024 asiento 1) --
+// ver particionarPorCoste. INV-2 (D-044 asiento 7): costeRepeticion debe
+// ser monotono; la forma concreta (maximo de diasConIdentidad sobre las
+// identidades del candidato) es decision de implementacion, puede
+// evolucionar sin tocar D-044. Log: dos causas unicamente
+// (identidad_verdura_preferencia_aplicada,
+// identidad_verdura_reversion_nivel_vacio) -- sin efecto, sin entrada
+// (D-044 punto 8, mismo principio que paso 4).
 
 import { resolveDishComposition, UnresolvableOriginError } from '../dishes/compositionResolver.js';
 import { DAYS_ORDER } from '../skeleton/days.js';
@@ -152,11 +184,13 @@ function diaAnterior(day) {
 /**
  * Estado local de frecuencias del walk (asiento 5): contadores semanales
  * (legumbre/pescado), dias de ultimo incremento por campo (para la veda,
- * asiento 4), dias que ya tienen verdura (asiento 3) e ids que resultaron
+ * asiento 4), dias que ya tienen verdura (asiento 3), ids que resultaron
  * irresolubles (D-024 addendum: sustituidos por vista neutral -- narrados
- * una vez por walk en runWalk.js, ver banner del modulo). Recomputable
- * desde las colocaciones del propio paseo -- sin persistencia (MemoryStore
- * no se toca, R4).
+ * una vez por walk en runWalk.js, ver banner del modulo) y memoria de
+ * identidad de verdura (D-044 punto 3: identidad -> dias distintos en que
+ * fue comprometida; representacion interna, la politica de paso 5 solo
+ * consulta diasConIdentidad). Recomputable desde las colocaciones del
+ * propio paseo -- sin persistencia (MemoryStore no se toca, R4).
  * @returns {object}
  */
 export function createFrequencyState() {
@@ -167,7 +201,11 @@ export function createFrequencyState() {
     incrementDays[campo] = new Set();
   }
   return {
-    contadores, incrementDays, diasConVerdura: new Set(), idsIrresolubles: new Set(),
+    contadores,
+    incrementDays,
+    diasConVerdura: new Set(),
+    idsIrresolubles: new Set(),
+    diasPorIdentidadVerdura: new Map(),
   };
 }
 
@@ -208,7 +246,19 @@ export function registerConsumption(state, dish, day, getVista, fuenteEditorial)
     state.contadores[vista.proteinType] += 1;
     state.incrementDays[vista.proteinType].add(day);
   }
-  if (satisfaceVerdura(vista)) state.diasConVerdura.add(day);
+  if (satisfaceVerdura(vista)) {
+    state.diasConVerdura.add(day);
+    // Memoria de identidad (D-044 puntos 3-4): eje-agnostica -- V y V2 ya
+    // llegan fusionados en valorEfectivo (norma de
+    // baseline-variedad-verdura.md), asi que cada elemento es una
+    // identidad de verdura comprometida ESTE dia, sin importar de que eje
+    // provino. Unidad temporal = dia (no aparicion): un Set por
+    // identidad, no un contador.
+    for (const identidad of vista.verdura.valorEfectivo) {
+      if (!state.diasPorIdentidadVerdura.has(identidad)) state.diasPorIdentidadVerdura.set(identidad, new Set());
+      state.diasPorIdentidadVerdura.get(identidad).add(day);
+    }
+  }
 }
 
 /**
@@ -298,4 +348,120 @@ export function chooseFrequencyLevel({
   }
 
   return { nivel: candidatesB, causa: null, evidencia: null };
+}
+
+/**
+ * Lectura del resumen de memoria de identidad (D-044, punto 4): dias
+ * DISTINTOS en que la identidad de verdura dada ya fue comprometida, por
+ * cualquier via de consumo (asiento 5 de D-024, extendido a identidad --
+ * ancla, sobra, capricho o seleccion libre, P1a y P1b sin distincion,
+ * D-044 punto 1). UNICA funcion que el paso 5 puede usar para leer
+ * memoria -- no conoce ni depende de que la representacion interna sea
+ * un Map<identidad,Set<dia>> (D-044 punto 4: "no conoce ni depende de
+ * como la memoria representa ese resumen").
+ * @param {object} state
+ * @param {string} identidad
+ * @returns {number}
+ */
+export function diasConIdentidad(state, identidad) {
+  return state.diasPorIdentidadVerdura.get(identidad)?.size ?? 0;
+}
+
+/**
+ * Coste de repeticion de un candidato (D-044, INV-2: la propiedad
+ * exigida es monotonia, la forma queda abierta a la implementacion --
+ * asiento 7). Maximo de diasConIdentidad sobre las identidades de
+ * verdura del candidato: monotono por construccion -- diasConIdentidad
+ * de una identidad con mas dias registrados nunca es menor que la misma
+ * identidad con menos dias, y el maximo de un conjunto solo puede subir
+ * o quedar igual al anadir mas identidades, nunca bajar. Sin verdura
+ * (origen "desconocida", o valorEfectivo vacio) -> coste 0: un candidato
+ * sin compromiso de identidad no aporta repeticion alguna. Forma
+ * DECISION DE IMPLEMENTACION (D-044 asiento 7): puede evolucionar sin
+ * tocar el asiento, siempre que sea monotona.
+ * @param {object} state
+ * @param {object} vista
+ * @returns {number}
+ */
+export function costeRepeticion(state, vista) {
+  if (!satisfaceVerdura(vista)) return 0;
+  return Math.max(...vista.verdura.valorEfectivo.map((identidad) => diasConIdentidad(state, identidad)));
+}
+
+/**
+ * Particion binaria preferentes/resto por coste minimo (D-044, asiento
+ * 5: "sin ranking total, sin umbrales absolutos, sin acumulacion
+ * numerica entre candidatos" -- el minimo es una comparacion, no una
+ * suma), con reversion INV-1 (D-044 asiento 6) si la particion
+ * preferente queda vacia -- MISMA semantica que frecuencia_corta_sin_
+ * candidato (D-024 asiento 1): revertir al conjunto completo, nunca
+ * relanzar contra pasos previos.
+ *
+ * Recibe los costes YA calculados (paralelos a candidates por indice)
+ * para mantener la particion agnostica de la forma de coste (D-044
+ * asiento 7: costeRepeticion puede evolucionar sin tocar esta funcion).
+ * Bajo un coste bien formado (numeros finitos comparables) el minimo de
+ * un conjunto no vacio nunca deja vacia la particion preferente -- INV-1
+ * es una red de seguridad ESTRUCTURAL, no alcanzable con costeRepeticion
+ * ni con el catalogo real (verificado con costes sinteticos degenerados
+ * en frequencies.test.js), y existe para cualquier funcion de coste
+ * futura que no preserve esa garantia.
+ * @param {object[]} candidates
+ * @param {number[]} costes paralelo a candidates por indice
+ * @returns {{preferentes: object[], costeMinimo: number, reversion: boolean}}
+ */
+export function particionarPorCoste(candidates, costes) {
+  const costeMinimo = Math.min(...costes);
+  const preferentes = candidates.filter((_, i) => costes[i] === costeMinimo);
+  return { preferentes, costeMinimo, reversion: preferentes.length === 0 };
+}
+
+/**
+ * Nucleo puro de paso 5 (D-044): dado el nivel ganador de paso 4
+ * (candidatesFinal) y el estado, particiona por coste minimo de
+ * repeticion de identidad. causa/evidencia son `null` cuando el paso NO
+ * interviene: pool de 1 candidato (no se evalua -- D-044, Fase 2.3), o
+ * particion sin efecto (todos los candidatos empatan al coste minimo --
+ * "se evaluo y no tuvo efecto" no genera entrada, D-044 punto 8, mismo
+ * principio que paso 4).
+ *
+ * getVista permite testear con vistas sinteticas (mismo patron que
+ * chooseFrequencyLevel/registerConsumption); sin getVista, usa el
+ * catalogo real (con fuenteEditorial si se inyecta, D-036) -- MISMO
+ * productor de vista ya ratificado (vistaPorDefecto), cero nueva entrada
+ * en la allowlist (D-037, s2-fuenteEditorial-callsites.test.js).
+ * @param {{candidatesFinal: object[], state: object, getVista?: (dish: object) => object, fuenteEditorial?: {version: number, confirmed: object}}} input
+ * @returns {{nivel: object[], causa: string|null, evidencia: string|null}}
+ */
+export function chooseIdentityLevel({
+  candidatesFinal, state, getVista, fuenteEditorial,
+}) {
+  if (candidatesFinal.length <= 1) {
+    return { nivel: candidatesFinal, causa: null, evidencia: null };
+  }
+
+  const resolver = getVista || vistaPorDefecto(state, fuenteEditorial);
+  const costes = candidatesFinal.map((d) => costeRepeticion(state, resolver(d)));
+  const { preferentes, costeMinimo, reversion } = particionarPorCoste(candidatesFinal, costes);
+
+  if (reversion) {
+    return {
+      nivel: candidatesFinal,
+      causa: 'identidad_verdura_reversion_nivel_vacio',
+      evidencia: `paso 5: particion preferente vacia (INV-1, estado degenerado); reversion al conjunto `
+        + `completo (${candidatesFinal.length} candidatos), misma semantica que frecuencia_corta_sin_candidato`,
+    };
+  }
+
+  if (preferentes.length === candidatesFinal.length) {
+    return { nivel: candidatesFinal, causa: null, evidencia: null };
+  }
+
+  const descartados = candidatesFinal.filter((d) => !preferentes.includes(d)).map((d) => d.id);
+  return {
+    nivel: preferentes,
+    causa: 'identidad_verdura_preferencia_aplicada',
+    evidencia: `paso 5: coste minimo de repeticion = ${costeMinimo}; nivel preferente = ${preferentes.length} candidatos de ${candidatesFinal.length} post-paso4; `
+      + `descartados por mayor repeticion de identidad: [${descartados.join(', ')}]`,
+  };
 }

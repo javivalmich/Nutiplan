@@ -64,5 +64,5 @@ orden vinculante para el trabajo futuro.
 Orden de fases (roadmap v2 — histórico):
 0 → 0.5 → 1 → 3 → 2 (continua) → 4 → 5 → 6 → 7
 
-Frente activo: —
+Frente activo: Frente B
 (Se actualizará al abrir formalmente el siguiente frente.)

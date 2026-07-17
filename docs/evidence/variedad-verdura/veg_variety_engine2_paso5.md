@@ -70,6 +70,22 @@ Diagnóstico V2 de referencia (no recalculado aquí): `veg_variety_engine2_v2dia
 (commit `d076ce7`) — el fenómeno de repetición existe
 prácticamente íntegro en el eje V, con o sin V2 (D-043).
 
+La interpretación de los cambios observados asume la invarianza de la
+ruta P1a, que permanece sin modificaciones en esta implementación. Bajo
+ese supuesto estructural —el paso 5 interviene únicamente en la ruta
+rotativa, expandWeekArc no cambia, y las semillas son idénticas—, el
+delta observado se atribuye íntegramente a la política aplicada sobre la
+ruta rotativa. Es una deducción respaldada por el código, no una
+medición apareada: no existe toggle de runtime del paso 5 (R-0 F-M,
+runWalk.js:365-367, invocación incondicional), por lo que un brazo
+ON/OFF exigiría modificar el motor y queda fuera del alcance de esta
+campaña de evidencia.
+
+La política desplaza engine2 hacia un régimen de menor concentración de
+identidades sin reproducir el perfil estadístico de legacy. `pctMax3`
+83.2% queda entre legacy (69.6%) y el engine2 pre-paso-5 (98.6%);
+`meanDistinct` 7.79 se aproxima a legacy (7.96) sin igualarlo.
+
 ## 5. Resultados — descomposición por vía e intensidad, por identidad
 
 Columnas: identidad | apariciones totales | semanas afectadas (%) |
@@ -125,6 +141,12 @@ diseño.
 | Preferencia aplicada (`identidad_verdura_preferencia_aplicada`) | 4561 | 84.2% |
 | Reversión INV-1 (`identidad_verdura_reversion_nivel_vacio`) | 0 | 0.0% |
 | Sin intervención registrada (pool-de-1 o evaluado-sin-efecto, indistinguibles) | 853 | 15.8% |
+
+Durante esta campaña no se observó ninguna activación de la rama de
+reversión INV-1 (0/5414). Su corrección queda verificada por inspección
+de código y por tests específicos, no por ocurrencia en esta ejecución;
+en consecuencia, el gate de exhaustividad validó de facto únicamente el
+patrón de preferencia aplicada.
 
 ## 7. Gates internos
 

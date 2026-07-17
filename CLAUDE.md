@@ -15,14 +15,17 @@ App de menús diarios/semanales personalizados. El motor actual (`buildPlan.js`)
 7. **`engine/` (motor viejo) no se importa desde `engine2/`** — jamás, salvo `*.test.js` de parity; `engine2` mantiene copias paritarias propias (p.ej. `deriveTempFeelEngine2`). Vigilado por tripwire de CI (`tripwire-engine2-engine-isolation.test.js`): escaneo AST de imports de `engine/` en archivos bajo `engine2/`, excepción por patrón de nombre (`*.test.js` + `__selftest_*__`), nunca por carpeta `tests/` genérica.
 
 ## Contrato de shape entre motores
-Ambos motores devuelven EXACTAMENTE estas claves (verificado en buildPlan.js:2780
-y en los call-sites de producto):
+Todo productor de plan deberá garantizar la presencia de estas claves en su return
+(productor legacy verificado en buildPlan.js:2808-2815):
 { days, strategy, weekWarnings, weekProblems, weekScore, decisionLog? }
 - strategy y weekProblems: consumidos por OriginalPlanApp.jsx y NutritionistDashboard.jsx.
   engine2 DEBE emitirlos (aunque weekProblems vaya como []).
 - weekScore: campo de COMPATIBILIDAD de display. engine2 NO puntúa; su valor en engine2
   se decide en Fase 7 (placeholder o derivado del contrato de reconcile). Allowlisted en el tripwire.
 - decisionLog: opcional, solo engine2.
+- Campos instrumentales o condicionados por mecanismos de depuración (p.ej. qaTrace bajo
+  QA_TRACE) no forman parte del contrato y no podrán ser utilizados por consumidores
+  como requisitos funcionales.
 
 ## Contrato MemoryStore (interfaz, sin implementación de storage)
 ```

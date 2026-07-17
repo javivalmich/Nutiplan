@@ -2402,3 +2402,21 @@ Decisión documental; ningún cambio de código. Ninguna afirmación de este asi
 
 ### Herencia
 Frente B: redacción de la especificación normativa del objeto de plan observable. Futuro frente de construcción del productor: recibirá esa especificación como criterio de aceptación parcial.
+
+## D-051 — Corrección del contrato de shape: cita muerta y formulación de garantía mínima
+
+Fecha: 2026-07-18 · HEAD de referencia: `68433b8` · Tipo: corrección normativa
+
+### Contexto
+Una micro-verificación documental (sesión 2026-07-17, solo lectura sobre `main @ 68433b8`), previa a la redacción de la especificación normativa encomendada por D-050, constató una doble contradicción entre el contrato de shape (`CLAUDE.md:17-25`) y el productor de plan de legacy identificado por R-1 (D-049): (1) el contrato afirma "verificado en buildPlan.js:2780", pero esa línea contiene el cierre de un bucle ajeno al return; el return real está en `buildPlan.js:2808-2815`; (2) el contrato afirma que ambos motores devuelven "EXACTAMENTE" un conjunto de claves que excluye `qaTrace`, mientras el productor real emite `qaTrace?` condicionalmente bajo el flag `QA_TRACE` (spread en `buildPlan.js:2814`). `qaTrace` no aparece mencionado en ninguna línea de `CLAUDE.md`.
+
+### Decide
+1. Corrección de la cita. La referencia de verificación pasa de `buildPlan.js:2780` a `buildPlan.js:2808-2815`, acotada al productor legacy (único con productor identificado en este estado, según D-049).
+2. Reformulación del contrato como garantía mínima. "Ambos motores devuelven EXACTAMENTE estas claves" se sustituye por "Todo productor de plan deberá garantizar la presencia de estas claves". La intención del contrato siempre fue fijar qué pueden asumir los consumidores, no inventariar el return. La enumeración exhaustiva era una afirmación más fuerte que esa intención, y el código la falsifica bajo `QA_TRACE` activo.
+3. Estatus de los campos instrumentales. Los campos instrumentales o condicionados por mecanismos de depuración (p.ej. `qaTrace` bajo `QA_TRACE`) no forman parte del contrato y no podrán ser utilizados por consumidores como requisitos funcionales. Esta regla es genérica por diseño: futuros campos instrumentales quedan cubiertos sin necesidad de nueva corrección normativa.
+
+### Alcance
+Corrección documental de `CLAUDE.md` exclusivamente; ningún cambio de código. Quedan expresamente fuera: el hueco de `meal.metadata.saciedad` (registrado en D-049), los productores parciales de `decisionLog` en engine2 (ídem), `reconcile`, y todo contenido de la especificación normativa de Frente B, que se redactará sobre el contrato ya corregido.
+
+### Herencia
+La especificación normativa del objeto de plan observable (D-050) se redacta sobre esta versión del contrato, sin necesidad de cargar excepciones a la norma superior.

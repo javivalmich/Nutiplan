@@ -2321,3 +2321,29 @@ Dado que el único hecho compartido es el andamiaje temporal, el Frente B hereda
 
 ### Aprendizaje metodológico
 F2 es la evidencia central del valor del contrato: la intuición inicial la señalaba como el caso más sólido y el reconocimiento la excluyó al encontrar lógica adicional donde no se esperaba. El contrato obligó a verificar una intuición antes de admitirla como hecho — no impidió la intuición, que es inevitable, sino su promoción sin evidencia. Este es el resultado de más alcance del frente.
+
+## D-048 — Frente B: Tesis, objeto de evaluación y separación de niveles
+
+Fecha: 2026-07-17 · HEAD de referencia: `c315d2e` · Tipo: decisión fundacional
+
+### Contexto
+D-045 dejó explícitamente abierta la interpretación de la tesis de humanización ("distinción deliberada de legacy o repetición más realista del mismo fenómeno", DECISIONS.md:2200-2207). D-047 heredó al Frente B la pregunta "¿sobre qué evalúa el juez la tesis de humanización?" (DECISIONS.md:2320). Una micro-verificación documental de solo lectura, anclada a `c315d2e`, constató que no existe formulación operacional de la tesis en el corpus normativo: CLAUDE.md:6 describe el proceso del motor y el mecanismo de migración ("evaluación ciega") sin definir qué se mide; ninguna entrada previa de DECISIONS.md la fija. La presente entrada es por tanto una decisión fundacional, no un hallazgo de reconocimiento.
+
+### Decide
+1. Tesis. Engine2 pretende aproximar el proceso de decisión de un nutricionista humano experto mejor de lo que lo aproxima el motor legacy. Es una afirmación sobre el motor, independiente de cualquier diseño experimental.
+2. Regla de evidencia. La evaluación del proceso de decisión se realizará a partir de evidencia observable en el plan generado, ya que el proceso interno del motor no constituye un objeto directamente evaluable.
+3. Objeto de evaluación. El plan generado por el motor. La definición formal de ese objeto en cada motor no forma parte de esta decisión y queda encomendada al reconocimiento R-1 del Frente B. Toda representación que se construya para hacer el plan observable por un juez humano es un vehículo de observación, no el objeto evaluado; deberá ser proyección fiel del plan, y el protocolo deberá minimizar la influencia de la representación sobre el juicio.
+4. Diseño experimental: abierto. Las dos lecturas de D-045 ("distinción deliberada", "repetición más realista") se reclasifican: no son tesis alternativas, sino familias de diseño experimental para contrastar la tesis del punto 1. Su elección pertenece al diseño del protocolo, posterior a esta entrada, junto con la forma del experimento (comparación A/B, evaluación ciega tipo Turing, ranking, preferencia u otras).
+
+### Causa
+Separar tres niveles hasta ahora entremezclados — qué afirma el proyecto (tesis), qué entidad se evalúa (objeto), cómo se diseña el experimento (protocolo) — evita dos fallos: que la tesis deba reescribirse si cambia el protocolo experimental, y que la representación, un artefacto propio, se convierta en lo evaluado. La disyuntiva de D-045 se difiere al nivel al que pertenece.
+
+### Consecuencias provisionales para el trabajo del Frente B
+Las siguientes consecuencias se derivan del estado actual del repositorio y del alcance de esta decisión. No forman parte de la tesis y podrán revisarse únicamente mediante una decisión posterior que las sustituya explícitamente.
+
+- Descartada la observación asimétrica (juez ve UI legacy y un artefacto ad hoc para engine2): la asimetría de presentación contamina el juicio, incompatible con el punto 3.
+- Descartada la observación de estructuras crudas (juez lee objetos serializados): traslada al juez interpretación técnica de estructuras no diseñadas para consumo humano.
+- El reconocimiento previo (R-0 del Frente B) constató que no existe hoy ningún artefacto observable por un juez humano que represente un plan de engine2; la construcción de un vehículo de observación es, en consecuencia, trabajo previsible del frente, subordinado a lo que R-1 establezca sobre el objeto.
+
+### Herencia
+R-1 (Frente B): documentar formalmente qué constituye "el plan generado" en cada motor — qué produce cada uno, con qué campos y qué semántica puede demostrarse mediante reconocimiento — como base para el diseño de la proyección fiel y, después, del protocolo experimental.

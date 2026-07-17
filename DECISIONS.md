@@ -2235,3 +2235,89 @@ particionado del lateral: verdura solo existe en el subconjunto freeform).
     repo: la sección CLAUDE.md:56 ("Orden de fases (roadmap v2)").
   - Fuente: informe R-0.1 (reconocimiento documental Fase 7), esta sesión.
 - Decide: Javi.
+
+## D-047 — Frente A / Fase 7: Congelación de la representación canónica de evaluación (C v1)
+
+Fecha: 2026-07-17 · HEAD de reconocimiento: 3c18f77 · Tipo: docs-only
+
+### Por qué (pregunta del frente)
+El Frente A no perseguía producir una C "útil" para el protocolo. Perseguía responder una pregunta de reconocimiento, anterior a todo diseño de evaluación: ¿qué terreno común observable existe realmente entre el motor legacy (`src/engine/`) y engine2 (`src/engine2/`) sin introducir interpretación? El protocolo de evaluación (Frente B) y su implementación (Frente C) quedan fuera de este asiento por construcción.
+
+### Principios de C (causas, pre-registradas antes de generar material comparativo)
+1. C es representación canónica de EVALUACIÓN, no formato de plan. Su reutilización como formato interno queda fuera de alcance.
+2. C es lenguaje intermedio, no adaptador: ambos motores expresan C; C no deriva del vocabulario nativo de ninguno. Las dos flechas entran a C.
+3. Cierre semántico: C contiene hechos, no criterios de juicio. Ninguna propiedad se añade para satisfacer una necesidad del protocolo.
+4. Minimalidad e independencia: C es la intersección mínima de hechos compartidos; cada propiedad se justifica; quitar una no afecta la expresabilidad de otra.
+5. Simetría de transformaciones: la transformación motor→C es idéntica en estructura para ambos motores y se especifica antes de todo material comparativo.
+6. C maximiza simetría, no información: ante conflicto entre conservar información de un motor y mantener simetría, gana la simetría.
+7. Contrato vs. documentación: C es un conjunto de identificadores verificables estructuralmente; el significado humano vive en documentación separada y revisable, no en el contrato.
+8. Estabilidad de identidad: un identificador F nunca se reutiliza para otro significado. Su documentación evoluciona y puede excluirse de una versión futura de C; su identidad contractual no cambia.
+9. Separación de instrumentos: ningún instrumento amplía su contrato durante su ejecución. Si el reconocimiento estático resulta insuficiente, la necesidad de un instrumento dinámico se registra como hallazgo; no se satisface mutando el instrumento actual.
+
+### Contrato v1
+Ninguna categoría inventada. Cada candidata debe citar productor explícito (`archivo:línea`) o regla ya versionada que la derive. "Derivable" sin cita no es respuesta válida. El contenido de C v1 es el conjunto de hechos que el reconocimiento ha demostrado compartidos entre ambos motores — no un objetivo de diseño.
+
+### C v1 — contenido
+- Unidad base (dentro): la semana como 14 posiciones (7 días × {comida, cena}).
+  - Legacy: `dayNames`, `buildPlan.js:2215`; cena condicionada por `n=profile.mealsPerDay`, `buildPlan.js:2216`, `:2435`.
+  - Engine2: `huecosBase`, `expandWeekArc.js:69-88`, sobre `MOMENTOS` (`schema.js:19`) y `DAYS_ORDER` (`days.js:10`).
+
+Hoy, el único conjunto de hechos que el reconocimiento ha podido demostrar como compartido es la unidad base.
+
+### Hallazgo (límite del reconocimiento)
+El reconocimiento estático, bajo el contrato de C v1, no ha podido demostrar un conjunto compartido de hechos de composición entre legacy y engine2 sin introducir interpretación. Esto NO afirma que tal terreno común no exista; afirma que este instrumento, con estas reglas, no puede certificarlo. El único conjunto de hechos que el reconocimiento ha podido demostrar como compartido es la estructura temporal de la semana. Ninguna candidata inicial de composición sobrevivió al reconocimiento sin introducir interpretación.
+
+### Consecuencia (gobernanza)
+C v1 queda congelada con ese alcance. La suficiencia de C v1 para soportar el protocolo de evaluación NO forma parte de este frente y queda heredada explícitamente al Frente B.
+
+### Candidatas excluidas de v1 (consecuencias del contrato, no decisiones del frente)
+Ninguna se descarta por criterio de diseño; todas por aplicación estricta del contrato previamente congelado. Cada exclusión separa lo que observó la sonda de lo que el contrato hizo con esa observación.
+
+F1 (verdura):
+- Hallazgo del reconocimiento: el productor engine2 introduce lógica adicional respecto al productor localizado en legacy — rama por origen y umbral (`frequencies.js:168-170`), fusión con filtrado (`compositionResolver.js:218`) — ausentes en el campo legacy `combo.V` (`buildPlan.js:1244`).
+- Aplicación del contrato: el reconocimiento ya no puede demostrar que ambos productores representen el mismo hecho observable sin interpretación.
+- Consecuencia: F1 no entra en C v1.
+
+F2 (proteína):
+- Hallazgo del reconocimiento: el productor legacy aplica fallback condicional por `tmpl` (`buildPlan.js:1219`) inexistente en el productor engine2, que en su lugar lanza (`compositionResolver.js:209-213`).
+- Aplicación del contrato: el reconocimiento ya no puede demostrar que ambos productores representen el mismo hecho observable sin interpretación.
+- Consecuencia: F2 no entra en C v1.
+
+F3 (hidrato):
+- Hallazgo del reconocimiento: engine2 no produce el hecho en producción; el único acceso a `tupla.C` es una aserción de test (`compositionResolver.test.js:92`) sin consumidor en `walk/` ni `contracts/`. Legacy sí lo produce (`!!cena._spec.C`, `continuidad.js:37`).
+- Aplicación del contrato: al faltar el productor en un lado, no hay hecho compartido; el principio de simetría (6) lo excluye.
+- Consecuencia: F3 no entra en C v1.
+
+Identidad de plato:
+- Hallazgo del reconocimiento: no existe identificador estable común; legacy no tiene implementación de identidad de combo en el objeto retornado (`identity.js:18` la declara engine2-only); engine2 sí (`comboIdentityKey`, `identity.js:32` → `dish.id`, `assemble.js:22`).
+- Aplicación del contrato: regla pre-registrada — si no existe identificador estable común, no hay rescate por traducción.
+- Consecuencia: identidad de plato no entra en C v1.
+
+### Identidades preservadas (principio 8)
+F1, F2 y F3 conservan su identidad contractual como candidatas a versiones futuras de C, si un reconocimiento posterior demuestra que el terreno común se ha ampliado (p. ej. si un frente de construcción produce en engine2 un productor simétrico del hecho hoy ausente o divergente).
+
+### Evidencia versionada (ancla reproducible)
+Reconocimiento por lectura estática estricta sobre el repo vivo en HEAD 3c18f77. Dos instrumentos, ambos SOLO LECTURA, sin ejecución de motores.
+
+Sonda de localización de productores:
+
+| ID | Legacy | Engine2 |
+|----|--------|---------|
+| F1 | `combo.V`, buildPlan.js:1244 | regla `satisfaceVerdura`, frequencies.js:166 (D-024/D-033) sobre `verdura`, compositionResolver.js:228,256 |
+| F2 | `protKey`, buildPlan.js:1219-1223 | `proteinType`, compositionResolver.js:209,252 |
+| F3 | `!!cena._spec.C`, continuidad.js:37 (sobre `_spec`, buildPlan.js:701-702) | no existe (solo aserción de test, compositionResolver.test.js:92) |
+| Unidad base | dayNames, buildPlan.js:2215; buildPlan.js:2216,:2435 | huecosBase, expandWeekArc.js:69-88 |
+| Identidad de plato | no existe (identity.js:18: engine2-only) | comboIdentityKey, identity.js:32 → dish.id, assemble.js:22 |
+
+Sonda de proyección (F1/F2):
+
+| ID | Resultado | Evidencia |
+|----|-----------|-----------|
+| F1 | introduce lógica | frequencies.js:168-170; compositionResolver.js:218 |
+| F2 | introduce lógica | buildPlan.js:1219; compositionResolver.js:209-213 |
+
+### Herencia a Frente B
+Dado que el único hecho compartido es el andamiaje temporal, el Frente B hereda la pregunta: ¿sobre qué evalúa el juez la tesis de humanización? B no puede "añadir F1"; solo puede "construir un terreno común nuevo que justifique F1". Esa distinción de gobernanza es consecuencia directa de congelar C v1 ahora.
+
+### Aprendizaje metodológico
+F2 es la evidencia central del valor del contrato: la intuición inicial la señalaba como el caso más sólido y el reconocimiento la excluyó al encontrar lógica adicional donde no se esperaba. El contrato obligó a verificar una intuición antes de admitirla como hecho — no impidió la intuición, que es inevitable, sino su promoción sin evidencia. Este es el resultado de más alcance del frente.

@@ -2420,3 +2420,29 @@ Corrección documental de `CLAUDE.md` exclusivamente; ningún cambio de código.
 
 ### Herencia
 La especificación normativa del objeto de plan observable (D-050) se redacta sobre esta versión del contrato, sin necesidad de cargar excepciones a la norma superior.
+
+## D-052 — Ratificación de la especificación normativa del objeto de plan observable v1.0
+
+Fecha: 2026-07-18 · HEAD de referencia: `9adbd87` · Tipo: ratificación de documento normativo
+
+### Contexto
+D-050 encomendó a Frente B, ante la dependencia demostrada del productor de plan de engine2 (D-049), redactar la especificación normativa del objeto de plan observable en vez de diseñar el vehículo de evaluación completo. B-A1-C invirtió la dependencia: el productor de plan de engine2 dejó de ser solo deuda del motor con su contrato de shape y pasó a ser dependencia contractual del protocolo de evaluación. Esa inversión exigía un criterio de aceptación externo al motor. B-E1→B fijó además que ese criterio debía ser agnóstico de motor: la simetría del protocolo requiere que ambos planes respondan a la misma norma. Agnóstica no significa mínimo común denominador: si la evaluación requiere una propiedad que un motor no expone, la norma la exige igual y la no conformidad queda registrada como deuda de ese motor.
+
+`docs/spec/plan-observable.md` v1.0 satisface ese encargo. Es, además, el primer documento del género `docs/spec/` (D-050/B-A3-A), por lo que este asiento inaugura el género y crea el directorio.
+
+### Decide
+1. Ratificación de `docs/spec/plan-observable.md` v1.0 como especificación normativa del objeto de plan observable, con la fuerza normativa que le asigna su propio §8.4 desde esta ratificación.
+2. Inauguración del género `docs/spec/`. El directorio se crea con este documento como primer ocupante; futuros documentos normativos de alcance equivalente deberán seguir su convención de identidad estable y versionado (§8).
+3. Principio emergente: verificabilidad sobre el objeto terminado (§0.4). No precedió a la redacción de la especificación; emergió de ella. Retrospectivamente explica la cadena D-048 (se evalúa el plan, no el proceso) → D-049 (se reconoce el productor, no el motor) → D-050 (se puede normar el objeto sin que exista implementación). El documento define condiciones de existencia —cuándo hay un plan conforme, una proyección fiel, conformidad, elegibilidad para evaluación— y no descripciones del sistema.
+4. Resolución de forks abiertos en la sesión de redacción:
+   - F-S1→A: el documento se nombra `plan-observable.md`, sin prefijo de ID. La identidad del documento es estable y los asientos que la ratifican pertenecen a su historia, no a su nombre (§8.3). La convención con prefijo de ID es propia del género evidencia, ligado a hechos fechados, y no se traslada al género especificación.
+   - F-S2→B: el contrato (§4) desarrolla estructura interna de `days` bajo la regla de contención (§4.0), que eleva el criterio de corte del redactor a norma permanente: ninguna obligación estructural futura podrá introducirse sin justificar su necesidad para la evaluación.
+   - F-S3→A: la verificabilidad se eleva a principio rector (§0.4), con la autosuficiencia del objeto (§4.7) como su aplicación concreta al contrato.
+
+### Alcance
+Decisión documental; ningún cambio de código. Se crean dos archivos: `docs/spec/plan-observable.md` (contenido normativo) y este asiento (ratificación). Ninguna afirmación de la especificación ni de este asiento describe estado actual de legacy ni de engine2; toda referencia a los motores es normativa o de posición de conformidad (§7.2).
+
+### Herencia
+Legacy queda en posición verificable con verificación de conformidad pendiente (§7.2.1, §7.3). engine2 queda en posición pendiente de productor, con esta especificación como criterio de aceptación de ese productor futuro (§7.2.2). §7.5 convierte la conformidad verificada en precondición de entrada a la evaluación comparativa: ningún plan podrá evaluarse sin que su motor haya sido verificado contra esta norma.
+
+Referencias: D-048, D-049 (con `docs/evidence/R-1-productores-plan.md`), D-050, D-051, `CLAUDE.md:17-28`.

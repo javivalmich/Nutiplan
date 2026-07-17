@@ -2376,3 +2376,29 @@ Véase Informe R-1 (`docs/evidence/R-1-productores-plan.md`, HEAD `6523de9`), ge
 
 ### Herencia
 La decisión siguiente hereda la pregunta: ¿puede Frente B completar el diseño del protocolo antes de que exista el productor de plan de engine2, o debe detenerse en una especificación de requisitos? Es decisión de arquitectura, fuera del alcance de este reconocimiento.
+
+## D-050 — B-A1 Frente B: Arquitectura del frente ante la dependencia del productor de plan
+
+Fecha: 2026-07-17 · HEAD de referencia: `53fc0a7` · Tipo: decisión de arquitectura
+
+### Contexto
+D-049 heredó la pregunta: ¿puede Frente B completar el diseño del protocolo antes de que exista el productor de plan de engine2, o debe detenerse en una especificación de requisitos? El reconocimiento constató que el objeto de evaluación fijado por D-048 está materializado en un solo motor: legacy tiene productor identificado (`buildPlan.js:2807-2815`, según R-1); en engine2 el contrato de shape (`CLAUDE.md:17-25`) es normativo y este reconocimiento no localizó código que lo cumpla en ese HEAD.
+
+### Decide
+1. Descarte de B-A1-A (diseñar el protocolo completo contra el contrato de shape). No por prudencia general: contradice dos decisiones asentadas. D-047 prohibió construir terreno común a partir de contratos no demostrados; D-049 demostró que en este HEAD el contrato de shape es norma respecto a engine2, no productor existente. Diseñar "como si" el objeto existiera volvería a mezclar especificación con estado observado.
+2. Ratificación de B-A1-C con criterio de frontera. Frente B puede decidir únicamente aquello cuya validez no dependa de la implementación concreta del productor de plan de engine2. Todo lo demás solo puede especificarse como requisito. La frontera viene determinada por la dependencia demostrada en D-049, no por conveniencia metodológica.
+3. Partición resultante.
+
+    Decisiones posibles en el estado actual del repositorio (normativa del protocolo): qué constituye evidencia admisible; reglas de cegado; reglas de comparación; criterios de aceptación/rechazo; requisitos que deberá cumplir cualquier representación para ser considerada proyección válida. Nada de esto presupone que engine2 produzca hoy un plan. (La tesis que contrasta el experimento está ya fijada en D-048 y no se redecide aquí.)
+
+    Especificaciones posibles en el estado actual del repositorio: las propiedades que deberá satisfacer el productor de plan; las que deberá satisfacer la proyección; las condiciones de fidelidad que deberán demostrarse cuando el productor exista. Regla de lenguaje: siempre obligación ("deberá"), nunca descripción ("es").
+
+    Decisiones diferidas por dependencia demostrada: la implementación concreta del vehículo de observación; la verificación de fidelidad de ese vehículo; la validación experimental del protocolo completo. Las tres dependen del productor ausente.
+4. Inversión de la dependencia. El productor de plan de engine2 deja de ser solo una deuda del motor con su contrato de shape; pasa a ser una dependencia contractual del protocolo de evaluación. El protocolo pasa a fijar parte del contrato observable que deberá satisfacer el productor de plan. La implementación del productor continúa siendo responsabilidad del motor; los criterios para considerarlo evaluable pasan a venir definidos parcialmente por Frente B. Esto evita que el futuro frente de construcción implemente un objeto correcto para el motor pero insuficiente para el protocolo.
+5. Resolución. Frente B no se suspende. Su siguiente trabajo no es diseñar el vehículo, sino redactar la especificación normativa del objeto de plan observable que el productor deberá materializar: qué propiedades mínimas deberá exponer para que una proyección fiel y un protocolo ciego sean posibles. Conforme a B-A2-B, esa especificación vivirá como documento versionado propio, separado de este registro (DECISIONS.md registra por qué se decidió y qué gobernanza introduce; la especificación es un artefacto normativo que evolucionará antes de estabilizarse). Su ubicación se determinará tras inspección de las convenciones documentales existentes del repositorio; solo si no existe lugar claramente adecuado se creará uno. La especificación se ratificará con asiento posterior.
+
+### Alcance
+Decisión documental; ningún cambio de código. Ninguna afirmación de este asiento describe estado de engine2; toda referencia a su plan es normativa.
+
+### Herencia
+Frente B: redacción de la especificación normativa del objeto de plan observable. Futuro frente de construcción del productor: recibirá esa especificación como criterio de aceptación parcial.

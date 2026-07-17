@@ -2153,3 +2153,55 @@ particionado del lateral: verdura solo existe en el subconjunto freeform).
   tripwire existente por esa vía. Ningún cambio de código en este asiento.
 - Decide: Javi (ratificación de sesión 2026-07-16, PR documental en rama
   `docs/asiento-contrato-identidad-variedad` sobre `main` post-D-043).
+
+## D-045 — [2026-07-17] Cierre F-M: impacto del paso 5 sobre la baseline de variedad de verdura (criterio vi de D-044)
+
+- Contexto: D-044 dejó el criterio de aceptación (vi) — impacto de la
+  política de identidad de variedad sobre la campaña anclada de D-042 —
+  como "artefacto futuro, no exigible en ese asiento". F-M cierra ese
+  criterio: re-ejecuta la campaña anclada (mismas semillas, mismo
+  PROFILE, mismo catálogo) con el paso 5 activo, mediante un runner
+  hermano que no modifica `engine2/**` ni ninguno de los cuatro
+  artefactos anclados en `docs/evidence/variedad-verdura/`. Un
+  reconocimiento read-only previo de F-M auditó accesibilidad y
+  completitud del `decisionLog` para esta medición antes de construir el
+  runner.
+- Decisión/Hallazgo (dirección, sin veredicto de valor): el paso 5
+  desplaza engine2 hacia un régimen de menor concentración de identidades
+  y mayor variedad, interviniendo en la mayoría de los huecos rotativos,
+  sin reproducir el perfil estadístico de legacy. Las cifras no se
+  transcriben a este asiento — viven en el artefacto (misma disciplina de
+  no duplicar cifras entre artefacto y asiento ya aplicada en D-042/D-043).
+- Causa/Lección (retirada del ~55,7% conversacional): durante el R-0 se
+  constató que la cifra utilizada como referencia conversacional carecía
+  de definición y artefacto versionados. Se retiró antes de convertirse
+  en insumo de diseño. Tercer caso de la serie, tras el ~49,8% (retirado
+  en D-042) y el "23/241 platos con V2" (referencia conversacional
+  retirada en F-E2, sellada en D-043; la medición real fue sustancialmente
+  menor): la
+  no-versión de una DEFINICIÓN de métrica es tan
+  fantasma como la no-versión de una cifra — ninguna referencia
+  conversacional entra al diseño sin artefacto reproducible que la
+  sostenga, ni siquiera cuando trae consigo su propia definición
+  operativa.
+- Deuda registrada (observabilidad, no requisito de este cierre): exponer
+  la causa de paso 5 (el `causa` que devuelve `chooseIdentityLevel`, hoy
+  consumido internamente sin concatenarse nunca en `evidencia` — solo su
+  texto narrativo lo hace) como campo estructurado propio del
+  `decisionLog`, en vez de depender del casado de prosa que usa el runner
+  de F-M. Condicionada a que estas campañas de evidencia se consoliden
+  como parte del proceso habitual de validación; mientras tanto, el gate
+  de exhaustividad de prosa del runner mitiga la deriva silenciosa de esa
+  dependencia.
+- Evidencia: `docs/evidence/variedad-verdura/veg_variety_engine2_paso5.mjs`
+  y `veg_variety_engine2_paso5.md`, ancladas en el commit de merge de F-M
+  (`5b0d503`, mergea `cb6bc36`). D-044 (contrato del mecanismo, criterio
+  vi). D-042 (baseline comparada, artefacto de referencia).
+- Decide / consecuencia para Fase 7: la no-convergencia con legacy que
+  muestra la campaña queda como input explícito del encuadre de Fase 7
+  (engine2 vs. legacy) — el paso 5 acerca los perfiles estadísticos sin
+  igualarlos, lo que obliga a Fase 7 a resolver si la tesis de
+  humanización de engine2 busca distinción deliberada de legacy o solo
+  una repetición más realista del mismo fenómeno. Javi (ratificación de
+  sesión 2026-07-17, PR documental en rama `docs/asiento-cierre-fm` sobre
+  `main` post-F-M).

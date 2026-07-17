@@ -2205,3 +2205,33 @@ particionado del lateral: verdura solo existe en el subconjunto freeform).
   una repetición más realista del mismo fenómeno. Javi (ratificación de
   sesión 2026-07-17, PR documental en rama `docs/asiento-cierre-fm` sobre
   `main` post-F-M).
+
+## D-046 — [2026-07-17] Gobierno por frentes reemplaza al roadmap numerado como fuente normativa
+- Decisión/Hallazgo:
+  Hallazgo: incoherencia entre el estado declarado en CLAUDE.md y el estado real del
+  proyecto. CLAUDE.md fija "Fase actual: 4. No trabajes fases futuras en esta sesión",
+  pero D-041 cerró formalmente la Fase 4 y D-042…D-045 documentan trabajo posterior que ya
+  no siguió la secuencia del roadmap numerado y se organizó mediante frentes autocontenidos
+  (F-M, etc.). Los ficheros de roadmap del snapshot de trabajo nunca fueron versionados en
+  el repo vivo.
+  Resolución: a partir de D-046, el modelo de frentes documentado mediante DECISIONS.md y
+  CLAUDE.md se declara como mecanismo normativo para organizar el trabajo futuro. El roadmap
+  numerado conservado en CLAUDE.md pasa a considerarse referencia histórica y deja de imponer
+  un orden vinculante de ejecución. NO se afirma que el roadmap fuera incorrecto ni que las
+  fases 5/6 desaparezcan; se constata que dejó de mantenerse como fuente normativa durante la
+  evolución D-042…D-045.
+  Consecuencia: las decisiones nuevas —incluida Fase 7— se abren y cierran como frentes
+  independientes, respetando los contratos existentes, sin quedar condicionadas por la
+  numeración histórica del roadmap. En CLAUDE.md se sustituye el concepto de "Fase actual"
+  por el de "Frente activo".
+- Evidencia:
+  - HEAD de main en el reconocimiento: 72b2fba913a7ceb0c5664551d3247c201705820e (D-045, merge).
+  - Incoherencia: CLAUDE.md:58 ("Fase actual: 4. No trabajes fases futuras en esta sesión")
+    vs. D-041 (cierre formal de Fase 4, 2026-07-15) y D-042…D-045 (2026-07-13…2026-07-17),
+    posteriores, sin número de fase del roadmap en su identificación de frente.
+  - Ausencia de roadmap versionado: `git log --all --diff-filter=A` sobre *roadmap* sin
+    resultados; no existe fichero de roadmap ni de "estado post-F2" en el repo vivo. Ya
+    constatado en D-026 ("sin roadmap vigente en el repo"). Único uso de "roadmap" en el
+    repo: la sección CLAUDE.md:56 ("Orden de fases (roadmap v2)").
+  - Fuente: informe R-0.1 (reconocimiento documental Fase 7), esta sesión.
+- Decide: Javi.

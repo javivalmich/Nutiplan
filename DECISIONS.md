@@ -2347,3 +2347,32 @@ Las siguientes consecuencias se derivan del estado actual del repositorio y del 
 
 ### Herencia
 R-1 (Frente B): documentar formalmente qué constituye "el plan generado" en cada motor — qué produce cada uno, con qué campos y qué semántica puede demostrarse mediante reconocimiento — como base para el diseño de la proyección fiel y, después, del protocolo experimental.
+
+## D-049 — R-1 Frente B: Reconocimiento de productores de plan
+
+Fecha: 2026-07-17 · HEAD de reconocimiento: `6523de9` · Tipo: reconocimiento (lectura estática estricta)
+
+### Qué preguntó R-1
+Encomendado por D-048: documentar qué garantiza cada productor que constituye "el plan generado" en cada motor — qué produce, con qué campos, con qué semántica demostrable por lectura estática. Instrumento: solo lectura, sin ejecución. Sin comparar los dos motores.
+
+### Qué encontró
+El reconocimiento distingue deliberadamente entre productor identificado y contrato normativo. Las conclusiones se basan exclusivamente en productores localizados mediante lectura estática. Legacy tiene un productor de plan identificado: `buildPlan()` retorna `{days, strategy, weekWarnings, weekProblems, weekScore, qaTrace?}` (`buildPlan.js:2807-2815`), ensamblado en tres niveles (return final; objeto `day`, `:2268-2508`; objeto `meal` vía `composeMeal()` y tres productores adicionales). Detalle y citas por nivel en el informe. Engine2: en el estado actual del repositorio (HEAD `6523de9`), no se ha identificado mediante este reconocimiento un productor del objeto de plan definido por el contrato de shape. Se ha localizado únicamente un productor de `{slots, decisionLog}` (`runWalk.js:412-414`), array plano de 14 huecos, no llamado fuera de sus propios tests. Verificado por triple vía: sin archivo en la raíz de `src/engine2/`, sin clave `days:` construida fuera de tests, sin importadores de engine2 fuera de engine2.
+
+### Dependencia arquitectónica que aparece
+El objeto de evaluación fijado por D-048 (el plan generado) está materializado en un solo motor según este reconocimiento. El contrato de shape (`CLAUDE.md:17-25`) es normativo respecto a engine2, y este reconocimiento no ha localizado código que lo cumpla en este HEAD. `reconcile` (Fase 5) no está implementado (`grep` sin resultados). Esto es una ausencia constatada por lectura estática en este estado del código, no una imposibilidad conceptual del motor.
+
+### Hallazgos secundarios (registrados, no resueltos)
+- `strategy` en engine2 (`buildWeekArc.js:422`) marcado "metadato pasivo" por el propio código; ninguna función posterior lo consume — se produce y no se propaga.
+- `decisionLog` en engine2: dos shapes incompatibles conviven (`buildWeekArc` vs. `runWalk`), sin productor que los fusione. No se ha localizado un `decisionLog` único del plan.
+- `meal.metadata.saciedad` en legacy no garantizado en todos los meals (solo en los de `composeMeal()`); `validateWeek` compensa con default (`buildPlan.js:2597`). Hueco en el productor, no en el consumidor.
+
+### Qué quedó fuera
+- Comparación entre los dos objetos: fuera del alcance de R-1 por diseño.
+- Contenido concreto de `days`/`slots` (qué plato cae en qué hueco): depende de RNG sembrado + estado acumulado; registrado como "requiere ejecución", no ejecutado. Reconocimiento dinámico (R-2) queda nombrado como posibilidad futura, no abierto.
+- Qué debe hacer Frente B ante la dependencia arquitectónica: decisión posterior, no la responde R-1.
+
+### Evidencia
+Véase Informe R-1 (`docs/evidence/R-1-productores-plan.md`, HEAD `6523de9`), generado exclusivamente mediante lectura estática, sin ejecución de motores.
+
+### Herencia
+La decisión siguiente hereda la pregunta: ¿puede Frente B completar el diseño del protocolo antes de que exista el productor de plan de engine2, o debe detenerse en una especificación de requisitos? Es decisión de arquitectura, fuera del alcance de este reconocimiento.

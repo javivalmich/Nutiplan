@@ -53,6 +53,16 @@ archive/           # buildPlan.js viejo + tmp, al final (Fase 7)
 - Lint: `npm run lint`
 - Un solo archivo de test: `npx vitest run src/engine/tests/<archivo>`
 
-## Orden de fases (roadmap v2)
-`0 → 0.5 → 1 → 3 → 2 (continua) → 4 → 5 → 6 → 7`
-**Fase actual: 4.** No trabajes fases futuras en esta sesión.
+## Gobierno activo: modelo de frentes
+
+Desde D-046, la planificación activa del proyecto se organiza mediante frentes documentados
+en DECISIONS.md y CLAUDE.md.
+
+El roadmap numerado se conserva como referencia histórica del proyecto y no establece un
+orden vinculante para el trabajo futuro.
+
+Orden de fases (roadmap v2 — histórico):
+0 → 0.5 → 1 → 3 → 2 (continua) → 4 → 5 → 6 → 7
+
+Frente activo: —
+(Se actualizará al abrir formalmente el siguiente frente.)

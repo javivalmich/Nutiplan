@@ -2445,4 +2445,21 @@ Decisión documental; ningún cambio de código. Se crean dos archivos: `docs/sp
 ### Herencia
 Legacy queda en posición verificable con verificación de conformidad pendiente (§7.2.1, §7.3). engine2 queda en posición pendiente de productor, con esta especificación como criterio de aceptación de ese productor futuro (§7.2.2). §7.5 convierte la conformidad verificada en precondición de entrada a la evaluación comparativa: ningún plan podrá evaluarse sin que su motor haya sido verificado contra esta norma.
 
+## D-053 — Procedimiento de artefactos de verificación de conformidad: ubicación/forma y doble ancla de hash
+
+Fecha: 2026-07-18 · HEAD de referencia: `0ffc686` · Tipo: decisión de procedimiento
+
+### Contexto
+D-052 ratificó `docs/spec/plan-observable.md` v1.0 y dejó a legacy en posición verificable con verificación pendiente (§7.2.1). La primera ejecución real de esa verificación (legacy contra §4, sobre un plan generado por la ruta de producción) expuso dos huecos de procedimiento no resueltos por la especificación: dónde y en qué forma vive el artefacto de verificación que exige §7.3, y cómo ancla ese artefacto un hash cuando el objeto verificado no resulta reproducible byte a byte entre corridas. Los resultados de esa verificación (veredictos cláusula a cláusula) viven en su propio artefacto de evidencia; este asiento registra únicamente las dos decisiones de procedimiento reutilizables para toda verificación futura contra cualquier especificación de `docs/spec/`.
+
+### Decide
+1. **F-V1 — Ubicación y forma de artefactos de verificación de conformidad.** Los artefactos que registran una verificación de conformidad (§7.3) viven en `docs/evidence/<nombre-spec>/` — una subcarpeta por especificación, un linaje de evidencia por norma. La forma sigue la convención de facto establecida por `docs/evidence/R-1-productores-plan.md` (encabezado HEAD/instrumento/fecha, secciones numeradas, tabla de veredictos), declarada explícitamente en cada artefacto como convención heredada, no como exigencia de la especificación verificada, mientras ninguna especificación la normalice por sí misma. Causa: §7.3 exige que la verificación quede "registrada como evidencia versionada" sin prescribir, por sí misma, ubicación ni forma; la ruta `docs/evidence/` solo aparece entre paréntesis en §7.0, cláusula de ámbito distinto (estado de conformidad de un motor, no artefacto de verificación individual). La ubicación se infiere por cercanía terminológica entre ambas cláusulas, no por prescripción literal de §7.3 — ambigüedad registrada como candidata a ciclo §8.2 de la propia especificación.
+2. **F-V2 — Doble ancla de hash.** Toda verificación de conformidad registra dos hashes SHA-256 del objeto de plan observado: (i) el del objeto completo, tal como lo emite el productor, aunque no resulte reproducible entre corridas — documentando en ese caso la causa observada de la no reproducibilidad; y (ii) el de una proyección estable, cuyo criterio de proyección sea citable y esté versionado en el repositorio, como ancla reproducible por terceros. Causa: el primer uso de la norma reveló que el objeto que el productor emite puede no ser reproducible byte a byte pese a seed determinista documentada; el ancla de verificación debe sobrevivir a ese hecho sin ocultar lo que el productor realmente emite ni renunciar a la reproducibilidad que la evidencia versionada requiere.
+
+### Alcance
+Decisión de procedimiento; ningún cambio de código, de la especificación `plan-observable.md`, ni de `buildPlan.js`. Este asiento no registra resultado de conformidad alguno — los veredictos de la primera verificación (legacy contra §4) viven en su propio artefacto de evidencia, ratificado por separado.
+
+### Herencia
+F-V1 y F-V2 rigen la forma de todo artefacto de verificación futuro bajo `docs/evidence/`, contra cualquier especificación de `docs/spec/` — no solo `plan-observable.md`. Las dos ambigüedades de redacción identificadas por F-V1 y por la nota de alcance sobre estabilidad de identificadores (§4.2) quedan como candidatas al ciclo §8.2 de `plan-observable.md`, registradas en el artefacto de evidencia correspondiente, no en este asiento.
+
 Referencias: D-048, D-049 (con `docs/evidence/R-1-productores-plan.md`), D-050, D-051, `CLAUDE.md:17-28`.

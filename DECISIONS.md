@@ -2489,3 +2489,57 @@ Decisión de ratificación de una especificación normativa; docs-only. No regis
 `docs/spec/protocolo-evaluacion.md` v1.0 rige, desde esta ratificación, el proceso de evaluación comparativa de motores, en los términos de §1-§8 del propio documento. Toda modificación futura deberá ratificarse por nuevo asiento e incrementar la versión, conforme a su propio §8.2.
 
 Referencias: D-048, D-050, D-052, D-053, `docs/spec/plan-observable.md`, `docs/evidence/protocolo-evaluacion/2026-07-18-R-protocolo-de-facto.md`.
+
+## D-055 — [2026-07-18] Reconciliación de frentes heredados (F-E3, F-E1/F-B2) e inventario de conformidad §5 del baseline de variedad de verdura
+
+- Contexto: la sesión abrió con una secuencia heredada de frentes
+  (F-E3 → F-E1/F-B2 → F-E2 diferido → mecanismo de identidad) formulada
+  antes de D-044/D-045/D-046. El reconocimiento del repositorio (git grep
+  del literal 49,8/49.8 y de las perífrasis "fantasma"/"conversacional";
+  git diff 7024bda..8889232 sobre src/ y catálogo; git log de los ficheros
+  tocados; títulos D-044..D-047) falsificó la premisa de pendencia de los
+  dos primeros frentes y del mecanismo.
+- Decisión/Hallazgo:
+  1. F-E3 (retirada del fantasma ~49,8% de docs) se declara satisfecho
+     con anterioridad por D-042. El censo no halló ninguna ocurrencia en
+     docs vivos: todas las apariciones restantes son asientos históricos
+     (append-only, intocables), evidencia sellada, o la definición
+     normativa de "cifra fantasma" en la propia spec. Sin PR.
+  2. F-E1/F-B2 (ancla permanente de baselines) se declara satisfecho por
+     la tríada: `docs/evidence/variedad-verdura/baseline-variedad-verdura.md`
+     (baseline pre-mecanismo, sellada a 7024bda), evidencia
+     `veg_variety_engine2_paso5.*` (medición post-mecanismo), y D-045
+     (cierre F-M con impacto registrado, criterio vi de D-044). Sin
+     re-medición: el artefacto pre-norma queda como evidencia sellada
+     válida a su commit; su contrato de reproducción declara el commit
+     como invariante, por lo que no describe el motor vigente a HEAD y
+     no debe hacerlo.
+- Inventario de conformidad del baseline frente a §5 de
+  `docs/spec/protocolo-evaluacion.md` v1.0 (primer uso operacional de la
+  norma, en modo auditoría retrospectiva sobre artefacto anterior a ella):
+  - Cumple: §5.2 (doble ancla), §5.3 (HEAD declarado), §5.4
+    (admisibilidad; su §7 es el acto de retirada que la norma luego
+    generalizó), §5.5 (semillas 1..500 con punto inicial explícito),
+    §5.6 (N=500 declarado).
+  - Carencia 1 (§5.1): self-check de determinismo declarado solo para el
+    runner de engine2 ("run1 === run2 debe imprimir true"); el runner de
+    legacy no declara self-check. Carencia documentada, no subsanada: el
+    artefacto es evidencia sellada y anterior a la norma.
+  - Carencia 2 (§5.8): los niveles de agregación de las 4 métricas son
+    inferibles desde su §3 pero no están declarados explícitamente por
+    métrica. Misma condición: documentada, no subsanada.
+- Candidata a revisión del protocolo (para futura §8.3.2, no incorporada
+  a la spec por este asiento): §5.7 exige PRNG "idéntico entre todos los
+  objetos sometidos a una misma comparación", pero la norma no define
+  qué constituye "una misma comparación". El baseline publica dos líneas
+  base en tablas paralelas declarando en su §6 que NO son un delta
+  atribuible al algoritmo; si eso es o no "una misma comparación" a
+  efectos de §5.7 es indecidible con el texto vigente. Laguna descubierta
+  por el primer intento de aplicar la norma a un artefacto real.
+- Causa/Lección: los traspasos entre sesiones pueden describir frentes
+  extintos; el reconocimiento del repositorio prevalece sobre el estado
+  heredado. El primer uso de §5 no requirió excepciones ni
+  interpretaciones ad hoc: detectó dos carencias reales y una laguna
+  real, que es el comportamiento esperado de la norma.
+- Sin cambios de código. Sin cambios en la spec. Evidencia sellada
+  intacta.

@@ -2463,3 +2463,29 @@ Decisión de procedimiento; ningún cambio de código, de la especificación `pl
 F-V1 y F-V2 rigen la forma de todo artefacto de verificación futuro bajo `docs/evidence/`, contra cualquier especificación de `docs/spec/` — no solo `plan-observable.md`. Las dos ambigüedades de redacción identificadas por F-V1 y por la nota de alcance sobre estabilidad de identificadores (§4.2) quedan como candidatas al ciclo §8.2 de `plan-observable.md`, registradas en el artefacto de evidencia correspondiente, no en este asiento.
 
 Referencias: D-048, D-049 (con `docs/evidence/R-1-productores-plan.md`), D-050, D-051, `CLAUDE.md:17-28`.
+
+## D-054 — Ratificación de la especificación del protocolo de evaluación v1.0
+
+Fecha: 2026-07-18 · HEAD de referencia: `b5684be` · Tipo: ratificación de especificación
+
+### Contexto
+`docs/spec/plan-observable.md` v1.0 (D-052) anuncia y delega en un documento propio el diseño del protocolo ciego de evaluación (`docs/spec/plan-observable.md:13`, §1.2.b) y la definición de las unidades temporales de `days` (§4.2.1, `docs/spec/plan-observable.md:49`). Antes de redactar esa segunda especificación se ejecutaron dos reconocimientos de solo lectura sobre HEAD `b5684be` — uno sobre las cláusulas madre y los invariantes de facto del protocolo de medición ya practicado en `analysis/` y `docs/evidence/`, otro sobre las unidades temporales que ese mismo protocolo practica — sellados como evidencia versionada en `docs/evidence/protocolo-evaluacion/2026-07-18-R-protocolo-de-facto.md`. El reconocimiento precedió a la redacción porque existía práctica evaluativa consolidada cuya observación debía fundar la norma — evidencia antes que norma nueva, precedente ya establecido por `plan-observable.md` respecto de legacy.
+
+### Decide
+1. **Ratificación.** Se ratifica `docs/spec/protocolo-evaluacion.md` v1.0 como segunda especificación del género `docs/spec/`, en cumplimiento de la delegación de `docs/spec/plan-observable.md:13` y §1.2.b (`docs/spec/plan-observable.md:21`).
+2. **Procedencia.** La especificación se funda en los dos reconocimientos de solo lectura sobre HEAD `b5684be` sellados en `docs/evidence/protocolo-evaluacion/2026-07-18-R-protocolo-de-facto.md`.
+3. **Invariantes de facto clasificadas por necesidad.** Se elevan a obligación (§5) solo las invariantes necesarias para reproducibilidad y auditabilidad del proceso de medición; las invariantes de mera uniformidad documental (forma del artefacto, fecha ISO, nomenclatura de archivo) permanecen como convención de facto, no como obligación normativa (F-P1-B).
+4. **Semillas como propiedad, no como convención única.** §5 norma el rango de semillas como propiedad (secuencial, contiguo, de orden conocido, con punto inicial declarado) sin fijar una convención única de punto inicial, porque el reconocimiento demostró dos convenciones vivas (0 y 1 como origen) y la evidencia no obliga a unificarlas (F-P2-B).
+5. **Cegado normado como propiedades, sin procedimiento.** §6 norma el cegado como un conjunto de propiedades verificables (no inferencia de productor, transformación común, reproducibilidad y auditabilidad), sin prescribir procedimiento, porque no existe todavía práctica de cegado que observar y la norma no debe reconstruir prácticas inexistentes (F-P3 reformulado).
+6. **PRNG normado como capacidad.** §5 exige un PRNG determinista, identificado de forma inequívoca e idéntico entre los objetos comparados, sin prescribir una implementación concreta, pese a que el reconocimiento observó `mulberry32` como implementación unánime de facto (I-1) — la unanimidad observada no se eleva a exigencia de implementación (F-P4-A).
+7. **Principio transversal.** Se adopta como principio rector de esta especificación (§0) que norma propiedades e invariantes del proceso de evaluación, nunca implementaciones concretas — mismo principio que gobierna `docs/spec/plan-observable.md` respecto del objeto evaluado.
+8. **Definiciones de §2 fundadas en la micro-R.** La semana como unidad de muestreo y el día como unidad de observación se fijan porque son la práctica unánime observada en el reconocimiento (Sección 2, Objetivo 1 del artefacto de evidencia). El nivel de agregación de la métrica se introduce como definición propia porque el reconocimiento demostró métricas operando a niveles distintos (comida y día) dentro de una misma unidad de muestreo (`analysis/gate2b_measure.test.js:401-403`, citado en el artefacto de evidencia).
+9. **Precondición del cegado para Fase 7.** La nota normativa de §6 —registro como evidencia versionada de la primera instanciación del cegado antes de toda evaluación de Fase 7— se ratifica como precondición normativa de entrada a esa evaluación, análoga en lógica a §7.5 de `docs/spec/plan-observable.md` (`docs/spec/plan-observable.md:110`).
+
+### Alcance
+Decisión de ratificación de una especificación normativa; docs-only. No registra conformidad ni resultado de campaña de ningún motor. No modifica `docs/spec/plan-observable.md` ni el procedimiento de D-053.
+
+### Herencia
+`docs/spec/protocolo-evaluacion.md` v1.0 rige, desde esta ratificación, el proceso de evaluación comparativa de motores, en los términos de §1-§8 del propio documento. Toda modificación futura deberá ratificarse por nuevo asiento e incrementar la versión, conforme a su propio §8.2.
+
+Referencias: D-048, D-050, D-052, D-053, `docs/spec/plan-observable.md`, `docs/evidence/protocolo-evaluacion/2026-07-18-R-protocolo-de-facto.md`.

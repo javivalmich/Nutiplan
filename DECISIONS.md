@@ -2543,3 +2543,33 @@ Referencias: D-048, D-050, D-052, D-053, `docs/spec/plan-observable.md`, `docs/e
   real, que es el comportamiento esperado de la norma.
 - Sin cambios de código. Sin cambios en la spec. Evidencia sellada
   intacta.
+
+## D-056 — Frente A / Fase 7: Orquestador de materialización del plan observable (`materializePlan.js`)
+
+Fecha: 2026-07-18. Decide: Javi. HEAD de reconocimiento: `5e7eb5c` (R-A y R-A2 ejecutadas sobre ese estado).
+
+Contexto
+§7.5 de `docs/spec/plan-observable.md` bloquea toda evaluación comparativa para motores sin verificación de conformidad registrada. R-A constató: engine2 en posición "Pendiente de productor" (per §7.2), sin artefacto de conformidad, sin instanciación de cegado (nota §6). R-A2 midió la distancia cláusula a cláusula y falsificó el encuadre implícito de "completar funcionalidades": las estructuras existen (arco, walk, identidad, strategy, dos decision logs con causa), pero no existía el componente cuya responsabilidad fuera materializar el objeto observable de §4. El frente es de materialización, no de invención: el orquestador no decide nada; ensambla lo ya decidido.
+
+Forks ratificados
+F-A2a — orden de ataque de las precondiciones de Fase 7. Productor primero; conformidad §7.5 después; cegado (§6) al final. Causa: el productor es obligatorio bajo cualquier resolución futura del Frente B (§4 no depende del contenido de C), es el camino crítico, y el cegado carece de objeto sin dos planes que cegar. La herencia de D-047 al Frente B (suficiencia de C para el juez) condiciona qué se compara, no si los motores están en posición de comparar; no bloquea esta secuencia.
+
+F-A3a — `weekScore: null`. El productor materializa siempre la clave (cumple §4.5); el valor expresa explícitamente "no disponible", no "valor perfecto" ni semántica aparente. Causa: §4.5 exige presencia sin obligación semántica; el gate de tipo ejecutado sobre `CLAUDE.md:17-28` confirmó que el contrato de shape exige presencia de claves, no tipo, y que el valor de `weekScore` en engine2 estaba explícitamente reservado a decisión de Fase 7 ("placeholder o derivado"). `null` no es una omisión ni una deuda: es la ejecución de esa reserva. Queda prohibido "corregirlo" a número sin asiento que derogue este. Alternativa descartada: constante numérica (p. ej. 100), rechazada por introducir semántica aparente donde no la hay.
+
+F-A4b — `decisionLog` único por concatenación, sin normalización de shape. El orquestador concatena los dos logs existentes (arco primero, walk después), entradas intactas. Causa: §4.6 exige una única colección con entradas autosuficientes; no exige homogeneidad estructural. Normalizar ahora sería diseño por anticipación; se convertirá en frente propio solo si aparece necesidad real. Control de mutación observado: retornar un solo log hace caer en rojo los tests de cardinalidad §4.6 (esperado 32, recibido 15).
+
+F-A5a — `weekWarnings: []`, `weekProblems: []`. Causa: §4.4.1 admite colección vacía como conforme. Un validador de engine2 es otro sujeto con su propio problema de diseño (qué validar, con qué criterios, sin scoring) y no es precondición de §7.5. Separar productor y validador preserva la arquitectura que ambas specs imponen.
+
+F-A6 — nombre y ubicación: `src/engine2/materializePlan.js`. Causa: el nombre expresa la responsabilidad exacta (materializa; no genera, no decide, no valida, no puntúa) y no queda ligado a engine2-como-algoritmo, dejando abierta la existencia futura de otros materializadores.
+
+Hallazgo — identidad §4.2.5 verificada por observación, no por recomputación
+Durante la fase de tests se constató que los campos crudos de combo (`tmpl/P/C/V/V2/S/cookM`) no sobreviven a `loadCatalog()`: el catálogo materializado solo garantiza los `REQUIRED_FIELDS` de `schema.js:33-44`. La aserción de identidad se corrigió para verificar §4.2.5 por igualdad de contenido de dos ocurrencias observadas en el objeto — el mismo instrumento con que se verificó legacy en su artefacto de conformidad. Consecuencia metodológica deliberada: ambos motores quedan sometidos al mismo criterio observacional de identidad, lo que fortalece la simetría del protocolo de Fase 7. Se deja constancia además de la distinción viva (heredada a Frente B): identidad dentro de engine2 (resuelta, `identity.js`) e identidad compartida entre motores (excluida de C v1 por D-047) son preguntas distintas.
+
+Candidata registrada (sin urgencia, no materia de este frente)
+Tercera copia privada e idéntica de `findDish` (en `expandWeekArc.js:38-44`, `runWalk.js:116-122` y ahora `materializePlan.js`). Deuda técnica localizada; extraerla ahora violaría un-concern-por-PR. Espera acumulación.
+
+Evidencia
+Rojo inicial observado (módulo inexistente) → verde 16/16 → suite completa 880/880 incluidos los 4 tripwires (32/32) → mutación discriminante observada y revertida. Sin cambios en `buildWeekArc.js`, `runWalk.js`, `expandWeekArc.js` ni catálogo. Determinismo asertado por byte-igualdad de doble invocación.
+
+Secuencia sellada (pasos restantes del frente)
+(2.5) Gate de existencia del productor sobre `main` post-merge → (3) R de conformidad §7.5 por el instrumento de legacy: generación real + observación del objeto → (4) artefacto gemelo versionado en `docs/evidence/plan-observable/` → (5) engine2 a posición "Verificable con verificación de conformidad registrada" → (6) instanciación del cegado per nota normativa §6, registrada como evidencia versionada antes de evaluación alguna.

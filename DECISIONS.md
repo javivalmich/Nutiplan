@@ -2595,3 +2595,29 @@ Ambos motores quedan verificados por el mismo instrumento observacional: generac
 
 Estado de la secuencia D-056
 Cubierto: productor (D-056), gate de existencia, conformidad §7.5 (este asiento). Pendiente único: instanciación del cegado per nota normativa §6, que debe registrarse como evidencia versionada antes de cualquier evaluación de Fase 7. Ninguna evaluación comparativa puede ejecutarse hasta que el cegado esté instanciado y versionado.
+
+## D-058 — Frente A / Fase 7: cierre del Frente A y transferencia de la instanciación del cegado al Frente B
+
+Fecha: 2026-07-18. Decide: Javi. HEAD: `0e21a8e`. R de referencia: R-A9 (reconocimiento del cegado §6 y su contexto procedimental, ejecutada sobre `0e21a8e`).
+
+Contexto
+D-056 fijó la secuencia del Frente A y situó "instanciación del cegado (§6)" como su último paso pendiente. R-A9 se ejecutó para reconocer qué exige §6 y qué queda por diseñar antes de instanciarlo. Su resultado reencuadra ese paso: no es un eslabón acotado del Frente A, sino trabajo subordinado al diseño del protocolo de evaluación.
+
+1. Hechos observados (resultado de R-A9)
+Afirmaciones fundadas en la R, con la evidencia que las sostiene:
+
+* No existe implementación previa del cegado. Grep exhaustivo de código y scripts (`cegad|cegar|blind|ciego|anonimiz`) por `src/`, `analysis/`, `scripts/`: cero resultados fuera de documentación. El único artefacto candidato a práctica de-facto (`docs/evidence/protocolo-evaluacion/2026-07-18-R-protocolo-de-facto.md`) trata otra materia (invariantes de medición y unidades temporales) y no discute el cegado. La norma vigente (D-054 pt.5) ya declaraba por escrito que no existe práctica de cegado que observar.
+* Las dependencias identificadas pertenecen al diseño del protocolo, no al productor. La instanciación del cegado depende de cuatro decisiones abiertas que son propiedades del experimento, no del motor: (a) el diseño experimental / forma de la comparación, declarado abierto en D-048 pt.4; (b) el vehículo de observación para el juez humano, declarado inexistente y "trabajo previsible" en D-048 (`DECISIONS.md:2346`); (c) la relación entre "C v1" (D-047) y "proyección" (`plan-observable.md` §2), nunca identificadas ni derivadas entre sí; (d) la frontera entre "contenido" legítimo y "rasgo ajeno al contenido" que §6.1 obliga a neutralizar, no trazada por ninguna norma —con la tabla de candidatos de fuga observados (presencia de `decisionLog`, `weekScore` número vs `null`, `weekWarnings` con contenido vs `[]`) sin clasificar.
+* Encuadre: el cegado es frente constituyente sobre vacío observado, no formalización de práctica existente —a diferencia de §5 (reproducibilidad), que sí tuvo práctica de-facto extensa que formalizar.
+
+2. Decisión de gobierno
+
+* El objetivo del Frente A se considera alcanzado con la existencia del productor (`materializePlan`, D-056) y la conformidad §7.5 registrada de engine2, que lo situó en estado "Verificable con verificación de conformidad registrada" (D-057). Ese era el objetivo declarado del frente: dejar engine2 en condiciones de ser sometido a verificación estructural para Fase 7.
+* R-A9 observa que la instanciación del cegado requiere decisiones cuyo sujeto es el protocolo de evaluación y no el productor; por ello, ese trabajo se transfiere al Frente B. Las tres dependencias (b), (c) y (d) del punto 1 estaban ya explícitamente heredadas a Frente B por D-047/D-048; esta transferencia las reúne con la instanciación del cegado bajo el mismo gobierno, sin duplicar frentes.
+* El Frente A se declara cerrado. El siguiente ciclo comienza como apertura del Frente B (diseño del protocolo de evaluación), no como continuación del Frente A.
+
+3. Corrección de la secuencia de D-056
+El punto (6) de la secuencia sellada en D-056 ("instanciación del cegado per nota §6") no era, como allí se supuso, el último paso del Frente A: es el primer sujeto del Frente B. D-056 no se deroga; se anota aquí que su secuencia identificó correctamente la dependencia (cegado antes de evaluación) pero la atribuyó al frente equivocado. La lección es la ya versionada en D-055: los traspasos y las secuencias envejecen; la R sobre el repo prevalece.
+
+Estado resultante
+Frente A: cerrado, objetivo cumplido. Cegado (§6): transferido a Frente B, no instanciado, bloqueante de toda evaluación de Fase 7 hasta que se instancie y versione. Frente B: por abrir, con sujeto = diseño del protocolo de evaluación (representación que consume el juez, vehículo de observación, identificación C⇿proyección, frontera contenido/origen, diseño experimental, e instanciación del cegado sobre lo anterior).

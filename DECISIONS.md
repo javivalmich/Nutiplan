@@ -2573,3 +2573,25 @@ Rojo inicial observado (módulo inexistente) → verde 16/16 → suite completa 
 
 Secuencia sellada (pasos restantes del frente)
 (2.5) Gate de existencia del productor sobre `main` post-merge → (3) R de conformidad §7.5 por el instrumento de legacy: generación real + observación del objeto → (4) artefacto gemelo versionado en `docs/evidence/plan-observable/` → (5) engine2 a posición "Verificable con verificación de conformidad registrada" → (6) instanciación del cegado per nota normativa §6, registrada como evidencia versionada antes de evaluación alguna.
+
+## D-057 — Frente A / Fase 7: engine2 alcanza posición "Verificable con verificación de conformidad registrada" (§7.5)
+
+Fecha: 2026-07-18. Decide: Javi. HEAD: `57676ff`. Artefacto de evidencia: `docs/evidence/plan-observable/2026-07-18-engine2-conformidad-v1.0.md` (mergeado en `57676ff`, generado sobre `569fc1c`).
+
+Contexto
+D-056 selló el orquestador `materializePlan` y fijó la secuencia restante del frente: gate de existencia → R de conformidad §7.5 → cambio de posición → cegado (§6). El gate de existencia se superó sobre `main` (punto de entrada único, test verde 16/28, suite 880/880). La R de conformidad §7.5 se ejecutó por el instrumento simétrico al de legacy —generación real + observación del objeto retornado, no lectura estática— y produjo el artefacto de evidencia versionado que §7.5 exige.
+
+Decisión
+engine2 pasa de "Pendiente de productor" (§7.2) a "Verificable con verificación de conformidad registrada" (§7.5). El bloqueo que §7.5 imponía sobre la entrada de engine2 en evaluación comparativa queda levantado. Causa: existe productor identificado por evidencia versionada (`materializePlan`, artefacto de conformidad `57676ff`) cuyo objeto de plan satisface el contrato §4 de `plan-observable.md` — 12/13 cláusulas conformes, 1 no aplicable (§4.0), 0 no conformidades.
+
+Propiedades conocidas del objeto (no son no-conformidades)
+Se asientan como propiedades observadas y versionadas, para que ninguna se relea en el futuro como defecto o deuda:
+
+1. §4.4.2 conforme vacuamente. `weekWarnings`/`weekProblems` son `[]` siempre por diseño (F-A5a): la autosuficiencia por elemento se satisface por ausencia de elementos, no sustantivamente. Es propiedad del productor tal como está hoy, no carencia de la generación. La construcción de un validador de engine2 —que poblaría estas colecciones con contenido real— es sujeto distinto, fuera de este frente. Divergencia sustantiva con legacy (que generó `weekWarnings` con contenido): ambos motores son conformes a §4.4.1, pero difieren en si el objeto exhibe avisos observables. Esta divergencia es materia del Frente B (interpretación del juez), no de conformidad.
+2. §4.2.5 verificada bajo seed con repetición. La identidad entre dos ocurrencias del mismo plato se verificó por observación (igualdad de contenido, sin ejecutar motor), pero requirió `seed=1` porque la seed primaria del fixture (`seed=0`) no produce `leftoverDays` y por tanto no exhibe repetición de plato. Ambas seeds quedan versionadas en el artefacto. La propiedad se cumple; su verificación necesitó una segunda generación, documentada.
+
+Simetría metodológica (consecuencia para Fase 7)
+Ambos motores quedan verificados por el mismo instrumento observacional: generación real + observación del objeto, identidad por igualdad de contenido. El artefacto de engine2 es comparable línea a línea con el de legacy. Punto de divergencia legítima explícito: §4.6 (`decisionLog`) es verificación sustantiva en engine2 (colección presente, cardinalidad 32 = 17 arco + 15 walk, heterogeneidad de shape por F-A4b sin normalizar) frente a condicional no disparada en legacy (ausente). La reproducibilidad del artefacto de engine2 es, de hecho, más estricta que la de legacy: byte-identidad en 3 procesos separados sobre el objeto completo, sin campos volátiles que proyectar.
+
+Estado de la secuencia D-056
+Cubierto: productor (D-056), gate de existencia, conformidad §7.5 (este asiento). Pendiente único: instanciación del cegado per nota normativa §6, que debe registrarse como evidencia versionada antes de cualquier evaluación de Fase 7. Ninguna evaluación comparativa puede ejecutarse hasta que el cegado esté instanciado y versionado.

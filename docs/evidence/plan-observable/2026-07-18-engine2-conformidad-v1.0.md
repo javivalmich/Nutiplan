@@ -315,3 +315,31 @@ raíz del repositorio (HEAD `569fc1c`), con `seed: 0` y `seed: 1` respectivament
 
 Sin proyección ni exclusión de campos — ambos hashes son sobre el objeto completo tal como lo
 retorna `materializePlan`.
+
+**Apartado autosuficiente (sin necesidad de navegar a §1):**
+
+- **Fixture:** `FIXTURE_INPUT`, la entrada ya versionada en `materializePlan.test.js` — no se
+  inventa perfil nuevo. `profile: { trainingDays: ['Lunes', 'Miercoles', 'Viernes'] }`,
+  `strategy: 'mantenimiento_equilibrado'`.
+- **Seeds:**
+  - **seed=0** (la seed literal de `FIXTURE_INPUT`): generación primaria, usada para §4.1,
+    §4.2.1-4, §4.3, §4.4, §4.5, §4.6, §4.7.
+  - **seed=1** (mismo profile/strategy, seed alternativa): generación adicional, usada
+    específicamente para §4.2.5, porque seed=0 no produce repetición de plato observable.
+- **Invocación exacta (idéntica a la de §1):**
+
+```js
+import { materializePlan } from './src/engine2/materializePlan.js';
+import { loadCatalog } from './src/engine2/dishes/loadCatalog.js';
+
+const FIXTURE_INPUT = {
+  profile: { trainingDays: ['Lunes', 'Miercoles', 'Viernes'] },
+  seed: 0, // o 1, ver arriba
+  strategy: 'mantenimiento_equilibrado',
+};
+
+const catalog = loadCatalog();
+const plan = materializePlan({ ...FIXTURE_INPUT, catalog });
+```
+
+- **Commit:** `569fc1c` (HEAD verificado, ver cabecera de este documento).

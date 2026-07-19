@@ -2621,3 +2621,20 @@ El punto (6) de la secuencia sellada en D-056 ("instanciación del cegado per no
 
 Estado resultante
 Frente A: cerrado, objetivo cumplido. Cegado (§6): transferido a Frente B, no instanciado, bloqueante de toda evaluación de Fase 7 hasta que se instancie y versione. Frente B: por abrir, con sujeto = diseño del protocolo de evaluación (representación que consume el juez, vehículo de observación, identificación C⇿proyección, frontera contenido/origen, diseño experimental, e instanciación del cegado sobre lo anterior).
+
+## D-059 — Frente B: apertura formal sobre su R-0 de reconocimiento
+Fecha: 2026-07-19. Decide: Javi. HEAD: `922d4f6`. Evidencia: R-0 de reconocimiento del Frente B (`docs/evidence/protocolo-evaluacion/R-0-reconocimiento-frente-B.md`, versionado en `922d4f6c9e889a3bddc444d7fce105ec95851bb5`, ejecutado sobre `c41558e`).
+
+1. Hecho nuevo
+El Frente B (diseño del protocolo de evaluación, sujeto declarado en D-058) queda formalmente abierto. Su acto fundacional es el R-0 referido: una re-derivación completa desde fuentes primarias versionadas (raíces `DECISIONS.md` D-047/D-048 y `docs/spec/protocolo-evaluacion.md` §6/§6.1), con criterio de inclusión declarado dentro del propio artefacto (`R-0-reconocimiento-frente-B.md:117-120`).
+
+2. Decisión de gobierno
+El R-0 pasa a ser el fundamento operativo del Frente B. Toda estructuración posterior del frente parte de las afirmaciones que ese artefacto sostiene desde fuentes primarias, no de síntesis heredadas de reconocimientos anteriores.
+
+3. Efecto sobre el fundamento
+Las afirmaciones heredadas de R-A9 que no superaron el criterio de inclusión del R-0 dejan de formar parte del fundamento del Frente B. No se borran ni se deroga D-058, que las recogió de buena fe como resultado de R-A9: conservan su valor histórico como antecedente, pero carecen de portancia normativa sobre el frente. El fundamento vigente es únicamente lo que el R-0 sostiene.
+
+4. Justificación
+La justificación metodológica de qué sobrevivió y qué no reside en el propio R-0 y en su criterio de inclusión (`R-0-reconocimiento-frente-B.md:117-120`); este asiento no la reproduce. El fundamento del Frente B queda limitado a afirmaciones re-derivables desde fuentes primarias versionadas, conforme al criterio de inclusión declarado en el R-0.
+Estado resultante
+Frente B: abierto, fundamento = R-0 versionado. Cegado (§6): sin cambios — transferido, no instanciado, bloqueante de Fase 7 (D-058). Próximo sujeto del frente: estructuración a partir del R-0.

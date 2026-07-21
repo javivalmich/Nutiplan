@@ -2694,3 +2694,127 @@ El trabajo siguiente del Frente B comienza por la subpregunta del sustrato (2.a)
 Esta entrada no anticipa ninguna respuesta sobre el sustrato: no afirma que C v1 sea o no suficiente, ni predetermina si el observable deberá ampliarse. Fija únicamente el orden de resolución. No decide entre familias experimentales. No instancia el cegado ni traza la frontera de §6.1. No altera ninguna deuda de higiene registrada. Sobrevive sin cambios cualquiera que sea la conclusión del reconocimiento del sustrato.
 
 - Decide: Javi.
+
+## D-062 — [2026-07-21] Frente B (A1): marco de admisibilidad del observable de evaluación
+
+Fecha: 2026-07-21 · HEAD: 48358d6652fa93e08ef2f59d80a9eb1fd6c458ac · Tipo: docs-only · Frente: B
+
+### Naturaleza del asiento
+Acto de gobierno constitutivo. Primer acto normativo del sustrato de evaluación
+(subfrente α, ratificado en D-061 punto 2.a). Define el espacio de admisibilidad
+de cualquier observable sobre el que se contraste el predicado de la tesis. Cada
+propiedad se deriva de fuente primaria anclada @ 48358d6. El asiento NO selecciona
+observable, NO decide la suficiencia de ningún sustrato, NO elige familia de diseño
+experimental. Es estable frente a cuál sea el observable que resulte seleccionado
+en el acto posterior de evaluación de candidatos.
+
+### Propiedades del espacio de admisibilidad
+Cada propiedad sobrevive a cuatro pruebas: Fuente, Necesidad, No redundancia,
+Neutralidad frente a candidatos.
+
+**A1-P1 — Finalidad respecto al predicado.**
+El observable deberá definirse con la finalidad de contrastar el predicado fijado
+en `DECISIONS.md:2333`, y no un predicado distinto.
+- Fuente: `DECISIONS.md:2333`.
+- Necesidad: sin ella, un observable medible en el plan pero ajeno al predicado no
+  contrastaría la tesis, sino otra propiedad cualquiera.
+- No redundancia: no la implican P2–P5; puede haber observables bien ubicados,
+  obtenibles y cegables, dirigidos a un predicado distinto.
+- Neutralidad: enunciada como finalidad respecto al predicado; no nombra rasgo ni
+  candidato. No prejuzga qué constituye evidencia del predicado (ver hojas abiertas).
+
+**A1-P2 — Ubicación en el plan generado.**
+El observable deberá ser una propiedad del plan generado, no del proceso interno
+del motor.
+- Fuente: `DECISIONS.md:2334`.
+- Necesidad: el corpus excluye el proceso interno como objeto directamente
+  evaluable; un observable situado ahí viola la regla de evidencia.
+- No redundancia: distinta de P1 y de P4; restringe el lugar de residencia.
+- Neutralidad: "el plan generado" es el objeto ya definido por el corpus; no
+  nombra candidato.
+
+**A1-P3 — Obtención equivalente para ambos motores.**
+El observable deberá poder obtenerse de forma equivalente para los planes de ambos
+motores.
+- Fuente: `DECISIONS.md:2333` (forma comparativa del predicado) y `DECISIONS.md:2339`
+  (la tesis como afirmación sobre el motor, relativa a legacy).
+- Necesidad: el predicado es comparativo; un observable obtenible para un solo motor
+  no puede sostener la comparación que el predicado exige.
+- No redundancia: distinta de P2; un observable en el plan podría no ser obtenible
+  de forma equivalente para ambos motores.
+- Neutralidad: exige equivalencia de obtención, no un contenido concreto; no rinde
+  aún veredicto comparativo — el veredicto pertenece al diseño experimental.
+
+**A1-P4 — Independencia del proceso interno.**
+La definición del observable no podrá requerir información procedente del proceso
+de generación del motor.
+- Fuente: `DECISIONS.md:2334`.
+- Necesidad: si la definición depende de información que solo existe durante la
+  generación, el observable evalúa el proceso interno —excluido por el corpus—
+  aunque su valor resida en el plan.
+- No redundancia: distinta de P2 (ver glosa).
+- Neutralidad: restringe la información admisible para definir el observable; no
+  nombra candidato.
+
+Glosa P2/P4: P2 restringe el lugar donde reside el observable; P4 restringe la
+información admisible para definirlo. Ninguna implica la otra.
+
+**A1-P5 — Compatibilidad con el protocolo de cegado.**
+El observable deberá admitir una presentación compatible con el protocolo de cegado
+(`protocolo-evaluacion.md` §6, `:51`).
+- Fuente: `protocolo-evaluacion.md:51` (§6 — Propiedades del cegado).
+- Necesidad: §6 es precondición de la evaluación de Fase 7; un observable no
+  presentable bajo cegado no es evaluable bajo el protocolo.
+- No redundancia: distinta de las anteriores; restringe la presentabilidad, no el
+  contenido ni la ubicación.
+- Neutralidad: remite a §6 sin reenumerar sus propiedades ni fijar candidato.
+
+### Cláusula de cierre
+A1 define únicamente el espacio de admisibilidad. El cumplimiento de sus propiedades
+es condición necesaria de admisibilidad, pero no criterio suficiente para seleccionar
+un observable.
+
+### Candidatas rechazadas (registro; no forman parte del espacio)
+- "Preservar la estructura semanal / andamiaje temporal": rechazada por Neutralidad
+  — nombra un candidato. Qué terreno esté hoy demostrado pertenece a la evaluación
+  de candidatos, no al espacio de admisibilidad.
+- "Reflejar variedad / repetición": rechazada por Fuente — `DECISIONS.md:2336`
+  reclasifica las lecturas "distinción / repetición" como familias de diseño
+  experimental, no como contenido del predicado.
+- "Ser cuantitativo / métrico": rechazada por Necesidad — su eliminación no impide
+  contrastar el predicado; un diseño no cuantitativo lo contrasta igual. Depende de
+  la familia de diseño experimental.
+- "Ser operacionalizable": no constituye restricción independiente del corpus, sino
+  consecuencia práctica de implementar cualquier observable seleccionado.
+
+### Demarcación (qué NO hace este asiento)
+- No nombra ni selecciona ningún observable.
+- No menciona ni evalúa sustrato candidato alguno; el marco existiría con
+  independencia de cualquier caracterización de sustrato.
+- No decide la suficiencia de ningún sustrato.
+- No elige familia de diseño experimental.
+- No traza la frontera contenido / rasgo-ajeno al contenido ni resuelve referencia
+  alguna bajo §6.
+
+### Hojas abiertas (registradas, no resueltas)
+- Verificación de finalidad (P1): el corpus fija el predicado pero no fija qué
+  constituye evidencia de él (`DECISIONS.md:2330` certifica que el corpus normativo
+  no define qué se mide). El criterio para juzgar si un candidato concreto contrasta
+  el predicado se resuelve en la evaluación de candidatos.
+- Equivalencia entre observables: queda abierta la cuestión de cuándo dos observables
+  formalmente obtenibles en ambos motores pueden considerarse equivalentes a efectos
+  de comparación. No pertenece al espacio de admisibilidad y deberá resolverse durante
+  la evaluación de candidatos.
+- Frontera de §6: no existe encabezado "§6.1" en `protocolo-evaluacion.md` @ 48358d6;
+  §6 fija tres propiedades del cegado (`:53`, `:54`, `:55`) sin subsección numerada.
+  La frontera contenido / rasgo-ajeno permanece como deuda registrada, aguas abajo
+  de P5.
+
+### Nota interpretativa (no normativa)
+La expresión "tesis de humanización" (D-045, D-047) correfiere el predicado aquí
+gobernado por anáfora vía el Contexto de D-048 (`DECISIONS.md:2330`), sin enunciado
+de igualdad literal en el corpus. Este asiento se apoya en el predicado literal
+(`DECISIONS.md:2333`), no en la etiqueta. Aclaración filológica; no gobierna ninguna
+obligación del marco.
+
+- Decide: Javi.

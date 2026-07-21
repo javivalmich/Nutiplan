@@ -2664,3 +2664,33 @@ Fecha: 2026-07-21 · HEAD de referencia: `2d0c194` · Tipo: resolución normativ
 **Alcance / no-alcance.** Esta entrada no afirma nada sobre el estado de conformidad de ningún motor, no cita ninguna implementación, y no depende de ningún estado del código. Es estable mientras `plan-observable.md` no se modifique por su propio ciclo (§8.2).
 
 **Decide:** Javi.
+
+## D-061 — [2026-07-21] Frente B: inventario de cuestiones cerradas/abiertas y orden de resolución
+
+Fecha: 2026-07-21 · HEAD: 73a55bc50b610d113e28ea6737eaa31a4130beb5 · Tipo: docs-only · Frente: B
+
+### Naturaleza del asiento
+Acto de gobierno que fija el estado del Frente B tras una relectura read-only de fuentes primarias versionadas y ratifica el orden del trabajo siguiente. La relectura no se sella como evidencia independiente: no aporta hecho empírico nuevo, reestablece el estado del corpus mediante lectura de fuentes primarias. Su valor es habilitar esta decisión de gobierno, no constituir evidencia reutilizable.
+
+### 1. Cuestiones cerradas por el corpus
+- Tesis, regla de evidencia y objeto de evaluación: fijados en D-048 p.1-3 (`DECISIONS.md:2333-2335`).
+- Identidad del objeto de evaluación en plano contractual (satisfacción de la definición constitutiva de `plan-observable.md` §2/§4), no por implementación privilegiada: D-060 (`DECISIONS.md:2658`), sobre `plan-observable.md:30` (§2) y `:46` (§4.1).
+- Admisibilidad: solo motores en posición verificable de conformidad (`protocolo-evaluacion.md:38`, §4).
+- Reproducibilidad: determinismo, doble ancla, ancla a commit, cifras citables, semillas contiguas, N explícito, PRNG determinista idéntico entre objetos de una misma comparación, nivel de agregación declarado (`protocolo-evaluacion.md:40-49`, §5.1-§5.8).
+- Propiedades del cegado —no información ajena al contenido, transformación común a todos los motores, procedimiento reproducible y auditable— (`protocolo-evaluacion.md:51-57`, §6).
+- Separación medición/decisión: el instrumento mide, no compara motores ni prescribe acción (`protocolo-evaluacion.md:59-61`, §7).
+- Terreno común demostrado entre legacy y engine2 bajo C v1: únicamente el andamiaje temporal (la semana como 14 posiciones); ninguna candidata de composición sobrevivió al reconocimiento sin introducir interpretación (D-047, `DECISIONS.md:2265`, `:2268`).
+
+### 2. Cuestiones abiertas
+a. Sustrato de evaluación: sobre qué observable evalúa el juez la tesis, cuestión heredada explícitamente al Frente B (D-047, `DECISIONS.md:2320`), incluyendo la suficiencia de C v1 para soportar el protocolo (`DECISIONS.md:2271`) y la relación —nunca derivada— entre C v1 y la definición contractual del objeto (`plan-observable.md` §2/§4).
+b. Familia de diseño experimental: comparación A/B, evaluación ciega tipo Turing, ranking, preferencia u otras, declarada abierta y sin restringir por el corpus (D-048 p.4, `DECISIONS.md:2336`).
+c. Instanciación concreta del cegado §6, declarada expresamente fuera del alcance normativo de la sección y bloqueante de Fase 7 hasta versionarse como evidencia (`protocolo-evaluacion.md:57`). Cuestión distinta de la forma del experimento.
+d. Frontera contenido / rasgo ajeno al contenido que §6.1 obliga a neutralizar, no trazada por ninguna norma (`protocolo-evaluacion.md:53`).
+
+### 3. Decisión de gobierno — orden de resolución
+El trabajo siguiente del Frente B comienza por la subpregunta del sustrato (2.a): determinar sobre qué observable evalúa el juez, resolviendo la suficiencia de C v1 y su relación con la definición contractual del objeto. La elección de familia de diseño experimental (2.b) queda diferida hasta que ese sustrato esté resuelto: no se especifica una familia sin haber fijado el observable sobre el que operaría.
+
+### 4. Alcance / no-alcance
+Esta entrada no anticipa ninguna respuesta sobre el sustrato: no afirma que C v1 sea o no suficiente, ni predetermina si el observable deberá ampliarse. Fija únicamente el orden de resolución. No decide entre familias experimentales. No instancia el cegado ni traza la frontera de §6.1. No altera ninguna deuda de higiene registrada. Sobrevive sin cambios cualquiera que sea la conclusión del reconocimiento del sustrato.
+
+- Decide: Javi.

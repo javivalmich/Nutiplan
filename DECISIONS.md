@@ -2638,3 +2638,29 @@ Las afirmaciones heredadas de R-A9 que no superaron el criterio de inclusión de
 La justificación metodológica de qué sobrevivió y qué no reside en el propio R-0 y en su criterio de inclusión (`R-0-reconocimiento-frente-B.md:117-120`); este asiento no la reproduce. El fundamento del Frente B queda limitado a afirmaciones re-derivables desde fuentes primarias versionadas, conforme al criterio de inclusión declarado en el R-0.
 Estado resultante
 Frente B: abierto, fundamento = R-0 versionado. Cegado (§6): sin cambios — transferido, no instanciado, bloqueante de Fase 7 (D-058). Próximo sujeto del frente: estructuración a partir del R-0.
+
+## D-060 — Frente B: La identificación del objeto de evaluación pertenece al plano contractual, no al de las implementaciones
+
+Fecha: 2026-07-21 · HEAD de referencia: `2d0c194` · Tipo: resolución normativa (interpretación de corpus vigente)
+
+**Contexto.** D-048 p.3 fijó como objeto de evaluación "el plan generado por el motor" y encomendó a reconocimiento posterior su definición formal. La cadena de reconocimientos subsiguiente mantuvo abierta la cuestión de cuál era ese objeto, formulándola como una elección entre implementaciones candidatas. Esta entrada resuelve que esa formulación situaba la pregunta en el nivel equivocado. No introduce norma nueva: interpreta el corpus ya ratificado.
+
+**Resolución.**
+
+1. Se planteó si el corpus debía identificar el objeto de evaluación mediante la elección de una implementación concreta.
+
+2. De la interpretación conjunta de `docs/spec/plan-observable.md` §0, §1, §2 y §4 se sigue que el término "plan observable" está definido **constitutivamente** por el contrato:
+   - §2 introduce "plan observable" bajo el encabezado "Definiciones", en la forma canónica *definiendum : definiens* ("objeto que satisface el contrato de §4, con independencia de su origen"), sin modo obligación.
+   - §0.1 reserva el modo "deberá" para los enunciados normativos; la definición de §2 no lo usa, luego es definición, no obligación adicional sobre una entidad previamente identificada.
+   - §0.4 exige que toda obligación sobre el objeto se verifique por observación del objeto terminado, sin conocer el proceso de generación; §1.1 define el objeto como lo que un productor materializa para evaluación, no como el materializador.
+   - Las obligaciones relativas a productores/motores pertenecen a un nivel normativo distinto, expresamente acotado (§1.2.c, §1.3): regulan condiciones de los motores, no la identidad del objeto.
+
+3. En consecuencia, la identificación del objeto de evaluación pertenece al **plano contractual** (satisfacción de la definición constitutiva) y no al plano de las implementaciones. El corpus no identifica el objeto mediante una implementación privilegiada; lo define por una propiedad verificable sobre el propio objeto.
+
+4. Las cuestiones relativas a implementaciones concretas pertenecen al plano de **evidencia y conformidad**, no al plano de definición normativa del objeto, y se resuelven por su propia cadena (verificación de conformidad a un HEAD, registrada como evidencia versionada), separada de esta resolución.
+
+**Consecuencia (gobierno).** Esta resolución fija el plano normativo en el que debe interpretarse el mandato de D-048 p.3: la identidad del objeto de evaluación se gobierna por la definición contractual de "plan observable" (`plan-observable.md` §2, desarrollada por §4), no por la elección de implementaciones concretas.
+
+**Alcance / no-alcance.** Esta entrada no afirma nada sobre el estado de conformidad de ningún motor, no cita ninguna implementación, y no depende de ningún estado del código. Es estable mientras `plan-observable.md` no se modifique por su propio ciclo (§8.2).
+
+**Decide:** Javi.

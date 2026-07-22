@@ -2844,3 +2844,32 @@ Desarrolla A1-P1 sin modificarla. No altera P2 (ubicación), P3 (obtención equi
 
 ### Evidencia
 El estado del corpus previo sobre P1 está demostrado en `docs/evidence/R-1a-corpus-hojas-A2.md`, citado como reconocimiento del espacio normativo previo, no como fuente de la norma.
+
+## D-064 — [2026-07-22] Frente B (A2, 1b-EQ): criterio de equivalencia entre observables a efectos de comparación
+
+Fecha: 2026-07-22 · HEAD: 1164c8fde61cdee0dd62d608958c2b5900edb1d6 · Tipo: docs-only · Frente: B
+
+### Objeto del criterio
+Fija el criterio por el cual se juzga cuándo el observable obtenido para el plan de un motor y el obtenido para el plan del otro pueden tratarse como el mismo objeto de comparación a efectos de la evaluación. No selecciona observable alguno, no crea una sexta propiedad del espacio de admisibilidad, no modifica P1–P5 ni rinde veredicto comparativo.
+
+### Fundamento
+D-062 registró como hoja abierta, distinta de A1-P3, la cuestión de cuándo dos observables formalmente obtenibles en ambos motores pueden considerarse equivalentes a efectos de comparación, y la remitió a la evaluación de candidatos (`DECISIONS.md:2804-2807`). Este asiento cumple esa remisión.
+
+La hoja no es redundante con P3. P3 exige obtención equivalente para ambos motores y su neutralidad acota expresamente esa exigencia a la obtención, no al contenido (`DECISIONS.md:2736-2738`, `:2745-2746`). El contrato de shape entre motores (`CLAUDE.md:17-28`) garantiza la presencia de un conjunto de claves en el return de todo productor de plan, es decir, disponibilidad estructural; no establece que lo nombrado por una clave denote la misma propiedad en ambos motores. El corpus exhibe un caso donde ambas cosas divergen: `weekScore` está garantizado en ambos motores y el propio contrato declara que engine2 no puntúa y que su valor será placeholder o derivado (`CLAUDE.md:22-23`). Un observable definido sobre esa clave resultaría obtenible en ambos motores sin denotar por ello la misma propiedad. El caso se cita como demostración de que existe residuo normativo entre P3 y esta hoja; no como elemento definitorio del criterio.
+
+### Criterio normativo
+El observable obtenido para el plan de un motor y el obtenido para el plan del otro podrán tratarse como el mismo objeto de comparación únicamente cuando la definición del observable denote la misma propiedad del plan en ambos motores.
+
+### Alcance
+- Es condición necesaria, no suficiente: que la definición denote la misma propiedad del plan en ambos motores es requisito para poder tratar ambos resultados como el mismo objeto de comparación, pero no basta por sí solo para establecer ese tratamiento.
+- El criterio versa sobre la correspondencia intermotor de un mismo observable. No gobierna la relación entre observables distintos entre sí; esa cuestión no está abierta por el corpus y este asiento no la abre.
+- El criterio no define qué constituye la misma propiedad del plan, ni reduce la noción de propiedad del plan que el corpus ya emplea.
+- No versa sobre la obtención, gobernada por A1-P3, ni la modifica. Un observable que satisfaga este criterio sigue debiendo satisfacer P3, y a la inversa.
+- No rinde veredicto comparativo alguno: qué ocurre al comparar los valores obtenidos pertenece al diseño experimental, conforme a `DECISIONS.md:2745-2746`.
+- No enumera observables, familias de observables ni técnicas de medición.
+
+### Relación con D-062
+Desarrolla la segunda hoja abierta de D-062 (`DECISIONS.md:2804-2807`) sin modificar ninguna de las cinco propiedades del marco de admisibilidad. Con este asiento y D-063, ambas hojas registradas en D-062 quedan resueltas.
+
+### Evidencia
+El estado del corpus previo sobre esta hoja está demostrado en `docs/evidence/R-1a-corpus-hojas-A2.md`, citado como reconocimiento del espacio normativo previo, no como fuente de la norma.

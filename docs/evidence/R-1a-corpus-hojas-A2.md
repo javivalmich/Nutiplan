@@ -38,7 +38,7 @@ Evidencia que sostiene (c):
 - El artefacto (ii) se ejecuta sobre un HEAD posterior (`cd10667`, 2026-07-19) al de (i) (`6523de9`, 2026-07-17), y sobre un estado de código materialmente distinto: `materializePlan.js` no existe en el HEAD de (i) (ausente del artefacto) y sí en el HEAD de (ii) (D-056 crea `materializePlan.js` en HEAD de reconocimiento `5e7eb5c`, fecha `2026-07-18`, `DECISIONS.md:2549` — es decir, entre las fechas de ejecución de (i) y (ii)).
 - Ningún asiento de DECISIONS.md (incluidos D-058, D-059, D-060, D-061, D-062 — todos posteriores a 2026-07-19) menciona el artefacto (ii) ni resuelve si sustituye, complementa o es independiente del R-1 de D-049. Confirmado por grep: la cadena "objeto-producido-por-motor" no aparece en `DECISIONS.md` (búsqueda sin resultados).
 
-Esta no-resolución queda registrada aquí como **precondición abierta de la hoja de equivalencia** (sección siguiente): cualquier afirmación sobre "candidatos-observable de engine2" depende de qué artefacto (i, ii, o ambos) se tome como fuente de candidatos, y el corpus no fija cuál rige.
+Esta no-resolución queda registrada aquí como hallazgo de este reconocimiento: el corpus no fija cuál de los dos artefactos rige. El reconocimiento no establece consecuencias de esa no-resolución para otros actos del corpus.
 
 ---
 
@@ -74,7 +74,6 @@ resultados fuera del propio D-062). Ver «Alcance de la demostración».
 
 - El propio D-062 registra la cuestión de la equivalencia como hoja abierta distinta de P3: `DECISIONS.md:2804-2807` — *"Equivalencia entre observables: queda abierta la cuestión de cuándo dos observables formalmente obtenibles en ambos motores pueden considerarse equivalentes a efectos de comparación. No pertenece al espacio de admisibilidad y deberá resolverse durante la evaluación de candidatos."*
 - No se localiza en el corpus gobernado ningún criterio de equivalencia entre observables anterior o posterior a D-062. Grep de "equivalen" sobre `DECISIONS.md`, `docs/spec/*.md` y `docs/evidence/**/*.md` no produce ninguna otra ocurrencia que trate la equivalencia de observables a efectos de comparación entre motores (las demás ocurrencias de "equivalen" en el corpus tratan materias distintas: sustitución de platos, `DECISIONS.md:1917`; ausencia de dato equivalente en engine2 para un campo concreto no relacionado, `DECISIONS.md:1093`; convención documental, `DECISIONS.md:2435`).
-- Dado el hallazgo de la subtarea previa: la pregunta de equivalencia presupone un conjunto de candidatos sobre el que aplicarse, y ese conjunto depende de qué artefacto R-1 se tome como base (ver Subtarea, desenlace c). El corpus no fija esa base, por lo que la propia noción de "dos observables formalmente obtenibles en ambos motores" carece hoy de un universo de candidatos único y resuelto sobre el que aplicarse.
 
 ---
 
@@ -84,13 +83,8 @@ Este documento demuestra el contenido literal del corpus gobernado sobre las dos
 
 ## Alcance de la demostración
 
-1. Barrido. Este reconocimiento agota su mandato sobre `DECISIONS.md` para las dos
-cadenas literales consultadas ("constituye evidencia", "contrasta el predicado").
-No establece nada sobre el resto del corpus gobernado: `CLAUDE.md` y `docs/spec/**`
-no fueron barridos, y un criterio redactado con otra literalidad no habría sido
-capturado por esas dos cadenas.
+1. Barrido — Hoja 1. Sobre esta hoja, el reconocimiento agota su mandato sobre `DECISIONS.md` para las dos cadenas literales consultadas ("constituye evidencia", "contrasta el predicado"). No establece nada sobre el resto del corpus gobernado: `CLAUDE.md` y `docs/spec/**` no fueron barridos para esta hoja, y un criterio redactado con otra literalidad no habría sido capturado por esas dos cadenas.
 
-2. Ancla del resultado heredado. La certificación citada en `DECISIONS.md:2330`
-está anclada a `c315d2e`, no a `79f31ae`. El grep realizado por este reconocimiento
-constituye su re-verificación parcial en el ancla vigente, con el alcance enunciado
-en el punto 1.
+2. Barrido — Hoja 2. Sobre esta hoja, el barrido fue más amplio: raíz "equivalen" sobre `DECISIONS.md`, `docs/spec/*.md` y `docs/evidence/**/*.md`. Con ese alcance, no se localiza criterio de equivalencia entre observables a efectos de comparación. Un criterio redactado con otra raíz léxica no habría sido capturado.
+
+3. Ancla del resultado heredado. La certificación citada en `DECISIONS.md:2330` está anclada a `c315d2e`, no a `79f31ae`. El grep realizado por este reconocimiento constituye su re-verificación parcial en el ancla vigente, con el alcance enunciado en el punto 1.

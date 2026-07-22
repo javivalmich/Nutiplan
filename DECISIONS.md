@@ -2818,3 +2818,29 @@ de igualdad literal en el corpus. Este asiento se apoya en el predicado literal
 obligación del marco.
 
 - Decide: Javi.
+
+## D-063 — [2026-07-22] Frente B (A2, 1b-P1): criterio de verificación de finalidad respecto al predicado
+
+Fecha: 2026-07-22 · HEAD: 9406e9732f9dc9aabd8525a59afc9ced0f63422c · Tipo: docs-only · Frente: B
+
+### Objeto del criterio
+Fija el criterio por el cual se juzga si un observable satisface A1-P1 (`DECISIONS.md:2715-2717`). No selecciona observable alguno, no crea una sexta propiedad del espacio de admisibilidad, no modifica P2–P5.
+
+### Fundamento
+D-062 registró como hoja abierta que el corpus fija el predicado pero no fija qué constituye evidencia de él, y delegó expresamente ese criterio a la evaluación de candidatos (`DECISIONS.md:2800-2803`); la certificación de la ausencia es anterior (`DECISIONS.md:2330`). Este asiento cumple esa delegación. El modo de razonar que adopta no es nuevo en el corpus: la cláusula de no redundancia de P1 (`DECISIONS.md:2721-2722`) sostiene la independencia de la propiedad exhibiendo un caso discriminante —observables que satisfacen las demás propiedades y están dirigidos a un predicado distinto—. El criterio formaliza ese razonamiento como condición normativa.
+
+### Criterio normativo
+Un observable **no** satisface A1-P1 si puede exhibirse un predicado distinto del gobernado (`DECISIONS.md:2333`) para el cual ese mismo observable, sin alteración alguna de su definición, resulte apto como contraste. La exhibición de un solo predicado en esas condiciones basta para el rechazo.
+
+### Alcance
+- Es criterio de rechazo: establece condición suficiente de no satisfacción de P1, no condición suficiente de satisfacción. Un observable que no sea rechazado por este criterio no queda por ello aceptado.
+- El criterio no define qué constituye aptitud como contraste. Emplea esa noción en el mismo sentido en que ya la emplea `DECISIONS.md:2721-2722` al hablar de observables dirigidos a un predicado distinto. Su aplicación exige juzgar la aptitud del observable respecto al predicado exhibido; no exige medir grados de aptitud ni compararlos entre predicados.
+- No fija el espacio de predicados alternativos sobre el que se practica la exhibición. Esa indeterminación es la que `DECISIONS.md:2722` ya emplea al hablar de "un predicado distinto"; este asiento no la reduce ni la amplía.
+- No enumera observables, familias de observables ni técnicas de medición.
+- No resuelve la segunda hoja abierta de D-062 (equivalencia entre observables a efectos de comparación, `DECISIONS.md:2804-2807`), que permanece abierta.
+
+### Relación con D-062
+Desarrolla A1-P1 sin modificarla. No altera P2 (ubicación), P3 (obtención equivalente), P4 (independencia del proceso interno) ni P5 (compatibilidad con cegado); un observable que supere este criterio sigue debiendo satisfacerlas. Preserva la neutralidad exigida en `DECISIONS.md:2723-2724`: no nombra rasgo ni candidato y es aplicable a cualquier observable.
+
+### Evidencia
+El estado del corpus previo sobre P1 está demostrado en `docs/evidence/R-1a-corpus-hojas-A2.md`, citado como reconocimiento del espacio normativo previo, no como fuente de la norma.

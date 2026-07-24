@@ -3063,3 +3063,79 @@ conservan íntegramente su fuerza normativa con independencia de aquella cuesti�
 - Los tres componentes de 2.a (`DECISIONS.md:2685`), que este asiento no responde.
 
 - Decide: Javi.
+
+## D-067 — [2026-07-24] Frente B: constatación del estado documental del vehículo de observación
+
+Fecha: 2026-07-24 · HEAD: 139c918c19227dc841aeab28a286cb4def05d0b3 · Tipo: docs-only · Frente: B
+
+### Naturaleza del asiento
+Acto de constatación. Registra el estado documental del vehículo de observación
+(`DECISIONS.md:2335`) en el fundamento del Frente B y en el inventario de D-061. No
+califica ese estado, no le atribuye causa, no deriva de él consecuencia normativa alguna,
+y no constituye ni nombra acto alguno. Se apoya en relectura read-only de fuentes
+primarias versionadas, no sellada como evidencia independiente, conforme al precedente de
+D-061 (`DECISIONS.md:2672-2673`).
+
+### 1. El término y su definición
+D-048 punto 3 (`DECISIONS.md:2335`) establece que toda representación que se construya
+para hacer el plan observable por un juez humano es un vehículo de observación, no el
+objeto evaluado.
+
+### 2. Presencia en el fundamento del Frente B
+D-059 (`DECISIONS.md:2632`) constituye
+`docs/evidence/protocolo-evaluacion/R-0-reconocimiento-frente-B.md` en fundamento
+operativo del Frente B, y establece que toda estructuración posterior del frente parte de
+las afirmaciones que ese artefacto sostiene.
+
+Ese artefacto (versionado en `922d4f6`, ejecutado sobre `c41558e`; SHA-256
+`76e734888e84fd1c74b8c58f010c2c1ccde63785929d7e8399cf9f08b2842730` @ `139c918`) trata el
+vehículo de observación en su cuerpo fundacional, sección (b)
+(`R-0-reconocimiento-frente-B.md:35-50`), con cita literal de `DECISIONS.md:2346`.
+
+El criterio de inclusión del artefacto (`R-0-reconocimiento-frente-B.md:117-120`) admite
+únicamente afirmaciones re-derivables mediante lectura directa de fuentes primarias
+versionadas. La sección (b) figura en el cuerpo fundacional, no en el perímetro negativo
+(`R-0-reconocimiento-frente-B.md:104-115`).
+
+### 3. Antecedencia necesaria declarada
+El artefacto declara (`R-0-reconocimiento-frente-B.md:48-50`): "sin vehículo de
+observación no existe superficie sobre la que aplicar cegado. La construcción del vehículo
+es antecedente necesario de cualquier instanciación del cegado."
+
+De las cuatro secciones del cuerpo fundacional, es la única cuya consecuencia sobre la
+instanciación del cegado se enuncia como antecedencia necesaria: (a) declara
+indeterminación (`R-0-reconocimiento-frente-B.md:31-33`); la tercera sección declara que
+el texto fuente no vincula su materia con esa instanciación (`:74-75`); (d) declara
+consecuencia directa con la clasificación operativa pendiente (`:97-100`).
+
+### 4. Presencia en D-058
+D-058 enumera el vehículo de observación entre las dependencias transferidas al Frente B
+(`DECISIONS.md:2610`, dependencia (b)) y entre los sujetos del frente por abrir
+(`DECISIONS.md:2623`).
+
+### 5. Ausencia de localización en el inventario de D-061
+D-061 se titula "inventario de cuestiones cerradas/abiertas y orden de resolución"
+(`DECISIONS.md:2668`). No se localiza el vehículo de observación entre sus cuestiones
+cerradas (`DECISIONS.md:2675-2682`) ni entre sus cuestiones abiertas
+(`DECISIONS.md:2684-2688`). No se localiza en D-061 (`DECISIONS.md:2668-2696`) enunciado
+que declare la exhaustividad del inventario, ni enunciado que retire, difiera o resuelva
+esa cuestión.
+
+### 6. Alcance / no-alcance
+- No califica la ausencia registrada en el punto 5 como omisión, error, exclusión
+  deliberada ni ninguna otra categoría.
+- No propone ni registra explicación alguna de esa ausencia.
+- No deriva consecuencia normativa: no reabre la cuestión, no la declara abierta ni
+  cerrada, no la incorpora a ningún inventario, y no altera el orden de resolución fijado
+  en `DECISIONS.md:2691`.
+- No responde ningún componente de la cuestión 2.a (`DECISIONS.md:2685`) ni fija
+  observable alguno.
+- No se pronuncia sobre la relación entre C v1 y ninguna de las designaciones que el
+  corpus emplea para su segundo término.
+- No adjudica correferencia alguna. No adjudica la tensión registrada en D-065 punto 5
+  (`DECISIONS.md:2936-2946`).
+- No modifica A1-P1–P5 (`DECISIONS.md:2711-2770`) ni los criterios normativos de D-063
+  (`DECISIONS.md:2833`) y D-064 (`DECISIONS.md:2861`). No modifica D-066.
+- No altera ninguna deuda de higiene registrada ni registra ninguna nueva.
+
+- Decide: Javi.

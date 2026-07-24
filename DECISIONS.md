@@ -3139,3 +3139,54 @@ esa cuestión.
 - No altera ninguna deuda de higiene registrada ni registra ninguna nueva.
 
 - Decide: Javi.
+
+## D-068 — [2026-07-24] Frente B: constitución de la cuestión documental sobre la relación entre dos designaciones del corpus
+
+Fecha: 2026-07-24 · HEAD: 3b1d6e4 · Tipo: docs-only · Frente: B
+
+### Naturaleza del asiento
+Acto de gobierno constitutivo de alcance limitado. Constituye únicamente el objeto de una cuestión documental y difiere expresamente cualquier constitución de su solución. No adjudica correferencia, no identifica ni distingue designaciones, y no atribuye causa ni califica el estado que registra.
+
+Se apoya en relectura read-only de fuentes primarias versionadas, no sellada como evidencia independiente, conforme al precedente de D-061 (`DECISIONS.md:2672-2673`).
+
+Su elección frente a las alternativas disponibles —no emitir acto alguno, o incorporar la materia directamente como cuestión del frente— es decisión de gobierno del frente, no consecuencia impuesta por las fuentes. El corpus no la exige.
+
+### 1. Las dos designaciones
+D-048 p.3 (`DECISIONS.md:2335`) establece que toda representación que se construya para hacer el plan observable por un juez humano es un vehículo de observación, no el objeto evaluado; que deberá ser proyección fiel del plan; y que el protocolo deberá minimizar la influencia de la representación sobre el juicio.
+
+D-061 (`DECISIONS.md:2685`) enuncia la cuestión abierta 2.a como sustrato de evaluación: sobre qué observable evalúa el juez la tesis.
+
+Se registra que ambas designaciones comparten raíz léxica: `:2335` emplea «observable» como adjetivo predicado del plan; `:2685` lo emplea como sustantivo. Este asiento registra esa proximidad y declara expresamente que no la trata como acto de identificación. Adoptar la correferencia por vía nominal produciría por esa vía lo que este asiento declina adjudicar, conforme al criterio de D-066 (`DECISIONS.md:2991-2992`).
+
+### 2. Asimetría documental demostrada
+a. La línea definicional `:2335` está comprendida en el rango `DECISIONS.md:2333-2335`, que D-061 (`:2676`) declara fijado entre sus cuestiones cerradas, bajo un rótulo —«tesis, regla de evidencia y objeto de evaluación»— que no nombra el vehículo.
+b. Esa misma línea `:2335` difiere expresamente parte de su materia: la definición formal del objeto en cada motor «queda encomendada al reconocimiento R-1 del Frente B». El cierre de `:2676` recae sobre el acto de fijación, no sobre la resolución de lo que la línea delega.
+c. D-048 `:2346` declara que no existe artefacto observable que represente un plan de engine2 y que la construcción de un vehículo de observación es trabajo previsible del frente. `:2346` queda fuera del rango cerrado por `:2676`, y bajo el régimen de revisión propio que `:2342` fija para `:2344-2346`: revisables únicamente mediante decisión posterior que las sustituya explícitamente.
+d. D-058 enumera el vehículo entre las dependencias transferidas al Frente B (`:2610`, sub-ítem (b), que cita `:2346`), entre las heredadas por D-047/D-048 (`:2616`) y entre los sujetos del frente por abrir (`:2623`). D-067 (`:3116-3122`) registra que el término no se localiza en las listas de D-061.
+e. La cuestión formulada en `:2685` es, en cambio, objeto de tratamiento constitutivo propio: D-066 (`:2977-2978`) dota de existencia normativa al acto en que resulta seleccionado el observable de evaluación, y sitúa ese acto dentro de 2.a (`:2984-2985`), cuestión que `:2691` ordena tratar en primer lugar. D-066 no constituye ni define la designación misma.
+
+### 3. Ausencia de acto declarativo dentro del perímetro
+Dentro del perímetro leído para sostener las premisas de este asiento —D-048 (`:2325-2350`), D-058 (`:2599-2624`), D-061 (`:2668-2697`), D-066 (`:2972-3066`), D-067 (`:3067-3141`)— no consta enunciado que establezca que la designación «vehículo de observación» (`:2335`) y la designación «observable» de la cuestión 2.a (`:2685`) refieran al mismo objeto, ni enunciado que las distinga. Este asiento no se pronuncia sobre lo que exista fuera de ese perímetro.
+
+D-066 (`:3018-3020`) declinó expresamente pronunciarse sobre la correferencia entre el acto que constituye y cinco sintagmas definidos distintos de los aquí tratados (`:3060-3061`). D-067 (`:3135`) declinó adjudicar correferencia alguna. Este asiento no reabre ni resuelve ninguna de esas declinaciones.
+
+### 4. Lo que queda constituido
+Queda constituido como cuestión documental con estatuto propio: que la relación entre ambas designaciones permanece sin acto declarativo localizado dentro del perímetro documental citado en §3. Nada más.
+
+En particular, no queda constituida ninguna de las explicaciones posibles de ese estado —omisión, exclusión deliberada, sustitución, correferencia tácita u otra—, que permanecen todas indeterminadas y no ordenadas entre sí.
+
+### 5. Alcance / no-alcance
+- No adjudica la correferencia. No afirma ni niega que ambas designaciones refieran al mismo objeto.
+- No califica el estado registrado como omisión, error ni exclusión, y no le atribuye causa.
+- No extiende su alcance al resto de dependencias transferidas por D-058 (`:2610`, `:2623`), y no extrae conclusión de clase sobre la relación entre D-058 y D-061.
+- La constitución de esta cuestión no modifica, no incorpora ni reordena el orden de resolución establecido en `DECISIONS.md:2691`. El objeto queda constituido sin adquirir por ello estatuto de cuestión del Frente B.
+- No responde ningún componente de 2.a (`:2685`) ni fija observable alguno.
+- No se pronuncia sobre la exigencia de «proyección fiel del plan» que `:2335` impone al vehículo, ni sobre la mención de `:2349`, ni sobre relación alguna entre esas menciones y las demás apariciones de «proyección» en el corpus.
+- No decide la suficiencia de C v1, mencionada en `:2685`, ni deriva su relación con la definición contractual del objeto.
+- No modifica D-066 (`:2972-3066`) ni D-067 (`:3067-3141`).
+- No altera ninguna deuda de higiene registrada ni registra ninguna nueva.
+
+### 6. Hoja abierta (registrada, no resuelta)
+- La relación entre ambas designaciones, cuyo estatuto documental este asiento constituye sin resolver.
+
+- Decide: Javi.

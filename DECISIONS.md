@@ -2968,3 +2968,98 @@ del corpus y se emplea aquí como glosa. Siguiendo la forma de `DECISIONS.md:281
 aclaración descriptiva; no gobierna ninguna obligación ni constituye término del corpus.
 
 - Decide: Javi.
+
+## D-066 — [2026-07-24] Frente B: constitución del acto de selección del observable de evaluación
+
+Fecha: 2026-07-24 · HEAD: 4eb28f1d458bc7d16ce3d499ba0e965cc0aaef1c · Tipo: docs-only · Frente: B
+
+### Naturaleza del asiento
+Acto de gobierno constitutivo. Dota por primera vez de existencia normativa al acto
+en que resulta seleccionado el observable de evaluación. Su efecto constitutivo es
+nuevo: la caracterización funcional de ese acto no nace aquí —`DECISIONS.md:2709`
+la enuncia de forma incidental, dentro de una oración cuyo objeto es afirmar la
+estabilidad de D-062—, pero su constitución sí. Este asiento no es explicitación de
+algo ya dicho ni declara que el acto existiera antes en sentido normativo.
+
+Se sitúa dentro de la cuestión abierta 2.a (`DECISIONS.md:2685`), cuyo tratamiento
+prioritario ordena `DECISIONS.md:2691`. No responde ninguno de sus tres componentes.
+
+### Denominación del acto
+El acto queda identificado por su función: aquel en que resulta seleccionado el
+observable de evaluación.
+
+Este asiento no adopta como denominación el sintagma "la evaluación de candidatos".
+Adoptarlo produciría por vía nominal la correferencia que este asiento declina
+expresamente adjudicar (ver más abajo). Tampoco adopta el rótulo "A2": no consta
+asiento que declare qué designa, conforme a la constatación de D-065
+(`DECISIONS.md:2924-2928`).
+
+La denominación funcional no prejuzga ninguna correferencia y no retira, sustituye
+ni impugna rótulo ni sintagma alguno del corpus.
+
+### Competencia del acto
+La competencia del acto constituido es únicamente la enunciada en
+`DECISIONS.md:2709`: la selección del observable de evaluación.
+
+Este asiento no le atribuye ninguna competencia adicional. En particular, no le
+atribuye decidir la suficiencia de C v1, ni derivar la relación entre C v1 y la
+definición contractual del objeto, ni determinar qué terreno esté hoy demostrado,
+ni elegir familia de diseño experimental. Cualquier competencia distinta de la
+selección del observable requerirá enunciado constitutivo expreso en asiento
+posterior; no se adquiere por acumulación de inferencias.
+
+### Correferencia: declinación expresa
+No se localiza en el corpus enunciado que establezca que los sintagmas definidos
+"la evaluación de candidatos" de `DECISIONS.md:2779-2780`, `:2803`, `:2807`,
+`:2830` y `:2856` refieran al acto caracterizado en `:2709`. `:2709` clasifica un
+acto mediante complemento sin artículo; las cinco restantes emplean sintagma
+definido sin clasificador.
+
+Este asiento declina expresamente pronunciarse sobre esa correferencia. La
+declinación es expresa y no silencio: no debe leerse como negación de la
+correferencia ni como afirmación de ella.
+
+### Lecturas de `DECISIONS.md:2779-2780` (registro; no se adjudica)
+La oración "Qué terreno esté hoy demostrado pertenece a la evaluación de
+candidatos, no al espacio de admisibilidad" admite dos lecturas compatibles con el
+literal. Este asiento registra ambas sin preferir ninguna.
+
+- Lectura A — atribución de competencia. "Pertenece a" asigna una cuestión a un
+  destinatario portador de competencia. Requiere que el sintagma correfiera con el
+  acto clasificado en `:2709`.
+- Lectura B — demarcación de contenido. El término de contraste es "el espacio de
+  admisibilidad", que no es acto sino contenido normativo; y la oración vive bajo
+  el encabezado "Candidatas rechazadas (registro; no forman parte del espacio)"
+  (`DECISIONS.md:2777`), cuya función es demarcar qué no es contenido de A1.
+
+La elección entre ambas es constitutiva, no descriptiva. Queda abierta.
+
+### Estatuto de D-063 y D-064
+Este asiento no se pronuncia sobre si D-063 y D-064 ejercieron o no competencias
+del acto aquí constituido.
+
+Declara, como fundamento positivo de esa no pronunciación, que los criterios
+normativos constituidos por D-063 (`DECISIONS.md:2833`) y D-064 (`:2861`) están
+enunciados sobre las propiedades del observable y no sobre un destinatario, y
+conservan íntegramente su fuerza normativa con independencia de aquella cuestión.
+
+### Alcance / no-alcance
+- No selecciona observable alguno ni enumera candidatos.
+- No decide la suficiencia de C v1 (`DECISIONS.md:2271`).
+- No deriva la relación entre C v1 y la definición contractual del objeto
+  (`plan-observable.md` §2/§4).
+- No modifica A1-P1–P5 (`DECISIONS.md:2711-2770`) ni los criterios normativos de
+  D-063 (`:2833`) y D-064 (`:2861`).
+- No elige familia de diseño experimental; 2.b permanece diferida conforme a
+  `DECISIONS.md:2691`.
+- No instancia el protocolo de cegado ni traza la frontera de §6.
+- No adjudica la tensión registrada en D-065 punto 5.
+- No altera ninguna deuda de higiene registrada ni registra ninguna nueva.
+
+### Hojas abiertas (registradas, no resueltas)
+- Correferencia entre el acto constituido y los cinco sintagmas definidos citados
+  arriba.
+- Elección entre las lecturas A y B de `DECISIONS.md:2779-2780`.
+- Los tres componentes de 2.a (`DECISIONS.md:2685`), que este asiento no responde.
+
+- Decide: Javi.

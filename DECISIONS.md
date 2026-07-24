@@ -2873,3 +2873,98 @@ Desarrolla la segunda hoja abierta de D-062 (`DECISIONS.md:2804-2807`) sin modif
 
 ### Evidencia
 El estado del corpus previo sobre esta hoja está demostrado en `docs/evidence/R-1a-corpus-hojas-A2.md`, citado como reconocimiento del espacio normativo previo, no como fuente de la norma.
+
+## D-065 — [2026-07-24] Frente B: constatación del estado de la cuestión 2.a tras D-062, D-063 y D-064
+
+Fecha: 2026-07-24 · HEAD: a14e16add63b6e0bab2a49c66822618533b5de27 · Tipo: docs-only · Frente: B
+
+### Naturaleza del asiento
+Acto de constatación. Registra el estado del corpus respecto de la cuestión abierta
+D-061 punto 2.a (`DECISIONS.md:2685`) tras los asientos D-062, D-063 y D-064. No
+responde ninguno de sus componentes, no constituye ni nombra acto alguno, y no
+adjudica la tensión que registra en el punto 5. Se apoya en relectura read-only de
+fuentes primarias versionadas, no sellada como evidencia independiente, conforme al
+precedente de D-061 (`DECISIONS.md:2672-2673`).
+
+### 1. La cuestión 2.a permanece registrada con tres componentes
+D-061 (`DECISIONS.md:2685`) registra como cuestión abierta el sustrato de evaluación,
+con tres componentes: sobre qué observable evalúa el juez la tesis; la suficiencia de
+C v1 para soportar el protocolo (`DECISIONS.md:2271`); y la relación —que la propia
+entrada califica de "nunca derivada"— entre C v1 y la definición contractual del
+objeto (`plan-observable.md` §2/§4).
+
+D-061 punto 3 (`DECISIONS.md:2690-2691`) fija que el trabajo siguiente del Frente B
+comienza por esa subpregunta, y difiere 2.b hasta que el sustrato esté resuelto.
+
+Las dos citas internas de 2.a resuelven en D-047 (`DECISIONS.md:2239-2324`) y
+concuerdan con la caracterización que 2.a hace de ellas: `:2320` ("el Frente B hereda
+la pregunta") y `:2271` ("La suficiencia de C v1 para soportar el protocolo de
+evaluación NO forma parte de este frente y queda heredada explícitamente al Frente B").
+
+### 2. No ejercicio de esos componentes por D-062, D-063 y D-064
+- Sobre fijar el observable: D-062 declara "No nombra ni selecciona ningún observable"
+  (`:2790`); D-063 declara "No selecciona observable alguno" (`:2827`); D-064 declara
+  "No selecciona observable alguno" (`:2853`).
+- Sobre la suficiencia de C v1: D-062 declara "No decide la suficiencia de ningún
+  sustrato" (`:2794`). No se localiza en D-063 (`:2822-2847`) ni en D-064
+  (`:2848-2875`) enunciado que la decida.
+- Sobre la relación C v1 ↔ `plan-observable.md` §2/§4: no se localiza enunciado que la
+  derive en D-062 (`:2698-2821`), D-063 (`:2822-2847`) ni D-064 (`:2848-2875`).
+
+D-061 punto 4 (`DECISIONS.md:2694`) ya declaraba, respecto de sí mismo, que no afirma
+que C v1 sea o no suficiente.
+
+### 3. Estado documental de la relación C v1 ↔ definición contractual
+No se localiza mención de `plan-observable.md` en D-047 (`DECISIONS.md:2239-2324`), ni
+mención de "C v1" en `plan-observable.md` §2 (`:24-33`) ni §4 (`:42-69`).
+
+D-061 cita D-060 (`DECISIONS.md:2677`, sobre `:2658`) entre las cuestiones cerradas y,
+en la misma entrada, califica esa relación de "nunca derivada" (`:2685`).
+
+### 4. Estado documental de "A2" y de "la evaluación de candidatos"
+- No se localiza en `DECISIONS.md` oración alguna que declare qué designa el rótulo
+  "A2". No aparece en el cuerpo de D-062 (`:2698-2821`); aparece en los títulos de
+  D-063 (`:2822`) y D-064 (`:2848`), y como subcadena del nombre de fichero citado
+  como evidencia en `:2846` y `:2875`.
+- La expresión "la evaluación de candidatos" aparece en `DECISIONS.md` en `:2709`,
+  `:2803`, `:2807` y `:2856`. No se localiza asiento que declare qué designa.
+- Lo que sí consta constituido mediante cita de línea: D-063 cita `:2800-2803` y
+  declara "Este asiento cumple esa delegación" (`:2830`); D-064 cita `:2804-2807` y
+  declara "Este asiento cumple esa remisión" (`:2856`); D-064 declara "Con este asiento
+  y D-063, ambas hojas registradas en D-062 quedan resueltas" (`:2872`).
+
+### 5. Tensión registrada, no adjudicada
+Coexisten en el corpus estos dos enunciados:
+- D-061 (`:2682`): "Terreno común demostrado entre legacy y engine2 bajo C v1:
+  únicamente el andamiaje temporal (la semana como 14 posiciones)".
+- D-062 (`:2778-2780`): "'Preservar la estructura semanal / andamiaje temporal':
+  rechazada por Neutralidad — nombra un candidato. Qué terreno esté hoy demostrado
+  pertenece a la evaluación de candidatos, no al espacio de admisibilidad."
+
+No se localiza en el corpus enunciado que iguale ni que distinga expresamente ambas
+designaciones. Este asiento registra la coexistencia sin preferir ninguno de los dos
+enunciados y sin decidir si designan el mismo objeto.
+
+### 6. Deuda de higiene registrada
+D-062 (`:2703-2704`) se declara "Primer acto normativo del sustrato de evaluación
+(subfrente α, ratificado en D-061 punto 2.a)". D-061 punto 2.a (`:2685`) registra la
+cuestión y su punto 3 (`:2690-2691`) fija el orden de su resolución; no se localiza en
+D-061 (`:2668-2696`) la expresión "subfrente" ni el rótulo "A1". Se registra como deuda
+de higiene, sin efecto sobre la vigencia de D-062.
+
+### 7. Alcance / no-alcance
+No responde ningún componente de 2.a. No fija observable. No decide la suficiencia de
+C v1. No deriva la relación entre C v1 y `plan-observable.md` §2/§4. No constituye,
+nombra ni atribuye competencia a acto alguno. No adjudica la tensión del punto 5. No
+retira, sustituye ni modifica rótulo alguno. No modifica A1-P1–P5
+(`DECISIONS.md:2711-2775`) ni los criterios normativos de D-063 (`:2832-2833`) y D-064
+(`:2860-2861`). No altera ninguna otra deuda de higiene registrada.
+
+### Nota interpretativa (no normativa)
+El estado que registran los puntos 1-5 puede describirse como un vacío de constitución:
+el corpus remite reiteradamente a cuestiones posteriores sin que se localice asiento
+que constituya el acto que las recibe. La expresión "vacío de constitución" no procede
+del corpus y se emplea aquí como glosa. Siguiendo la forma de `DECISIONS.md:2813-2818`:
+aclaración descriptiva; no gobierna ninguna obligación ni constituye término del corpus.
+
+- Decide: Javi.

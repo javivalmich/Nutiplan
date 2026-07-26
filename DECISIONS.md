@@ -3222,6 +3222,8 @@ Se constata que en esa sección (`:2948-2953`) no aparecen registrados los objet
 ### 4. Queda abierto
 Todo lo no constatado aquí en primario durable, en particular: el estado de (i)–(v) como deudas (pendiente de barrido de corpus exhibido); la resolución del doble uso de «R-1»; y la cuestión de nomenclatura de ramas.
 
+- Decide: Javi.
+
 ## D-070 — [2026-07-26] Higiene documental: alcance implícito de la afirmación reconcile (DECISIONS.md:2362) y ausencia de respaldo versionado del mapeo F6 = narrador
 
 Tipo: docs-only · higiene · append-only. HEAD de reconocimiento: 0a13d67. No pertenece al Frente B; no toca la precondición de cegado (§6), único gate versionado de Fase 7. Decide: Javi.
@@ -3239,5 +3241,3 @@ Alcance: ambas deudas son de higiene documental, no urgentes, fuera del camino c
 Evidencia: reconocimiento read-only, HEAD `0a13d67`. Citas `archivo:línea` verificadas contra el árbol trackeado por `git grep`.
 
 Decide: Javi.
-
-- Decide: Javi.

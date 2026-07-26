@@ -3190,3 +3190,36 @@ En particular, no queda constituida ninguna de las explicaciones posibles de ese
 - La relación entre ambas designaciones, cuyo estatuto documental este asiento constituye sin resolver.
 
 - Decide: Javi.
+
+## D-069 — [2026-07-26] Deuda de higiene: doble uso de «R-1» y no registro de (i)–(v) en la sección de deuda de D-065
+
+Fecha: 2026-07-26 · HEAD: `72ceae7` · Tipo: docs-only · Frente: B
+
+### Naturaleza del asiento
+Acto de constatación de alcance limitado. Registra únicamente hechos documentales verificados contra fuente primaria durable (ficheros versionados en el árbol `@72ceae7`). No constituye cuestiones nuevas, no adjudica correferencias, no interpreta silencios y no reabre materia distinta de la aquí expresamente citada. No se apoya en reflog ni en ninguna traza local no replicada.
+
+### 1. Doble uso de la designación «R-1»
+El corpus versionado contiene dos artefactos de evidencia distintos que llevan la designación «R-1» en su identidad, referidos a objetos distintos:
+
+- `docs/evidence/R-1-productores-plan.md` — corresponde a la R-1 encomendada por D-048 y reconocida en D-049, cuyo título es «R-1 Frente B: Reconocimiento de productores de plan» (`DECISIONS.md:2351`): reconocimiento de qué produce cada motor como «el plan generado».
+- `docs/evidence/protocolo-evaluacion/R-1-objeto-producido-por-motor.md` — artefacto distinto, bajo el subárbol `protocolo-evaluacion/`, cuyo rótulo de identidad refiere al objeto producido por el motor.
+
+Ambos paths existen en el árbol versionado `@72ceae7`. La coexistencia de la misma designación «R-1» sobre dos artefactos distintos se registra aquí como deuda de higiene de nomenclatura. Este asiento no decide cuál conserva la designación, no la retira de ninguno, no declara que designen el mismo objeto ni objetos distintos, y no ordena su resolución.
+
+### 2. La sección de deuda de D-065 no registra los objetos (i)–(v) del traspaso
+La sección «6. Deuda de higiene registrada» de D-065 (`DECISIONS.md:2948-2953`) registra una única deuda: que D-062 se autodenomina «subfrente α» y que el rótulo «subfrente» / «A1» no se localiza en D-061 (`:2668-2696`).
+
+Se constata que en esa sección (`:2948-2953`) no aparecen registrados los objetos de higiene arrastrados en traspaso de sesión —(i) referencia irresoluble a «§6.1» en `protocolo-evaluacion.md`; (ii) alias «juez de Fase 7»; (iii) «R-0 histórico» en `:2346`; (iv) roturas `archivo:línea` heredadas de D-054/D-056/D-057; (v) duplicación `findDish` ×3—.
+
+### 3. Alcance / no-alcance
+- Sí registra el doble uso de «R-1» como deuda de nomenclatura entre artefactos versionados.
+- Sí constata que la sección `:2948-2953` no contiene registrados los objetos (i)–(v).
+- No afirma que (i)–(v) no existan, no estén descritos en otra parte del corpus, ni que estén resueltos: sólo que no constan registrados en `:2948-2953`. No se ha ejecutado en primario durable, en este acto, un barrido del corpus completo de secciones de deuda; esa constatación queda expresamente abierta.
+- No incorpora la cuestión de nomenclatura de ramas (`fase-N-descripcion`): su única evidencia disponible es reflog, no durable, y queda fuera de este asiento.
+- No convierte la constatación del punto 2 en juicio sobre la corrección o incorrección de los objetos (i)–(v).
+- No modifica ninguna otra deuda de higiene registrada ni ningún rótulo del corpus.
+
+### 4. Queda abierto
+Todo lo no constatado aquí en primario durable, en particular: el estado de (i)–(v) como deudas (pendiente de barrido de corpus exhibido); la resolución del doble uso de «R-1»; y la cuestión de nomenclatura de ramas.
+
+- Decide: Javi.

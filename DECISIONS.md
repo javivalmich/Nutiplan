@@ -3241,3 +3241,15 @@ Alcance: ambas deudas son de higiene documental, no urgentes, fuera del camino c
 Evidencia: reconocimiento read-only, HEAD `0a13d67`. Citas `archivo:línea` verificadas contra el árbol trackeado por `git grep`.
 
 Decide: Javi.
+
+## D-071 — [2026-07-27] Higiene documental: uso material de la etiqueta «Frente B» previo a su apertura formal
+
+Tipo: docs-only · higiene · append-only. HEAD de reconocimiento: 6500b4a. Registra, no resuelve; fuera de camino crítico. Decide: Javi.
+
+Hallazgo: la etiqueta «Frente B» opera con uso material en D-048 (`DECISIONS.md:2325,2335,2341,2346,2349`), D-049 (`:2351,2372,2378`) y D-050 (`:2380,2385,2389,2397,2398,2404`), y es referenciada por D-051 (`:2419`) como especificación pendiente («todo contenido de la especificación normativa de Frente B, que se redactará sobre el contrato ya corregido»). Los cuatro asientos son anteriores a la apertura formal de Frente B registrada en D-059 (`:2625`, «Frente B: apertura formal sobre su R-0 de reconocimiento»; cuerpo en `:2629`: «El Frente B... queda formalmente abierto»).
+
+Cuestión: no consta si «Frente B» fue etiqueta material previa a la apertura de gobernanza o si hay ambigüedad real sobre cuándo abrió el frente. Este asiento no lo dirime.
+
+Estado: registrada como posible ambigüedad nominal; abierta; sin efecto sobre camino crítico.
+
+Decide: Javi.

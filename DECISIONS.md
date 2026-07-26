@@ -3223,3 +3223,21 @@ Se constata que en esa sección (`:2948-2953`) no aparecen registrados los objet
 Todo lo no constatado aquí en primario durable, en particular: el estado de (i)–(v) como deudas (pendiente de barrido de corpus exhibido); la resolución del doble uso de «R-1»; y la cuestión de nomenclatura de ramas.
 
 - Decide: Javi.
+
+## D-070 — [2026-07-26] Higiene documental: alcance implícito de la afirmación reconcile (DECISIONS.md:2362) y ausencia de respaldo versionado del mapeo F6 = narrador
+
+Tipo: docs-only · higiene · append-only. HEAD de reconocimiento: 0a13d67. No pertenece al Frente B; no toca la precondición de cegado (§6), único gate versionado de Fase 7. Decide: Javi.
+
+Contexto: reconocimiento read-only sobre el árbol trackeado (`git grep`, salida exhibida esta sesión). Se registran dos deudas ya caracterizadas; ninguna se resuelve en este asiento.
+
+Deuda 1 — alcance implícito de la afirmación sobre `reconcile`.
+La afirmación en `DECISIONS.md:2362` («`reconcile` (Fase 5) no está implementado (grep sin resultados)») es verdadera bajo su alcance implícito `src/`: no existe función `reconcile` implementada en `src/engine2/` ni en el resto de `src/`, donde solo hay dos comentarios (`src/engine/buildPlan.js:2752`, `src/ui/views/NutritionistDashboard.jsx:121`). Leída literalmente contra todo el árbol, hoy es imprecisa: existen helpers ejecutables homónimos en `docs/evidence/variedad-verdura/veg_variety_engine2_freq.mjs:270,404` (`function reconcile`) y `docs/evidence/variedad-verdura/veg_variety_engine2_intensity.mjs:322` (`function reconcileUnit`), ajenos al contrato de reconcile de Fase 5 (utilidades locales de una campaña de variedad de verdura). El asiento no era falso; su alcance quedó tácito. Se registra la imprecisión de alcance; no se corrige el texto de `:2362` aquí.
+
+Deuda 2 — el mapeo «F6 = narrador» carece de respaldo versionado.
+`git grep -niE "narrador|narrator"` sobre el árbol trackeado no produce resultados. La identidad de F6 como «narrador» no aparece en ningún artefacto versionado (ni `DECISIONS.md`, ni specs, ni código); vive únicamente en un roadmap de trabajo no versionado en el repo. Se registra como deuda de constitución/denominación: el concepto «narrador» no existe en el corpus gobernado.
+
+Alcance: ambas deudas son de higiene documental, no urgentes, fuera del camino crítico. La única precondición versionada de Fase 7 es el cegado (§6), sin relación con ninguna de las dos.
+
+Evidencia: reconocimiento read-only, HEAD `0a13d67`. Citas `archivo:línea` verificadas contra el árbol trackeado por `git grep`.
+
+Decide: Javi.

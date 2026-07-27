@@ -3271,3 +3271,13 @@ Nomenclatura: este asiento no asigna etiqueta de subfrente (p. ej. «α»/«A1»
 Estado: abierto. Ningún componente resuelto.
 
 Decide: Javi.
+
+## D-073 — Resolución de 2.a(i): el observable es el plan observable
+
+**Contexto.** Frente 2.a, componente (i) de los tres registrados en D-061 (`DECISIONS.md:2685`): «sobre qué observable evalúa el juez la tesis». Este asiento resuelve el sustrato observable, sobre corpus vivo del núcleo normativo (`plan-observable.md`, `protocolo-evaluacion.md`), ancla `601fff1`.
+
+**Decisión.** Queda resuelto (i): el observable sobre el que opera la evaluación es el plan observable, objeto normado por `plan-observable.md` §4, según declara `protocolo-evaluacion.md:32` («el objeto evaluado — el plan observable»). La proyección (§5) y la unidad de observación / día (`protocolo-evaluacion.md:24`) no son co-componentes de igual rango, sino subordinados a ese objeto: la proyección se computa exclusivamente desde él (§5.1); el día es un elemento de `days`, campo del contrato de §4. No se registra ninguna «composición de sustrato»: el corpus no la sostiene.
+
+**Límite de alcance.** Este asiento resuelve el sustrato observable de (i). No resuelve la relación entre ese observable y «la tesis» que se evalúa sobre él (`plan-observable.md:38` → D-048), ni la figura «juez» (no literal en el núcleo). Ambas quedan fuera de este asiento; se abrirán como acto propio si un trabajo posterior demuestra que las exige.
+
+**Estado de 2.a.** (i) queda resuelto; (ii) y (iii) permanecen abiertos, sin orden interno fijado entre ellos.

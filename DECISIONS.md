@@ -3281,3 +3281,31 @@ Decide: Javi.
 **Límite de alcance.** Este asiento resuelve el sustrato observable de (i). No resuelve la relación entre ese observable y «la tesis» que se evalúa sobre él (`plan-observable.md:38` → D-048), ni la figura «juez» (no literal en el núcleo). Ambas quedan fuera de este asiento; se abrirán como acto propio si un trabajo posterior demuestra que las exige.
 
 **Estado de 2.a.** (i) queda resuelto; (ii) y (iii) permanecen abiertos, sin orden interno fijado entre ellos.
+
+## D-074 — [2026-07-27] Corrección de apoyo documental: :3263 sobre-atribuye a :2691 el enunciado de no-serialización
+
+Tipo: docs-only · corrección de apoyo documental · append-only. HEAD de verificación: af66978. Decide: Javi.
+
+**Contexto.** En el arranque del trabajo sobre 2.a(ii) —suficiencia de C v1 para soportar el protocolo (origen: `DECISIONS.md:2271`, D-047)— se identificó que D-072 `DECISIONS.md:3263` presenta como «ligadura declarada en `DECISIONS.md:2691`» un enunciado de no-serialización de los componentes de 2.a. Por ser la única pieza que amenazaba con volverse load-bearing para el razonamiento sobre (ii), se cotejó verbatim contra el repo vivo (`af66978`) el texto de origen `:2691` frente a la caracterización de `:3263`.
+
+**Evidencia (verbatim, `af66978`).**
+
+D-061, `DECISIONS.md:2691` (punto 3):
+> «El trabajo siguiente del Frente B comienza por la subpregunta del sustrato (2.a): determinar sobre qué observable evalúa el juez, resolviendo la suficiencia de C v1 y su relación con la definición contractual del objeto. La elección de familia de diseño experimental (2.b) queda diferida hasta que ese sustrato esté resuelto: no se especifica una familia sin haber fijado el observable sobre el que operaría.»
+
+D-072, `DECISIONS.md:3263`:
+> «Alcance (dentro): los tres componentes de 2.a según `DECISIONS.md:2889-2894` — (i) el observable; (ii) la suficiencia de C v1 para soportar el protocolo (`:2271`); (iii) la relación —«nunca derivada»— entre C v1 y la definición contractual del objeto (`plan-observable.md` §2/§4). Los tres se abordan como facetas internas de un mismo trabajo, conforme a la ligadura declarada en `DECISIONS.md:2691` (verbo principal «determinar» el observable, gerundios «resolviendo la suficiencia... y su relación...»); no se serializan ni se separan en preguntas independientes.»
+
+**Decisión (fija qué declara y qué no declara `:2691`).**
+1. `:2691` declara una estructura todo/parte: verbo principal «determinar» (el observable), con dos gerundios subordinados —«resolviendo la suficiencia de C v1 y su relación con la definición contractual del objeto»—. Esto es: resolver (ii) y (iii) es parte de determinar (i).
+2. `:2691` no declara que (ii) y (iii) no puedan serializarse entre sí, ni que constituyan una única pregunta indivisible. Sobre la serializabilidad de (ii)/(iii) entre sí, `:2691` guarda silencio.
+3. `:3263` sobre-atribuye a `:2691` el enunciado «no se serializan ni se separan en preguntas independientes»: esa formulación relacional no figura en el texto de `:2691`. En `:2691` figura solo la estructura gramatical (un verbo principal y dos gerundios) que `:3263` cita como base; la conclusión de no-serialización es añadida por D-072.
+
+**Límite de alcance.**
+- No corrige ni deroga D-072 (`DECISIONS.md` es append-only): solo deja constancia de que su lectura de `:2691` excede lo que el texto de origen declara. La decisión de gobierno de D-072 de abordar (i)(ii)(iii) «dentro» del frente permanece en pie.
+- No decide si (ii) y (iii) son serializables: `:2691` no lo resuelve y este asiento tampoco. Solo fija qué declara y qué no declara `:2691`.
+- No abre (iii): constatar que `:2691` menciona «su relación con la definición contractual del objeto» no es abrir ni caracterizar (iii).
+- No abre D-048. No incorpora los `.xlsx`.
+- No mueve el estado de apertura de (ii): «(ii) abierta» cuelga de D-072 `DECISIONS.md:3271`, no de `:3263`, y este asiento no lo toca.
+
+Decide: Javi.

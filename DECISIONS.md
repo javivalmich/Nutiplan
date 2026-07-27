@@ -3253,3 +3253,21 @@ Cuestión: no consta si «Frente B» fue etiqueta material previa a la apertura 
 Estado: registrada como posible ambigüedad nominal; abierta; sin efecto sobre camino crítico.
 
 Decide: Javi.
+
+## D-072 — [2026-07-27] Apertura del frente sobre la cuestión 2.a (sustrato de evaluación)
+
+Tipo: docs-only · apertura de frente · append-only. HEAD de apertura: e8418c4. Asiento normativo: constituye el frente y fija su alcance; no resuelve ningún componente. Decide: Javi.
+
+Pregunta del frente: sobre qué observable evalúa el juez la tesis (`DECISIONS.md:2685`).
+
+Alcance (dentro): los tres componentes de 2.a según `DECISIONS.md:2889-2894` — (i) el observable; (ii) la suficiencia de C v1 para soportar el protocolo (`:2271`); (iii) la relación —«nunca derivada»— entre C v1 y la definición contractual del objeto (`plan-observable.md` §2/§4). Los tres se abordan como facetas internas de un mismo trabajo, conforme a la ligadura declarada en `DECISIONS.md:2691` (verbo principal «determinar» el observable, gerundios «resolviendo la suficiencia... y su relación...»); no se serializan ni se separan en preguntas independientes.
+
+Perímetro negativo (fuera): las cuatro hojas periféricas caracterizadas en `docs/evidence/protocolo-evaluacion/R-0-estructura-cuestion-2a.md` §2 —correferencia D-066; lecturas A/B de `DECISIONS.md:2779-2780`; relación «vehículo de observación» ⇿ «observable»; artefacto R-1 que aporta el conjunto de candidatos— quedan fuera del frente. Solo podrían incorporarse si un acto posterior declara su relación con los tres componentes anteriores. La cuestión 2.b (familia de diseño experimental) queda diferida por `DECISIONS.md:2691` hasta que ese sustrato esté resuelto.
+
+Base estructural: la cardinalidad interna de 2.a (tres componentes) y la no-fijación del racimo periférico están demostradas en `docs/evidence/protocolo-evaluacion/R-0-estructura-cuestion-2a.md` (sellado en la historia hasta `e8418c4`).
+
+Nomenclatura: este asiento no asigna etiqueta de subfrente (p. ej. «α»/«A1»); esa correspondencia no está fijada en el corpus y su no-localización queda registrada como deuda. La designación de este frente es neutra: «frente 2.a».
+
+Estado: abierto. Ningún componente resuelto.
+
+Decide: Javi.

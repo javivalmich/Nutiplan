@@ -3330,3 +3330,17 @@ Decide: Javi.
 - No cierra (ii): ii-auto queda listo para trabajarse de forma autónoma; ii-med queda bloqueado por la divergencia de caracterización, que es su propio acto.
 
 **Consecuencia:** ii-auto es descargable sin resolver la relación C v1↔objeto. ii-med no, hasta que la divergencia de caracterización se asiente por separado.
+
+## D-076 — Constitución de ii-auto: pregunta propia y extensión normativa
+
+**Contexto / dependencia.** D-075 (`DECISIONS.md:3313-3332`) escinde (ii) en dos sub-cuestiones autónomas y caracteriza ii-auto como «eje de muestreo/reproducibilidad» cuya evaluación no enruta por el contrato del objeto (`plan-observable.md §4.2`) y no requiere la relación C v1↔objeto (`DECISIONS.md:3323`). D-075 no fija una pregunta propia dedicada a ii-auto ni delimita su extensión normativa. El R-0 de reconocimiento (`docs/evidence/protocolo-evaluacion/R-0-reconocimiento-ii-auto.md`, sellado en `4c886f5`, vigente en `7edb6dc`) demuestra ambos huecos: el corpus no fija oración interrogativa dedicada a ii-auto (`R-0-reconocimiento-ii-auto.md:69`, `:112`), y no distingue de forma expresa si ii-auto adopta el mapeo completo de muestreo o solo el caso de §5.6 (`R-0-reconocimiento-ii-auto.md:63`, `:115`). El R-0 demuestra; este asiento decide. Actos separados.
+
+**Decisión 1 — Pregunta propia (constitutiva).** Se fija como pregunta propia de ii-auto:
+
+> «¿Se fija ii-auto como el eje de muestreo/reproducibilidad, sin dependencia de la relación C v1↔objeto?»
+
+Redactada de novo sobre la caracterización literal de `DECISIONS.md:3323`. No se consume la formulación candidata del R-0 (`R-0-reconocimiento-ii-auto.md:73`), que el propio R-0 sella como NO FIJADA POR EL CORPUS y no consumible. El acto de asentar responde afirmativamente esta pregunta al fijar ii-auto como tal eje sobre la base de `:3323`.
+
+**Decisión 2 — Extensión normativa.** La extensión normativa de ii-auto se fija en §5.6 del protocolo de evaluación (tamaño de muestra N, «el caso limpio» que D-075 cita literal en `DECISIONS.md:3323`). El mapeo completo de las demás cláusulas de muestreo/reproducibilidad (§5.5 semillas, §5.8 agregación, etc.) permanece demostrado en el R-0 previo (`docs/evidence/protocolo-evaluacion/R-0-observacion-vs-muestreo-ii.md`, sellado en `abb468f`) pero NO se adopta como normativo en este asiento. Su adopción, si procede, será acto propio futuro.
+
+**Alcance.** Este asiento constituye la pregunta propia y fija la extensión mínima (§5.6). No resuelve el contenido sustantivo de evaluación de ii-auto (acto resolutivo, futuro) ni el estatus de ii-auto como frente operativo vs. sub-cuestión (acto de estatus, futuro).

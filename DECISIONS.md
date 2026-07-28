@@ -3309,3 +3309,24 @@ D-072, `DECISIONS.md:3263`:
 - No mueve el estado de apertura de (ii): «(ii) abierta» cuelga de D-072 `DECISIONS.md:3271`, no de `:3263`, y este asiento no lo toca.
 
 Decide: Javi.
+
+## D-075 — Asiento: partición normativa de (ii) en ii-auto / ii-med
+
+**Naturaleza:** Decisión normativa. Adopta una partición sobre terreno ya demostrado; no reconoce, no demuestra.
+
+**Fuente de la demostración:** `docs/evidence/protocolo-evaluacion/R-0-observacion-vs-muestreo-ii.md` (sellado en `abb468f`). El R-0 demuestra la partición del terreno; este asiento la adopta como normativa. Actos separados.
+
+**Pregunta resuelta (F-δ-Q):** ¿Se asienta (ii) —la suficiencia de C v1 para soportar el protocolo de evaluación— como partición normativa en ii-auto / ii-med, con ii-auto autónomo e ii-med mediado por la relación C v1↔objeto, o permanece (ii) como requisito único, dejando esa partición solo como hecho demostrado sin adopción normativa?
+
+**Decisión:** Se adopta la partición normativa. (ii) deja de tratarse como requisito único y se escinde en dos sub-cuestiones con estatus distinto:
+
+- **ii-auto** — eje de muestreo/reproducibilidad. Su evaluación no enruta por el contrato del objeto (`plan-observable.md` §4.2) y, por tanto, no requiere la relación C v1↔objeto. El tamaño de muestra N (§5.6 del protocolo) es el caso limpio: cuenta iteraciones semanales sin invocar la colección `days`. Sub-cuestión autónoma.
+
+- **ii-med** — eje de cegado (§6.1 del protocolo, no-filtración del productor). Su evaluación enruta por el contrato del objeto —el contenido evaluado es el objeto— y queda **mediada** por la relación C v1↔objeto: juzgar si C v1 basta para blindar la identidad del productor exige saber qué campos del objeto exceden a C v1. Mediación, no herencia ni prerrequisito. La caracterización precisa de esa relación permanece en **divergencia registrada y no resuelta** (dos caracterizaciones incompatibles en corpus: C v1↔proyección vs. C v1↔definición contractual del objeto); este asiento no la resuelve y la deja viva como deuda aguas abajo.
+
+**Alcance / lo que este asiento NO hace:**
+- No resuelve la relación C v1↔objeto ni elige entre sus dos caracterizaciones divergentes.
+- No fija orden de trabajo entre ii-auto e ii-med.
+- No cierra (ii): ii-auto queda listo para trabajarse de forma autónoma; ii-med queda bloqueado por la divergencia de caracterización, que es su propio acto.
+
+**Consecuencia:** ii-auto es descargable sin resolver la relación C v1↔objeto. ii-med no, hasta que la divergencia de caracterización se asiente por separado.

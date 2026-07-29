@@ -3354,3 +3354,31 @@ Redactada de novo sobre la caracterización literal de `DECISIONS.md:3323`. No s
 **Decisión 2 — Subordinación.** La cuestión se RETIRA como está planteada y queda SUBORDINADA a un acto futuro de criterio que fije, con carácter general, la distinción «frente operativo» vs. «sub-cuestión». Hasta que ese acto exista, no procede clasificar ii-auto en ninguno de los dos sentidos.
 
 **Alcance.** Este asiento no clasifica ii-auto (ni promueve a frente ni ratifica sub-cuestión) ni define el criterio frente/sub-cuestión: solo constata su ausencia en el corpus sellado y difiere la definición a acto futuro. No afirma exhaustividad —no sostiene que el criterio no exista en ninguna parte, sino que los hechos sellados citados no lo fijan—; el barrido de perímetro amplio del reconocimiento de sesión no se adopta como normativo.
+
+## D-078 — [2026-07-29] Asiento de Rama 1: adjudicación de la co-referencia proyección ↔ definición contractual del objeto
+
+Tipo. Decisión normativa (asiento). Decide sobre terreno exhibido por `docs/evidence/protocolo-evaluacion/R-0-caracterizacion-cv1-objeto.md`, sellado en el árbol de `f43db50`. El R-0 demuestra; este asiento decide. Actos separados.
+
+Ancla. `origin/main @ f43db50`.
+
+Objeto. Adjudicar si «proyección» (`plan-observable.md §2`, D-058 `DECISIONS.md:2610`) y «definición contractual del objeto» (`plan-observable.md §2/§4`, D-061 `DECISIONS.md:2685`, D-072 `DECISIONS.md:3263`) co-refieren, y verificar la incompatibilidad consignada en D-075 `DECISIONS.md:3325`. Precondición de ii-med.
+
+Perímetro leído. `docs/spec/plan-observable.md §2 (:24-32) + §4 (:42-68) + §5 (:70-82)`, literal contra `f43db50`. El perímetro incorpora §5 («Requisitos de proyección») por ratificación previa al acto, para que toda conclusión negativa quede acotada a un perímetro que contiene la sección nominalmente más relevante al término en disputa.
+
+Exhibición decisiva.
+
+* `plan-observable.md:30`: «Plan observable» = objeto que satisface el contrato de §4.
+* `plan-observable.md:31`: «Proyección» = transformación de un plan observable a la representación que consumirá la evaluación, sujeta a §5.
+* `plan-observable.md:74` (§5.1): toda proyección deberá computarse exclusivamente a partir del plan observable.
+
+Decisión 1 — Co-referencia: negativa. «Proyección» y «definición contractual del objeto» no co-refieren. §2 los fija como entidades distintas ligadas por una relación funcional: la proyección es una transformación del objeto (`:31`), computada exclusivamente a partir del plan observable (`:74`). El objeto es lo que satisface el contrato de §4 (`:30`); la proyección es aguas abajo de él.
+
+Decisión 2 — Verificación de D-075. La incompatibilidad consignada en D-075 `DECISIONS.md:3325` no queda confirmada tras la lectura literal de `plan-observable.md` §2 y §5. La lectura de esas secciones muestra que «proyección» y «definición contractual del objeto» designan entidades distintas, por lo que las dos relaciones comparadas —[C v1↔proyección] (D-058 `:2610`) y [C v1↔definición contractual del objeto] (D-061 `:2685`, D-072 `:3263`)— dejan de constituir caracterizaciones rivales de un mismo término.
+
+Alcance append-only. Este asiento no deroga D-075 ni ningún asiento previo. La partición ii-auto/ii-med de D-075 permanece vigente; únicamente su calificación de la relación C v1↔objeto como «divergencia incompatible» deja de estar sostenida por el literal de §2/§5, conforme a la Decisión 2.
+
+Residual acotado — no decidido en este asiento. En qué lado de la distinción objeto/proyección cae C v1 exige el literal de D-047 (`DECISIONS.md`), fuera del perímetro leído. Este asiento no lo pronuncia. Pasa a ser el siguiente reconocimiento de la cadena de Rama 1.
+
+Efecto sobre ii-med. ii-med (D-075 `:3325`) permanece bloqueado únicamente por el reconocimiento del residual C v1↔lado (lectura de D-047). Resuelto ese reconocimiento, ii-med queda desbloqueado: su formulación —qué campos del objeto §4 exceden a C v1— dispone ya de la relación objeto/proyección fijada por este asiento.
+
+Estado. Rama 1: co-referencia adjudicada (negativa); incompatibilidad de D-075 no confirmada por el literal de §2/§5; relación objeto↔proyección fijada (`:30`, `:31`, `:74`). Residual C v1↔lado diferido al reconocimiento de D-047, que es ahora el único bloqueo de ii-med.

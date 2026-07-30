@@ -42,7 +42,7 @@ Cita literal, archivo:línea, de los principios y el contrato que fijan el marco
   ambos motores — no un objetivo de diseño." (DECISIONS.md:2257-2258)
 
 Este marco se exhibe tal como aparece en el literal. No se mapea contra la distinción objeto/proyección
-ni se reconcilia con D-078 en este acto (ver §6).
+ni se reconcilia con D-078 en este acto (ver §5).
 
 ## 3. Las cuatro salidas
 

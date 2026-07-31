@@ -3402,3 +3402,47 @@ El R-0 demuestra; este asiento decide. El reconocimiento respondió a la pregunt
 **Estado.** El residual C v1↔lado queda dispuesto en los términos de este asiento. El bloqueo documental identificado por D-078 (`DECISIONS.md:3382`) queda levantado. ii-med queda desbloqueado y pendiente únicamente de su asiento propio.
 
 **Referencias.** D-047 (`DECISIONS.md:2239-2324`), D-075 (`DECISIONS.md:3313-3332`), D-078 (`DECISIONS.md:3358-3384`, en particular `:3380`, `:3382`), `docs/evidence/R-0-reconocimiento-D-047.md` (`:59`, `:76`, `:79`).
+
+## D-080 — [2026-07-31] Asiento de ii-med: disposición estructural de los campos del objeto §4 que exceden a C v1
+
+**Naturaleza.** Decisión normativa (asiento). Dispone sobre terreno demostrado; no reconoce, no demuestra. Único acto normativo de ii-med en el plano estructural. El R-0 demuestra; este asiento decide. Actos separados.
+
+**Ancla.** `origin/main @ 0b60969`.
+
+**Fuente de la demostración.** `docs/evidence/protocolo-evaluacion/R-0-reconocimiento-ii-med.md` (sellado en el árbol de `0b60969`, leído sobre HEAD `61b8e3c`). El R-0 exhibe la diferencia de conjuntos entre el contrato del objeto y C v1 (Exhibit D, `:48-55`; diferencia, `:80-81`) sin calificarla (`:83`). Este asiento la dispone normativamente.
+
+**Contexto / dependencia.** D-075 (`DECISIONS.md:3313-3332`) escindió (ii) en ii-auto / ii-med y caracterizó ii-med como eje mediado por la relación C v1↔objeto (`:3325`). D-078 (`DECISIONS.md:3358`) adjudicó negativamente la co-referencia proyección↔definición contractual del objeto y fijó la relación objeto↔proyección (`:3384`). D-079 (`DECISIONS.md:3386`) dispuso el residual C v1↔lado y desbloqueó ii-med, dejándolo «listo para su propio asiento —qué campos del objeto §4 exceden a C v1—» (`:3400`). Este es ese asiento. Su pregunta es, literal, la que D-078/D-079 formulan: qué campos del objeto §4 exceden a C v1 — plano estructural, no informativo.
+
+**Objeto de la comparación (los dos lados, corpus vivo @ 0b60969).**
+- C v1: «la semana como 14 posiciones (7 días × {comida, cena})» (`DECISIONS.md:2261`), congelada con ese alcance y solo ese, con la suficiencia heredada a este frente (`:2271`) y la composición excluida por D-047 (`:2294`). Acarrea el andamiaje temporal de `plan-observable.md:49-52` (§4.2.1–§4.2.4).
+- Contrato del objeto: `plan-observable.md` §4 (`:42-68`).
+
+**Decisión 1 — Criterio estructural de exceso.** Un elemento constituye exceso respecto de C v1 si, y solo si, forma parte de las obligaciones estructurales del contrato del objeto en `plan-observable.md` §4 —sea clave obligatoria (§4.1) u obligación anidada— y su satisfacción no queda garantizada por el andamiaje temporal que C v1 congela. El criterio es de presencia de obligación contractual, no de contenido informativo del campo. Un campo cuenta como exceso con independencia del valor concreto que su instanciación pueda portar.
+
+**Decisión 2 — Disposición del conjunto de exceso.** Bajo el criterio de la Decisión 1, exceden a C v1:
+- composición / identidad de plato — obligación anidada §4.2.5 (`plan-observable.md:53`), excluida de C v1 por D-047 (`DECISIONS.md:2294`);
+- `strategy` — §4.3 (`plan-observable.md:55`);
+- `weekWarnings` — §4.4 (`plan-observable.md:57-59`);
+- `weekProblems` — §4.4 (`plan-observable.md:57-59`);
+- `weekScore` — §4.5 (`plan-observable.md:61`), con independencia del valor concreto que contenga;
+- `decisionLog` — §4.6 (`plan-observable.md:63-66`), campo opcional del contrato; entra al conjunto de exceso dejando constancia expresa de su carácter opcional.
+
+Este conjunto coincide con el exhibido por el R-0 (Exhibit D). El asiento lo cita como demostrado y lo dispone; no lo recomputa.
+
+**No entran (consecuencia del criterio, no decisión adicional).** Las normas del contrato que no son campos del objeto: la regla de contención estructural (§4.0, `plan-observable.md:44`) y la autosuficiencia del objeto (§4.7, `plan-observable.md:68`). El asiento dispone sobre campos del objeto, no sobre normas de interpretación del contrato. El andamiaje temporal §4.2.1–§4.2.4 (`plan-observable.md:49-52`) no excede: es precisamente lo que C v1 congela (R-0, Exhibit C).
+
+**Fuera de alcance — β preservado.** Este asiento NO valora si la ausencia en C v1 de los campos anteriores satisface la obligación de no-inferencia del productor de `protocolo-evaluacion.md:53` (§6, ítem 1). Esa valoración —el eje de cegado— cambia de pregunta: deja de ser comparación estructural contrato↔C v1 y pasa a ser evaluación frente al requisito del protocolo. Es puente argumental no fijado por la cadena D-078 → D-079 y merece acto normativo propio. ii-med, tal como D-079 lo desbloqueó, se cierra en el plano estructural; el plano de cegado queda expresamente fuera.
+
+**Cierre de ii-med.** Con la Decisión 1 y la Decisión 2, ii-med queda resuelto en su plano estructural: el conjunto de campos del objeto §4 que exceden a C v1 queda dispuesto normativamente. (ii) NO queda cerrada: la disposición de (ii) post-D-077 (Fork B — si (ii) cierra sobre ii-med en solitario o exige disposición propia de la no-decidibilidad de ii-auto sellada en D-077) permanece en cola, aguas abajo de este asiento.
+
+**Consecuencias de higiene (registradas, no resueltas aquí).**
+- El fantasma «§6.1 del protocolo» vuelve al saco de higiene sin destino asignado. El R-0 ii-med (`R-0-reconocimiento-ii-med.md:98-101`) atribuyó su retirada «al asiento de ii-med, primer acto que cita el cegado de forma normativa»; esa atribución presuponía que ii-med citaría el cegado. Bajo el alcance estructural aquí adoptado, ii-med NO cita el cegado de forma normativa, por lo que no es el hogar de esa retirada. La regla de citación (`protocolo-evaluacion.md:53` o «§6, ítem 1», no «§6.1 del protocolo») se retirará en el acto propio que toque el plano de cegado. No se retira aquí por vía indirecta.
+- Colisión de líneas `:53` entre specs, registrada: `plan-observable.md:53` designa §4.2.5 (composición); `protocolo-evaluacion.md:53` designa §6 ítem 1 (cegado). Toda cita de este asiento al primero va calificada.
+
+**Alcance append-only.** No deroga D-047, D-075, D-078 ni D-079 ni ningún asiento previo. No resuelve en qué lado de la distinción objeto/proyección cae C v1 (no reabierto; dispuesto negativamente por D-078/D-079). No valora suficiencia de cegado (β, fuera). No toca Fork B (en cola). No incorpora los `.xlsx`.
+
+**Estado.** ii-med: resuelto en el plano estructural. Conjunto de exceso dispuesto. Plano de cegado: fuera de alcance, acto propio pendiente. (ii): abierta, pendiente de Fork B.
+
+**Referencias.** D-047 (`DECISIONS.md:2239-2324`), D-075 (`DECISIONS.md:3313-3332`), D-078 (`DECISIONS.md:3358-3384`), D-079 (`DECISIONS.md:3386-3404`), `plan-observable.md` §4 (`:42-68`), `docs/evidence/protocolo-evaluacion/R-0-reconocimiento-ii-med.md`.
+
+**Decide:** Javi.

@@ -28,7 +28,7 @@ no decidible.
 
 ## Exhibicion por asiento
 - D-061 `:2685` REGISTRA (iii) como abierta; `:2694` «no anticipa ninguna respuesta».
-- D-072 `:3271` «Ningun componente resuelto». D-073 `:3283» «(ii) y (iii) permanecen abiertos».
+- D-072 `:3271` «Ningun componente resuelto». D-073 `:3283` «(ii) y (iii) permanecen abiertos».
 - D-065 `:2884` «No responde ninguno de sus componentes»; `:2917-2919` estado documental
   (ninguna mencion cruzada C v1 <-> plan-observable); `:2957` «No deriva la relacion».
 - D-075 `:3325` deja la relacion C v1<->objeto como divergencia viva; `:3328` «No resuelve».

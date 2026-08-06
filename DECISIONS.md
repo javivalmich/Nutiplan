@@ -3446,3 +3446,37 @@ Este conjunto coincide con el exhibido por el R-0 (Exhibit D). El asiento lo cit
 **Referencias.** D-047 (`DECISIONS.md:2239-2324`), D-075 (`DECISIONS.md:3313-3332`), D-078 (`DECISIONS.md:3358-3384`), D-079 (`DECISIONS.md:3386-3404`), `plan-observable.md` §4 (`:42-68`), `docs/evidence/protocolo-evaluacion/R-0-reconocimiento-ii-med.md`.
 
 **Decide:** Javi.
+
+## D-081 — [2026-08-05] Asiento de Fork B: cierre de (ii) sobre la disposicion estructural de ii-med
+
+**Naturaleza.** Acto de disposicion (asiento), constitutivo y singular. Resuelve el fork que
+D-080 (`DECISIONS.md:3436`) dejo abierto. Consume la demostracion sellada en el R-0 de
+reconocimiento de Fork B; no la reproduce. Su objeto se limita a esta configuracion.
+
+**Fuente de la demostracion.** `docs/evidence/protocolo-evaluacion/R-0-reconocimiento-fork-B.md`,
+alcanzable en `ec7b5cb`; demostracion ejecutada por el R-0 @ `aedf8cf` (su HEAD declarado).
+`DECISIONS.md` identico entre `aedf8cf` y `ec7b5cb` (verificado: `git diff aedf8cf ec7b5cb -- DECISIONS.md` vacio), por lo que el asiento @ `ec7b5cb` consume sin repetir el reconocimiento.
+
+**Perimetro consumido.** El declarado por el R-0 en sus secciones «Perimetro inspeccionado» y «Conjunto de terminos de barrido»: `DECISIONS.md` integro @ `aedf8cf` bajo el term-set literal alli fijado. Se remite a ese literal; no se resume ni se estrecha.
+
+**Objeto.** El planteado por D-080 (`DECISIONS.md:3436`): si (ii) cierra sobre ii-med en solitario, o exige disposicion propia de la no-decidibilidad de ii-auto sellada en D-077.
+
+**Hecho consumido (descriptivo).** El R-0 concluye, dentro de su perimetro y term-set declarados, desenlace C: no localiza A (disposicion sustantiva de ii-auto) ni B (regla adoptada de cierre de (ii)); su Veredicto sella «Localizada: NO» para ambas. Se remite a esa conclusion literal. Este hecho queda ligado al perimetro del R-0; no se amplia a «el corpus».
+
+**Disposicion (constitutiva, singular).** Sobre el fork asi planteado y el hecho C, este asiento dispone —no deriva— que, para la configuracion en que Fork B se situa (D-075 `:3313-3332`, D-077 `:3348-3357`, D-080 `:3406-3448`), la disposicion estructural de ii-med alcanzada en D-080 basta para tener (ii) por cerrada. En consecuencia, (ii) queda cerrada sobre ii-med en solitario.
+
+Como parte de esta disposicion, y no como lectura obligada del material previo, D-081 dispone ademas que la no-decidibilidad de ii-auto sellada en D-077 (`:3352`, `:3354`) no es condicion del cierre de (ii): queda desacoplada de ese cierre.
+
+Esta disposicion consume unicamente el fork abierto por D-080 (`:3436`) y no incorpora determinacion adicional distinta de la necesaria para resolver ese objeto.
+
+**Sobre ii-auto.** Este asiento no resuelve ii-auto ni altera su estatus, que permanece el dispuesto por D-077. Lo dispuesto aqui es el desacoplamiento de ese estatus respecto del cierre de (ii), no su resolucion.
+
+**Sobre β.** El plano β de cegado / no-inferencia de ii-med (`protocolo-evaluacion.md:53`, §6 item 1) permanece fuera del objeto de este asiento, donde D-080 lo dejo (`:3434`). D-081 dispone que β no es condicion del cierre de (ii) aqui alcanzado; no lo consume, no lo interpreta y no lo altera.
+
+**Alcance append-only.** No deroga D-047, D-075, D-077, D-078, D-079 ni D-080 ni ningun asiento previo. Consume el fork que D-080 (`:3436`) dejo en cola; no lo reabre. No incorpora los `.xlsx`.
+
+**Alcance de la negativa.** El hecho C se refiere a lo no hallado dentro del perimetro declarado por el R-0 (`DECISIONS.md` integro @ `aedf8cf`, term-set literal). No afirma ausencia global ni prejuzga actos futuros.
+
+**Estado.** (ii): cerrada, sobre la disposicion estructural de ii-med, en solitario. ii-auto: estatus segun D-077, desacoplado del cierre de (ii). β: fuera, donde D-080 lo dejo.
+
+**Decide:** Javi.

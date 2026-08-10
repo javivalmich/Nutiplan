@@ -3480,3 +3480,72 @@ Esta disposicion consume unicamente el fork abierto por D-080 (`:3436`) y no inc
 **Estado.** (ii): cerrada, sobre la disposicion estructural de ii-med, en solitario. ii-auto: estatus segun D-077, desacoplado del cierre de (ii). β: fuera, donde D-080 lo dejo.
 
 **Decide:** Javi.
+
+## D-082 — [2026-08-07] Asiento de 2.a(iii): cierre del componente (iii) sobre la fundamentacion exhibida
+
+**Naturaleza.** Acto de disposicion (asiento), singular y constitutivo. Toma el componente
+2.a(iii) por objeto y dispone sobre el. No constituye regla metodologica alguna; su alcance
+se agota en (iii). Consume la demostracion sellada en el R-0 de reconocimiento de 2.a(iii);
+no la reproduce.
+
+**Ancla.** `origin/main @ d8e31ba`.
+
+**Fuente de la demostracion.** `docs/evidence/protocolo-evaluacion/R-0-reconocimiento-2a-iii.md`
+(HEAD declarado del R-0: `3c20f31`; sellado en el merge `d8e31ba`). El unico cambio de
+`DECISIONS.md` entre `aedf8cf` y `d8e31ba` es la incorporacion integra de D-081 (verificado en
+terminal: `git diff aedf8cf..HEAD -- DECISIONS.md`, un unico bloque de adicion, cero lineas
+eliminadas). D-081 esta dentro del perimetro inspeccionado por el R-0, que lo enumera. No
+consta modificacion del tramo inspeccionado por el R-0; por tanto este asiento consume dicho
+reconocimiento sin repetirlo.
+
+**Objeto.** El componente 2.a(iii) identificado en D-061 (`DECISIONS.md:2685`): la relacion
+«nunca derivada» entre C v1 y la definicion contractual del objeto (`plan-observable.md §2/§4`)
+— el par {C v1, definicion contractual del objeto}. El objeto del acto es (iii); no lo es la
+suficiencia de ningun asiento previo, que interviene solo como fundamentacion.
+
+**Fundamentacion.** El R-0-2a-iii y los asientos D-078 (`DECISIONS.md:3358-3384`), D-079
+(`DECISIONS.md:3386-3404`) y D-080 (`DECISIONS.md:3406-3448`). El R-0 concluye, en su seccion
+Veredicto y dentro del perimetro y term-set alli declarados: no se localiza acto cuya
+disposicion tome (iii) por objeto; si se localizan actos dispositivos sobre objetos relacionados
+con (iii) sin que el objeto del acto sea (iii) — D-078, D-079 y D-080 —, exhibidos sin categoria
+reutilizable. El R-0 reservo expresamente la suficiencia de esa evidencia para tener (iii) por
+resuelta a un asiento propio; este es ese asiento.
+
+**Disposicion (constitutiva).** Sobre la fundamentacion exhibida, este asiento dispone —no
+deriva— el cierre de (iii). En consecuencia, (iii) queda cerrada sobre la fundamentacion
+exhibida.
+
+**Motivacion de la disposicion.** El R-0 identifico un vacio de objeto, no un vacio de
+evidencia: lo no hallado fue un acto que tomara (iii) por objeto, no evidencia suficiente sobre
+la relacion. Este asiento dispone que ese vacio de objeto no constituye, por si mismo, razon
+impeditiva del cierre una vez que existe un acto que toma (iii) por objeto — pues D-082 es ese
+acto. El peso de la disposicion recae, por tanto, sobre si la fundamentacion disponible permite
+que ese acto nuevo disponga el cierre; y la evidencia exhibida no fue reconocida por el R-0 como
+insuficiente, sino como no tomada por objeto. El cierre no se sigue por derivacion del R-0 —la
+fundamentacion delimita el espacio de disposiciones defendibles, no selecciona una—; se dispone.
+Lo que D-082 aporta al corpus no es evidencia nueva, sino la primera disposicion sobre un objeto
+cuya evidencia ya estaba delimitada.
+
+**Fuera de alcance (sin determinacion).** Este asiento no dispone sobre 2.a como conjunto: su
+objeto es (iii), no el estado global de 2.a. El cierre de (iii) podra tener consecuencias
+logicas para la lectura posterior del corpus; D-082 no las constituye. Tampoco toca el plano β
+de cegado / no-inferencia (`protocolo-evaluacion.md:53`, §6 item 1) ni el estatus de ii-auto
+(D-077): ninguno es objeto de (iii); se nombran para que su no-mencion dispositiva no se lea
+como disposicion tacita. Cualquier acto sobre 2.a como conjunto, sobre β o sobre ii-auto sera
+objeto propio de asiento propio.
+
+**Alcance append-only.** No deroga D-047, D-061, D-073, D-075, D-077, D-078, D-079, D-080 ni
+D-081 ni ningun asiento previo. No constituye regla metodologica transversal. No incorpora los
+`.xlsx`.
+
+**Alcance de la negativa.** El vacio de objeto que el R-0 sella se refiere a lo no hallado
+dentro del perimetro y term-set declarados por el R-0. No afirma ausencia global ni prejuzga
+actos futuros.
+
+**Estado.** (iii): cerrada, sobre la fundamentacion exhibida (R-0-2a-iii + D-078/D-079/D-080).
+
+**Referencias.** D-061 (`DECISIONS.md:2685`), D-078 (`DECISIONS.md:3358-3384`), D-079
+(`DECISIONS.md:3386-3404`), D-080 (`DECISIONS.md:3406-3448`), D-081 (`DECISIONS.md:3450-3480`),
+`docs/evidence/protocolo-evaluacion/R-0-reconocimiento-2a-iii.md`, `plan-observable.md` §2/§4.
+
+**Decide:** Javi.

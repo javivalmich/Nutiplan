@@ -3549,3 +3549,41 @@ actos futuros.
 `docs/evidence/protocolo-evaluacion/R-0-reconocimiento-2a-iii.md`, `plan-observable.md` §2/§4.
 
 **Decide:** Javi.
+
+## D-083 — [2026-08-11] Disposición de la frontera contenido/ajeno del cegado (§6.1)
+
+Fecha: 2026-08-11 · HEAD de referencia: `81c3f31` · Decide: Javi · Tipo: disposición normativa
+
+### Contexto
+
+§6.1 de `protocolo-evaluacion.md` obliga a que el protocolo no introduzca información ajena al contenido evaluado que permita inferir el productor de un plan, pero no traza la frontera entre contenido evaluado e información ajena. D-058 (`DECISIONS.md:2610`, dependencia (d)) registró esa frontera como no trazada por ninguna norma. El objeto material sobre el que la frontera opera es el plan observable normado por `plan-observable.md §4`. §5.5 de `plan-observable.md` regula la proyección y, conforme a §1.2.b del mismo documento, el diseño del protocolo ciego queda fuera de su ámbito y es materia de norma propia. El protocolo, por su parte, regula el proceso de evaluación y el cegado, sin remitir a §5.5. En consecuencia, este asiento no adopta §5.5 por remisión ni lo trata como norma del cegado. Este asiento dispone la frontera exigida por §6.1. No evalúa la conformidad de ninguna instanciación concreta del cegado, no resuelve la relación entre C v1 y proyección (dependencia (c), distinta y no reabierta) y no ejecuta la evaluación de suficiencia propia de ii-med.
+
+### Decide
+
+1. **Disposición de la frontera.** A los efectos de la obligación de §6.1 de `protocolo-evaluacion.md`, se dispone la siguiente frontera sobre todo rasgo observable de un objeto de plan conforme a `plan-observable.md §4`:
+
+   **(1.a) Contenido evaluado.** Un rasgo pertenece al *contenido evaluado* si su presencia y estructura están normativamente definidas por `plan-observable.md §4` como parte del plan observable. La determinación se hace por la relación del rasgo con lo que §4 norma positivamente, no por su valor concreto ni por su variación entre productores.
+
+   **(1.b) Información ajena.** Un rasgo pertenece a la *información ajena al contenido evaluado* —y es por tanto materia de la obligación de neutralización de §6.1— si es observable en el artefacto y no pertenece al contenido evaluado según (1.a). Quedan comprendidos en esta categoría, sin que la enumeración la agote: (i) los rasgos que §4 no norma; (ii) los rasgos que §4 declara expresamente fuera de su contrato (§4.7); (iii) los rasgos de presentación, serialización o transporte del artefacto no normados como estructura por §4.
+
+   **(1.c) Regla de determinación.** La pertenencia de un rasgo a (1.a) o (1.b) se determina exclusivamente por su relación con la normación positiva de §4, con anterioridad e independencia de toda consideración sobre si el rasgo permite o no inferir el productor. Esta última consideración —la suficiencia de la neutralización frente a §6.1— es acto posterior y separado, no regulado por esta disposición.
+
+   **(1.d) Semántica remitida.** Cuando §4 norma la presencia de un rasgo como clave obligatoria pero remite expresamente su interpretación o semántica a otra norma (p. ej. §4.5 respecto de `weekScore`), el rasgo pertenece al contenido evaluado en cuanto a su presencia y estructura; la información semántica remitida fuera de §4 no queda por ello incorporada al contenido evaluado por esta disposición.
+
+2. **Completitud.** El criterio dispuesto en (1) es determinante sobre todo rasgo observable de un objeto conforme a §4: aplicado a cualquier plan observable así conforme, decide la pertenencia de cada rasgo a contenido evaluado o a información ajena, sin remanente pendiente de interpretación en una aplicación posterior. La disposición es intensional: no enumera campos, sino que fija la regla que determina la pertenencia de cualquiera de ellos.
+
+3. **Alcance dispositivo.** Este asiento dispone la frontera; no constituye ni un procedimiento de cegado ni su implementación, no evalúa si un cegado que respete esta frontera satisface §6.1, no resuelve la dependencia (c), no ejecuta ii-med y no traza ninguna de las demás dependencias (a) y (b) de D-058. La evaluación de suficiencia y la instanciación concreta del cegado son actos posteriores y separados.
+
+4. **§5.5 como precedente contextual.** La frontera aquí dispuesta no se funda en, ni adopta por remisión, §5.5 de `plan-observable.md`. Toda coincidencia entre la categoría (1.b) y la enumeración de §5.5 es contingente y no normativa: (1.b.iii) se dispone como regla propia de este asiento, no como incorporación de §5.5.
+
+### Alcance
+
+Disposición normativa; docs-only. No modifica `docs/spec/plan-observable.md` ni `docs/spec/protocolo-evaluacion.md`. No registra conformidad ni resultado de campaña de ningún motor. No toca las dependencias (a), (b) ni (c) de D-058. No incorpora los `.xlsx` pendientes.
+
+### Herencia
+
+La frontera dispuesta rige la instanciación futura del procedimiento de cegado exigida por la Nota de §6 de `protocolo-evaluacion.md`. La evaluación de conformidad de esa instanciación frente a §6.1-§6.3, y la evaluación de suficiencia propia de ii-med, son actos separados que este asiento no realiza ni prejuzga.
+
+### Referencias
+
+D-054, D-058, `docs/spec/protocolo-evaluacion.md` (§6.1), `docs/spec/plan-observable.md` (§4, §4.7, §5.5).

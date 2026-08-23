@@ -1,0 +1,177 @@
+{
+  "generatedAt": "2026-08-23T13:37:00.913Z",
+  "producers": {
+    "buildPlan": {
+      "name": "buildPlan",
+      "outFile": "docs\\evidence\\protocolo-evaluacion\\out\\r0-buildPlan-run1.raw.json",
+      "serializableIntegra": "si",
+      "noSerializables": [],
+      "estabilidad": "DIFIERE",
+      "outFile2": "docs\\evidence\\protocolo-evaluacion\\out\\r0-buildPlan-run2.raw.json"
+    },
+    "materializePlan": {
+      "name": "materializePlan",
+      "outFile": "docs\\evidence\\protocolo-evaluacion\\out\\r0-materializePlan.raw.json",
+      "serializableIntegra": "no",
+      "noSerializables": [
+        {
+          "path": "materializePlan.decisionLog[18].momento",
+          "kind": "undefined",
+          "repr": "[undefined]"
+        },
+        {
+          "path": "materializePlan.decisionLog[18].plato",
+          "kind": "undefined",
+          "repr": "[undefined]"
+        }
+      ],
+      "estabilidad": "byte-identico"
+    }
+  },
+  "tarea1_buildPlan_run1_vs_run2": {
+    "rutasDivergentes": [
+      {
+        "path": "buildPlan.days[0].id",
+        "left": "day-0-1787492220828",
+        "right": "day-0-1787492220841"
+      },
+      {
+        "path": "buildPlan.days[1].id",
+        "left": "day-1-1787492220828",
+        "right": "day-1-1787492220841"
+      },
+      {
+        "path": "buildPlan.days[2].id",
+        "left": "day-2-1787492220828",
+        "right": "day-2-1787492220841"
+      },
+      {
+        "path": "buildPlan.days[3].id",
+        "left": "day-3-1787492220828",
+        "right": "day-3-1787492220841"
+      },
+      {
+        "path": "buildPlan.days[4].id",
+        "left": "day-4-1787492220828",
+        "right": "day-4-1787492220841"
+      },
+      {
+        "path": "buildPlan.days[5].id",
+        "left": "day-5-1787492220828",
+        "right": "day-5-1787492220841"
+      },
+      {
+        "path": "buildPlan.days[6].id",
+        "left": "day-6-1787492220828",
+        "right": "day-6-1787492220841"
+      }
+    ],
+    "soloDayId": true,
+    "excepciones": [],
+    "expectedDayIdPathsAusentes": []
+  },
+  "tarea2_buildPlan_tuRun_vs_adjunto": {
+    "omitida": true,
+    "motivo": "ENOENT: no such file or directory, open 'C:\\Users\\javiv\\app-comida\\docs\\evidence\\protocolo-evaluacion\\out\\r0-buildPlan-run1.raw.json'"
+  },
+  "tarea3a_materializePlan_tuRun_vs_adjunto": {
+    "omitida": true,
+    "motivo": "ENOENT: no such file or directory, open 'C:\\Users\\javiv\\app-comida\\docs\\evidence\\protocolo-evaluacion\\out\\r0-materializePlan.raw.json'"
+  },
+  "tarea3b_decisionLog": {
+    "length": 32,
+    "undefinedEntries": [
+      "materializePlan.decisionLog[18].momento",
+      "materializePlan.decisionLog[18].plato"
+    ],
+    "keySetGroups": [
+      {
+        "claves": [
+          "decisionId",
+          "cause",
+          "evidence",
+          "consequence"
+        ],
+        "cuenta": 17,
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16
+        ]
+      },
+      {
+        "claves": [
+          "decisionId",
+          "day",
+          "momento",
+          "plato",
+          "causa",
+          "evidencia",
+          "alternativasDescartadas"
+        ],
+        "cuenta": 1,
+        "indices": [
+          17
+        ]
+      },
+      {
+        "claves": [
+          "decisionId",
+          "day",
+          "momento",
+          "plato",
+          "causa",
+          "evidencia",
+          "alternativasDescartadas",
+          "evento"
+        ],
+        "cuenta": 1,
+        "indices": [
+          18
+        ]
+      },
+      {
+        "claves": [
+          "decisionId",
+          "day",
+          "momento",
+          "plato",
+          "causa",
+          "evidencia",
+          "alternativasDescartadas",
+          "energiaCocina"
+        ],
+        "cuenta": 13,
+        "indices": [
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ]
+      }
+    ]
+  }
+}

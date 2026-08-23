@@ -1,0 +1,886 @@
+{
+  "days": [
+    {
+      "name": "Lunes",
+      "id": "day-0-1787492220841",
+      "special": null,
+      "mood": "rutina",
+      "effectiveMood": "rutina",
+      "meals": [
+        {
+          "time": "Desayuno",
+          "emoji": "🌅",
+          "title": "Tostada con aguacate y huevo poché",
+          "p1": "1 rebanada pan integral (60g) tostada · ½ aguacate maduro chafado",
+          "p2": "1 huevo poché · sal, pimienta y limón · Café",
+          "shopping": [
+            "Pan integral (60g)",
+            "Aguacate (1 ud)",
+            "Huevos (1 ud)",
+            "Limón (½)",
+            "Sal y pimienta"
+          ],
+          "recipe": [
+            "Tuesta el pan.",
+            "Chafa el aguacate con limón y sal.",
+            "Para el huevo poché: hierve agua con un chorrito de vinagre, crea un remolino y cuece el huevo 3 min.",
+            "Extiende el aguacate sobre la tostada.",
+            "Coloca el huevo encima."
+          ],
+          "metadata": {
+            "facilidad": "media",
+            "tiempo": 10,
+            "familiar": true
+          },
+          "_spec": {
+            "recomposable": false
+          }
+        },
+        {
+          "time": "Comida",
+          "emoji": "☀️",
+          "title": "Bowl proteico de pechuga de pollo con boniato",
+          "p1": "Pechuga de pollo (220g) asado al horno, pimentón ahumado y ajo",
+          "p2": "Boniato (220g g) de base · Calabacín (250g) a la plancha 4 min por lado, o al horno 20 min a 200°C · 15ml AOVE",
+          "shopping": [
+            "Pechuga de pollo (220g)",
+            "Boniato (220g)",
+            "Calabacín (250g)",
+            "pimentón ahumado (condimento)",
+            "AOVE",
+            "Sal y especias básicas"
+          ],
+          "recipe": [
+            "Boniato: hornear a 200°C — 35 min.",
+            "Sazona pechuga de pollo con pimentón ahumado y ajo y deja reposar 5 min.",
+            "Pechuga de pollo: Hornea a 200°C unos 20-25 min.",
+            "Calabacín: a la plancha 4 min por lado, o al horno 20 min a 200°C.",
+            "Sirve inmediatamente. Puedes preparar el boniato con antelación la noche anterior."
+          ],
+          "metadata": {
+            "saciedad": "alta",
+            "facilidad": "media",
+            "tiempo": 35,
+            "familiar": true,
+            "comfort": false,
+            "plateType": "bowl",
+            "proteinG": 68
+          },
+          "_spec": {
+            "slot": "Comida",
+            "tmpl": "bowl",
+            "P": "pollo",
+            "C": "boniato",
+            "V": "calabacin",
+            "S": "pimenton_ajo",
+            "cookM": "horno",
+            "plateType": "bowl",
+            "density": "media",
+            "familiar": false,
+            "facil": false
+          },
+          "slotNote": "⚖️ Lunes de rutina — empieza la semana ordenado."
+        },
+        {
+          "time": "Cena",
+          "emoji": "🌙",
+          "title": "Atún en conserva a la plancha en vinagreta con tomate cherry",
+          "p1": "Atún en conserva (150g) servido crudo con vinagre de Módena y mostaza · 15ml de aceite de oliva virgen extra",
+          "p2": "  · Tomate cherry (190g) crudo, o confitado al horno 30 min a 160°C",
+          "shopping": [
+            "Atún en conserva (150g)",
+            "Tomate cherry (190g)",
+            "vinagre de Módena (condimento)",
+            "AOVE",
+            "Sal y especias básicas"
+          ],
+          "recipe": [
+            "Aliña atún en conserva con vinagre de Módena y mostaza y deja macerar 10 min.",
+            "Atún en conserva: Escurre y reserva.",
+            "Tomate cherry: crudo, o confitado al horno 30 min a 160°C.",
+            "Sirve inmediatamente. Puedes preparar los ingredientes la noche anterior."
+          ],
+          "metadata": {
+            "saciedad": "media",
+            "facilidad": "alta",
+            "tiempo": 10,
+            "familiar": true,
+            "comfort": false,
+            "plateType": "ensalada",
+            "proteinG": 41
+          },
+          "_spec": {
+            "slot": "Cena",
+            "tmpl": "caliente_clasico",
+            "P": "atun",
+            "C": null,
+            "V": "tomate",
+            "S": "vinagreta",
+            "cookM": "crudo",
+            "plateType": "ensalada",
+            "density": "baja",
+            "saciante": false
+          }
+        }
+      ],
+      "shakeEnabled": false
+    },
+    {
+      "name": "Martes",
+      "id": "day-1-1787492220841",
+      "special": null,
+      "mood": "ligero",
+      "effectiveMood": "ligero",
+      "meals": [
+        {
+          "time": "Desayuno",
+          "emoji": "🌅",
+          "title": "Avena overnight con fruta y pistachos",
+          "p1": "Avena (55g) + yogur griego 0% (125g) + 100g fruta de temporada + 20g pistachos · preparar noche anterior",
+          "p2": "Canela · Café o té",
+          "shopping": [
+            "Avena (55g)",
+            "Yogur griego 0% (125g)",
+            "Fruta de temporada (100g)",
+            "Pistachos (20g)",
+            "Canela"
+          ],
+          "recipe": [
+            "Noche anterior: mezcla avena y yogur en bote.",
+            "Trocea la fruta y añade encima.",
+            "Tapa y refrigera 8h mínimo.",
+            "Por la mañana añade pistachos y canela.",
+            "Consume frío."
+          ],
+          "metadata": {
+            "facilidad": "alta",
+            "tiempo": 2,
+            "familiar": true
+          },
+          "_spec": {
+            "recomposable": false
+          }
+        },
+        {
+          "time": "Comida",
+          "emoji": "☀️",
+          "title": "Atún en conserva en ensalada",
+          "p1": "Atún en conserva (150g) · Lechuga mixta (125g) + Tomate cherry (190g) · vinagre de Módena y mostaza",
+          "p2": "Tomate cherry (190g) · 20ml AOVE + vinagre de Módena · sal",
+          "shopping": [
+            "Atún en conserva (150g)",
+            "Lechuga mixta (125g)",
+            "Tomate cherry (190g)",
+            "vinagre de Módena (condimento)",
+            "AOVE",
+            "Sal y especias básicas"
+          ],
+          "recipe": [
+            "Aliña atún en conserva con vinagre de Módena y mostaza y deja macerar 10 min.",
+            "Atún en conserva: Escurre y reserva.",
+            "Lechuga mixta: cruda con vinagreta.",
+            "Tomate cherry: crudo, o confitado al horno 30 min a 160°C.",
+            "Sirve inmediatamente. Puedes preparar los ingredientes la noche anterior."
+          ],
+          "metadata": {
+            "saciedad": "media",
+            "facilidad": "alta",
+            "tiempo": 10,
+            "familiar": true,
+            "comfort": false,
+            "plateType": "ensalada",
+            "proteinG": 41
+          },
+          "_spec": {
+            "slot": "Comida",
+            "tmpl": "ensalada",
+            "P": "atun",
+            "C": null,
+            "V": "lechuga",
+            "V2": "tomate",
+            "S": "vinagreta",
+            "cookM": "crudo",
+            "plateType": "ensalada",
+            "density": "baja",
+            "familiar": true,
+            "facil": true
+          },
+          "slotNote": "🐟 Martes de pescado — dos veces a la semana, como siempre."
+        },
+        {
+          "time": "Cena",
+          "emoji": "🌙",
+          "title": "Calamares a la plancha con alioli",
+          "p1": "Calamares (220g) a la plancha con ajo, perejil y guindilla · aliñado con 15ml de AOVE",
+          "p2": "  · Pimientos (190g) asados al horno 25 min a 200°C, o salteados al wok 6 min",
+          "shopping": [
+            "Calamares (220g)",
+            "Pimientos (190g)",
+            "ajo, perejil (condimento)",
+            "AOVE",
+            "Sal y especias básicas"
+          ],
+          "recipe": [
+            "Aliña calamares con ajo, perejil y guindilla antes de cocinar.",
+            "Calamares: Cocina a fuego vivo 3-4 min por lado.",
+            "Pimientos: asados al horno 25 min a 200°C, o salteados al wok 6 min.",
+            "Sirve inmediatamente. Puedes preparar los ingredientes la noche anterior."
+          ],
+          "metadata": {
+            "saciedad": "media",
+            "facilidad": "alta",
+            "tiempo": 10,
+            "familiar": true,
+            "comfort": false,
+            "plateType": "plancha_verdura",
+            "proteinG": 33
+          },
+          "_spec": {
+            "slot": "Cena",
+            "tmpl": "caliente_clasico",
+            "P": "calamares",
+            "C": null,
+            "V": "pimientos",
+            "S": "ajillo",
+            "cookM": "plancha",
+            "plateType": "plancha_verdura",
+            "density": "baja",
+            "saciante": false
+          }
+        }
+      ],
+      "shakeEnabled": false
+    },
+    {
+      "name": "Miércoles",
+      "id": "day-2-1787492220841",
+      "special": null,
+      "mood": "fuerza",
+      "effectiveMood": "fuerza",
+      "meals": [
+        {
+          "time": "Desayuno",
+          "emoji": "🌅",
+          "title": "Tostada con salmón ahumado y queso",
+          "p1": "2 tostadas pan de centeno (60g) · 60g salmón ahumado",
+          "p2": "30g queso crema light · alcaparras · eneldo · Café o té",
+          "shopping": [
+            "Pan de centeno (60g)",
+            "Salmón ahumado (60g)",
+            "Queso crema light (30g)",
+            "Alcaparras",
+            "Eneldo"
+          ],
+          "recipe": [
+            "Tuesta el pan ligeramente.",
+            "Extiende el queso crema.",
+            "Coloca el salmón encima.",
+            "Añade alcaparras y eneldo.",
+            "Sirve inmediatamente."
+          ],
+          "metadata": {
+            "facilidad": "alta",
+            "tiempo": 4,
+            "familiar": true
+          },
+          "_spec": {
+            "recomposable": false
+          }
+        },
+        {
+          "time": "Comida",
+          "emoji": "☀️",
+          "title": "Conejo al ajillo",
+          "p1": "Conejo (220g) estofado con ajo, perejil y guindilla · un chorrito de AOVE (15ml)",
+          "p2": "Arroz blanco (80g g seco) — cocer en agua con sal · Zanahoria (190g) rallada cruda, o al vapor 10 min",
+          "shopping": [
+            "Conejo (220g)",
+            "Arroz blanco (80g)",
+            "Zanahoria (190g)",
+            "ajo, perejil (condimento)",
+            "AOVE",
+            "Sal y especias básicas"
+          ],
+          "recipe": [
+            "Arroz blanco: cocer en agua con sal — 18 min.",
+            "Incorpora ajo, perejil y guindilla al guiso de conejo.",
+            "Conejo: Cuece a fuego suave 25-30 min con caldo.",
+            "Zanahoria: rallada cruda, o al vapor 10 min.",
+            "Sirve inmediatamente. Puedes preparar el arroz blanco con antelación la noche anterior."
+          ],
+          "metadata": {
+            "saciedad": "media",
+            "facilidad": "media",
+            "tiempo": 25,
+            "familiar": true,
+            "comfort": false,
+            "plateType": "caliente_arroz",
+            "proteinG": 46
+          },
+          "_spec": {
+            "slot": "Comida",
+            "tmpl": "caliente_clasico",
+            "P": "conejo",
+            "C": "arroz",
+            "V": "zanahoria",
+            "S": "ajillo",
+            "cookM": "guisado",
+            "plateType": "caliente_arroz",
+            "density": "media",
+            "familiar": true,
+            "facil": false
+          },
+          "wildcard": true,
+          "slotNote": "✨ Día sorpresa — el plan se ha salido un poco del guión. Así la semana no se vuelve predecible."
+        },
+        {
+          "time": "Cena",
+          "emoji": "🌙",
+          "title": "Solomillo de cerdo con mostaza y miel",
+          "p1": "Lomo de cerdo (200g) asado al horno, mostaza y miel · 15ml AOVE",
+          "p2": "Patata (200g g) — cocer con piel 25 min en agua con sal · Col de Bruselas (225g) al horno 25 min a 200°C con AOVE y sal",
+          "shopping": [
+            "Lomo de cerdo (200g)",
+            "Patata (200g)",
+            "Col de Bruselas (225g)",
+            "mostaza (condimento)",
+            "AOVE",
+            "Sal y especias básicas"
+          ],
+          "recipe": [
+            "Patata: cocer con piel 25 min en agua con sal — 25 min.",
+            "Sazona lomo de cerdo con mostaza y miel y deja reposar 5 min.",
+            "Lomo de cerdo: Hornea a 200°C unos 20-25 min.",
+            "Col de Bruselas: al horno 25 min a 200°C con AOVE y sal.",
+            "Sirve inmediatamente. Puedes preparar el patata con antelación la noche anterior."
+          ],
+          "metadata": {
+            "saciedad": "alta",
+            "facilidad": "media",
+            "tiempo": 25,
+            "familiar": false,
+            "comfort": false,
+            "plateType": "caliente_patata",
+            "proteinG": 44
+          },
+          "_spec": {
+            "slot": "Cena",
+            "tmpl": "caliente_clasico",
+            "P": "cerdo",
+            "C": "patata",
+            "V": "coles",
+            "S": "mostaza_miel",
+            "cookM": "horno",
+            "plateType": "caliente_patata",
+            "density": "media",
+            "saciante": true
+          }
+        }
+      ],
+      "shakeEnabled": false
+    },
+    {
+      "name": "Jueves",
+      "id": "day-3-1787492220841",
+      "special": null,
+      "mood": "fibra",
+      "effectiveMood": "fibra",
+      "meals": [
+        {
+          "time": "Desayuno",
+          "emoji": "🌅",
+          "title": "Tostadas con tomate y jamón",
+          "p1": "2 rebanadas pan de centeno (60g) · tomate rallado (70g) · AOVE",
+          "p2": "2 lonchas jamón serrano (40g) · yogur griego 0% (125g)",
+          "shopping": [
+            "Pan de centeno (60g)",
+            "Tomate maduro (1 ud)",
+            "Jamón serrano (40g)",
+            "Yogur griego 0% (125g)",
+            "AOVE"
+          ],
+          "recipe": [
+            "Tuesta el pan.",
+            "Ralla el tomate maduro encima.",
+            "Añade AOVE y sal.",
+            "Coloca el jamón.",
+            "Sirve el yogur aparte."
+          ],
+          "metadata": {
+            "facilidad": "alta",
+            "tiempo": 5,
+            "familiar": true
+          },
+          "_spec": {
+            "recomposable": false
+          }
+        },
+        {
+          "time": "Comida",
+          "emoji": "☀️",
+          "title": "Garbanzos al curry con berenjena",
+          "p1": "Garbanzos (120g) con curry y cúrcuma · caldo de verduras",
+          "p2": "Berenjena (250g) añadida · sal, comino · 15ml AOVE",
+          "shopping": [
+            "Garbanzos (120g)",
+            "Berenjena (250g)",
+            "curry (condimento)",
+            "AOVE",
+            "Sal y especias básicas"
+          ],
+          "recipe": [
+            "Garbanzos: cocer a fuego suave 30-35 min con caldo, laurel y sal. Incorporar sofrito de ajo, curry y cúrcuma y AOVE al final.",
+            "Berenjena: a la plancha 4 min por lado, o al horno 25 min a 200°C.",
+            "Sirve inmediatamente. Puedes preparar los ingredientes la noche anterior."
+          ],
+          "metadata": {
+            "saciedad": "media",
+            "facilidad": "media",
+            "tiempo": 10,
+            "familiar": true,
+            "comfort": true,
+            "plateType": "legumbre",
+            "proteinG": 23
+          },
+          "_spec": {
+            "slot": "Comida",
+            "tmpl": "legumbre",
+            "P": "garbanzos",
+            "C": null,
+            "V": "berenjena",
+            "S": "curry_ligero",
+            "cookM": "salteado",
+            "plateType": "legumbre",
+            "density": "baja",
+            "familiar": false,
+            "facil": true
+          },
+          "slotNote": "🫘 Jueves de legumbre — fibra y proteína vegetal."
+        },
+        {
+          "time": "Cena",
+          "emoji": "🌙",
+          "title": "Tortilla de zanahoria",
+          "p1": "3 ud Huevos en tortilla con pimentón ahumado y ajo · 15ml de aceite de oliva virgen extra",
+          "p2": "  · Zanahoria (190g) rallada cruda, o al vapor 10 min",
+          "shopping": [
+            "Huevos (3 ud)",
+            "Zanahoria (190g)",
+            "pimentón ahumado (condimento)",
+            "AOVE",
+            "Sal y especias básicas"
+          ],
+          "recipe": [
+            "Mezcla huevos con pimentón ahumado y ajo antes de cuajar.",
+            "Huevos: Cuaja a fuego medio 3-4 min por lado.",
+            "Zanahoria: rallada cruda, o al vapor 10 min.",
+            "Sirve inmediatamente. Puedes preparar los ingredientes la noche anterior."
+          ],
+          "metadata": {
+            "saciedad": "media",
+            "facilidad": "alta",
+            "tiempo": 10,
+            "familiar": true,
+            "comfort": false,
+            "plateType": "huevo_plancha",
+            "proteinG": 18
+          },
+          "_spec": {
+            "slot": "Cena",
+            "tmpl": "caliente_clasico",
+            "P": "huevo",
+            "C": null,
+            "V": "zanahoria",
+            "S": "pimenton_ajo",
+            "cookM": "tortilla",
+            "plateType": "huevo_plancha",
+            "density": "media",
+            "saciante": true
+          }
+        }
+      ],
+      "shakeEnabled": false
+    },
+    {
+      "name": "Viernes",
+      "id": "day-4-1787492220841",
+      "special": null,
+      "mood": "suave",
+      "effectiveMood": "rapido",
+      "meals": [
+        {
+          "time": "Desayuno",
+          "emoji": "🌅",
+          "title": "Batido proteico con plátano",
+          "p1": "250ml leche o bebida vegetal · 1 plátano maduro · 150g yogur griego 0% (125g)",
+          "p2": "1 cda mantequilla de cacahuete · canela · Café o té",
+          "shopping": [
+            "Leche o bebida vegetal (250ml)",
+            "Plátano (1 ud)",
+            "Yogur griego 0% (150g)",
+            "Mantequilla de cacahuete (15g)"
+          ],
+          "recipe": [
+            "Pon todos los ingredientes en el vaso de la batidora.",
+            "Tritura hasta obtener una mezcla homogénea.",
+            "Sirve frío inmediatamente.",
+            "Puedes añadir hielo si lo prefieres más fresco."
+          ],
+          "metadata": {
+            "facilidad": "alta",
+            "tiempo": 3,
+            "familiar": false
+          },
+          "_spec": {
+            "recomposable": false
+          }
+        },
+        {
+          "time": "Comida",
+          "emoji": "☀️",
+          "title": "Salmón al horno con limón y eneldo",
+          "p1": "Salmón (220g) asado al horno, limón, orégano y ajo · aliñado con 15ml de AOVE",
+          "p2": "Boniato (220g g) — hornear a 200°C · Espinacas (190g) salteadas con ajo 3 min",
+          "shopping": [
+            "Salmón (220g)",
+            "Boniato (220g)",
+            "Espinacas (190g)",
+            "limón, orégano (condimento)",
+            "AOVE",
+            "Sal y especias básicas"
+          ],
+          "recipe": [
+            "Boniato: hornear a 200°C — 35 min.",
+            "Sazona salmón con limón, orégano y ajo y deja reposar 5 min.",
+            "Salmón: Hornea a 200°C unos 20-25 min.",
+            "Espinacas: salteadas con ajo 3 min.",
+            "Sirve inmediatamente. Puedes preparar el boniato con antelación la noche anterior."
+          ],
+          "metadata": {
+            "saciedad": "alta",
+            "facilidad": "media",
+            "tiempo": 35,
+            "familiar": true,
+            "comfort": false,
+            "plateType": "caliente_boniato",
+            "proteinG": 44
+          },
+          "_spec": {
+            "slot": "Comida",
+            "tmpl": "caliente_clasico",
+            "P": "salmon",
+            "C": "boniato",
+            "V": "espinacas",
+            "S": "limon_hierbas",
+            "cookM": "horno",
+            "plateType": "caliente_boniato",
+            "density": "media",
+            "familiar": true,
+            "facil": true
+          },
+          "slotNote": "🍵 Viernes de sopa — terminas la semana sin sensación de pesadez."
+        },
+        {
+          "time": "Cena",
+          "emoji": "🌙",
+          "title": "Crema de zanahoria y calabacín · pechuga de pollo encima",
+          "p1": "190g de zanahoria y 250g calabacín, caldo y cebolla · 15ml AOVE",
+          "p2": "+ Pechuga de pollo (220g) guisado encima · sal y pimienta",
+          "shopping": [
+            "Pechuga de pollo (220g)",
+            "Zanahoria (190g)",
+            "Calabacín (250g)",
+            "AOVE",
+            "Sal y especias básicas"
+          ],
+          "recipe": [
+            "Pechuga de pollo: Cuece a fuego suave 25-30 min con caldo.",
+            "Sofríe cebolla picada con AOVE a fuego medio 5 min.",
+            "Añade zanahoria troceado y calabacín y cubre con caldo.",
+            "Cuece tapado a fuego suave 20 min.",
+            "Tritura con batidora hasta textura suave. Ajusta de sal.",
+            "Sirve la crema y coloca pechuga de pollo guisado encima.",
+            "Sirve inmediatamente. Puedes preparar los ingredientes la noche anterior."
+          ],
+          "metadata": {
+            "saciedad": "alta",
+            "facilidad": "alta",
+            "tiempo": 10,
+            "familiar": true,
+            "comfort": true,
+            "plateType": "sopa_crema",
+            "proteinG": 68
+          },
+          "_spec": {
+            "slot": "Cena",
+            "tmpl": "sopa_crema",
+            "P": "pollo",
+            "C": null,
+            "V": "zanahoria",
+            "V2": "calabacin",
+            "cookM": "guisado",
+            "plateType": "sopa_crema",
+            "density": "baja",
+            "saciante": true
+          }
+        }
+      ],
+      "shakeEnabled": false
+    },
+    {
+      "name": "Sábado",
+      "id": "day-5-1787492220841",
+      "special": "libre",
+      "mood": "libre",
+      "effectiveMood": "libre",
+      "meals": [
+        {
+          "time": "Desayuno",
+          "emoji": "🌅",
+          "title": "Tortitas de avena y plátano",
+          "p1": "Avena (60g) + 1 plátano + 2 huevos · triturado y cocinado",
+          "p2": "yogur griego 0% (125g) · 1 cda miel · Café",
+          "shopping": [
+            "Avena (60g)",
+            "Plátano (1 ud)",
+            "Huevos (2 ud)",
+            "Yogur griego 0% (125g)",
+            "Miel (1 cda)"
+          ],
+          "recipe": [
+            "Tritura avena, plátano y huevos hasta masa homogénea.",
+            "Calienta sartén antiadherente a fuego medio con unas gotas AOVE.",
+            "Vierte círculos de masa y cocina 2 min por lado.",
+            "Sirve con yogur y miel.",
+            "Puedes preparar la masa la noche anterior."
+          ],
+          "metadata": {
+            "facilidad": "media",
+            "tiempo": 12,
+            "familiar": true
+          },
+          "_spec": {
+            "recomposable": false
+          }
+        },
+        {
+          "time": "Comida",
+          "emoji": "🎉",
+          "title": "Comida libre 🎉",
+          "p1": "Hoy comes lo que más te apetezca — es parte del plan, no una trampa.",
+          "p2": "Intenta terminar cuando estés satisfecho, no lleno.",
+          "shopping": [
+            "Lo que tú elijas hoy"
+          ],
+          "recipe": [
+            "Disfruta sin culpa.",
+            "La flexibilidad integrada mejora la adherencia a largo plazo.",
+            "Vuelves al plan mañana sin dramas."
+          ],
+          "metadata": {
+            "facilidad": "alta",
+            "tiempo": 0,
+            "familiar": true
+          },
+          "_spec": {
+            "recomposable": false,
+            "isFree": true
+          }
+        },
+        {
+          "time": "Cena",
+          "emoji": "🌙",
+          "title": "Ternera magra al horno con pimentón con brócoli y boniato",
+          "p1": "Ternera magra (200g) al horno con pimentón ahumado y ajo · un chorrito de AOVE (15ml)",
+          "p2": "Boniato (220g g) — hornear a 200°C · Brócoli (250g) al vapor 8 min o salteado",
+          "shopping": [
+            "Ternera magra (200g)",
+            "Boniato (220g)",
+            "Brócoli (250g)",
+            "pimentón ahumado (condimento)",
+            "AOVE",
+            "Sal y especias básicas"
+          ],
+          "recipe": [
+            "Boniato: hornear a 200°C — 35 min.",
+            "Sazona ternera magra con pimentón ahumado y ajo y deja reposar 5 min.",
+            "Ternera magra: Hornea a 200°C unos 20-25 min.",
+            "Brócoli: al vapor 8 min o salteado.",
+            "Sirve inmediatamente. Puedes preparar el boniato con antelación la noche anterior."
+          ],
+          "metadata": {
+            "saciedad": "alta",
+            "facilidad": "media",
+            "tiempo": 35,
+            "familiar": true,
+            "comfort": false,
+            "plateType": "caliente_arroz",
+            "proteinG": 52
+          },
+          "_spec": {
+            "slot": "Cena",
+            "tmpl": "caliente_clasico",
+            "P": "ternera",
+            "C": "boniato",
+            "V": "brocoli",
+            "S": "pimenton_ajo",
+            "cookM": "horno",
+            "plateType": "caliente_arroz",
+            "density": "media",
+            "saciante": true
+          }
+        }
+      ],
+      "shakeEnabled": false
+    },
+    {
+      "name": "Domingo",
+      "id": "day-6-1787492220841",
+      "special": null,
+      "mood": "familiar",
+      "effectiveMood": "reconfortante",
+      "meals": [
+        {
+          "time": "Desayuno",
+          "emoji": "🌅",
+          "title": "Avena caliente con fresas y nueces",
+          "p1": "Avena (55g) cocida con 180ml leche semidesnatada · 100g fresas · 20g nueces",
+          "p2": "yogur griego 0% (125g) · canela · Café o té",
+          "shopping": [
+            "Avena (55g)",
+            "Leche o bebida vegetal (200ml)",
+            "Fresas (100g)",
+            "Nueces (20g)",
+            "Yogur griego 0% (125g)",
+            "Canela"
+          ],
+          "recipe": [
+            "Calienta la leche a fuego medio.",
+            "Añade la avena y remueve 5 min.",
+            "Trocea las fresas, añádelas encima.",
+            "Añade las nueces.",
+            "Sirve con el yogur aparte y canela."
+          ],
+          "metadata": {
+            "facilidad": "alta",
+            "tiempo": 8,
+            "familiar": true
+          },
+          "_spec": {
+            "recomposable": false
+          }
+        },
+        {
+          "time": "Comida",
+          "emoji": "☀️",
+          "title": "Pasta integral al pomodoro con ternera magra",
+          "p1": "Pasta integral (85g g seco) cocida al dente · Ternera magra (200g) · salsa de tomate casero",
+          "p2": "Calabacín (250g) incorporada · 15ml AOVE · queso rallado al gusto",
+          "shopping": [
+            "Ternera magra (200g)",
+            "Pasta integral (85g)",
+            "Calabacín (250g)",
+            "tomate casero (condimento)",
+            "AOVE",
+            "Sal y especias básicas"
+          ],
+          "recipe": [
+            "Pasta integral: cocer al dente — 10 min.",
+            "Mezcla ternera magra con tomate casero justo antes de saltear.",
+            "Ternera magra: Cocina a fuego vivo 3-4 min por lado.",
+            "Calabacín: a la plancha 4 min por lado, o al horno 20 min a 200°C.",
+            "Sirve inmediatamente. Puedes preparar los ingredientes la noche anterior."
+          ],
+          "metadata": {
+            "saciedad": "alta",
+            "facilidad": "media",
+            "tiempo": 10,
+            "familiar": true,
+            "comfort": false,
+            "plateType": "pasta",
+            "proteinG": 52
+          },
+          "_spec": {
+            "slot": "Comida",
+            "tmpl": "pasta",
+            "P": "ternera",
+            "C": "pasta",
+            "V": "calabacin",
+            "S": "tomate_casero",
+            "cookM": "salteado",
+            "plateType": "pasta",
+            "density": "alta",
+            "familiar": true,
+            "facil": false
+          },
+          "slotNote": "🍗 Domingo familiar — el pollo de domingo nunca caduca."
+        },
+        {
+          "time": "Cena",
+          "emoji": "🌙",
+          "title": "Crema de calabaza y zanahoria · huevos encima",
+          "p1": "350g de calabaza y 190g zanahoria, caldo y cebolla · 15ml AOVE",
+          "p2": "+ 3 ud Huevos a la plancha encima · sal y pimienta",
+          "shopping": [
+            "Huevos (3 ud)",
+            "Calabaza (350g)",
+            "Zanahoria (190g)",
+            "AOVE",
+            "Sal y especias básicas"
+          ],
+          "recipe": [
+            "Huevos: Cocina a fuego vivo 3-4 min por lado.",
+            "Sofríe cebolla picada con AOVE a fuego medio 5 min.",
+            "Añade calabaza troceado y zanahoria y cubre con caldo.",
+            "Cuece tapado a fuego suave 20 min.",
+            "Tritura con batidora hasta textura suave. Ajusta de sal.",
+            "Sirve la crema y coloca huevos a la plancha encima.",
+            "Sirve inmediatamente. Puedes preparar los ingredientes la noche anterior."
+          ],
+          "metadata": {
+            "saciedad": "alta",
+            "facilidad": "alta",
+            "tiempo": 10,
+            "familiar": true,
+            "comfort": true,
+            "plateType": "sopa_crema",
+            "proteinG": 18
+          },
+          "_spec": {
+            "slot": "Cena",
+            "tmpl": "sopa_crema",
+            "P": "huevo",
+            "C": null,
+            "V": "calabaza",
+            "V2": "zanahoria",
+            "cookM": null,
+            "plateType": "sopa_crema",
+            "density": "baja",
+            "saciante": true
+          }
+        }
+      ],
+      "shakeEnabled": false
+    }
+  ],
+  "strategy": "mantenimiento_equilibrado",
+  "weekWarnings": [
+    "🧄 Estilo 'casero' domina la semana — busca más variedad de sabores.",
+    "[AJUSTE] Lunes: día bajo en energía (~1180 kcal) — déficit excesivo",
+    "[AJUSTE] Martes: día bajo en energía (~1050 kcal) — déficit excesivo",
+    "[AJUSTE] Miércoles: día bajo en energía (~1360 kcal) — déficit excesivo",
+    "[AJUSTE] Jueves: día bajo en energía (~1180 kcal) — déficit excesivo",
+    "[AJUSTE] Viernes: día bajo en energía (~980 kcal) — déficit excesivo",
+    "[AJUSTE] Sábado: día bajo en energía (~1190 kcal) — déficit excesivo",
+    "[AJUSTE] Domingo: día bajo en energía (~1190 kcal) — déficit excesivo",
+    "[AJUSTE] Lunes–Martes: 2 días consecutivos bajos en energía (<1600 kcal)",
+    "[AJUSTE] Martes–Miércoles: 2 días consecutivos bajos en energía (<1600 kcal)",
+    "[AJUSTE] Miércoles–Jueves: 2 días consecutivos bajos en energía (<1600 kcal)",
+    "[AJUSTE] Jueves–Viernes: 2 días consecutivos bajos en energía (<1600 kcal)",
+    "[AJUSTE] Viernes–Sábado: 2 días consecutivos bajos en energía (<1600 kcal)",
+    "[AJUSTE] Sábado–Domingo: 2 días consecutivos bajos en energía (<1600 kcal)",
+    "[AJUSTE] Proteína estimada insuficiente (~100g) — objetivo mínimo 130g/día"
+  ],
+  "weekProblems": [],
+  "weekScore": 97
+}

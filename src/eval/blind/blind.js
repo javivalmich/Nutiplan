@@ -11,20 +11,27 @@
 // claves propias de ningún motor. Cualquier clave fuera del contrato común
 // hace fallar la llamada: así no puede colarse información de origen.
 //
-// Reglas (D-086):
+// Reglas (D-086, D-087):
 //   - Exactamente 7 días por plan. Posición del día: 1..7, por orden.
-//   - Lista blanca de momentos: comida, cena. Exactamente una de cada por día.
-//     Otros momentos canónicos (p. ej. desayuno) se excluyen por esta regla
-//     general, igual para todos los planes.
+//   - Lista blanca de momentos: comida, cena. Exactamente una de cada por día,
+//     en todos los días (la entrada se exige completa). Otros momentos
+//     canónicos (p. ej. desayuno) se excluyen por esta regla general, igual
+//     para todos los planes.
+//   - Exclusión posicional (D-087, punto 3): la comida de la posición 6 no se
+//     muestra en ningún plan. Se exige en la entrada, pero no se emite. La
+//     regla es solo de posición: no mira el contenido del plato.
+//     Resultado: 13 posiciones por plan.
 //   - plato: literal, sin normalizar ni recortar. Vacío o solo espacios -> error.
 //   - Ante cualquier anomalía: error. Nunca corrección ni omisión silenciosa.
 //
 // Aleatorización: mulberry32 sembrado (copia local; ver más abajo). Misma
 // entrada + misma semilla -> salida idéntica byte a byte.
 
-export const BLIND_VERSION = 1;
+export const BLIND_VERSION = 2;
 export const DIAS_POR_PLAN = 7;
 export const MOMENTOS_VISTA = Object.freeze(['comida', 'cena']);
+// Posición (1..7) cuya comida no se emite (D-087, punto 3).
+export const DIA_SIN_COMIDA_EN_VISTA = 6;
 
 const MOMENTO_CANONICO = /^[a-z][a-z_]*$/;
 const ALFABETO_ETIQUETA = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
@@ -98,8 +105,13 @@ function projectView(view, where) {
         throw new BlindError(`${w}: falta el momento "${m}"`);
       }
     }
-    // Orden de claves fijo: dia, comida, cena.
-    return { dia: i + 1, comida: encontrados.comida, cena: encontrados.cena };
+    // Orden de claves fijo: dia, comida, cena. En la posición excluida, la
+    // clave comida se omite (no null): esa posición no forma parte de la vista.
+    const dia = i + 1;
+    if (dia === DIA_SIN_COMIDA_EN_VISTA) {
+      return { dia, cena: encontrados.cena };
+    }
+    return { dia, comida: encontrados.comida, cena: encontrados.cena };
   });
 }
 
@@ -133,7 +145,7 @@ function generarEtiqueta(rng) {
  * @param {{id: string, view: object}[]} items
  * @param {number} seed entero en [0, 2^32 - 1]
  * @returns {{
- *   evaluador: { version: number, planes: { etiqueta: string, dias: { dia: number, comida: string, cena: string }[] }[] },
+ *   evaluador: { version: number, planes: { etiqueta: string, dias: { dia: number, comida?: string, cena: string }[] }[] },
  *   clave: { version: number, seed: number, entradas: { etiqueta: string, id: string }[] }
  * }}
  */

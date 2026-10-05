@@ -3641,3 +3641,30 @@ Decisión
 
 Estado resultante
 Contrato de entrada del cegado determinado. Siguiente: implementación (adaptadores de productor y transformación común) y registro de la primera instanciación como evidencia versionada antes de Fase 7.
+
+## D-087 — [2026-10-05] Diseño experimental de la primera Fase 7
+
+Decide: Javi. HEAD: `737d062`.
+
+Contexto
+El cegado quedó instanciado y registrado como evidencia (`docs/evidence/protocolo-evaluacion/2026-10-05-instanciacion-cegado.md`, `737d062`). Sobre las salidas del R-0, la vista evaluable de un plan contiene en la comida del día 6 una salida de día libre («Comida libre 🎉») mientras el otro plan contiene un plato: una diferencia estructural que identifica el origen y dominaría la comparación. Este asiento fija el diseño de la primera evaluación de Fase 7. No fija el criterio de superación ni contiene resultados.
+
+Decisión
+1. Forma. Comparación por pares. Cada par contiene dos planes del mismo caso (mismo perfil, estrategia y semilla), uno de cada motor, en orden A/B aleatorizado por el cegado.
+2. Instrumento. Para cada par, en este orden:
+   a. Pregunta principal: «¿Qué semana recomendarías a esta persona?», con cinco opciones: claramente A, algo A, igual, algo B, claramente B.
+   b. Tres dimensiones con la misma escala: variedad; coherencia y realismo («parece una semana real»); equilibrio aparente. El equilibrio aparente se juzga solo por la selección de platos visible, sin cantidades ni información nutricional, que están excluidas de la vista (D-086).
+   c. Comentario libre opcional.
+   La pregunta de reconocimiento («¿vienen A y B de sistemas distintos? ¿cuál es cuál?») se formula una vez completadas todas las valoraciones de todos los pares, y su respuesta se registra.
+3. Día libre. Se excluye de la vista evaluable la comida del día 6 en todos los planes, por regla posicional general que no depende del motor de origen. Ningún nombre se altera. La vista evaluable pasa de 14 a 13 posiciones por plan. La premisa de la regla (que el día libre de ambos motores es el día 6) se verifica en cada caso generado; si no se cumple, la generación se aborta. La diferencia en cómo cada motor materializa el día libre queda registrada como diferencia funcional y no se declara equivalente.
+4. Tamaño. 20 pares en esta primera instanciación.
+5. Casos. 2 perfiles × 10 semillas, con la misma estrategia y el mismo caso para ambos motores. Semillas contiguas 1001–1010, con punto inicial declarado (protocolo §5.5), condicionadas a que se acredite que no se han usado antes; la acreditación se registra con el generador de casos. Los perfiles y su traducción a la entrada nativa de cada motor se fijan en el generador y se versionan con él.
+6. Evaluador. Un dietista o nutricionista ajeno al proyecto, sin acceso al repositorio ni a la clave, y que no haya trabajado con ninguno de los motores.
+7. Fuera de este asiento. El criterio de superación y su interpretación serán objeto de un asiento propio, constituido con su justificación antes de que exista ningún resultado (protocolo §7). Este asiento no autoriza ejecutar la evaluación.
+
+Consecuencias
+- El cegado debe actualizarse a una versión 2 con la regla del punto 3, con su PR y su evidencia propia.
+- Se construye el generador de casos (perfiles, traducción a entrada nativa, verificación de la premisa del punto 3, acreditación de semillas). No se ejecuta la evaluación.
+
+Estado resultante
+Diseño de la primera Fase 7 determinado. Pendientes: cegado v2, generador de casos, asiento del criterio de superación, designación del evaluador.

@@ -3604,3 +3604,22 @@ Decisión
 
 Estado resultante
 Frente B: cadena procedimental cerrada. Cegado (§6): no instanciado; sigue bloqueando Fase 7 (D-058). Siguiente: D-085, determinación de «común»; después, instanciación del cegado.
+
+## D-085 — [2026-10-05] Determinación de «común» en el cegado (§6 ítem 2)
+
+Decide: Javi. HEAD: `98509ec`.
+
+Contexto
+`docs/spec/protocolo-evaluacion.md:54` exige que toda transformación destinada al cegado sea común a todos los motores comparados. D-084 fijó que su sentido se determina por acto constitutivo, con la finalidad del cegado como única base. D-083 clasifica como contenido evaluado los rasgos cuya presencia y estructura norma `plan-observable.md §4`, con independencia de su valor. Entre ellos hay rasgos que los motores emiten de forma distinta (D-057: `decisionLog` presente solo en engine2; `weekScore` numérico frente a `null`; `weekWarnings` con contenido frente a vacío), de modo que presentarlos al evaluador permitiría identificar el origen.
+
+Decisión
+1. Común. Una transformación de cegado es común cuando: (a) es la misma función, del mismo código y con los mismos parámetros, para las salidas de todos los motores; (b) no recibe ni consulta el motor de procedencia, ni contiene ramas que dependan de él; (c) trata cada rasgo por una regla general, nunca por una regla nombrada para un motor.
+2. Vista del evaluador. La transformación proyecta cada plan sobre una misma vista, idéntica en estructura y serialización para todos los motores. La vista contiene solo el menú propuesto: los rasgos de contenido evaluado que describen los días, las comidas y los platos.
+3. Exclusión. Queda fuera de la vista, para todos los motores, todo rasgo que refleje el razonamiento, la puntuación o los avisos del propio motor. Su evaluación, si procede, es acto separado y no forma parte de la evaluación ciega.
+4. La lista de rasgos de la vista se fija en la instanciación del cegado, aplicando los puntos 2 y 3 sobre `plan-observable.md §4`, y se versiona con ella.
+5. Relación con D-083. Este asiento no reclasifica ningún rasgo. La información ajena según D-083 se elimina siempre. La vista restringe además qué parte del contenido evaluado se presenta al evaluador.
+
+Base: la finalidad del cegado (D-084, punto 4). Que la transformación resulte más fácil o más difícil de construir no es base.
+
+Estado resultante
+§6 ítem 2: determinado. Siguiente: instanciación del cegado (vista del evaluador y transformación común).

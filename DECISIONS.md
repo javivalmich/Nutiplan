@@ -3623,3 +3623,21 @@ Base: la finalidad del cegado (D-084, punto 4). Que la transformación resulte m
 
 Estado resultante
 §6 ítem 2: determinado. Siguiente: instanciación del cegado (vista del evaluador y transformación común).
+
+## D-086 — [2026-10-05] Alcance de Fase 7, contrato de la vista evaluable y evaluador externo
+
+Decide: Javi. HEAD: `fb82145`.
+
+Contexto
+Las salidas del R-0 (`docs/evidence/protocolo-evaluacion/out/r0-buildPlan-run1.raw.json`, `out/r0-materializePlan.raw.json`) muestran que los motores no producen el mismo menú: legacy emite desayuno, comida y cena con cantidades, receta, compra, emoji y metadatos; engine2 emite comida y cena con un plato y atributos internos, sin cantidades, receta ni compra. Las claves de día, momento y plato difieren entre ambos.
+
+Decisión
+1. Alcance. La Fase 7 compara la selección de platos de comida y cena durante los siete días: el subconjunto observable que ambos motores producen en común. Quedan fuera el desayuno, las cantidades, las recetas, la lista de la compra, los emojis, los metadatos no comunes y las claves internas de cada motor.
+2. Diferencia funcional. Lo excluido no se declara equivalente. La ausencia en engine2 de desayuno, cantidades y recetas queda registrada como diferencia de capacidad independiente. Un resultado de Fase 7 no acredita la sustitución de legacy en producción sobre el plan completo; la paridad funcional del plan completo es cuestión distinta y no resuelta.
+3. Contrato común. Cada productor entrega la misma forma observable antes del cegado (día → momento → nombre del plato). La transformación ciega recibe solo ese contrato y no contiene reglas que lean claves propias de un motor. La adaptación se hace en los productores. D-085 no se enmienda.
+4. Vista evaluable. 7 días × 2 momentos (comida, cena) × nombre original del plato, con posición del día 1–7 y etiqueta aleatoria por plan. La tabla etiqueta → motor se guarda fuera de la vista del evaluador.
+5. Nombres. El nombre del plato es contenido y no se altera (`plan-observable.md` §6.3). La aleatorización oculta la correspondencia formal, no los estilos culinarios. Si un evaluador reconoce el origen por el nombre, se registra como condición de la prueba y no se corrige.
+6. Evaluador. La Fase 7 la evalúa una persona externa que no conoce la correspondencia etiqueta → motor y que no ha trabajado con ninguno de los dos motores. Recibe únicamente la vista cegada. El titular no evalúa.
+
+Estado resultante
+Contrato de entrada del cegado determinado. Siguiente: implementación (adaptadores de productor y transformación común) y registro de la primera instanciación como evidencia versionada antes de Fase 7.

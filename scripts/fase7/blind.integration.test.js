@@ -1,4 +1,4 @@
-// Integración del cegado (D-085, D-086): único punto donde conviven los dos
+// Integración del cegado (D-085, D-086, D-087): único punto donde conviven los dos
 // adaptadores y el módulo ciego. Usa las salidas crudas versionadas del R-0;
 // no ejecuta ningún motor ni escribe artefactos.
 //
@@ -44,6 +44,11 @@ describe('integración — forma común tras el cegado', () => {
     const [a, b] = evaluador.planes.map((p) => shapeOf(p.dias));
     expect(a).toEqual(b);
     expect(a).toHaveLength(7);
+    for (const plan of evaluador.planes) {
+      const posiciones = plan.dias.reduce((n, d) => n + ('comida' in d ? 1 : 0) + ('cena' in d ? 1 : 0), 0);
+      expect(posiciones).toBe(13);
+      expect(Object.keys(plan.dias[5])).toEqual(['dia', 'cena']);
+    }
   });
 
   it('los nombres de plato llegan literales desde cada productor', () => {
@@ -52,11 +57,11 @@ describe('integración — forma común tras el cegado', () => {
     const { evaluador, clave } = blind(items(), 1);
     const porId = Object.fromEntries(clave.entradas.map((e, k) => [e.id, evaluador.planes[k]]));
     porId[ID_L].dias.forEach((d, i) => {
-      expect(d.comida).toBe(L.days[i].meals.find((m) => m.time === 'Comida').title);
+      if (d.dia !== 6) expect(d.comida).toBe(L.days[i].meals.find((m) => m.time === 'Comida').title);
       expect(d.cena).toBe(L.days[i].meals.find((m) => m.time === 'Cena').title);
     });
     porId[ID_E].dias.forEach((d, i) => {
-      expect(d.comida).toBe(E.days[i].meals.find((m) => m.momento === 'comida').dish.nombre);
+      if (d.dia !== 6) expect(d.comida).toBe(E.days[i].meals.find((m) => m.momento === 'comida').dish.nombre);
       expect(d.cena).toBe(E.days[i].meals.find((m) => m.momento === 'cena').dish.nombre);
     });
   });
@@ -72,6 +77,15 @@ describe('integración — la vista del evaluador no lleva origen ni material ex
     ]) {
       expect(out, `aparece ${prohibido}`).not.toContain(prohibido);
     }
+  });
+
+  it('la comida del día 6 de ambos planes no aparece (en el R-0: «Comida libre» de un plan)', () => {
+    const out = serialize(blind(items(), 1).evaluador);
+    expect(out).not.toContain('Comida libre');
+    const tituloL = rawLegacy().days[5].meals.find((m) => m.time === 'Comida').title;
+    const nombreE = rawEngine2().days[5].meals.find((m) => m.momento === 'comida').dish.nombre;
+    expect(out).not.toContain(JSON.stringify(tituloL));
+    expect(out).not.toContain(JSON.stringify(nombreE));
   });
 
   it('sin desayunos de legacy', () => {
@@ -104,12 +118,12 @@ describe('integración — el módulo ciego solo recibe { id, view }', () => {
     expect(serialize(blind(renamed, 42).evaluador)).toBe(ref);
   });
 
-  it('el código del módulo ciego no importa nada ni nombra claves de ningún motor', () => {
+  it('el código del módulo ciego no importa nada ni nombra claves de ningún motor ni el día libre', () => {
     const src = fs.readFileSync(BLIND_SRC, 'utf8');
     expect(src).not.toMatch(/^\s*import\s/m);
     expect(src).not.toMatch(/\brequire\s*\(/);
     expect(src).not.toMatch(/\bimport\s*\(/);
-    for (const palabra of ['title', 'dish', 'nombre', 'time', 'legacy', 'engine2', 'buildPlan', 'materializePlan', 'decisionLog', 'weekScore', 'weekWarnings']) {
+    for (const palabra of ['title', 'dish', 'nombre', 'time', 'legacy', 'engine2', 'buildPlan', 'materializePlan', 'decisionLog', 'weekScore', 'weekWarnings', 'libre', 'special', 'fixedRole']) {
       expect(src, `aparece ${palabra}`).not.toMatch(new RegExp(`\\b${palabra}\\b`));
     }
   });

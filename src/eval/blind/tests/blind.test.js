@@ -1,9 +1,11 @@
-// Tests del cegado común (D-085, D-086). Vistas escritas a mano: este archivo
-// no puede importar adaptadores ni motores (tripwire inverso de src/eval/**).
+// Tests del cegado común (D-085, D-086, D-087). Vistas escritas a mano: este
+// archivo no puede importar adaptadores ni motores (tripwire inverso de
+// src/eval/**).
 import { describe, it, expect } from 'vitest';
-import { blind, serialize, BlindError, MOMENTOS_VISTA } from '../blind.js';
+import { blind, serialize, BlindError, MOMENTOS_VISTA, BLIND_VERSION, DIA_SIN_COMIDA_EN_VISTA } from '../blind.js';
 
 const DIAS = 7;
+const clavesDia = (dia) => (dia === 6 ? ['dia', 'cena'] : ['dia', 'comida', 'cena']);
 
 function makeView({ conDesayuno = false, prefijo = 'Plato' } = {}) {
   return {
@@ -23,16 +25,41 @@ const items = () => [
 ];
 
 describe('blind — forma de la salida', () => {
-  it('lista blanca de claves en todos los niveles', () => {
+  it('versión 2 y regla posicional declaradas', () => {
+    expect(BLIND_VERSION).toBe(2);
+    expect(DIA_SIN_COMIDA_EN_VISTA).toBe(6);
+    expect(MOMENTOS_VISTA).toEqual(['comida', 'cena']);
+    const { evaluador, clave } = blind(items(), 1);
+    expect(evaluador.version).toBe(2);
+    expect(clave.version).toBe(2);
+  });
+
+  it('lista blanca de claves en todos los niveles; día 6 solo dia + cena', () => {
     const { evaluador, clave } = blind(items(), 1);
     expect(Object.keys(evaluador)).toEqual(['version', 'planes']);
     expect(Object.keys(clave)).toEqual(['version', 'seed', 'entradas']);
     for (const plan of evaluador.planes) {
       expect(Object.keys(plan)).toEqual(['etiqueta', 'dias']);
       expect(plan.dias).toHaveLength(DIAS);
-      for (const d of plan.dias) expect(Object.keys(d)).toEqual(['dia', 'comida', 'cena']);
+      for (const d of plan.dias) expect(Object.keys(d)).toEqual(clavesDia(d.dia));
     }
-    expect(MOMENTOS_VISTA).toEqual(['comida', 'cena']);
+  });
+
+  it('13 posiciones evaluables por plan', () => {
+    const { evaluador } = blind(items(), 1);
+    for (const plan of evaluador.planes) {
+      const posiciones = plan.dias.reduce((n, d) => n + ('comida' in d ? 1 : 0) + ('cena' in d ? 1 : 0), 0);
+      expect(posiciones).toBe(13);
+    }
+  });
+
+  it('la comida del día 6 de la entrada no aparece serializada (no hay filtrado silencioso de otra cosa)', () => {
+    const out = serialize(blind(items(), 1).evaluador);
+    expect(out).not.toContain('Alfa comida 6');
+    expect(out).not.toContain('Beta comida 6');
+    expect(out).toContain('Alfa cena 6');
+    expect(out).toContain('Beta cena 6');
+    expect(out).not.toContain('null');
   });
 
   it('excluye el desayuno por regla general', () => {
@@ -50,13 +77,25 @@ describe('blind — fidelidad', () => {
     expect(evaluador.planes[0].dias[3].cena).toBe(raro);
   });
 
-  it('orden de días y pertenencia comida/cena', () => {
+  it('orden de días y pertenencia comida/cena en las 13 posiciones', () => {
     const { evaluador } = blind([{ id: 'x', view: makeView({ prefijo: 'Z' }) }], 1);
     evaluador.planes[0].dias.forEach((d, i) => {
       expect(d.dia).toBe(i + 1);
-      expect(d.comida).toBe(`Z comida ${i + 1}`);
+      if (d.dia === 6) {
+        expect('comida' in d).toBe(false);
+      } else {
+        expect(d.comida).toBe(`Z comida ${i + 1}`);
+      }
       expect(d.cena).toBe(`Z cena ${i + 1}`);
     });
+  });
+
+  it('plato literal también en la cena del día 6', () => {
+    const raro = ' Cena  RARA ✓ ';
+    const view = makeView();
+    view.days[5].meals[1].plato = raro;
+    const { evaluador } = blind([{ id: 'x', view }], 1);
+    expect(evaluador.planes[0].dias[5].cena).toBe(raro);
   });
 
   it('no muta los items recibidos', () => {
@@ -124,6 +163,15 @@ describe('blind — fallos, sin corrección', () => {
 
   it('6 días', () => {
     expect(() => blind(conView((v) => v.days.pop()), 1)).toThrow(BlindError);
+  });
+  it('día 6 sin comida en la entrada: falla (la entrada se exige completa)', () => {
+    expect(() => blind(conView((v) => v.days[5].meals.shift()), 1)).toThrow(/falta el momento "comida"/);
+  });
+  it('día 6 con dos comidas: falla', () => {
+    expect(() => blind(conView((v) => v.days[5].meals.push({ momento: 'comida', plato: 'Otra' })), 1)).toThrow(/más de un momento "comida"/);
+  });
+  it('día 6 con plato de comida vacío: falla aunque no se muestre', () => {
+    expect(() => blind(conView((v) => { v.days[5].meals[0].plato = ' '; }), 1)).toThrow(/plato/);
   });
   it('falta la cena', () => {
     expect(() => blind(conView((v) => v.days[2].meals.pop()), 1)).toThrow(/falta el momento "cena"/);

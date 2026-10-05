@@ -3587,3 +3587,20 @@ La frontera dispuesta rige la instanciación futura del procedimiento de cegado 
 ### Referencias
 
 D-054, D-058, `docs/spec/protocolo-evaluacion.md` (§6.1), `docs/spec/plan-observable.md` (§4, §4.7, §5.5).
+
+## D-084 — [2026-10-05] Cierre de la cadena procedimental sobre Vía 1 y la forma de registro
+
+Decide: Javi. HEAD: `b2c600d`.
+
+Contexto
+Desde `fc1fec8`, el Frente B se ha dedicado a actos encadenados para habilitar la determinación de «común» (`docs/spec/protocolo-evaluacion.md:54`): el R-0 de procedencia de la dependencia hacia `plan-observable.md` (no versionado), el Nuevo Acto A (suspendido en HS-4; `docs/evidence/protocolo-evaluacion/2026-09-16-R-pertinencia-plan-observable-item2.md`), la reconstitución del freeze de Vía 1 (`docs/evidence/protocolo-evaluacion/2026-09-16-reconstitucion-freeze-via-1.md`, con la ratificación pendiente en el propio artefacto) y una disposición sobre la forma de registrar esa ratificación, ratificada en conversación el 2026-10-05 y nunca versionada. Ninguno de esos actos tiene efecto sobre el motor ni sobre el resultado de la evaluación de Fase 7, y la cadena no ha acercado la instanciación del cegado.
+
+Decisión
+1. Se cierra la cadena. Quedan cerrados, sin resultado y sin efecto normativo: el Nuevo Acto A, s2, s3, F-S.2, R-3, el ítem 5 de la base de Vía 1, la disposición del 2026-10-05 sobre la forma de registro y el acto previsto para versionarla.
+2. El freeze de Vía 1 no se ratifica. El artefacto `2026-09-16-reconstitucion-freeze-via-1.md` (blob `a30a7326c8cbef2d81d9c0a2808dfa72be378b57`) se conserva sin modificar, como antecedente sin efecto normativo.
+3. Los artefactos versionados de la cadena no se modifican ni se derogan. Conservan su valor como evidencia de lo realizado.
+4. «Común» se determinará mediante un acto constitutivo del titular, en un asiento propio y sin reconocimiento previo del corpus. Su única base admisible es la finalidad del cegado: que quien evalúa no pueda identificar el motor que produjo cada plan. La viabilidad del resultado y la conveniencia técnica no son base.
+5. Proporcionalidad, en adelante: los actos documentales del titular se registran como asiento directo en este archivo, sin freeze previo. Se exige freeze únicamente cuando el acto afecta al motor, a la ejecución de la evaluación o al cegado.
+
+Estado resultante
+Frente B: cadena procedimental cerrada. Cegado (§6): no instanciado; sigue bloqueando Fase 7 (D-058). Siguiente: D-085, determinación de «común»; después, instanciación del cegado.

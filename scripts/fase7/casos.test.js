@@ -24,8 +24,8 @@ const registroOk = (usos = [{ desde: 0, hasta: 999, origen: 'N=1000' }]) => ({
 });
 
 describe('casos — definición', () => {
-  it('20 casos: 2 perfiles × semillas 1001–1010', () => {
-    expect([...SEMILLAS_EVALUACION]).toEqual([1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010]);
+  it('20 casos: 2 perfiles × semillas 2001–2010', () => {
+    expect([...SEMILLAS_EVALUACION]).toEqual([2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010]);
     expect(Object.keys(PERFILES)).toEqual(['P1', 'P2']);
     expect(listaCasos()).toHaveLength(20);
   });
@@ -90,7 +90,7 @@ describe('casos — semillas contra registro', () => {
     expect(() => verificarSemillas([...SEMILLAS_EVALUACION], registroOk())).not.toThrow();
   });
   it('falla si alguna semilla está registrada como usada', () => {
-    expect(() => verificarSemillas([...SEMILLAS_EVALUACION], registroOk([{ desde: 1005, hasta: 1005, origen: 'prueba X' }]))).toThrow(/1005 ya usada: prueba X/);
+    expect(() => verificarSemillas([...SEMILLAS_EVALUACION], registroOk([{ desde: 2005, hasta: 2005, origen: 'prueba X' }]))).toThrow(/2005 ya usada: prueba X/);
   });
   it('falla sin registro, sin ancla, sin perímetro o sin declararse completo', () => {
     expect(() => verificarSemillas([1001], undefined)).toThrow(/ausente/);

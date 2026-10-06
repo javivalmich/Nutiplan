@@ -1,5 +1,5 @@
 // Tests del generador que ejecutan los motores. Usan semillas de test (1 y 2),
-// nunca las de evaluación (1001–1010), y no escriben archivos.
+// nunca las de evaluación (2001–2010), y no escriben archivos.
 import { describe, it, expect } from 'vitest';
 import path from 'node:path';
 import process from 'node:process';

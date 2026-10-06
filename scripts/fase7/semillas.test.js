@@ -1,4 +1,4 @@
-// Tests de las reglas puras del escáner de semillas. Ningún fixture usa enteros 1001-1010.
+// Tests de las reglas puras del escáner de semillas. Ningún fixture usa enteros 2001-2010.
 import { describe, it, expect } from 'vitest';
 import {
   analizarLinea, ocurrenciasDeTexto, agrupar, comprobarAgrupacion, intersecta, esBinario, dividirLineas,

@@ -1,5 +1,5 @@
 // Integración del escáner contra un repo git TEMPORAL (nunca el repo real).
-// Ningún fixture usa enteros 1001-1010.
+// Ningún fixture usa enteros 2001-2010.
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import fs from 'node:fs';
 import os from 'node:os';

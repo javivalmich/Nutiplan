@@ -3668,3 +3668,24 @@ Consecuencias
 
 Estado resultante
 Diseño de la primera Fase 7 determinado. Pendientes: cegado v2, generador de casos, asiento del criterio de superación, designación del evaluador.
+
+## D-088 — [2026-10-06] Ventana de semillas de la primera Fase 7 (enmienda de D-087, punto 5)
+
+Decide: Javi. HEAD: `2aa1157`.
+
+Contexto
+D-087 (punto 5) condicionó las semillas 1001–1010 a acreditar que no se habían usado antes. La revisión del registro de semillas sobre el borrador del escáner en `2aa1157` (829 grupos; borrador sha256 `dd01bbee…8c9d`) encontró dos bucles de test con corte temprano en `src/engine2/skeleton/tests/buildWeekArc.test.js`, `for (let seed = 0; seed < 2000 …)`, cuyo rango literal 0–1999 contiene 1001–1010. Por la regla de revisión F-RV.5(a), los bucles con corte se registran por su rango literal, sin reconstruir la ejecución histórica.
+
+Decisión
+1. Se descarta 1001–1010: para ese intervalo no se obtiene la acreditación que exige D-087 (punto 5).
+2. Regla de ventana, fijada antes de aplicarla: se elige el primer intervalo [k·1000+1, k·1000+10], con k ≥ 1, cuya intersección con el conjunto consolidado de usos U sea vacía.
+3. Aplicada sobre U (consolidación reproducida por el titular; resultado sha256 `485ceda6…3ec9`), 1001–1010 interseca U y 2001–2010 no. Las semillas de evaluación pasan a ser 2001–2010: contiguas, con punto inicial declarado (protocolo §5.5).
+4. La ventana es libre respecto de U bajo las reglas de revisión del registro, no en términos absolutos. Su acreditación definitiva queda condicionada al re-escaneo en la ancla que produzca este cambio, a la revisión incremental, a las comprobaciones F-RV.11 y F-RV.11b sobre 2001–2010 y al registro final.
+5. El resto de D-087 sigue vigente sin cambios.
+
+Consecuencias
+- `SEMILLAS_EVALUACION` pasa a 2001–2010. Se actualizan el título y la aserción del test de definición, la aserción que usa un miembro de la ventana y los comentarios que documentan la ventana. Los datos de prueba del validador que usan 1001 no se modifican.
+- Antes de autorizar la generación: re-escaneo, revisión incremental, F-RV.11/11b sobre 2001–2010 y registro final. Este asiento no autoriza la generación.
+
+Estado resultante
+Ventana de evaluación: 2001–2010, pendiente de acreditación en la nueva ancla.

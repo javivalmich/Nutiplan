@@ -3689,3 +3689,23 @@ Consecuencias
 
 Estado resultante
 Ventana de evaluación: 2001–2010, pendiente de acreditación en la nueva ancla.
+
+## D-089 — [2026-10-06] Autorización de la generación de los casos de la primera Fase 7
+
+Decide: Javi. HEAD: `c24541a`.
+
+Contexto
+D-087 (punto 5) condicionó las semillas de evaluación a acreditar que no se habían usado antes, y D-088 sustituyó la ventana por 2001–2010, condicionada al re-escaneo en su ancla (`289d90d`), a la revisión incremental, a las comprobaciones F-RV.11 y F-RV.11b sobre 2001–2010 y al registro final. Esos pasos están hechos y versionados en `docs/evidence/fase7-semillas/` (merge `c24541a`): registro final `registro-semillas.json` (sha256 `cee27373…002b`; ancla `289d90d`; `completo: true`; 127 entradas en `usos`; 10 limitaciones), revisión definitiva, borradores de `2aa1157` y `289d90d`, y los guiones de comprobación con sus salidas. El titular reprodujo en su equipo cada comprobación con hash idéntico. `verificarSemillas` del código de `289d90d` acepta 2001–2010 con ese registro y rechaza 1001–1010. `git diff --name-only 289d90d..c24541a` contiene únicamente la carpeta `docs/evidence/fase7-semillas/`.
+
+Decisión
+1. La ventana 2001–2010 queda acreditada respecto del registro: libre bajo su perímetro, su fuente y sus reglas de revisión, con las limitaciones que el registro declara; no en términos absolutos.
+2. Se autoriza la generación de los casos de la primera Fase 7 con `scripts/fase7/generarCasos.mjs`, usando `--registro docs/evidence/fase7-semillas/registro-semillas.json`, con la salida fuera del repositorio.
+3. Condiciones de la ejecución, verificadas en el momento de lanzarla: árbol limpio; `git diff --name-only 289d90d..HEAD` contiene únicamente archivos de `docs/evidence/fase7-semillas/` y `DECISIONS.md`; en `DECISIONS.md`, el cambio respecto de `289d90d` es únicamente este asiento; el manifiesto de la generación registra para el registro el sha256 `cee27373…002b`.
+4. Este asiento no autoriza la evaluación ni fija el criterio de superación (D-087, punto 7).
+
+Consecuencias
+- La generación produce su propia evidencia (manifiesto y planes crudos), que se versionará en un acto posterior.
+- Pendientes antes de evaluar: emparejamiento A/B en el runner, asiento del criterio de superación y designación del evaluador.
+
+Estado resultante
+Generación de los casos de la primera Fase 7 autorizada sobre la ventana 2001–2010.

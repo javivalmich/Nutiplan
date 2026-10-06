@@ -1,0 +1,29 @@
+{
+ "carpeta": "docs/evidence/fase7-semillas/",
+ "archivos": {
+  ".gitattributes": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da",
+  "README.md": "6ac5d9ab026b543d6e19e23440e68324118da4b3df1eb827f7cf10a4bf72c60a",
+  "borrador-289d90d.json": "3c90e324c9f912c64220df14c637ae934f6be77e66a23815631ee451b3d7e9f8",
+  "borrador-289d90d.md": "8541cc3e3e03afd363a019f725a4315c0a80bc486ca8b0d7e71b937f1242ea1e",
+  "borrador-2aa1157.json": "dd01bbeef34acbcac83a060f6dc2b2474a77759a4d53504dbb4fced0ff1a8c9d",
+  "borrador-2aa1157.md": "4f6684ca7e9baabb281debd4428f37fd5bc9c2feb73d3f38ed43768efbe6c138",
+  "comprobarPaquete.mjs": "16fd4810ef058b7a1674764229dd15a78543b43274e26c2869e1dead9ae67851",
+  "consolidarUsos.mjs": "e692128f19fd3238826f103b889a3127dc1cde66c4ffb3034555bd00a7e30557",
+  "frv11.mjs": "b6374c61ad0f4838475d9f36199387a81f71bb59ada72c8f354acc8ec69c6fdc",
+  "frv11_hits-1001-1010-2aa1157.json": "b995db0a7fc402c3686d91925a413facfe8c6d6538c16c2286da396faef1e108",
+  "frv11_hits-2001-2010-289d90d.json": "0a65fc052db3b81d2fca737b849083118e8bb611124f689b4b7ffcccc3e8f320",
+  "frv11b.mjs": "3cf8fc5cdce89c02ff83489d810e7c3a62a93daf26dcb4597e3a38265d95e49b",
+  "frv11b_hits-289d90d.json": "5cf26e30093a323a07c79dc40513de4f0744c5c253992779c74d6401f5a1272f",
+  "frv11b_hits-2aa1157.json": "51be958f8eb350a0e7e36471b8e77901201543feebbd3d421c989fcf796b23e7",
+  "frv11p.mjs": "4eb25b88a36472c7b5bfab47ad897681f40d9300a06a5e3adc4410e01a49aeb9",
+  "frv13.mjs": "c44ab4192c175f0cfecb12c13ddd0fbaf7e85fc78a8ad6efcebb6896423c6981",
+  "frv13_resultado.json": "28b03b191e002ece5285228e87e3d10277f1886956a19a778540802c9db255e4",
+  "frv13b.mjs": "c006b8ce28cb818b9aea0a8ba7d58d1d2a420eb404c0d7c52b35a71e4ab6490d",
+  "frv13b_resultado.json": "47f8a0efc2d8524229e9cd3f5a551c63c5f366f01a99e70513d8c43cf61e7aef",
+  "probarRegistro.mjs": "6921cd09a63e76a3383a5b958ee7a9c9a3fbdaae373ad03dec3700db876939ad",
+  "registro-semillas.json": "cee27373cfaacc4658bf27241c6d82b1c36d6e10220ce2a315d01db363bc002b",
+  "revision-semillas.json": "7a5c477a5f89604f4efcc5ad3e5de6b4482710c1a614a8cd91fa8016ebdabc1d",
+  "revision-semillas.parcial.json": "f4e1a64368744a12831aee51f4c30ba751625cbc9b7b8199f0143f3dfb67724c",
+  "usos-consolidados.json": "485ceda657bf9765b1456cb948f679a67980288c0dcd8a990731532634543ec9"
+ }
+}

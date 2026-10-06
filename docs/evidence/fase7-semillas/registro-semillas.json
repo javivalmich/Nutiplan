@@ -1,0 +1,670 @@
+{
+ "version": 1,
+ "ancla": "289d90d833bb4219707fbb3b18d31fdba0e4ebca",
+ "perimetro": "git rev-list --all en 289d90d (83 refs, 418 commits): 615 blobs de texto alcanzables y los mensajes de commit; excluidos el reflog, los objetos inalcanzables y 3 binarios. No cubre ejecuciones nunca versionadas. Completo solo respecto de este perímetro y de la fuente declarada en \"fuente\".",
+ "completo": true,
+ "usos": [
+  {
+   "desde": 0,
+   "hasta": 0,
+   "origen": "G0012 src/engine2/skeleton/tests/buildWeekArc.test.js:345@be0b9f4 — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 0,
+   "hasta": 0,
+   "origen": "G0039 src/engine2/walk/tests/runWalk.frequencies.test.js:94@fe78e05 — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 0,
+   "hasta": 0,
+   "origen": "G0043 src/engine2/skeleton/tests/buildWeekArc.test.js:406@be0b9f4 — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 0,
+   "hasta": 0,
+   "origen": "G0045 src/engine2/walk/tests/runWalk.frequencies.test.js:93@fe78e05 — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 0,
+   "hasta": 0,
+   "origen": "G0047 src/engine2/skeleton/tests/buildWeekArc.vetoAncla.test.js:175@be17024 — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 0,
+   "hasta": 0,
+   "origen": "G0048 src/engine2/skeleton/tests/buildWeekArc.test.js:389@be0b9f4 — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 0,
+   "hasta": 0,
+   "origen": "G0058 src/engine2/skeleton/tests/buildWeekArc.test.js:25@a87e38b — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 0,
+   "hasta": 0,
+   "origen": "G0064 docs/evidence/plan-observable/2026-07-18-engine2-conformidad-v1.0.md:26@a89cb99 — documental, no versionado: docs/evidence/plan-observable/2026-07-18-engine2-conformidad-v1.0.md (ejecución con fragmento de invocación en 569fc1c)"
+  },
+  {
+   "desde": 0,
+   "hasta": 0,
+   "origen": "G0071 src/engine2/walk/tests/runWalk.test.js:70@662a4b7 — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 0,
+   "hasta": 0,
+   "origen": "G0072 src/engine2/walk/tests/expandWeekArc.test.js:32@d69f2bc — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 0,
+   "hasta": 0,
+   "origen": "G0074 src/engine2/walk/tests/runWalk.test.js:71@662a4b7 — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 0,
+   "hasta": 0,
+   "origen": "G0087 src/engine2/tests/materializePlan.test.js:17@67f994e — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 0,
+   "hasta": 0,
+   "origen": "G0104 scripts/phaseP2c/runAdapter.js:14@7676b02 — constante de origen SEED (1 / 0 / 123456) de usos ya trazados"
+  },
+  {
+   "desde": 0,
+   "hasta": 0,
+   "origen": "G0197 src/engine2/skeleton/tests/capricho.test.js:45@31feb2f — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 0,
+   "hasta": 0,
+   "origen": "G0217 src/engine2/walk/tests/expandWeekArc.test.js:263@d69f2bc — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 0,
+   "hasta": 1,
+   "origen": "G0419 src/engine2/skeleton/tests/buildWeekArc.test.js:273@a87e38b — seedsPorVariante = { A: 7, B: 1, C: 0 } -> for-of -> buildWeekArc; valores 0, 1, 7"
+  },
+  {
+   "desde": 0,
+   "hasta": 2,
+   "origen": "G0563 src/eval/blind/blind.js:147@f953524 — uso de paso (F-RV.12) en blind.js (const rng = mulberry32(seed)), dominio cegado (F-RV.9a); llamadores posicionales blind(..., 1/2/7/42/99/1"
+  },
+  {
+   "desde": 0,
+   "hasta": 4,
+   "origen": "G0140 src/engine2/walk/tests/runWalk.identidad.test.js:95@225a55a — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 0,
+   "hasta": 7,
+   "origen": "G0141 src/engine2/skeleton/tests/buildWeekArc.vetoAncla.test.js:74@be17024 — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 0,
+   "hasta": 19,
+   "origen": "G0135 src/engine2/walk/tests/expandWeekArc.test.js:110@d69f2bc — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 0,
+   "hasta": 49,
+   "origen": "G0136 src/engine2/skeleton/tests/capricho.test.js:118@31feb2f — cabecera de bucle con corte temprano: rango literal registrado provisionalmente; la decisión de F-RV.5 se aplica uniformemente a todos los b"
+  },
+  {
+   "desde": 0,
+   "hasta": 49,
+   "origen": "G0139 src/engine2/skeleton/tests/buildWeekArc.vetoAncla.test.js:182@be17024 — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 0,
+   "hasta": 99,
+   "origen": "G0130 src/engine2/skeleton/tests/buildWeekArc.vetoAncla.test.js:82@be17024 — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 0,
+   "hasta": 199,
+   "origen": "G0131 src/engine2/skeleton/tests/buildWeekArc.vetoAncla.test.js:56@be17024 — cabecera de bucle con corte temprano: rango literal registrado provisionalmente; la decisión de F-RV.5 se aplica uniformemente a todos los b"
+  },
+  {
+   "desde": 0,
+   "hasta": 199,
+   "origen": "G0134 src/engine2/skeleton/tests/buildWeekArc.test.js:99@a34883d — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 0,
+   "hasta": 499,
+   "origen": "G0116 src/engine2/skeleton/tests/buildWeekArc.test.js:366@be0b9f4 — cabecera de bucle con corte temprano: rango literal registrado provisionalmente; la decisión de F-RV.5 se aplica uniformemente a todos los b"
+  },
+  {
+   "desde": 0,
+   "hasta": 499,
+   "origen": "G0117 src/engine2/skeleton/tests/buildWeekArc.test.js:151@a34883d — cabecera de bucle con corte temprano: rango literal registrado provisionalmente; la decisión de F-RV.5 se aplica uniformemente a todos los b"
+  },
+  {
+   "desde": 0,
+   "hasta": 499,
+   "origen": "G0137 src/engine2/skeleton/tests/buildWeekArc.test.js:203@a34883d — cabecera de bucle con corte temprano: rango literal registrado provisionalmente; la decisión de F-RV.5 se aplica uniformemente a todos los b"
+  },
+  {
+   "desde": 0,
+   "hasta": 499,
+   "origen": "G0138 src/engine2/skeleton/tests/buildWeekArc.test.js:179@a34883d — cabecera de bucle con corte temprano: rango literal registrado provisionalmente; la decisión de F-RV.5 se aplica uniformemente a todos los b"
+  },
+  {
+   "desde": 0,
+   "hasta": 999,
+   "origen": "G0156 docs/evidence/protocolo-evaluacion/2026-07-18-R-protocolo-de-facto.md:110@8b3edcf — documental, no versionado: docs/evidence/protocolo-evaluacion/2026-07-18-R-protocolo-de-facto.md:110 (campañas n1000)"
+  },
+  {
+   "desde": 0,
+   "hasta": 999,
+   "origen": "G0160 docs/evidence/protocolo-evaluacion/2026-07-18-R-protocolo-de-facto.md:104@8b3edcf — documental, no versionado: docs/evidence/protocolo-evaluacion/2026-07-18-R-protocolo-de-facto.md:104 (campañas n1000)"
+  },
+  {
+   "desde": 0,
+   "hasta": 999,
+   "origen": "G0185 docs/evidence/protocolo-evaluacion/2026-07-18-R-protocolo-de-facto.md:61@8b3edcf — documental, no versionado: docs/evidence/protocolo-evaluacion/2026-07-18-R-protocolo-de-facto.md:61 (campañas n1000)"
+  },
+  {
+   "desde": 0,
+   "hasta": 999,
+   "origen": "G0752 docs/evidence/protocolo-evaluacion/2026-07-18-R-protocolo-de-facto.md:85@8b3edcf — documental, no versionado: docs/evidence/protocolo-evaluacion/2026-07-18-R-protocolo-de-facto.md:85 (analysis/baseline_n1000.mjs:35)"
+  },
+  {
+   "desde": 0,
+   "hasta": 1999,
+   "origen": "G0132 src/engine2/skeleton/tests/buildWeekArc.test.js:219@a87e38b — buildWeekArc.test.js (3 versiones): for seed 0..<2000 con corte temprano llama a buildWeekArc (contexto [V] blob 3e47796 L225-228). Rango li"
+  },
+  {
+   "desde": 0,
+   "hasta": 1999,
+   "origen": "G0133 src/engine2/skeleton/tests/buildWeekArc.test.js:191@a87e38b — buildWeekArc.test.js (3 versiones): for seed 0..<2000 con corte temprano llama a buildWeekArc (contexto [V] blob 3e47796 L197-203). Rango li"
+  },
+  {
+   "desde": 1,
+   "hasta": 1,
+   "origen": "G0023 src/engine/tests/weeklyVegCount.test.js:78@755f764 — constante de origen SEED (1 / 0 / 123456) de usos ya trazados"
+  },
+  {
+   "desde": 1,
+   "hasta": 1,
+   "origen": "G0028 src/engine2/tests/materializePlan.test.js:99@67f994e — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 1,
+   "hasta": 1,
+   "origen": "G0038 src/engine2/walk/tests/expandWeekArc.test.js:138@d69f2bc — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 1,
+   "hasta": 1,
+   "origen": "G0065 docs/evidence/plan-observable/2026-07-18-engine2-conformidad-v1.0.md:28@a89cb99 — documental, no versionado: docs/evidence/plan-observable/2026-07-18-engine2-conformidad-v1.0.md (ejecución con fragmento de invocación en 569fc1c)"
+  },
+  {
+   "desde": 1,
+   "hasta": 1,
+   "origen": "G0197 src/engine2/skeleton/tests/capricho.test.js:45@31feb2f — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 1,
+   "hasta": 1,
+   "origen": "G0217 src/engine2/walk/tests/expandWeekArc.test.js:263@d69f2bc — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 1,
+   "hasta": 1,
+   "origen": "G0218 src/engine2/walk/tests/runWalk.test.js:394@662a4b7 — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 1,
+   "hasta": 1,
+   "origen": "G0219 src/engine2/walk/tests/expandWeekArc.test.js:127@d69f2bc — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 1,
+   "hasta": 1,
+   "origen": "G0224 scripts/fase7/generarCasos.test.js:13@0301bf0 — SEMILLAS_TEST = [1, 2] (generarCasos.test.js:13): origen de los usos 1-2 del lote 1"
+  },
+  {
+   "desde": 1,
+   "hasta": 1,
+   "origen": "G0294 src/engine2/skeleton/tests/buildWeekArc.vetoAncla.test.js:103@be17024 — uso de paso (F-RV.12) en rngSucio(seedNum); único llamador posicional sin término chooseAnchorSucioConDescarte(mezcla, 1, vetadosIds) (build"
+  },
+  {
+   "desde": 1,
+   "hasta": 1,
+   "origen": "G0315 src/engine2/skeleton/tests/buildWeekArc.vetoAncla.test.js:93@be17024 — uso de paso (F-RV.12) en rngSucio(seedNum); único llamador posicional sin término chooseAnchorSucioConDescarte(mezcla, 1, vetadosIds) (build"
+  },
+  {
+   "desde": 1,
+   "hasta": 200,
+   "origen": "G0524 analysis/gate4_protein_guard.test.js:30@8f2cffa — analysis/gate4_protein_guard.test.js: N=200 -> run(i+1) (:46-50)"
+  },
+  {
+   "desde": 1,
+   "hasta": 500,
+   "origen": "G0234 analysis/gate2_measure.test.js:468@fe7e5ce — analysis/gate2_measure.test.js: N=500 -> run(i+1) / seed = i + 1 (:222,236-237; :445,463-464) y run(12345) (:132-133,171)"
+  },
+  {
+   "desde": 1,
+   "hasta": 500,
+   "origen": "G0257 analysis/gate2_measure.test.js:464@fe7e5ce — analysis/gate2_measure.test.js: N=500 -> run(i+1) / seed = i + 1 (:222,236-237; :445,463-464) y run(12345) (:132-133,171)"
+  },
+  {
+   "desde": 1,
+   "hasta": 500,
+   "origen": "G0413 docs/evidence/variedad-verdura/veg_variety_engine2_freq.mjs:164@054c68d — campañas docs/evidence/variedad-verdura/*: N=500, seed = i + 1 / runWeek(i+1) / run(i+1)"
+  },
+  {
+   "desde": 1,
+   "hasta": 500,
+   "origen": "G0432 docs/evidence/variedad-verdura/veg_variety_engine2_freq.mjs:166@054c68d — campañas docs/evidence/variedad-verdura/*: N=500, seed = i + 1 / runWeek(i+1) / run(i+1)"
+  },
+  {
+   "desde": 1,
+   "hasta": 500,
+   "origen": "G0442 docs/evidence/variedad-verdura/veg_variety_engine2_paso5.mjs:308@486b7b6 — campañas docs/evidence/variedad-verdura/*: N=500, seed = i + 1 / runWeek(i+1) / run(i+1)"
+  },
+  {
+   "desde": 1,
+   "hasta": 500,
+   "origen": "G0444 docs/evidence/variedad-verdura/veg_variety_engine2_freq.mjs:165@054c68d — campañas docs/evidence/variedad-verdura/*: N=500, seed = i + 1 / runWeek(i+1) / run(i+1)"
+  },
+  {
+   "desde": 1,
+   "hasta": 500,
+   "origen": "G0519 docs/evidence/variedad-verdura/veg_variety_engine2_paso5.mjs:252@486b7b6 — campañas docs/evidence/variedad-verdura/*: N=500, seed = i + 1 / runWeek(i+1) / run(i+1)"
+  },
+  {
+   "desde": 1,
+   "hasta": 500,
+   "origen": "G0522 analysis/gate2_measure.test.js:91@fe7e5ce — analysis/gate2_measure.test.js: N=500 -> run(i+1) / seed = i + 1 (:222,236-237; :445,463-464) y run(12345) (:132-133,171)"
+  },
+  {
+   "desde": 1,
+   "hasta": 500,
+   "origen": "G0523 docs/evidence/variedad-verdura/veg_variety_legacy.mjs:52@991e4fd — campañas docs/evidence/variedad-verdura/*: N=500, seed = i + 1 / runWeek(i+1) / run(i+1)"
+  },
+  {
+   "desde": 1,
+   "hasta": 500,
+   "origen": "G0570 docs/evidence/variedad-verdura/veg_variety_engine2.mjs:123@50c7091 — campañas docs/evidence/variedad-verdura/*: N=500, seed = i + 1 / runWeek(i+1) / run(i+1)"
+  },
+  {
+   "desde": 1,
+   "hasta": 500,
+   "origen": "G0574 docs/evidence/variedad-verdura/veg_variety_engine2.mjs:122@50c7091 — campañas docs/evidence/variedad-verdura/*: N=500, seed = i + 1 / runWeek(i+1) / run(i+1)"
+  },
+  {
+   "desde": 2,
+   "hasta": 2,
+   "origen": "G0197 src/engine2/skeleton/tests/capricho.test.js:45@31feb2f — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 2,
+   "hasta": 2,
+   "origen": "G0217 src/engine2/walk/tests/expandWeekArc.test.js:263@d69f2bc — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 2,
+   "hasta": 2,
+   "origen": "G0218 src/engine2/walk/tests/runWalk.test.js:394@662a4b7 — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 2,
+   "hasta": 2,
+   "origen": "G0219 src/engine2/walk/tests/expandWeekArc.test.js:127@d69f2bc — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 2,
+   "hasta": 2,
+   "origen": "G0224 scripts/fase7/generarCasos.test.js:13@0301bf0 — SEMILLAS_TEST = [1, 2] (generarCasos.test.js:13): origen de los usos 1-2 del lote 1"
+  },
+  {
+   "desde": 3,
+   "hasta": 3,
+   "origen": "G0013 src/engine2/walk/tests/runWalk.test.js:202@662a4b7 — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 3,
+   "hasta": 3,
+   "origen": "G0040 src/engine2/walk/tests/runWalk.test.js:422@662a4b7 — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 3,
+   "hasta": 3,
+   "origen": "G0041 src/engine2/walk/tests/runWalk.test.js:205@662a4b7 — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 3,
+   "hasta": 3,
+   "origen": "G0073 src/engine2/walk/tests/expandWeekArc.test.js:166@d69f2bc — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 3,
+   "hasta": 3,
+   "origen": "G0217 src/engine2/walk/tests/expandWeekArc.test.js:263@d69f2bc — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 3,
+   "hasta": 3,
+   "origen": "G0218 src/engine2/walk/tests/runWalk.test.js:394@662a4b7 — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 3,
+   "hasta": 3,
+   "origen": "G0219 src/engine2/walk/tests/expandWeekArc.test.js:127@d69f2bc — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 4,
+   "hasta": 4,
+   "origen": "G0217 src/engine2/walk/tests/expandWeekArc.test.js:263@d69f2bc — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 4,
+   "hasta": 4,
+   "origen": "G0218 src/engine2/walk/tests/runWalk.test.js:394@662a4b7 — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 4,
+   "hasta": 4,
+   "origen": "G0219 src/engine2/walk/tests/expandWeekArc.test.js:127@d69f2bc — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 5,
+   "hasta": 5,
+   "origen": "G0046 src/engine2/walk/tests/runWalk.test.js:461@662a4b7 — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 5,
+   "hasta": 5,
+   "origen": "G0051 src/engine2/walk/tests/runWalk.test.js:468@662a4b7 — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 5,
+   "hasta": 5,
+   "origen": "G0217 src/engine2/walk/tests/expandWeekArc.test.js:263@d69f2bc — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 5,
+   "hasta": 5,
+   "origen": "G0218 src/engine2/walk/tests/runWalk.test.js:394@662a4b7 — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 5,
+   "hasta": 5,
+   "origen": "G0219 src/engine2/walk/tests/expandWeekArc.test.js:127@d69f2bc — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 6,
+   "hasta": 6,
+   "origen": "G0218 src/engine2/walk/tests/runWalk.test.js:394@662a4b7 — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 7,
+   "hasta": 7,
+   "origen": "G0014 src/engine2/walk/tests/runWalk.test.js:224@662a4b7 — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 7,
+   "hasta": 7,
+   "origen": "G0037 src/engine2/walk/tests/expandWeekArc.test.js:222@d69f2bc — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 7,
+   "hasta": 7,
+   "origen": "G0042 src/engine2/walk/tests/runWalk.test.js:227@662a4b7 — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 7,
+   "hasta": 7,
+   "origen": "G0197 src/engine2/skeleton/tests/capricho.test.js:45@31feb2f — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 7,
+   "hasta": 7,
+   "origen": "G0218 src/engine2/walk/tests/runWalk.test.js:394@662a4b7 — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 7,
+   "hasta": 7,
+   "origen": "G0419 src/engine2/skeleton/tests/buildWeekArc.test.js:273@a87e38b — seedsPorVariante = { A: 7, B: 1, C: 0 } -> for-of -> buildWeekArc; valores 0, 1, 7"
+  },
+  {
+   "desde": 7,
+   "hasta": 7,
+   "origen": "G0492 src/engine2/dishes/tests/frequencyCount.test.js:131@4e638d4 — uso de paso (F-RV.12) en shuffle (frequencyCount.test.js:131); llamadores posicionales sin término shuffle(..., 42 / 999 / 7) (:146,154,179,"
+  },
+  {
+   "desde": 7,
+   "hasta": 7,
+   "origen": "G0563 src/eval/blind/blind.js:147@f953524 — uso de paso (F-RV.12) en blind.js (const rng = mulberry32(seed)), dominio cegado (F-RV.9a); llamadores posicionales blind(..., 1/2/7/42/99/1"
+  },
+  {
+   "desde": 8,
+   "hasta": 8,
+   "origen": "G0218 src/engine2/walk/tests/runWalk.test.js:394@662a4b7 — cabecera de bucle o lista sin corte: rango completo"
+  },
+  {
+   "desde": 11,
+   "hasta": 11,
+   "origen": "G0036 src/engine2/walk/tests/expandWeekArc.test.js:240@d69f2bc — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 42,
+   "hasta": 42,
+   "origen": "G0030 src/engine2/walk/tests/expandWeekArc.test.js:208@d69f2bc — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 42,
+   "hasta": 42,
+   "origen": "G0031 src/engine2/walk/tests/runWalk.test.js:359@662a4b7 — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 42,
+   "hasta": 42,
+   "origen": "G0033 src/engine2/walk/tests/expandWeekArc.test.js:209@d69f2bc — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 42,
+   "hasta": 42,
+   "origen": "G0034 src/engine2/walk/tests/runWalk.test.js:360@662a4b7 — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 42,
+   "hasta": 42,
+   "origen": "G0044 src/engine2/walk/tests/runWalk.test.js:358@662a4b7 — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 42,
+   "hasta": 42,
+   "origen": "G0059 src/engine2/walk/tests/expandWeekArc.test.js:202@d69f2bc — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 42,
+   "hasta": 42,
+   "origen": "G0492 src/engine2/dishes/tests/frequencyCount.test.js:131@4e638d4 — uso de paso (F-RV.12) en shuffle (frequencyCount.test.js:131); llamadores posicionales sin término shuffle(..., 42 / 999 / 7) (:146,154,179,"
+  },
+  {
+   "desde": 42,
+   "hasta": 42,
+   "origen": "G0563 src/eval/blind/blind.js:147@f953524 — uso de paso (F-RV.12) en blind.js (const rng = mulberry32(seed)), dominio cegado (F-RV.9a); llamadores posicionales blind(..., 1/2/7/42/99/1"
+  },
+  {
+   "desde": 99,
+   "hasta": 99,
+   "origen": "G0032 src/engine2/walk/tests/runWalk.test.js:452@662a4b7 — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 99,
+   "hasta": 99,
+   "origen": "G0035 src/engine2/walk/tests/runWalk.test.js:453@662a4b7 — literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])"
+  },
+  {
+   "desde": 99,
+   "hasta": 99,
+   "origen": "G0563 src/eval/blind/blind.js:147@f953524 — uso de paso (F-RV.12) en blind.js (const rng = mulberry32(seed)), dominio cegado (F-RV.9a); llamadores posicionales blind(..., 1/2/7/42/99/1"
+  },
+  {
+   "desde": 123,
+   "hasta": 123,
+   "origen": "G0521 src/engine/tests/buildPlan.snapshot.test.js:63@7a278b8 — uso de paso (F-RV.12) en run(seed)/runBuildPlan(seed); llamadores run(SEED=123456) (R1) y posicionales run(123), run(456) (buildPlan.snapsho"
+  },
+  {
+   "desde": 456,
+   "hasta": 456,
+   "origen": "G0521 src/engine/tests/buildPlan.snapshot.test.js:63@7a278b8 — uso de paso (F-RV.12) en run(seed)/runBuildPlan(seed); llamadores run(SEED=123456) (R1) y posicionales run(123), run(456) (buildPlan.snapsho"
+  },
+  {
+   "desde": 999,
+   "hasta": 999,
+   "origen": "G0492 src/engine2/dishes/tests/frequencyCount.test.js:131@4e638d4 — uso de paso (F-RV.12) en shuffle (frequencyCount.test.js:131); llamadores posicionales sin término shuffle(..., 42 / 999 / 7) (:146,154,179,"
+  },
+  {
+   "desde": 12345,
+   "hasta": 12345,
+   "origen": "G0234 analysis/gate2_measure.test.js:468@fe7e5ce — analysis/gate2_measure.test.js: N=500 -> run(i+1) / seed = i + 1 (:222,236-237; :445,463-464) y run(12345) (:132-133,171)"
+  },
+  {
+   "desde": 12345,
+   "hasta": 12345,
+   "origen": "G0257 analysis/gate2_measure.test.js:464@fe7e5ce — analysis/gate2_measure.test.js: N=500 -> run(i+1) / seed = i + 1 (:222,236-237; :445,463-464) y run(12345) (:132-133,171)"
+  },
+  {
+   "desde": 12345,
+   "hasta": 12345,
+   "origen": "G0522 analysis/gate2_measure.test.js:91@fe7e5ce — analysis/gate2_measure.test.js: N=500 -> run(i+1) / seed = i + 1 (:222,236-237; :445,463-464) y run(12345) (:132-133,171)"
+  },
+  {
+   "desde": 12345,
+   "hasta": 12345,
+   "origen": "G0563 src/eval/blind/blind.js:147@f953524 — uso de paso (F-RV.12) en blind.js (const rng = mulberry32(seed)), dominio cegado (F-RV.9a); llamadores posicionales blind(..., 1/2/7/42/99/1"
+  },
+  {
+   "desde": 123456,
+   "hasta": 123456,
+   "origen": "G0105 src/engine/tests/buildPlan.snapshot.test.js:26@7a278b8 — constante de origen SEED (1 / 0 / 123456) de usos ya trazados"
+  },
+  {
+   "desde": 123456,
+   "hasta": 123456,
+   "origen": "G0550 docs/evidence/protocolo-evaluacion/r0-emision-productores.mjs:264@603638d — runBuildPlan(SEED) con SEED=123456 (r0-emision-productores.mjs:205,264; R1)"
+  },
+  {
+   "desde": 532847468,
+   "hasta": 532847468,
+   "origen": "G0552 src/engine/buildPlan.js:29@bd40735 — uso de paso: ruta por defecto de legacy, mulberry32(_hashStr(String(userId ?? \"anon\") + \":\" + (weekNumber ?? 0))) (buildPlan.js:29); valores"
+  },
+  {
+   "desde": 588720795,
+   "hasta": 588720795,
+   "origen": "G0552 src/engine/buildPlan.js:29@bd40735 — uso de paso: ruta por defecto de legacy, mulberry32(_hashStr(String(userId ?? \"anon\") + \":\" + (weekNumber ?? 0))) (buildPlan.js:29); valores"
+  },
+  {
+   "desde": 756482041,
+   "hasta": 756482041,
+   "origen": "G0552 src/engine/buildPlan.js:29@bd40735 — uso de paso: ruta por defecto de legacy, mulberry32(_hashStr(String(userId ?? \"anon\") + \":\" + (weekNumber ?? 0))) (buildPlan.js:29); valores"
+  },
+  {
+   "desde": 1263988022,
+   "hasta": 1263988022,
+   "origen": "G0373 src/engine/tests/buildPlan.snapshot.test.js:104@c4248d9 — semilla entera derivada por _hashStr (src/engine/hash.js@308ef70) de literales acreditados (F-RV.13): valor 1263988022; reproducido por el t"
+  },
+  {
+   "desde": 1263988022,
+   "hasta": 1263988022,
+   "origen": "G0376 src/engine/tests/buildPlan.snapshot.test.js:98@c4248d9 — semilla entera derivada por _hashStr (src/engine/hash.js@308ef70) de literales acreditados (F-RV.13): valor 1263988022; reproducido por el t"
+  },
+  {
+   "desde": 1263988022,
+   "hasta": 1263988022,
+   "origen": "G0382 src/engine/tests/buildPlan.snapshot.test.js:99@c4248d9 — semilla entera derivada por _hashStr (src/engine/hash.js@308ef70) de literales acreditados (F-RV.13): valor 1263988022; reproducido por el t"
+  },
+  {
+   "desde": 1263988022,
+   "hasta": 1263988022,
+   "origen": "G0421 src/engine/tests/buildPlan.snapshot.test.js:117@c4248d9 — semilla entera derivada por _hashStr (src/engine/hash.js@308ef70) de literales acreditados (F-RV.13): valor 1263988022; reproducido por el t"
+  },
+  {
+   "desde": 1263988023,
+   "hasta": 1263988023,
+   "origen": "G0378 src/engine/tests/buildPlan.snapshot.test.js:111@c4248d9 — semilla entera derivada por _hashStr (src/engine/hash.js@308ef70) de literales acreditados (F-RV.13): valor 1263988023; reproducido por el t"
+  },
+  {
+   "desde": 1377073392,
+   "hasta": 1377073392,
+   "origen": "G0552 src/engine/buildPlan.js:29@bd40735 — uso de paso: ruta por defecto de legacy, mulberry32(_hashStr(String(userId ?? \"anon\") + \":\" + (weekNumber ?? 0))) (buildPlan.js:29); valores"
+  },
+  {
+   "desde": 1393820248,
+   "hasta": 1393820248,
+   "origen": "G0552 src/engine/buildPlan.js:29@bd40735 — uso de paso: ruta por defecto de legacy, mulberry32(_hashStr(String(userId ?? \"anon\") + \":\" + (weekNumber ?? 0))) (buildPlan.js:29); valores"
+  },
+  {
+   "desde": 1487635260,
+   "hasta": 1487635260,
+   "origen": "G0552 src/engine/buildPlan.js:29@bd40735 — uso de paso: ruta por defecto de legacy, mulberry32(_hashStr(String(userId ?? \"anon\") + \":\" + (weekNumber ?? 0))) (buildPlan.js:29); valores"
+  },
+  {
+   "desde": 1491109313,
+   "hasta": 1491109313,
+   "origen": "G0552 src/engine/buildPlan.js:29@bd40735 — uso de paso: ruta por defecto de legacy, mulberry32(_hashStr(String(userId ?? \"anon\") + \":\" + (weekNumber ?? 0))) (buildPlan.js:29); valores"
+  },
+  {
+   "desde": 1880525077,
+   "hasta": 1880525077,
+   "origen": "G0391 src/engine/tests/buildPlan.baseline.test.js:185@53ba827 — semilla entera derivada por _hashStr (src/engine/hash.js@308ef70) de literales acreditados (F-RV.13): valor 1880525077; reproducido por el t"
+  },
+  {
+   "desde": 1880525077,
+   "hasta": 1880525077,
+   "origen": "G0392 src/engine/tests/buildPlan.baseline.test.js:184@53ba827 — semilla entera derivada por _hashStr (src/engine/hash.js@308ef70) de literales acreditados (F-RV.13): valor 1880525077; reproducido por el t"
+  },
+  {
+   "desde": 1880525077,
+   "hasta": 1880525077,
+   "origen": "G0552 src/engine/buildPlan.js:29@bd40735 — uso de paso: ruta por defecto de legacy, mulberry32(_hashStr(String(userId ?? \"anon\") + \":\" + (weekNumber ?? 0))) (buildPlan.js:29); valores"
+  },
+  {
+   "desde": 1880525078,
+   "hasta": 1880525078,
+   "origen": "G0422 src/engine/tests/buildPlan.baseline.test.js:194@53ba827 — semilla entera derivada por _hashStr (src/engine/hash.js@308ef70) de literales acreditados (F-RV.13): valor 1880525078; reproducido por el t"
+  },
+  {
+   "desde": 1890273642,
+   "hasta": 1890273642,
+   "origen": "G0552 src/engine/buildPlan.js:29@bd40735 — uso de paso: ruta por defecto de legacy, mulberry32(_hashStr(String(userId ?? \"anon\") + \":\" + (weekNumber ?? 0))) (buildPlan.js:29); valores"
+  },
+  {
+   "desde": 2102762501,
+   "hasta": 2102762501,
+   "origen": "G0379 src/engine/tests/buildPlan.snapshot.test.js:105@c4248d9 — semilla entera derivada por _hashStr (src/engine/hash.js@308ef70) de literales acreditados (F-RV.13): valor 2102762501; reproducido por el t"
+  }
+ ],
+ "fuente": {
+  "escaner": "scripts/fase7/escanearSemillas.mjs + scripts/fase7/semillas.js (ESCANER_VERSION 1, versionados en bfdb574)",
+  "reglas": "R1 literal, R2 rango explícito, R3 lista, R4 indeterminado; términos seed, semilla, mulberry32(",
+  "revision": "revision-semillas.json (reglas F-RV.1 a F-RV.14, comprobaciones F-RV.11, F-RV.11b y F-RV.13)"
+ },
+ "borrador": {
+  "ancla": {
+   "ruta": "docs/evidence/fase7-semillas/borrador-289d90d.json",
+   "sha256": "3c90e324c9f912c64220df14c637ae934f6be77e66a23815631ee451b3d7e9f8"
+  },
+  "previo": {
+   "ruta": "docs/evidence/fase7-semillas/borrador-2aa1157.json",
+   "sha256": "dd01bbeef34acbcac83a060f6dc2b2474a77759a4d53504dbb4fced0ff1a8c9d"
+  }
+ },
+ "limitaciones": [
+  "Ejecuciones nunca versionadas: fuera del perímetro.",
+  "Excluidos el reflog y los objetos inalcanzables.",
+  "3 blobs binarios (NUL en los primeros 8000 bytes) inventariados y no escaneados; 0 gitlinks.",
+  "Semillas no enteras (F-RV.8): usos fuera de este array. En engine2 un entero N y la cadena \"N\" comparten los generadores derivados (::skeleton, ::walk, ::walk::select) y difieren en el del ancla; no hay equivalencia ni independencia totales. F-RV.11 acredita que no hay literales de la ventana, numéricos ni en cadena.",
+  "R4_sin_resolver no bloqueantes (F-RV.7a): 5 grupos de scripts/fase7/blind-run.mjs cuya semilla llega de un manifiesto indicado por argv; ningún manifiesto de cegado versionado.",
+  "Llamadores posicionales sin término de contexto no alcanzados por trazado: residuo declarado; para la ventana lo cubre F-RV.11 (literales exactos).",
+  "Semillas derivadas por hash de userId/weekNumber en la ruta por defecto de legacy (buildPlan.js:29): calculadas solo para los 9 grupos de F-RV.13 y los 9 pares del baseline (F-RV.13b); el resto no se enumera.",
+  "F-RV.11b acredita solo la cobertura de su patrón (constantes y cotas de 4+ cifras), no la ausencia de dominios de semillas expresados de otra forma.",
+  "Usos de origen documental (F-RV.14): entran por conservadurismo sin elevarse a ejecución acreditada (campañas n1000 0-999; conformidad de engine2 0 y 1).",
+  "Bucles con corte temprano (F-RV.5a): registrados por su rango literal, sin reconstruir la semilla de corte."
+ ]
+}

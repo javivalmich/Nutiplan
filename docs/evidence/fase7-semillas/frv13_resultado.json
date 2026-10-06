@@ -1,0 +1,69 @@
+{
+ "hashJsBlob": "308ef701e2af084fd43fadbf2cb1f78d80595853",
+ "resultados": [
+  {
+   "grupos": [
+    "G0364",
+    "G0370",
+    "G0361",
+    "G0409"
+   ],
+   "entrada": "user-abc:23",
+   "origen": "buildPlan.snapshot.test.js@c4248d9: runSeeded('user-abc', 23) -> buildPlan.js@bd40735:29 String(userId)+':'+weekNumber",
+   "suma": 0,
+   "hash": 1263988022,
+   "valorPasado": 1263988022,
+   "valorEfectivoUint32": 1263988022,
+   "en1001a1010": false
+  },
+  {
+   "grupos": [
+    "G0367"
+   ],
+   "entrada": "user-xyz:23",
+   "origen": "buildPlan.snapshot.test.js@c4248d9:105 runSeeded('user-xyz', 23)",
+   "suma": 0,
+   "hash": 2102762501,
+   "valorPasado": 2102762501,
+   "valorEfectivoUint32": 2102762501,
+   "en1001a1010": false
+  },
+  {
+   "grupos": [
+    "G0366"
+   ],
+   "entrada": "user-abc:24",
+   "origen": "buildPlan.snapshot.test.js@c4248d9:111 runSeeded('user-abc', 24)",
+   "suma": 0,
+   "hash": 1263988023,
+   "valorPasado": 1263988023,
+   "valorEfectivoUint32": 1263988023,
+   "en1001a1010": false
+  },
+  {
+   "grupos": [
+    "G0380",
+    "G0379"
+   ],
+   "entrada": "baseline-mantenimiento:13",
+   "origen": "buildPlan.baseline.test.js@53ba827/f64b15a/adfb8ea: fixture 'mantenimiento_equilibrado (base)' userId 'baseline-mantenimiento', weekNumber 13",
+   "suma": 0,
+   "hash": 1880525077,
+   "valorPasado": 1880525077,
+   "valorEfectivoUint32": 1880525077,
+   "en1001a1010": false
+  },
+  {
+   "grupos": [
+    "G0410"
+   ],
+   "entrada": "baseline-mantenimiento:13",
+   "origen": "idem, mulberry32(manualSeed + 1)",
+   "suma": 1,
+   "hash": 1880525077,
+   "valorPasado": 1880525078,
+   "valorEfectivoUint32": 1880525078,
+   "en1001a1010": false
+  }
+ ]
+}

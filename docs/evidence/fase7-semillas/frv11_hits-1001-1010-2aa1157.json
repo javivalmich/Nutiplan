@@ -1,0 +1,501 @@
+[
+ {
+  "origen": "blob",
+  "id": "a1bb147b559061ad7159e8dfee8410cd3f2c8ed0",
+  "rutas": [
+   "DECISIONS.md"
+  ],
+  "linea": 3661,
+  "valor": 1001,
+  "texto": "5. Casos. 2 perfiles × 10 semillas, con la misma estrategia y el mismo caso para ambos motores. Semillas contiguas 1001–1010, con punto inicial declarado (protocolo §5.5), condicionadas a que se acredite que no se han usado antes; la acreditación se registra con el generador de casos. Los perfiles y su traducción a la entrada nativa de cada motor se fijan en el generador y se versionan con él.",
+  "grupos": [
+   "G0162"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "a1bb147b559061ad7159e8dfee8410cd3f2c8ed0",
+  "rutas": [
+   "DECISIONS.md"
+  ],
+  "linea": 3661,
+  "valor": 1010,
+  "texto": "5. Casos. 2 perfiles × 10 semillas, con la misma estrategia y el mismo caso para ambos motores. Semillas contiguas 1001–1010, con punto inicial declarado (protocolo §5.5), condicionadas a que se acredite que no se han usado antes; la acreditación se registra con el generador de casos. Los perfiles y su traducción a la entrada nativa de cada motor se fijan en el generador y se versionan con él.",
+  "grupos": [
+   "G0162"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "5ae2e23ab0e73bba4b44b2c75340fefa43344973",
+  "rutas": [
+   "scripts/fase7/casos.js"
+  ],
+  "linea": 13,
+  "valor": 1001,
+  "texto": "export const SEMILLAS_EVALUACION = Object.freeze([1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010]);",
+  "grupos": [
+   "G0214"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "5ae2e23ab0e73bba4b44b2c75340fefa43344973",
+  "rutas": [
+   "scripts/fase7/casos.js"
+  ],
+  "linea": 13,
+  "valor": 1002,
+  "texto": "export const SEMILLAS_EVALUACION = Object.freeze([1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010]);",
+  "grupos": [
+   "G0214"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "5ae2e23ab0e73bba4b44b2c75340fefa43344973",
+  "rutas": [
+   "scripts/fase7/casos.js"
+  ],
+  "linea": 13,
+  "valor": 1003,
+  "texto": "export const SEMILLAS_EVALUACION = Object.freeze([1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010]);",
+  "grupos": [
+   "G0214"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "5ae2e23ab0e73bba4b44b2c75340fefa43344973",
+  "rutas": [
+   "scripts/fase7/casos.js"
+  ],
+  "linea": 13,
+  "valor": 1004,
+  "texto": "export const SEMILLAS_EVALUACION = Object.freeze([1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010]);",
+  "grupos": [
+   "G0214"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "5ae2e23ab0e73bba4b44b2c75340fefa43344973",
+  "rutas": [
+   "scripts/fase7/casos.js"
+  ],
+  "linea": 13,
+  "valor": 1005,
+  "texto": "export const SEMILLAS_EVALUACION = Object.freeze([1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010]);",
+  "grupos": [
+   "G0214"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "5ae2e23ab0e73bba4b44b2c75340fefa43344973",
+  "rutas": [
+   "scripts/fase7/casos.js"
+  ],
+  "linea": 13,
+  "valor": 1006,
+  "texto": "export const SEMILLAS_EVALUACION = Object.freeze([1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010]);",
+  "grupos": [
+   "G0214"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "5ae2e23ab0e73bba4b44b2c75340fefa43344973",
+  "rutas": [
+   "scripts/fase7/casos.js"
+  ],
+  "linea": 13,
+  "valor": 1007,
+  "texto": "export const SEMILLAS_EVALUACION = Object.freeze([1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010]);",
+  "grupos": [
+   "G0214"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "5ae2e23ab0e73bba4b44b2c75340fefa43344973",
+  "rutas": [
+   "scripts/fase7/casos.js"
+  ],
+  "linea": 13,
+  "valor": 1008,
+  "texto": "export const SEMILLAS_EVALUACION = Object.freeze([1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010]);",
+  "grupos": [
+   "G0214"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "5ae2e23ab0e73bba4b44b2c75340fefa43344973",
+  "rutas": [
+   "scripts/fase7/casos.js"
+  ],
+  "linea": 13,
+  "valor": 1009,
+  "texto": "export const SEMILLAS_EVALUACION = Object.freeze([1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010]);",
+  "grupos": [
+   "G0214"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "5ae2e23ab0e73bba4b44b2c75340fefa43344973",
+  "rutas": [
+   "scripts/fase7/casos.js"
+  ],
+  "linea": 13,
+  "valor": 1010,
+  "texto": "export const SEMILLAS_EVALUACION = Object.freeze([1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010]);",
+  "grupos": [
+   "G0214"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "c87a24c8a76c79c3af3c11b54e44c5b03c6834e5",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 27,
+  "valor": 1001,
+  "texto": "  it('20 casos: 2 perfiles × semillas 1001–1010', () => {",
+  "grupos": [
+   "G0148"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "c87a24c8a76c79c3af3c11b54e44c5b03c6834e5",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 27,
+  "valor": 1010,
+  "texto": "  it('20 casos: 2 perfiles × semillas 1001–1010', () => {",
+  "grupos": [
+   "G0148"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "c87a24c8a76c79c3af3c11b54e44c5b03c6834e5",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 28,
+  "valor": 1001,
+  "texto": "    expect([...SEMILLAS_EVALUACION]).toEqual([1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010]);",
+  "grupos": [
+   "G0201"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "c87a24c8a76c79c3af3c11b54e44c5b03c6834e5",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 28,
+  "valor": 1002,
+  "texto": "    expect([...SEMILLAS_EVALUACION]).toEqual([1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010]);",
+  "grupos": [
+   "G0201"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "c87a24c8a76c79c3af3c11b54e44c5b03c6834e5",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 28,
+  "valor": 1003,
+  "texto": "    expect([...SEMILLAS_EVALUACION]).toEqual([1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010]);",
+  "grupos": [
+   "G0201"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "c87a24c8a76c79c3af3c11b54e44c5b03c6834e5",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 28,
+  "valor": 1004,
+  "texto": "    expect([...SEMILLAS_EVALUACION]).toEqual([1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010]);",
+  "grupos": [
+   "G0201"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "c87a24c8a76c79c3af3c11b54e44c5b03c6834e5",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 28,
+  "valor": 1005,
+  "texto": "    expect([...SEMILLAS_EVALUACION]).toEqual([1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010]);",
+  "grupos": [
+   "G0201"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "c87a24c8a76c79c3af3c11b54e44c5b03c6834e5",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 28,
+  "valor": 1006,
+  "texto": "    expect([...SEMILLAS_EVALUACION]).toEqual([1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010]);",
+  "grupos": [
+   "G0201"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "c87a24c8a76c79c3af3c11b54e44c5b03c6834e5",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 28,
+  "valor": 1007,
+  "texto": "    expect([...SEMILLAS_EVALUACION]).toEqual([1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010]);",
+  "grupos": [
+   "G0201"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "c87a24c8a76c79c3af3c11b54e44c5b03c6834e5",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 28,
+  "valor": 1008,
+  "texto": "    expect([...SEMILLAS_EVALUACION]).toEqual([1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010]);",
+  "grupos": [
+   "G0201"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "c87a24c8a76c79c3af3c11b54e44c5b03c6834e5",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 28,
+  "valor": 1009,
+  "texto": "    expect([...SEMILLAS_EVALUACION]).toEqual([1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010]);",
+  "grupos": [
+   "G0201"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "c87a24c8a76c79c3af3c11b54e44c5b03c6834e5",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 28,
+  "valor": 1010,
+  "texto": "    expect([...SEMILLAS_EVALUACION]).toEqual([1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010]);",
+  "grupos": [
+   "G0201"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "c87a24c8a76c79c3af3c11b54e44c5b03c6834e5",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 93,
+  "valor": 1005,
+  "texto": "    expect(() => verificarSemillas([...SEMILLAS_EVALUACION], registroOk([{ desde: 1005, hasta: 1005, origen: 'prueba X' }]))).toThrow(/1005 ya usada: prueba X/);",
+  "grupos": [
+   "G0447"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "c87a24c8a76c79c3af3c11b54e44c5b03c6834e5",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 93,
+  "valor": 1005,
+  "texto": "    expect(() => verificarSemillas([...SEMILLAS_EVALUACION], registroOk([{ desde: 1005, hasta: 1005, origen: 'prueba X' }]))).toThrow(/1005 ya usada: prueba X/);",
+  "grupos": [
+   "G0447"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "c87a24c8a76c79c3af3c11b54e44c5b03c6834e5",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 93,
+  "valor": 1005,
+  "texto": "    expect(() => verificarSemillas([...SEMILLAS_EVALUACION], registroOk([{ desde: 1005, hasta: 1005, origen: 'prueba X' }]))).toThrow(/1005 ya usada: prueba X/);",
+  "grupos": [
+   "G0447"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "c87a24c8a76c79c3af3c11b54e44c5b03c6834e5",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 96,
+  "valor": 1001,
+  "texto": "    expect(() => verificarSemillas([1001], undefined)).toThrow(/ausente/);",
+  "grupos": [
+   "G0192"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "c87a24c8a76c79c3af3c11b54e44c5b03c6834e5",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 97,
+  "valor": 1001,
+  "texto": "    expect(() => verificarSemillas([1001], { ...registroOk(), ancla: 'abc' })).toThrow(/ancla/);",
+  "grupos": [
+   "G0193"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "c87a24c8a76c79c3af3c11b54e44c5b03c6834e5",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 98,
+  "valor": 1001,
+  "texto": "    expect(() => verificarSemillas([1001], { ...registroOk(), perimetro: ' ' })).toThrow(/perímetro/);",
+  "grupos": [
+   "G0195"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "c87a24c8a76c79c3af3c11b54e44c5b03c6834e5",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 99,
+  "valor": 1001,
+  "texto": "    expect(() => verificarSemillas([1001], { ...registroOk(), completo: false })).toThrow(/completo/);",
+  "grupos": [
+   "G0194"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "c87a24c8a76c79c3af3c11b54e44c5b03c6834e5",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 102,
+  "valor": 1001,
+  "texto": "    expect(() => verificarSemillas([1001], registroOk([{ desde: 5, hasta: 1, origen: 'x' }]))).toThrow(/mal formado/);",
+  "grupos": [
+   "G0191"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "c87a24c8a76c79c3af3c11b54e44c5b03c6834e5",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 103,
+  "valor": 1001,
+  "texto": "    expect(() => verificarSemillas([1001], registroOk([{ desde: 1, hasta: 2 }]))).toThrow(/mal formado/);",
+  "grupos": [
+   "G0190"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "c31da442fed57d4f15a4da10c31b55881f152e13",
+  "rutas": [
+   "scripts/fase7/escanearSemillas.test.js"
+  ],
+  "linea": 2,
+  "valor": 1001,
+  "texto": "// Ningún fixture usa enteros 1001-1010.",
+  "grupos": []
+ },
+ {
+  "origen": "blob",
+  "id": "c31da442fed57d4f15a4da10c31b55881f152e13",
+  "rutas": [
+   "scripts/fase7/escanearSemillas.test.js"
+  ],
+  "linea": 2,
+  "valor": 1010,
+  "texto": "// Ningún fixture usa enteros 1001-1010.",
+  "grupos": []
+ },
+ {
+  "origen": "blob",
+  "id": "0301bf0d286e48e97b39ff92ff584c913b3e9007",
+  "rutas": [
+   "scripts/fase7/generarCasos.test.js"
+  ],
+  "linea": 2,
+  "valor": 1001,
+  "texto": "// nunca las de evaluación (1001–1010), y no escriben archivos.",
+  "grupos": []
+ },
+ {
+  "origen": "blob",
+  "id": "0301bf0d286e48e97b39ff92ff584c913b3e9007",
+  "rutas": [
+   "scripts/fase7/generarCasos.test.js"
+  ],
+  "linea": 2,
+  "valor": 1010,
+  "texto": "// nunca las de evaluación (1001–1010), y no escriben archivos.",
+  "grupos": []
+ },
+ {
+  "origen": "blob",
+  "id": "3b7418a6f4e4c3c21e49869732aac08d9dddbada",
+  "rutas": [
+   "scripts/fase7/semillas.test.js"
+  ],
+  "linea": 1,
+  "valor": 1001,
+  "texto": "// Tests de las reglas puras del escáner de semillas. Ningún fixture usa enteros 1001-1010.",
+  "grupos": [
+   "G0160"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "3b7418a6f4e4c3c21e49869732aac08d9dddbada",
+  "rutas": [
+   "scripts/fase7/semillas.test.js"
+  ],
+  "linea": 1,
+  "valor": 1010,
+  "texto": "// Tests de las reglas puras del escáner de semillas. Ningún fixture usa enteros 1001-1010.",
+  "grupos": [
+   "G0160"
+  ]
+ }
+]

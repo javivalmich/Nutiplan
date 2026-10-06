@@ -1,0 +1,589 @@
+[
+ {
+  "origen": "blob",
+  "id": "fea4339aebdd6e46f136453215392d079d270221",
+  "rutas": [
+   "DECISIONS.md"
+  ],
+  "linea": 3682,
+  "valor": 2001,
+  "texto": "3. Aplicada sobre U (consolidación reproducida por el titular; resultado sha256 `485ceda6…3ec9`), 1001–1010 interseca U y 2001–2010 no. Las semillas de evaluación pasan a ser 2001–2010: contiguas, con punto inicial declarado (protocolo §5.5).",
+  "grupos": [
+   "G0166",
+   "G0167"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "fea4339aebdd6e46f136453215392d079d270221",
+  "rutas": [
+   "DECISIONS.md"
+  ],
+  "linea": 3682,
+  "valor": 2010,
+  "texto": "3. Aplicada sobre U (consolidación reproducida por el titular; resultado sha256 `485ceda6…3ec9`), 1001–1010 interseca U y 2001–2010 no. Las semillas de evaluación pasan a ser 2001–2010: contiguas, con punto inicial declarado (protocolo §5.5).",
+  "grupos": [
+   "G0166",
+   "G0167"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "fea4339aebdd6e46f136453215392d079d270221",
+  "rutas": [
+   "DECISIONS.md"
+  ],
+  "linea": 3682,
+  "valor": 2001,
+  "texto": "3. Aplicada sobre U (consolidación reproducida por el titular; resultado sha256 `485ceda6…3ec9`), 1001–1010 interseca U y 2001–2010 no. Las semillas de evaluación pasan a ser 2001–2010: contiguas, con punto inicial declarado (protocolo §5.5).",
+  "grupos": [
+   "G0166",
+   "G0167"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "fea4339aebdd6e46f136453215392d079d270221",
+  "rutas": [
+   "DECISIONS.md"
+  ],
+  "linea": 3682,
+  "valor": 2010,
+  "texto": "3. Aplicada sobre U (consolidación reproducida por el titular; resultado sha256 `485ceda6…3ec9`), 1001–1010 interseca U y 2001–2010 no. Las semillas de evaluación pasan a ser 2001–2010: contiguas, con punto inicial declarado (protocolo §5.5).",
+  "grupos": [
+   "G0166",
+   "G0167"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "fea4339aebdd6e46f136453215392d079d270221",
+  "rutas": [
+   "DECISIONS.md"
+  ],
+  "linea": 3683,
+  "valor": 2001,
+  "texto": "4. La ventana es libre respecto de U bajo las reglas de revisión del registro, no en términos absolutos. Su acreditación definitiva queda condicionada al re-escaneo en la ancla que produzca este cambio, a la revisión incremental, a las comprobaciones F-RV.11 y F-RV.11b sobre 2001–2010 y al registro final.",
+  "grupos": []
+ },
+ {
+  "origen": "blob",
+  "id": "fea4339aebdd6e46f136453215392d079d270221",
+  "rutas": [
+   "DECISIONS.md"
+  ],
+  "linea": 3683,
+  "valor": 2010,
+  "texto": "4. La ventana es libre respecto de U bajo las reglas de revisión del registro, no en términos absolutos. Su acreditación definitiva queda condicionada al re-escaneo en la ancla que produzca este cambio, a la revisión incremental, a las comprobaciones F-RV.11 y F-RV.11b sobre 2001–2010 y al registro final.",
+  "grupos": []
+ },
+ {
+  "origen": "blob",
+  "id": "fea4339aebdd6e46f136453215392d079d270221",
+  "rutas": [
+   "DECISIONS.md"
+  ],
+  "linea": 3687,
+  "valor": 2001,
+  "texto": "- `SEMILLAS_EVALUACION` pasa a 2001–2010. Se actualizan el título y la aserción del test de definición, la aserción que usa un miembro de la ventana y los comentarios que documentan la ventana. Los datos de prueba del validador que usan 1001 no se modifican.",
+  "grupos": [
+   "G0162"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "fea4339aebdd6e46f136453215392d079d270221",
+  "rutas": [
+   "DECISIONS.md"
+  ],
+  "linea": 3687,
+  "valor": 2010,
+  "texto": "- `SEMILLAS_EVALUACION` pasa a 2001–2010. Se actualizan el título y la aserción del test de definición, la aserción que usa un miembro de la ventana y los comentarios que documentan la ventana. Los datos de prueba del validador que usan 1001 no se modifican.",
+  "grupos": [
+   "G0162"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "fea4339aebdd6e46f136453215392d079d270221",
+  "rutas": [
+   "DECISIONS.md"
+  ],
+  "linea": 3688,
+  "valor": 2001,
+  "texto": "- Antes de autorizar la generación: re-escaneo, revisión incremental, F-RV.11/11b sobre 2001–2010 y registro final. Este asiento no autoriza la generación.",
+  "grupos": []
+ },
+ {
+  "origen": "blob",
+  "id": "fea4339aebdd6e46f136453215392d079d270221",
+  "rutas": [
+   "DECISIONS.md"
+  ],
+  "linea": 3688,
+  "valor": 2010,
+  "texto": "- Antes de autorizar la generación: re-escaneo, revisión incremental, F-RV.11/11b sobre 2001–2010 y registro final. Este asiento no autoriza la generación.",
+  "grupos": []
+ },
+ {
+  "origen": "blob",
+  "id": "fea4339aebdd6e46f136453215392d079d270221",
+  "rutas": [
+   "DECISIONS.md"
+  ],
+  "linea": 3691,
+  "valor": 2001,
+  "texto": "Ventana de evaluación: 2001–2010, pendiente de acreditación en la nueva ancla.",
+  "grupos": []
+ },
+ {
+  "origen": "blob",
+  "id": "fea4339aebdd6e46f136453215392d079d270221",
+  "rutas": [
+   "DECISIONS.md"
+  ],
+  "linea": 3691,
+  "valor": 2010,
+  "texto": "Ventana de evaluación: 2001–2010, pendiente de acreditación en la nueva ancla.",
+  "grupos": []
+ },
+ {
+  "origen": "blob",
+  "id": "0a7b39153b5b1095a7a5cee3128618e5628ac8c1",
+  "rutas": [
+   "scripts/fase7/casos.js"
+  ],
+  "linea": 13,
+  "valor": 2001,
+  "texto": "export const SEMILLAS_EVALUACION = Object.freeze([2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010]);",
+  "grupos": [
+   "G0226"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "0a7b39153b5b1095a7a5cee3128618e5628ac8c1",
+  "rutas": [
+   "scripts/fase7/casos.js"
+  ],
+  "linea": 13,
+  "valor": 2002,
+  "texto": "export const SEMILLAS_EVALUACION = Object.freeze([2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010]);",
+  "grupos": [
+   "G0226"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "0a7b39153b5b1095a7a5cee3128618e5628ac8c1",
+  "rutas": [
+   "scripts/fase7/casos.js"
+  ],
+  "linea": 13,
+  "valor": 2003,
+  "texto": "export const SEMILLAS_EVALUACION = Object.freeze([2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010]);",
+  "grupos": [
+   "G0226"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "0a7b39153b5b1095a7a5cee3128618e5628ac8c1",
+  "rutas": [
+   "scripts/fase7/casos.js"
+  ],
+  "linea": 13,
+  "valor": 2004,
+  "texto": "export const SEMILLAS_EVALUACION = Object.freeze([2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010]);",
+  "grupos": [
+   "G0226"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "0a7b39153b5b1095a7a5cee3128618e5628ac8c1",
+  "rutas": [
+   "scripts/fase7/casos.js"
+  ],
+  "linea": 13,
+  "valor": 2005,
+  "texto": "export const SEMILLAS_EVALUACION = Object.freeze([2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010]);",
+  "grupos": [
+   "G0226"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "0a7b39153b5b1095a7a5cee3128618e5628ac8c1",
+  "rutas": [
+   "scripts/fase7/casos.js"
+  ],
+  "linea": 13,
+  "valor": 2006,
+  "texto": "export const SEMILLAS_EVALUACION = Object.freeze([2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010]);",
+  "grupos": [
+   "G0226"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "0a7b39153b5b1095a7a5cee3128618e5628ac8c1",
+  "rutas": [
+   "scripts/fase7/casos.js"
+  ],
+  "linea": 13,
+  "valor": 2007,
+  "texto": "export const SEMILLAS_EVALUACION = Object.freeze([2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010]);",
+  "grupos": [
+   "G0226"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "0a7b39153b5b1095a7a5cee3128618e5628ac8c1",
+  "rutas": [
+   "scripts/fase7/casos.js"
+  ],
+  "linea": 13,
+  "valor": 2008,
+  "texto": "export const SEMILLAS_EVALUACION = Object.freeze([2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010]);",
+  "grupos": [
+   "G0226"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "0a7b39153b5b1095a7a5cee3128618e5628ac8c1",
+  "rutas": [
+   "scripts/fase7/casos.js"
+  ],
+  "linea": 13,
+  "valor": 2009,
+  "texto": "export const SEMILLAS_EVALUACION = Object.freeze([2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010]);",
+  "grupos": [
+   "G0226"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "0a7b39153b5b1095a7a5cee3128618e5628ac8c1",
+  "rutas": [
+   "scripts/fase7/casos.js"
+  ],
+  "linea": 13,
+  "valor": 2010,
+  "texto": "export const SEMILLAS_EVALUACION = Object.freeze([2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010]);",
+  "grupos": [
+   "G0226"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "9bb2570bf8d31d5ee68e5890f92daaab7422344c",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 27,
+  "valor": 2001,
+  "texto": "  it('20 casos: 2 perfiles × semillas 2001–2010', () => {",
+  "grupos": [
+   "G0149"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "9bb2570bf8d31d5ee68e5890f92daaab7422344c",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 27,
+  "valor": 2010,
+  "texto": "  it('20 casos: 2 perfiles × semillas 2001–2010', () => {",
+  "grupos": [
+   "G0149"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "9bb2570bf8d31d5ee68e5890f92daaab7422344c",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 28,
+  "valor": 2001,
+  "texto": "    expect([...SEMILLAS_EVALUACION]).toEqual([2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010]);",
+  "grupos": [
+   "G0212"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "9bb2570bf8d31d5ee68e5890f92daaab7422344c",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 28,
+  "valor": 2002,
+  "texto": "    expect([...SEMILLAS_EVALUACION]).toEqual([2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010]);",
+  "grupos": [
+   "G0212"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "9bb2570bf8d31d5ee68e5890f92daaab7422344c",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 28,
+  "valor": 2003,
+  "texto": "    expect([...SEMILLAS_EVALUACION]).toEqual([2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010]);",
+  "grupos": [
+   "G0212"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "9bb2570bf8d31d5ee68e5890f92daaab7422344c",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 28,
+  "valor": 2004,
+  "texto": "    expect([...SEMILLAS_EVALUACION]).toEqual([2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010]);",
+  "grupos": [
+   "G0212"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "9bb2570bf8d31d5ee68e5890f92daaab7422344c",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 28,
+  "valor": 2005,
+  "texto": "    expect([...SEMILLAS_EVALUACION]).toEqual([2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010]);",
+  "grupos": [
+   "G0212"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "9bb2570bf8d31d5ee68e5890f92daaab7422344c",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 28,
+  "valor": 2006,
+  "texto": "    expect([...SEMILLAS_EVALUACION]).toEqual([2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010]);",
+  "grupos": [
+   "G0212"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "9bb2570bf8d31d5ee68e5890f92daaab7422344c",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 28,
+  "valor": 2007,
+  "texto": "    expect([...SEMILLAS_EVALUACION]).toEqual([2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010]);",
+  "grupos": [
+   "G0212"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "9bb2570bf8d31d5ee68e5890f92daaab7422344c",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 28,
+  "valor": 2008,
+  "texto": "    expect([...SEMILLAS_EVALUACION]).toEqual([2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010]);",
+  "grupos": [
+   "G0212"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "9bb2570bf8d31d5ee68e5890f92daaab7422344c",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 28,
+  "valor": 2009,
+  "texto": "    expect([...SEMILLAS_EVALUACION]).toEqual([2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010]);",
+  "grupos": [
+   "G0212"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "9bb2570bf8d31d5ee68e5890f92daaab7422344c",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 28,
+  "valor": 2010,
+  "texto": "    expect([...SEMILLAS_EVALUACION]).toEqual([2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010]);",
+  "grupos": [
+   "G0212"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "9bb2570bf8d31d5ee68e5890f92daaab7422344c",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 93,
+  "valor": 2005,
+  "texto": "    expect(() => verificarSemillas([...SEMILLAS_EVALUACION], registroOk([{ desde: 2005, hasta: 2005, origen: 'prueba X' }]))).toThrow(/2005 ya usada: prueba X/);",
+  "grupos": [
+   "G0460"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "9bb2570bf8d31d5ee68e5890f92daaab7422344c",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 93,
+  "valor": 2005,
+  "texto": "    expect(() => verificarSemillas([...SEMILLAS_EVALUACION], registroOk([{ desde: 2005, hasta: 2005, origen: 'prueba X' }]))).toThrow(/2005 ya usada: prueba X/);",
+  "grupos": [
+   "G0460"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "9bb2570bf8d31d5ee68e5890f92daaab7422344c",
+  "rutas": [
+   "scripts/fase7/casos.test.js"
+  ],
+  "linea": 93,
+  "valor": 2005,
+  "texto": "    expect(() => verificarSemillas([...SEMILLAS_EVALUACION], registroOk([{ desde: 2005, hasta: 2005, origen: 'prueba X' }]))).toThrow(/2005 ya usada: prueba X/);",
+  "grupos": [
+   "G0460"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "f529d5f6d0397a759e3ee5b26f7eacc2d37269df",
+  "rutas": [
+   "scripts/fase7/escanearSemillas.test.js"
+  ],
+  "linea": 2,
+  "valor": 2001,
+  "texto": "// Ningún fixture usa enteros 2001-2010.",
+  "grupos": []
+ },
+ {
+  "origen": "blob",
+  "id": "f529d5f6d0397a759e3ee5b26f7eacc2d37269df",
+  "rutas": [
+   "scripts/fase7/escanearSemillas.test.js"
+  ],
+  "linea": 2,
+  "valor": 2010,
+  "texto": "// Ningún fixture usa enteros 2001-2010.",
+  "grupos": []
+ },
+ {
+  "origen": "blob",
+  "id": "d5d614ec5202d64e7546535adb903e920e60f677",
+  "rutas": [
+   "scripts/fase7/generarCasos.test.js"
+  ],
+  "linea": 2,
+  "valor": 2001,
+  "texto": "// nunca las de evaluación (2001–2010), y no escriben archivos.",
+  "grupos": []
+ },
+ {
+  "origen": "blob",
+  "id": "d5d614ec5202d64e7546535adb903e920e60f677",
+  "rutas": [
+   "scripts/fase7/generarCasos.test.js"
+  ],
+  "linea": 2,
+  "valor": 2010,
+  "texto": "// nunca las de evaluación (2001–2010), y no escriben archivos.",
+  "grupos": []
+ },
+ {
+  "origen": "blob",
+  "id": "a87544b3c3f418fe8f81ce132da938a272d2e14c",
+  "rutas": [
+   "scripts/fase7/semillas.test.js"
+  ],
+  "linea": 1,
+  "valor": 2001,
+  "texto": "// Tests de las reglas puras del escáner de semillas. Ningún fixture usa enteros 2001-2010.",
+  "grupos": [
+   "G0164"
+  ]
+ },
+ {
+  "origen": "blob",
+  "id": "a87544b3c3f418fe8f81ce132da938a272d2e14c",
+  "rutas": [
+   "scripts/fase7/semillas.test.js"
+  ],
+  "linea": 1,
+  "valor": 2010,
+  "texto": "// Tests de las reglas puras del escáner de semillas. Ningún fixture usa enteros 2001-2010.",
+  "grupos": [
+   "G0164"
+  ]
+ },
+ {
+  "origen": "mensaje",
+  "id": "289d90d833bb4219707fbb3b18d31fdba0e4ebca",
+  "rutas": [],
+  "linea": 1,
+  "valor": 2001,
+  "texto": "Merge D-088: ventana de semillas 2001-2010",
+  "grupos": [
+   "G0184"
+  ]
+ },
+ {
+  "origen": "mensaje",
+  "id": "289d90d833bb4219707fbb3b18d31fdba0e4ebca",
+  "rutas": [],
+  "linea": 1,
+  "valor": 2010,
+  "texto": "Merge D-088: ventana de semillas 2001-2010",
+  "grupos": [
+   "G0184"
+  ]
+ },
+ {
+  "origen": "mensaje",
+  "id": "dad19cc6342f0835f0fae8e2b8ab3fe1bc3b78bd",
+  "rutas": [],
+  "linea": 1,
+  "valor": 2001,
+  "texto": "D-088: ventana de semillas de Fase 7 pasa a 2001-2010 (enmienda de D-087)",
+  "grupos": [
+   "G0171"
+  ]
+ },
+ {
+  "origen": "mensaje",
+  "id": "dad19cc6342f0835f0fae8e2b8ab3fe1bc3b78bd",
+  "rutas": [],
+  "linea": 1,
+  "valor": 2010,
+  "texto": "D-088: ventana de semillas de Fase 7 pasa a 2001-2010 (enmienda de D-087)",
+  "grupos": [
+   "G0171"
+  ]
+ }
+]

@@ -1,0 +1,95 @@
+{
+ "hashJsBlob": "308ef701e2af084fd43fadbf2cb1f78d80595853",
+ "resultados": [
+  {
+   "entrada": "baseline-defflexible:12",
+   "origenes": [
+    "src/engine/tests/baselineFixtures.js@025652c:43",
+    "src/engine/tests/buildPlan.baseline.test.js@53ba827:49",
+    "src/engine/tests/buildPlan.baseline.test.js@f64b15a:51"
+   ],
+   "valor": 532847468,
+   "en1001a1010": false
+  },
+  {
+   "entrada": "baseline-defsaciante:11",
+   "origenes": [
+    "src/engine/tests/baselineFixtures.js@025652c:36",
+    "src/engine/tests/buildPlan.baseline.test.js@53ba827:42",
+    "src/engine/tests/buildPlan.baseline.test.js@f64b15a:44"
+   ],
+   "valor": 1393820248,
+   "en1001a1010": false
+  },
+  {
+   "entrada": "baseline-fatlossgeneral:10",
+   "origenes": [
+    "src/engine/tests/baselineFixtures.js@025652c:29",
+    "src/engine/tests/buildPlan.baseline.test.js@53ba827:35",
+    "src/engine/tests/buildPlan.baseline.test.js@f64b15a:37"
+   ],
+   "valor": 1890273642,
+   "en1001a1010": false
+  },
+  {
+   "entrada": "baseline-mant-intol:16",
+   "origenes": [
+    "src/engine/tests/baselineFixtures.js@025652c:71",
+    "src/engine/tests/buildPlan.baseline.test.js@53ba827:77",
+    "src/engine/tests/buildPlan.baseline.test.js@f64b15a:79"
+   ],
+   "valor": 756482041,
+   "en1001a1010": false
+  },
+  {
+   "entrada": "baseline-mant-simple:18",
+   "origenes": [
+    "src/engine/tests/baselineFixtures.js@025652c:85",
+    "src/engine/tests/buildPlan.baseline.test.js@53ba827:91",
+    "src/engine/tests/buildPlan.baseline.test.js@f64b15a:93"
+   ],
+   "valor": 1491109313,
+   "en1001a1010": false
+  },
+  {
+   "entrada": "baseline-mant-training:17",
+   "origenes": [
+    "src/engine/tests/baselineFixtures.js@025652c:78",
+    "src/engine/tests/buildPlan.baseline.test.js@53ba827:84",
+    "src/engine/tests/buildPlan.baseline.test.js@f64b15a:86"
+   ],
+   "valor": 1377073392,
+   "en1001a1010": false
+  },
+  {
+   "entrada": "baseline-mantenimiento:13",
+   "origenes": [
+    "src/engine/tests/baselineFixtures.js@025652c:50",
+    "src/engine/tests/buildPlan.baseline.test.js@53ba827:56",
+    "src/engine/tests/buildPlan.baseline.test.js@f64b15a:58"
+   ],
+   "valor": 1880525077,
+   "en1001a1010": false
+  },
+  {
+   "entrada": "baseline-volumenagresivo:15",
+   "origenes": [
+    "src/engine/tests/baselineFixtures.js@025652c:64",
+    "src/engine/tests/buildPlan.baseline.test.js@53ba827:70",
+    "src/engine/tests/buildPlan.baseline.test.js@f64b15a:72"
+   ],
+   "valor": 588720795,
+   "en1001a1010": false
+  },
+  {
+   "entrada": "baseline-volumenlimpio:14",
+   "origenes": [
+    "src/engine/tests/baselineFixtures.js@025652c:57",
+    "src/engine/tests/buildPlan.baseline.test.js@53ba827:63",
+    "src/engine/tests/buildPlan.baseline.test.js@f64b15a:65"
+   ],
+   "valor": 1487635260,
+   "en1001a1010": false
+  }
+ ]
+}

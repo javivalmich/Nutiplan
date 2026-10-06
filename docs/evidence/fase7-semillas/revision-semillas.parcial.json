@@ -1,0 +1,5002 @@
+{
+ "version": 1,
+ "estado": "parcial: 829/829 clasificados; F-RV.5 abierta",
+ "borradorSha256": "dd01bbeef34acbcac83a060f6dc2b2474a77759a4d53504dbb4fced0ff1a8c9d",
+ "borradorMdSha256": "4f6684ca7e9baabb281debd4428f37fd5bc9c2feb73d3f38ed43768efbe6c138",
+ "ancla": "2aa1157e32306c356c60bfc4bc594ca5cfff7bb2",
+ "bundleSha256": "6485e7b62fbf7128b029cb20ae798df6437a039fb17a80418fcdeb81d1963107",
+ "reglasRatificadas": {
+  "F-RV.1": "se clasifican los 829 grupos; orden: R1-R3 que tocan 1001-1010, R4, resto R1-R3",
+  "F-RV.2": "clases uso / mencion/designacion / falso_positivo / R4_sin_resolver (descartable para 1001-1010 = no bloqueante; si no, completo:false); la clase se deriva del contexto, la relevancia solo decide el bloqueo",
+  "F-RV.3": "(b) propuesta por grupo; en bloque solo falso_positivo y mencion; individual todo uso, todo grupo de 1001-1010 y todo R4 no descartable",
+  "F-RV.4": "revision separada ligada por borradorSha256; borrador intacto",
+  "F-RV.5": "(a) rango literal para los 8 bucles con corte (G0132, G0133: 0-1999; G0116, G0117, G0137, G0138: 0-499; G0131: 0-199; G0136: 0-49), sin reconstruir ejecución. Regla de ventana: sea U el conjunto consolidado de usos; se elige el primer intervalo [k*1000+1, k*1000+10], k>=1, con intersección vacía con U. La ventana es libre respecto de U bajo las reglas F-RV, no en términos absolutos",
+  "F-RV.6": "bundle git como canal de contexto, validado (82 refs, 612 blobs, 416 commits)",
+  "F-RV.7": "(a) trazado del valor hasta su origen en el commit; entrada no versionada -> R4_sin_resolver no bloqueante en limitaciones; no se fabrican enteros; un R4 solo es uso si se demuestra el flujo hasta el motor; precisión: un llamador posicional sin término puede ser origen de un uso si se alcanza por trazado manual; su literal entero entra en usos; los no alcanzados quedan como residuo declarado (cubierto para 1001-1010 por F-RV.11)",
+  "F-RV.8": "semilla no entera = uso fuera de usos, en limitaciones; nota ampliada: en engine2 un entero N y la cadena \"N\" comparten los generadores derivados (::skeleton, ::walk, ::walk::select) y difieren en el del ancla (resolveSeed: número directo, cadena por seedFromString); no hay equivalencia total ni independencia total; F-RV.11 acredita que no hay literales 1001-1010 numéricos ni en cadena en el perímetro",
+  "F-RV.9": "(a) toda semilla cuenta, sin distinguir dominio; dominio en nota",
+  "F-RV.10": "la ruta instrumental de Fase 7 que consume SEMILLAS_EVALUACION es mencion/designacion mientras no haya evidencia versionada de ejecución; no reescribe F-SE.5 para el resto",
+  "F-RV.11": "comprobación complementaria de literales exactos 1001-1010 sin contexto; no detecta rangos que los contengan sin escribirlos",
+  "F-RV.12": "línea interna de paso = uso de paso: no introduce valores ni bloquea por sí misma; valores y bloqueos en llamadores/orígenes; no oculta orígenes ambiguos (el llamador conserva su R4_sin_resolver)",
+  "F-RV.13": "(a) derivación determinista de semilla entera: si un entero llega a un RNG como resultado de una función pura, determinista y versionada sobre entradas acreditadas, se evalúa exactamente y el resultado se acredita como uso; prohibido inferir por comportamiento esperado, aproximación, ejecución del motor o heurística; función y entradas identificadas por blob/ruta/commit; resultado reproducible. Alcance actual: las rutas legacy identificadas (no se extiende preventivamente a seedFromString de engine2); extensión (b) ratificada: aplicada a los 9 pares userId:weekNumber de los fixtures del baseline, cobertura parcial declarada",
+  "planSeed": "la palabra seed en un identificador no convierte el valor en semilla; la clase depende del flujo hacia un generador",
+  "F-RV.11b": "falsación complementaria de cotas de campañas: script reproducible sobre todo el perímetro textual alcanzable buscando constantes y cotas de bucle de 4+ cifras (<, <=, y formas declaradas por el script); exclusiones (umbrales nutricionales, temporizadores) con criterios documentados; complementa F-RV.11; la ausencia solo acredita la cobertura del patrón; toda cota de semillas >= 1000 que pueda alcanzar 1001-1010 se revisa individualmente; no sustituye F-RV.5",
+  "argumento_invalido": "un argumento inválido que nunca alcanza el generador no constituye uso",
+  "clasificacion_vs_ejecucion": "clasificación semántica != evidencia de ejecución: que un documento diga que se ejecutó una campaña no la convierte automáticamente en uso acreditado",
+  "F-RV.14": "(b) ejecución afirmada por documentación versionada sin código ejecutor en el perímetro: sus semillas entran en usos con origen documental explícito (ruta:línea, \"documental, no versionado\"); no se eleva a ejecución acreditada; usos = conjunto conservador de semillas a tratar como usadas, con procedencias distintas; no reclasifica la línea (sigue mencion/designacion)"
+ },
+ "clasificaciones": {
+  "G0001": {
+   "clase": "mencion/designacion",
+   "nota": "artefacto de salida que deja constancia de la semilla usada",
+   "paso": "F3F4"
+  },
+  "G0002": {
+   "clase": "mencion/designacion",
+   "nota": "artefacto de salida que deja constancia de la semilla usada",
+   "paso": "F3F4"
+  },
+  "G0003": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0004": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0005": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0006": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0007": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0008": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0009": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0010": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0011": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0012": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 0
+    }
+   ]
+  },
+  "G0013": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 3,
+     "hasta": 3
+    }
+   ]
+  },
+  "G0014": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 7,
+     "hasta": 7
+    }
+   ]
+  },
+  "G0015": {
+   "clase": "mencion/designacion",
+   "nota": "comentario o título de test que nombra una semilla sin ejecutarla",
+   "paso": "F1F2"
+  },
+  "G0016": {
+   "clase": "mencion/designacion",
+   "nota": "comentario o título de test que nombra una semilla sin ejecutarla",
+   "paso": "F1F2"
+  },
+  "G0017": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0018": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0019": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0020": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0021": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0022": {
+   "clase": "mencion/designacion",
+   "nota": "log, cabecera, título de test, comentario o mensaje de commit que nombra semillas ya en usos desde el código",
+   "paso": "F3F4"
+  },
+  "G0023": {
+   "clase": "uso",
+   "nota": "constante de origen SEED (1 / 0 / 123456) de usos ya trazados",
+   "paso": "F3F4",
+   "aportaUsos": [
+    {
+     "desde": 1,
+     "hasta": 1
+    }
+   ]
+  },
+  "G0024": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0025": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0026": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0027": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0028": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 1,
+     "hasta": 1
+    }
+   ]
+  },
+  "G0029": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0030": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 42,
+     "hasta": 42
+    }
+   ]
+  },
+  "G0031": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 42,
+     "hasta": 42
+    }
+   ]
+  },
+  "G0032": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 99,
+     "hasta": 99
+    }
+   ]
+  },
+  "G0033": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 42,
+     "hasta": 42
+    }
+   ]
+  },
+  "G0034": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 42,
+     "hasta": 42
+    }
+   ]
+  },
+  "G0035": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 99,
+     "hasta": 99
+    }
+   ]
+  },
+  "G0036": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 11,
+     "hasta": 11
+    }
+   ]
+  },
+  "G0037": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 7,
+     "hasta": 7
+    }
+   ]
+  },
+  "G0038": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 1,
+     "hasta": 1
+    }
+   ]
+  },
+  "G0039": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 0
+    }
+   ]
+  },
+  "G0040": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 3,
+     "hasta": 3
+    }
+   ]
+  },
+  "G0041": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 3,
+     "hasta": 3
+    }
+   ]
+  },
+  "G0042": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 7,
+     "hasta": 7
+    }
+   ]
+  },
+  "G0043": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 0
+    }
+   ]
+  },
+  "G0044": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 42,
+     "hasta": 42
+    }
+   ]
+  },
+  "G0045": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 0
+    }
+   ]
+  },
+  "G0046": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 5,
+     "hasta": 5
+    }
+   ]
+  },
+  "G0047": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 0
+    }
+   ]
+  },
+  "G0048": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 0
+    }
+   ]
+  },
+  "G0049": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0050": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0051": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 5,
+     "hasta": 5
+    }
+   ]
+  },
+  "G0052": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0053": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0054": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0055": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0056": {
+   "clase": "mencion/designacion",
+   "nota": "log, cabecera, título de test, comentario o mensaje de commit que nombra semillas ya en usos desde el código",
+   "paso": "F3F4"
+  },
+  "G0057": {
+   "clase": "mencion/designacion",
+   "nota": "log, cabecera, título de test, comentario o mensaje de commit que nombra semillas ya en usos desde el código",
+   "paso": "F3F4"
+  },
+  "G0058": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 0
+    }
+   ]
+  },
+  "G0059": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 42,
+     "hasta": 42
+    }
+   ]
+  },
+  "G0060": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0061": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0062": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0063": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0064": {
+   "clase": "mencion/designacion",
+   "nota": "2026-07-18-engine2-conformidad-v1.0.md: ejecución con fragmento de invocación del propio documento (:43, :309-310) en 569fc1c, no versionado; F-RV.14",
+   "paso": "F3F4",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 0,
+     "origen": "documental, no versionado: docs/evidence/plan-observable/2026-07-18-engine2-conformidad-v1.0.md (ejecución con fragmento de invocación en 569fc1c)"
+    }
+   ]
+  },
+  "G0065": {
+   "clase": "mencion/designacion",
+   "nota": "2026-07-18-engine2-conformidad-v1.0.md: ejecución con fragmento de invocación del propio documento (:43, :309-310) en 569fc1c, no versionado; F-RV.14",
+   "paso": "F3F4",
+   "aportaUsos": [
+    {
+     "desde": 1,
+     "hasta": 1,
+     "origen": "documental, no versionado: docs/evidence/plan-observable/2026-07-18-engine2-conformidad-v1.0.md (ejecución con fragmento de invocación en 569fc1c)"
+    }
+   ]
+  },
+  "G0066": {
+   "clase": "mencion/designacion",
+   "nota": "comentario o título de test que nombra una semilla sin ejecutarla",
+   "paso": "F1F2"
+  },
+  "G0067": {
+   "clase": "mencion/designacion",
+   "nota": "comentario o título de test que nombra una semilla sin ejecutarla",
+   "paso": "F1F2"
+  },
+  "G0068": {
+   "clase": "mencion/designacion",
+   "nota": "comentario o título de test que nombra una semilla sin ejecutarla",
+   "paso": "F1F2"
+  },
+  "G0069": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0070": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0071": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 0
+    }
+   ]
+  },
+  "G0072": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 0
+    }
+   ]
+  },
+  "G0073": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 3,
+     "hasta": 3
+    }
+   ]
+  },
+  "G0074": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 0
+    }
+   ]
+  },
+  "G0075": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0076": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0077": {
+   "clase": "mencion/designacion",
+   "nota": "comentario o título de test que nombra una semilla sin ejecutarla",
+   "paso": "F1F2"
+  },
+  "G0078": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0079": {
+   "clase": "mencion/designacion",
+   "nota": "comentario o título de test que nombra una semilla sin ejecutarla",
+   "paso": "F1F2"
+  },
+  "G0080": {
+   "clase": "mencion/designacion",
+   "nota": "log, cabecera, título de test, comentario o mensaje de commit que nombra semillas ya en usos desde el código",
+   "paso": "F3F4"
+  },
+  "G0081": {
+   "clase": "mencion/designacion",
+   "nota": "log, cabecera, título de test, comentario o mensaje de commit que nombra semillas ya en usos desde el código",
+   "paso": "F3F4"
+  },
+  "G0082": {
+   "clase": "mencion/designacion",
+   "nota": "log, cabecera, título de test, comentario o mensaje de commit que nombra semillas ya en usos desde el código",
+   "paso": "F3F4"
+  },
+  "G0083": {
+   "clase": "mencion/designacion",
+   "nota": "log, cabecera, título de test, comentario o mensaje de commit que nombra semillas ya en usos desde el código",
+   "paso": "F3F4"
+  },
+  "G0084": {
+   "clase": "mencion/designacion",
+   "nota": "log, cabecera, título de test, comentario o mensaje de commit que nombra semillas ya en usos desde el código",
+   "paso": "F3F4"
+  },
+  "G0085": {
+   "clase": "mencion/designacion",
+   "nota": "comentario o título de test que nombra una semilla sin ejecutarla",
+   "paso": "F1F2"
+  },
+  "G0086": {
+   "clase": "mencion/designacion",
+   "nota": "log, cabecera, título de test, comentario o mensaje de commit que nombra semillas ya en usos desde el código",
+   "paso": "F3F4"
+  },
+  "G0087": {
+   "clase": "uso",
+   "nota": "literal pasado directamente a buildWeekArc/runWalk/expandWeekArc/materializePlan (contexto [V])",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 0
+    }
+   ]
+  },
+  "G0088": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0089": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0090": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0091": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0092": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0093": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0094": {
+   "clase": "mencion/designacion",
+   "nota": "log, cabecera, título de test, comentario o mensaje de commit que nombra semillas ya en usos desde el código",
+   "paso": "F3F4"
+  },
+  "G0095": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0096": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0097": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0098": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0099": {
+   "clase": "mencion/designacion",
+   "nota": "log, cabecera, título de test, comentario o mensaje de commit que nombra semillas ya en usos desde el código",
+   "paso": "F3F4"
+  },
+  "G0100": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0101": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0102": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0103": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0104": {
+   "clase": "uso",
+   "nota": "constante de origen SEED (1 / 0 / 123456) de usos ya trazados",
+   "paso": "F3F4",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 0
+    }
+   ]
+  },
+  "G0105": {
+   "clase": "uso",
+   "nota": "constante de origen SEED (1 / 0 / 123456) de usos ya trazados",
+   "paso": "F3F4",
+   "aportaUsos": [
+    {
+     "desde": 123456,
+     "hasta": 123456
+    }
+   ]
+  },
+  "G0106": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0107": {
+   "clase": "mencion/designacion",
+   "nota": "artefacto de salida que deja constancia de la semilla usada",
+   "paso": "F3F4"
+  },
+  "G0108": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0109": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0110": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0111": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0112": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0113": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0114": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0115": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0116": {
+   "clase": "uso",
+   "nota": "cabecera de bucle con corte temprano: rango literal registrado provisionalmente; la decisión de F-RV.5 se aplica uniformemente a todos los bucles con corte",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 499
+    }
+   ],
+   "corte": true,
+   "F-RV.5": "(a) rango literal registrado"
+  },
+  "G0117": {
+   "clase": "uso",
+   "nota": "cabecera de bucle con corte temprano: rango literal registrado provisionalmente; la decisión de F-RV.5 se aplica uniformemente a todos los bucles con corte",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 499
+    }
+   ],
+   "corte": true,
+   "F-RV.5": "(a) rango literal registrado"
+  },
+  "G0118": {
+   "clase": "falso_positivo",
+   "nota": "\"1-2 min\" en receta",
+   "paso": "F3F4"
+  },
+  "G0119": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0120": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0121": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0122": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0123": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0124": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0125": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0126": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0127": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0128": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0129": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0130": {
+   "clase": "uso",
+   "nota": "cabecera de bucle o lista sin corte: rango completo",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 99
+    }
+   ]
+  },
+  "G0131": {
+   "clase": "uso",
+   "nota": "cabecera de bucle con corte temprano: rango literal registrado provisionalmente; la decisión de F-RV.5 se aplica uniformemente a todos los bucles con corte",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 199
+    }
+   ],
+   "corte": true,
+   "F-RV.5": "(a) rango literal registrado"
+  },
+  "G0132": {
+   "clase": "uso",
+   "nota": "buildWeekArc.test.js (3 versiones): for seed 0..<2000 con corte temprano llama a buildWeekArc (contexto [V] blob 3e47796 L225-228). Rango literal 0-1999; alcance registrado pendiente de F-RV.5",
+   "paso": "1",
+   "corte": true,
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 1999
+    }
+   ],
+   "F-RV.5": "(a) rango literal registrado"
+  },
+  "G0133": {
+   "clase": "uso",
+   "nota": "buildWeekArc.test.js (3 versiones): for seed 0..<2000 con corte temprano llama a buildWeekArc (contexto [V] blob 3e47796 L197-203). Rango literal 0-1999; alcance registrado pendiente de F-RV.5",
+   "paso": "1",
+   "corte": true,
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 1999
+    }
+   ],
+   "F-RV.5": "(a) rango literal registrado"
+  },
+  "G0134": {
+   "clase": "uso",
+   "nota": "cabecera de bucle o lista sin corte: rango completo",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 199
+    }
+   ]
+  },
+  "G0135": {
+   "clase": "uso",
+   "nota": "cabecera de bucle o lista sin corte: rango completo",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 19
+    }
+   ]
+  },
+  "G0136": {
+   "clase": "uso",
+   "nota": "cabecera de bucle con corte temprano: rango literal registrado provisionalmente; la decisión de F-RV.5 se aplica uniformemente a todos los bucles con corte",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 49
+    }
+   ],
+   "corte": true,
+   "F-RV.5": "(a) rango literal registrado"
+  },
+  "G0137": {
+   "clase": "uso",
+   "nota": "cabecera de bucle con corte temprano: rango literal registrado provisionalmente; la decisión de F-RV.5 se aplica uniformemente a todos los bucles con corte",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 499
+    }
+   ],
+   "corte": true,
+   "F-RV.5": "(a) rango literal registrado"
+  },
+  "G0138": {
+   "clase": "uso",
+   "nota": "cabecera de bucle con corte temprano: rango literal registrado provisionalmente; la decisión de F-RV.5 se aplica uniformemente a todos los bucles con corte",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 499
+    }
+   ],
+   "corte": true,
+   "F-RV.5": "(a) rango literal registrado"
+  },
+  "G0139": {
+   "clase": "uso",
+   "nota": "cabecera de bucle o lista sin corte: rango completo",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 49
+    }
+   ]
+  },
+  "G0140": {
+   "clase": "uso",
+   "nota": "cabecera de bucle o lista sin corte: rango completo",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 4
+    }
+   ]
+  },
+  "G0141": {
+   "clase": "uso",
+   "nota": "cabecera de bucle o lista sin corte: rango completo",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 7
+    }
+   ]
+  },
+  "G0142": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0143": {
+   "clase": "falso_positivo",
+   "nota": "aritmética 2^32 - 1",
+   "paso": "F3F4"
+  },
+  "G0144": {
+   "clase": "falso_positivo",
+   "nota": "rango de números de línea en referencia documental",
+   "paso": "F3F4"
+  },
+  "G0145": {
+   "clase": "falso_positivo",
+   "nota": "rango de números de línea en referencia documental",
+   "paso": "F3F4"
+  },
+  "G0146": {
+   "clase": "falso_positivo",
+   "nota": "rango de números de línea en referencia documental",
+   "paso": "F3F4"
+  },
+  "G0147": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0148": {
+   "clase": "mencion/designacion",
+   "nota": "casos.test.js:27-31: comprueba constante, PERFILES y listaCasos().length; no ejecuta motores",
+   "paso": "1"
+  },
+  "G0149": {
+   "clase": "falso_positivo",
+   "nota": "aritmética 2^32 - 1",
+   "paso": "F3F4"
+  },
+  "G0150": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0151": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0152": {
+   "clase": "falso_positivo",
+   "nota": "rango de números de línea en referencia documental",
+   "paso": "F3F4"
+  },
+  "G0153": {
+   "clase": "falso_positivo",
+   "nota": "rango de números de línea en referencia documental",
+   "paso": "F3F4"
+  },
+  "G0154": {
+   "clase": "mencion/designacion",
+   "nota": "cita la campaña seed < 1000 de baseline_n1000.mjs/stage2a_n1000.mjs (no versionados); F-RV.14",
+   "paso": "F3F4",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 999,
+     "origen": "documental, no versionado: docs/evidence/protocolo-evaluacion/2026-07-18-R-protocolo-de-facto.md:110 (campañas n1000)"
+    }
+   ]
+  },
+  "G0155": {
+   "clase": "falso_positivo",
+   "nota": "rango de números de línea en referencia documental",
+   "paso": "F3F4"
+  },
+  "G0156": {
+   "clase": "falso_positivo",
+   "nota": "rango de números de línea en referencia documental",
+   "paso": "F3F4"
+  },
+  "G0157": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0158": {
+   "clase": "mencion/designacion",
+   "nota": "cita la campaña seed < 1000 de baseline_n1000.mjs/stage2a_n1000.mjs (no versionados); F-RV.14",
+   "paso": "F3F4",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 999,
+     "origen": "documental, no versionado: docs/evidence/protocolo-evaluacion/2026-07-18-R-protocolo-de-facto.md:104 (campañas n1000)"
+    }
+   ]
+  },
+  "G0159": {
+   "clase": "falso_positivo",
+   "nota": "rango de números de línea en referencia documental",
+   "paso": "F3F4"
+  },
+  "G0160": {
+   "clase": "mencion/designacion",
+   "nota": "comentario que declara que los fixtures no usan 1001-1010",
+   "paso": "1"
+  },
+  "G0161": {
+   "clase": "mencion/designacion",
+   "nota": "log, cabecera, título de test, comentario o mensaje de commit que nombra semillas ya en usos desde el código",
+   "paso": "F3F4"
+  },
+  "G0162": {
+   "clase": "mencion/designacion",
+   "nota": "DECISIONS.md:3661, texto de D-087 que designa el conjunto experimental",
+   "paso": "1"
+  },
+  "G0163": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0164": {
+   "clase": "falso_positivo",
+   "nota": "rango de números de línea en referencia documental",
+   "paso": "F3F4"
+  },
+  "G0165": {
+   "clase": "falso_positivo",
+   "nota": "rango de números de línea en referencia documental",
+   "paso": "F3F4"
+  },
+  "G0166": {
+   "clase": "falso_positivo",
+   "nota": "rango de números de línea en referencia documental",
+   "paso": "F3F4"
+  },
+  "G0167": {
+   "clase": "falso_positivo",
+   "nota": "rango de números de línea en referencia documental",
+   "paso": "F3F4"
+  },
+  "G0168": {
+   "clase": "falso_positivo",
+   "nota": "rango de números de línea en referencia documental",
+   "paso": "F3F4"
+  },
+  "G0169": {
+   "clase": "falso_positivo",
+   "nota": "rango de números de línea en referencia documental",
+   "paso": "F3F4"
+  },
+  "G0170": {
+   "clase": "falso_positivo",
+   "nota": "rango de números de línea en referencia documental",
+   "paso": "F3F4"
+  },
+  "G0171": {
+   "clase": "falso_positivo",
+   "nota": "rango de números de línea en referencia documental",
+   "paso": "F3F4"
+  },
+  "G0172": {
+   "clase": "falso_positivo",
+   "nota": "rango de números de línea en referencia documental",
+   "paso": "F3F4"
+  },
+  "G0173": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0174": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0175": {
+   "clase": "mencion/designacion",
+   "nota": "cita la campaña seed < 1000 de baseline_n1000.mjs/stage2a_n1000.mjs (no versionados); F-RV.14",
+   "paso": "F3F4",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 999,
+     "origen": "documental, no versionado: docs/evidence/protocolo-evaluacion/2026-07-18-R-protocolo-de-facto.md:61 (campañas n1000)"
+    }
+   ]
+  },
+  "G0176": {
+   "clase": "falso_positivo",
+   "nota": "rango de números de línea en referencia documental",
+   "paso": "F3F4"
+  },
+  "G0177": {
+   "clase": "falso_positivo",
+   "nota": "2026-07 forma parte de fechas",
+   "paso": "1"
+  },
+  "G0178": {
+   "clase": "falso_positivo",
+   "nota": "rango de números de línea en referencia documental",
+   "paso": "F3F4"
+  },
+  "G0179": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0180": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0181": {
+   "clase": "mencion/designacion",
+   "nota": "documentación que nombra semillas de ejecuciones con código versionado o convenciones (0 vs 1)",
+   "paso": "F3F4"
+  },
+  "G0182": {
+   "clase": "falso_positivo",
+   "nota": "R3 sobre índice de array ([0])",
+   "paso": "F1F2"
+  },
+  "G0183": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0184": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0185": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0186": {
+   "clase": "falso_positivo",
+   "nota": "R3 sobre índice de array ([0])",
+   "paso": "F1F2"
+  },
+  "G0187": {
+   "clase": "uso",
+   "nota": "cabecera de bucle o lista sin corte: rango completo",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 0
+    },
+    {
+     "desde": 1,
+     "hasta": 1
+    },
+    {
+     "desde": 2,
+     "hasta": 2
+    },
+    {
+     "desde": 7,
+     "hasta": 7
+    }
+   ]
+  },
+  "G0188": {
+   "clase": "falso_positivo",
+   "nota": "R3 sobre índice de array ([0])",
+   "paso": "F1F2"
+  },
+  "G0189": {
+   "clase": "falso_positivo",
+   "nota": "R3 sobre índice de array ([0])",
+   "paso": "F1F2"
+  },
+  "G0190": {
+   "clase": "mencion/designacion",
+   "nota": "verificarSemillas([1001], ...): dato de entrada del validador (casos.js:163-187 no ejecuta motores)",
+   "paso": "1"
+  },
+  "G0191": {
+   "clase": "mencion/designacion",
+   "nota": "verificarSemillas([1001], ...): dato de entrada del validador (casos.js:163-187 no ejecuta motores)",
+   "paso": "1"
+  },
+  "G0192": {
+   "clase": "mencion/designacion",
+   "nota": "verificarSemillas([1001], ...): dato de entrada del validador (casos.js:163-187 no ejecuta motores)",
+   "paso": "1"
+  },
+  "G0193": {
+   "clase": "mencion/designacion",
+   "nota": "verificarSemillas([1001], ...): dato de entrada del validador (casos.js:163-187 no ejecuta motores)",
+   "paso": "1"
+  },
+  "G0194": {
+   "clase": "mencion/designacion",
+   "nota": "verificarSemillas([1001], ...): dato de entrada del validador (casos.js:163-187 no ejecuta motores)",
+   "paso": "1"
+  },
+  "G0195": {
+   "clase": "mencion/designacion",
+   "nota": "verificarSemillas([1001], ...): dato de entrada del validador (casos.js:163-187 no ejecuta motores)",
+   "paso": "1"
+  },
+  "G0196": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0197": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0198": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0199": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0200": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0201": {
+   "clase": "mencion/designacion",
+   "nota": "aserción de la constante SEMILLAS_EVALUACION; sin ejecución",
+   "paso": "1"
+  },
+  "G0202": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0203": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0204": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0205": {
+   "clase": "falso_positivo",
+   "nota": "R3 sobre índice de array ([0])",
+   "paso": "F1F2"
+  },
+  "G0206": {
+   "clase": "uso",
+   "nota": "cabecera de bucle o lista sin corte: rango completo",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 0
+    },
+    {
+     "desde": 1,
+     "hasta": 1
+    },
+    {
+     "desde": 2,
+     "hasta": 2
+    },
+    {
+     "desde": 3,
+     "hasta": 3
+    },
+    {
+     "desde": 4,
+     "hasta": 4
+    },
+    {
+     "desde": 5,
+     "hasta": 5
+    }
+   ]
+  },
+  "G0207": {
+   "clase": "uso",
+   "nota": "cabecera de bucle o lista sin corte: rango completo",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 1,
+     "hasta": 1
+    },
+    {
+     "desde": 2,
+     "hasta": 2
+    },
+    {
+     "desde": 3,
+     "hasta": 3
+    },
+    {
+     "desde": 4,
+     "hasta": 4
+    },
+    {
+     "desde": 5,
+     "hasta": 5
+    },
+    {
+     "desde": 6,
+     "hasta": 6
+    },
+    {
+     "desde": 7,
+     "hasta": 7
+    },
+    {
+     "desde": 8,
+     "hasta": 8
+    }
+   ]
+  },
+  "G0208": {
+   "clase": "uso",
+   "nota": "cabecera de bucle o lista sin corte: rango completo",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 1,
+     "hasta": 1
+    },
+    {
+     "desde": 2,
+     "hasta": 2
+    },
+    {
+     "desde": 3,
+     "hasta": 3
+    },
+    {
+     "desde": 4,
+     "hasta": 4
+    },
+    {
+     "desde": 5,
+     "hasta": 5
+    }
+   ]
+  },
+  "G0209": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0210": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0211": {
+   "clase": "falso_positivo",
+   "nota": "fixture del propio escáner (cadena de prueba pasada a analizarLinea/ocurrenciasDeTexto/escribir en repo temporal); no siembra generador",
+   "paso": "F1F2"
+  },
+  "G0212": {
+   "clase": "falso_positivo",
+   "nota": "R3 sobre índice days[0]",
+   "paso": "F3F4"
+  },
+  "G0213": {
+   "clase": "uso",
+   "nota": "SEMILLAS_TEST = [1, 2] (generarCasos.test.js:13): origen de los usos 1-2 del lote 1",
+   "paso": "F1F2",
+   "aportaUsos": [
+    {
+     "desde": 1,
+     "hasta": 1
+    },
+    {
+     "desde": 2,
+     "hasta": 2
+    }
+   ]
+  },
+  "G0214": {
+   "clase": "mencion/designacion",
+   "nota": "definición de SEMILLAS_EVALUACION (casos.js:13)",
+   "paso": "1"
+  },
+  "G0215": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0216": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0217": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0218": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0219": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0220": {
+   "clase": "uso",
+   "nota": "llamada con la variable del bucle que la envuelve; valores = rango del bucle (registrado en su grupo R2/R3); las ocurrencias en bucles 0-1999 con corte heredan F-RV.5",
+   "paso": "lote2b"
+  },
+  "G0221": {
+   "clase": "uso",
+   "nota": "llamada con la variable del bucle que la envuelve; valores = rango del bucle (registrado en su grupo R2/R3); las ocurrencias en bucles 0-1999 con corte heredan F-RV.5",
+   "paso": "lote2b"
+  },
+  "G0222": {
+   "clase": "uso",
+   "nota": "analysis/gate2_measure.test.js: N=500 -> run(i+1) / seed = i + 1 (:222,236-237; :445,463-464) y run(12345) (:132-133,171)",
+   "paso": "lote5",
+   "aportaUsos": [
+    {
+     "desde": 1,
+     "hasta": 500
+    },
+    {
+     "desde": 12345,
+     "hasta": 12345
+    }
+   ]
+  },
+  "G0223": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (sésamo, chía, calabaza)",
+   "paso": "lote5"
+  },
+  "G0224": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (sésamo, chía, calabaza)",
+   "paso": "lote5"
+  },
+  "G0225": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (sésamo, chía, calabaza)",
+   "paso": "lote5"
+  },
+  "G0226": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (sésamo, chía, calabaza)",
+   "paso": "lote5"
+  },
+  "G0227": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (sésamo, chía, calabaza)",
+   "paso": "lote5"
+  },
+  "G0228": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (sésamo, chía, calabaza)",
+   "paso": "lote5"
+  },
+  "G0229": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (sésamo, chía, calabaza)",
+   "paso": "lote5"
+  },
+  "G0230": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (sésamo, chía, calabaza)",
+   "paso": "lote5"
+  },
+  "G0231": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (sésamo, chía, calabaza)",
+   "paso": "lote5"
+  },
+  "G0232": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (sésamo, chía, calabaza)",
+   "paso": "lote5"
+  },
+  "G0233": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (sésamo, chía, calabaza)",
+   "paso": "lote5"
+  },
+  "G0234": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (sésamo, chía, calabaza)",
+   "paso": "lote5"
+  },
+  "G0235": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (sésamo, chía, calabaza)",
+   "paso": "lote5"
+  },
+  "G0236": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (sésamo, chía, calabaza)",
+   "paso": "lote5"
+  },
+  "G0237": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (sésamo, chía, calabaza)",
+   "paso": "lote5"
+  },
+  "G0238": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (sésamo, chía, calabaza)",
+   "paso": "lote5"
+  },
+  "G0239": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0240": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0241": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0242": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0243": {
+   "clase": "falso_positivo",
+   "nota": "cadena sin valor (cause, mensaje)",
+   "paso": "lote2a"
+  },
+  "G0244": {
+   "clase": "uso",
+   "nota": "semillas 1-2: generarCasos.test.js:13 SEMILLAS_TEST=[1,2] -> :21 -> :23 generarCaso (ejecuta ambos motores)",
+   "paso": "lote1"
+  },
+  "G0245": {
+   "clase": "uso",
+   "nota": "analysis/gate2_measure.test.js: N=500 -> run(i+1) / seed = i + 1 (:222,236-237; :445,463-464) y run(12345) (:132-133,171)",
+   "paso": "lote5",
+   "aportaUsos": [
+    {
+     "desde": 1,
+     "hasta": 500
+    },
+    {
+     "desde": 12345,
+     "hasta": 12345
+    }
+   ]
+  },
+  "G0246": {
+   "clase": "uso",
+   "nota": "llamada con la variable del bucle que la envuelve; valores = rango del bucle (registrado en su grupo R2/R3); las ocurrencias en bucles 0-1999 con corte heredan F-RV.5",
+   "paso": "lote2b"
+  },
+  "G0247": {
+   "clase": "uso",
+   "nota": "llamada con la variable del bucle que la envuelve; valores = rango del bucle (registrado en su grupo R2/R3); las ocurrencias en bucles 0-1999 con corte heredan F-RV.5",
+   "paso": "lote2b"
+  },
+  "G0248": {
+   "clase": "uso",
+   "nota": "llamada con la semilla encontrada por un bucle con corte; valor = punto de corte, dentro del rango del bucle; en versiones de 2000 heredan F-RV.5",
+   "paso": "lote2b"
+  },
+  "G0249": {
+   "clase": "uso",
+   "nota": "llamada con la variable del bucle que la envuelve; valores = rango del bucle (registrado en su grupo R2/R3); las ocurrencias en bucles 0-1999 con corte heredan F-RV.5",
+   "paso": "lote2b"
+  },
+  "G0250": {
+   "clase": "mencion/designacion",
+   "nota": "aserción sobre la semilla encontrada, sin ejecución",
+   "paso": "lote2b"
+  },
+  "G0251": {
+   "clase": "falso_positivo",
+   "nota": "identificador con seed que no contiene semilla (bySeed = mapa día->rol) o inicialización a null",
+   "paso": "lote2b"
+  },
+  "G0252": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8): fuera de usos, en limitaciones",
+   "paso": "lote2b"
+  },
+  "G0253": {
+   "clase": "mencion/designacion",
+   "nota": "semilla en error, log, clave de cegado, verificación o validación; sin ejecución",
+   "paso": "lote5"
+  },
+  "G0254": {
+   "clase": "mencion/designacion",
+   "nota": "semilla en error, log, clave de cegado, verificación o validación; sin ejecución",
+   "paso": "lote5"
+  },
+  "G0255": {
+   "clase": "uso",
+   "nota": "semilla de cadena (F-RV.8): deriveSeed concatena userId+weekNumber (\"baseline-...NN\", \"...-mutada\") hacia buildWeekArc/runWalk; fuera de usos, en limitaciones",
+   "paso": "lote4"
+  },
+  "G0256": {
+   "clase": "falso_positivo",
+   "nota": "cadena cause ..._por_seed en artefacto o planSeed citado",
+   "paso": "lote6"
+  },
+  "G0257": {
+   "clase": "falso_positivo",
+   "nota": "cadena cause ..._por_seed en artefacto o planSeed citado",
+   "paso": "lote6"
+  },
+  "G0258": {
+   "clase": "mencion/designacion",
+   "nota": "artefacto comparacion-D2 que deja constancia de la semilla de cadena usada, sin ejecutarla",
+   "paso": "lote4"
+  },
+  "G0259": {
+   "clase": "mencion/designacion",
+   "nota": "artefacto comparacion-D2 que deja constancia de la semilla de cadena usada, sin ejecutarla",
+   "paso": "lote4"
+  },
+  "G0260": {
+   "clase": "mencion/designacion",
+   "nota": "artefacto comparacion-D2 que deja constancia de la semilla de cadena usada, sin ejecutarla",
+   "paso": "lote4"
+  },
+  "G0261": {
+   "clase": "mencion/designacion",
+   "nota": "artefacto comparacion-D2 que deja constancia de la semilla de cadena usada, sin ejecutarla",
+   "paso": "lote4"
+  },
+  "G0262": {
+   "clase": "mencion/designacion",
+   "nota": "artefacto comparacion-D2 que deja constancia de la semilla de cadena usada, sin ejecutarla",
+   "paso": "lote4"
+  },
+  "G0263": {
+   "clase": "mencion/designacion",
+   "nota": "artefacto comparacion-D2 que deja constancia de la semilla de cadena usada, sin ejecutarla",
+   "paso": "lote4"
+  },
+  "G0264": {
+   "clase": "mencion/designacion",
+   "nota": "artefacto comparacion-D2 que deja constancia de la semilla de cadena usada, sin ejecutarla",
+   "paso": "lote4"
+  },
+  "G0265": {
+   "clase": "mencion/designacion",
+   "nota": "artefacto comparacion-D2 que deja constancia de la semilla de cadena usada, sin ejecutarla",
+   "paso": "lote4"
+  },
+  "G0266": {
+   "clase": "mencion/designacion",
+   "nota": "artefacto comparacion-D2 que deja constancia de la semilla de cadena usada, sin ejecutarla",
+   "paso": "lote4"
+  },
+  "G0267": {
+   "clase": "mencion/designacion",
+   "nota": "semilla interpolada en evidence del registro de decisiones",
+   "paso": "lote2a"
+  },
+  "G0268": {
+   "clase": "mencion/designacion",
+   "nota": "semilla interpolada en evidence del registro de decisiones",
+   "paso": "lote2a"
+  },
+  "G0269": {
+   "clase": "falso_positivo",
+   "nota": "seedDemo: poblar cuentas de demostración, no RNG",
+   "paso": "lote5"
+  },
+  "G0270": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8): fuera de usos, en limitaciones",
+   "paso": "lote2b"
+  },
+  "G0271": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8): fuera de usos, en limitaciones",
+   "paso": "lote2b"
+  },
+  "G0272": {
+   "clase": "mencion/designacion",
+   "nota": "semilla en error, log, clave de cegado, verificación o validación; sin ejecución",
+   "paso": "lote5"
+  },
+  "G0273": {
+   "clase": "falso_positivo",
+   "nota": "comentario, JSDoc o mensaje sin valor",
+   "paso": "lote5"
+  },
+  "G0274": {
+   "clase": "falso_positivo",
+   "nota": "cadena 'eleccion_ancla_por_seed'",
+   "paso": "lote2b"
+  },
+  "G0275": {
+   "clase": "uso",
+   "nota": "llamada con la variable del bucle que la envuelve; valores = rango del bucle (registrado en su grupo R2/R3); las ocurrencias en bucles 0-1999 con corte heredan F-RV.5",
+   "paso": "lote2b"
+  },
+  "G0276": {
+   "clase": "uso",
+   "nota": "llamada con la variable del bucle que la envuelve; valores = rango del bucle (registrado en su grupo R2/R3); las ocurrencias en bucles 0-1999 con corte heredan F-RV.5",
+   "paso": "lote2b"
+  },
+  "G0277": {
+   "clase": "uso",
+   "nota": "llamada con la variable del bucle que la envuelve; valores = rango del bucle (registrado en su grupo R2/R3); las ocurrencias en bucles 0-1999 con corte heredan F-RV.5",
+   "paso": "lote2b"
+  },
+  "G0278": {
+   "clase": "mencion/designacion",
+   "nota": "ruta instrumental de Fase 7 sobre SEMILLAS_EVALUACION (1001-1010); mencion/designacion por F-RV.10, sin evidencia versionada de ejecución",
+   "paso": "lote1"
+  },
+  "G0279": {
+   "clase": "uso",
+   "nota": "llamada con variable de bucle o lista entera; valores en su grupo R2/R3 (todos < 20)",
+   "paso": "lote2c"
+  },
+  "G0280": {
+   "clase": "uso",
+   "nota": "seedsPorVariante = { A: 7, B: 1, C: 0 } -> for-of -> buildWeekArc; valores 0, 1, 7",
+   "paso": "lote2b"
+  },
+  "G0281": {
+   "clase": "uso",
+   "nota": "uso de paso (F-RV.12) en helper del test; G0281: llamador G0277 (0-199); G0282/G0303: único llamador posicional chooseAnchorSucioConDescarte(mezcla, 1, vetadosIds) (vetoAncla:116), valor 1, fuera de la fuente (residuo declarado)",
+   "paso": "lote2b"
+  },
+  "G0282": {
+   "clase": "uso",
+   "nota": "uso de paso (F-RV.12) en rngSucio(seedNum); único llamador posicional sin término chooseAnchorSucioConDescarte(mezcla, 1, vetadosIds) (buildWeekArc.vetoAncla.test.js:116, tres versiones), no capturado por el escáner; valor 1 recuperado por trazado (F-RV.7). Corregido en revisión de 2b.",
+   "paso": "lote2b",
+   "aportaUsos": [
+    {
+     "desde": 1,
+     "hasta": 1
+    }
+   ]
+  },
+  "G0283": {
+   "clase": "uso",
+   "nota": "llamada con variable de bucle o lista entera; valores en su grupo R2/R3 (todos < 20)",
+   "paso": "lote2c"
+  },
+  "G0284": {
+   "clase": "uso",
+   "nota": "llamada con variable de bucle o lista entera; valores en su grupo R2/R3 (todos < 20)",
+   "paso": "lote2c"
+  },
+  "G0285": {
+   "clase": "uso",
+   "nota": "llamada con variable de bucle o lista entera; valores en su grupo R2/R3 (todos < 20)",
+   "paso": "lote2c"
+  },
+  "G0286": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0287": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0288": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0289": {
+   "clase": "uso",
+   "nota": "semilla de cadena (F-RV.8): deriveSeed concatena userId+weekNumber (\"baseline-...NN\", \"...-mutada\") hacia buildWeekArc/runWalk; fuera de usos, en limitaciones",
+   "paso": "lote4"
+  },
+  "G0290": {
+   "clase": "uso",
+   "nota": "llamada con la variable del bucle que la envuelve; valores = rango del bucle (registrado en su grupo R2/R3); las ocurrencias en bucles 0-1999 con corte heredan F-RV.5",
+   "paso": "lote2b"
+  },
+  "G0291": {
+   "clase": "uso",
+   "nota": "llamada con la variable del bucle que la envuelve; valores = rango del bucle (registrado en su grupo R2/R3); las ocurrencias en bucles 0-1999 con corte heredan F-RV.5",
+   "paso": "lote2b"
+  },
+  "G0292": {
+   "clase": "uso",
+   "nota": "llamada con la variable del bucle que la envuelve; valores = rango del bucle (registrado en su grupo R2/R3); las ocurrencias en bucles 0-1999 con corte heredan F-RV.5",
+   "paso": "lote2b"
+  },
+  "G0293": {
+   "clase": "uso",
+   "nota": "llamada con la variable del bucle que la envuelve; valores = rango del bucle (registrado en su grupo R2/R3); las ocurrencias en bucles 0-1999 con corte heredan F-RV.5",
+   "paso": "lote2b"
+  },
+  "G0294": {
+   "clase": "mencion/designacion",
+   "nota": "aserción sobre la semilla encontrada, sin ejecución",
+   "paso": "lote2b"
+  },
+  "G0295": {
+   "clase": "mencion/designacion",
+   "nota": "aserción sobre la semilla encontrada, sin ejecución",
+   "paso": "lote2b"
+  },
+  "G0296": {
+   "clase": "mencion/designacion",
+   "nota": "aserción sobre la semilla encontrada, sin ejecución",
+   "paso": "lote2b"
+  },
+  "G0297": {
+   "clase": "mencion/designacion",
+   "nota": "ruta instrumental de Fase 7 sobre SEMILLAS_EVALUACION (1001-1010); mencion/designacion por F-RV.10, sin evidencia versionada de ejecución",
+   "paso": "lote1"
+  },
+  "G0298": {
+   "clase": "mencion/designacion",
+   "nota": "ruta instrumental de Fase 7 sobre SEMILLAS_EVALUACION (1001-1010); mencion/designacion por F-RV.10, sin evidencia versionada de ejecución",
+   "paso": "lote1"
+  },
+  "G0299": {
+   "clase": "uso",
+   "nota": "llamada con la variable del bucle que la envuelve; valores = rango del bucle (registrado en su grupo R2/R3); las ocurrencias en bucles 0-1999 con corte heredan F-RV.5",
+   "paso": "lote2b"
+  },
+  "G0300": {
+   "clase": "uso",
+   "nota": "llamada con la variable del bucle que la envuelve; valores = rango del bucle (registrado en su grupo R2/R3); las ocurrencias en bucles 0-1999 con corte heredan F-RV.5",
+   "paso": "lote2b"
+  },
+  "G0301": {
+   "clase": "uso",
+   "nota": "llamada con la variable del bucle que la envuelve; valores = rango del bucle (registrado en su grupo R2/R3); las ocurrencias en bucles 0-1999 con corte heredan F-RV.5",
+   "paso": "lote2b"
+  },
+  "G0302": {
+   "clase": "mencion/designacion",
+   "nota": "semilla interpolada en etiqueta (idPlan, retorno, título de test); sin ejecución",
+   "paso": "lote1"
+  },
+  "G0303": {
+   "clase": "uso",
+   "nota": "uso de paso (F-RV.12) en rngSucio(seedNum); único llamador posicional sin término chooseAnchorSucioConDescarte(mezcla, 1, vetadosIds) (buildWeekArc.vetoAncla.test.js:116, tres versiones), no capturado por el escáner; valor 1 recuperado por trazado (F-RV.7). Corregido en revisión de 2b.",
+   "paso": "lote2b",
+   "aportaUsos": [
+    {
+     "desde": 1,
+     "hasta": 1
+    }
+   ]
+  },
+  "G0304": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (sésamo, chía, calabaza)",
+   "paso": "lote5"
+  },
+  "G0305": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0306": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0307": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (sésamo, chía, calabaza)",
+   "paso": "lote5"
+  },
+  "G0308": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (sésamo, chía, calabaza)",
+   "paso": "lote5"
+  },
+  "G0309": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (sésamo, chía, calabaza)",
+   "paso": "lote5"
+  },
+  "G0310": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (sésamo, chía, calabaza)",
+   "paso": "lote5"
+  },
+  "G0311": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0312": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0313": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0314": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0315": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0316": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0317": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8): fuera de usos, en limitaciones",
+   "paso": "lote2b"
+  },
+  "G0318": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8): fuera de usos, en limitaciones",
+   "paso": "lote2b"
+  },
+  "G0319": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0320": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0321": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0322": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0323": {
+   "clase": "falso_positivo",
+   "nota": "planSeed = Date.now() solo alimenta day.id (App.jsx:4253,4442; buildPlan.js:2302,2491; documentado en buildPlan.js:2247); no siembra ningún generador",
+   "paso": "lote3"
+  },
+  "G0324": {
+   "clase": "mencion/designacion",
+   "nota": "semilla escrita en log, objeto de salida o aserción, sin ejecución",
+   "paso": "lote4"
+  },
+  "G0325": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8): fuera de usos, en limitaciones",
+   "paso": "lote2b"
+  },
+  "G0326": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0327": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0328": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0329": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0330": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0331": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0332": {
+   "clase": "falso_positivo",
+   "nota": "mensaje o comprobación de estructura del registro en verificarSemillas; sin valor de semilla",
+   "paso": "lote1"
+  },
+  "G0333": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0334": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0335": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0336": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0337": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0338": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0339": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0340": {
+   "clase": "falso_positivo",
+   "nota": "comentario",
+   "paso": "lote2b"
+  },
+  "G0341": {
+   "clase": "falso_positivo",
+   "nota": "seedDemo: poblar cuentas de demostración, no RNG",
+   "paso": "lote5"
+  },
+  "G0342": {
+   "clase": "falso_positivo",
+   "nota": "comentario",
+   "paso": "lote2b"
+  },
+  "G0343": {
+   "clase": "falso_positivo",
+   "nota": "comentario",
+   "paso": "lote3"
+  },
+  "G0344": {
+   "clase": "falso_positivo",
+   "nota": "comentario",
+   "paso": "lote2c"
+  },
+  "G0345": {
+   "clase": "falso_positivo",
+   "nota": "comentario",
+   "paso": "lote2b"
+  },
+  "G0346": {
+   "clase": "falso_positivo",
+   "nota": "comentario",
+   "paso": "lote2b"
+  },
+  "G0347": {
+   "clase": "falso_positivo",
+   "nota": "comentario",
+   "paso": "lote3"
+  },
+  "G0348": {
+   "clase": "falso_positivo",
+   "nota": "comentario",
+   "paso": "lote2c"
+  },
+  "G0349": {
+   "clase": "falso_positivo",
+   "nota": "comentario",
+   "paso": "lote2c"
+  },
+  "G0350": {
+   "clase": "falso_positivo",
+   "nota": "comentario",
+   "paso": "lote3"
+  },
+  "G0351": {
+   "clase": "falso_positivo",
+   "nota": "comentario",
+   "paso": "lote2c"
+  },
+  "G0352": {
+   "clase": "falso_positivo",
+   "nota": "comentario",
+   "paso": "lote2b"
+  },
+  "G0353": {
+   "clase": "falso_positivo",
+   "nota": "comentario",
+   "paso": "lote2c"
+  },
+  "G0354": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0355": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0356": {
+   "clase": "mencion/designacion",
+   "nota": "describe el esquema de semillas de ejecuciones reales sin dar valores",
+   "paso": "lote6"
+  },
+  "G0357": {
+   "clase": "falso_positivo",
+   "nota": "cadena sin valor (cause, mensaje)",
+   "paso": "lote2a"
+  },
+  "G0358": {
+   "clase": "falso_positivo",
+   "nota": "cadena sin valor (cause, mensaje)",
+   "paso": "lote2a"
+  },
+  "G0359": {
+   "clase": "mencion/designacion",
+   "nota": "semilla en error, log, clave de cegado, verificación o validación; sin ejecución",
+   "paso": "lote5"
+  },
+  "G0360": {
+   "clase": "falso_positivo",
+   "nota": "seedDemo: poblar cuentas de demostración, no RNG",
+   "paso": "lote5"
+  },
+  "G0361": {
+   "clase": "uso",
+   "paso": "lote3",
+   "nota": "semilla entera derivada por _hashStr (src/engine/hash.js@308ef70) de literales acreditados (F-RV.13): valor 1263988022; reproducido por el titular (frv13_resultado.json sha256 28b03b19...55e4)",
+   "aportaUsos": [
+    {
+     "desde": 1263988022,
+     "hasta": 1263988022
+    }
+   ]
+  },
+  "G0362": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8): fuera de usos, en limitaciones",
+   "paso": "lote2b"
+  },
+  "G0363": {
+   "clase": "uso",
+   "nota": "llamada con constante entera SEED (123456 o 1); valor en su grupo R1",
+   "paso": "lote3"
+  },
+  "G0364": {
+   "clase": "uso",
+   "paso": "lote3",
+   "nota": "semilla entera derivada por _hashStr (src/engine/hash.js@308ef70) de literales acreditados (F-RV.13): valor 1263988022; reproducido por el titular (frv13_resultado.json sha256 28b03b19...55e4)",
+   "aportaUsos": [
+    {
+     "desde": 1263988022,
+     "hasta": 1263988022
+    }
+   ]
+  },
+  "G0365": {
+   "clase": "uso",
+   "nota": "llamada con constante entera (seed = 7 / 11, FIXTURE_INPUT.seed = 0); valor en su grupo R1",
+   "paso": "lote2c"
+  },
+  "G0366": {
+   "clase": "uso",
+   "paso": "lote3",
+   "nota": "semilla entera derivada por _hashStr (src/engine/hash.js@308ef70) de literales acreditados (F-RV.13): valor 1263988023; reproducido por el titular (frv13_resultado.json sha256 28b03b19...55e4)",
+   "aportaUsos": [
+    {
+     "desde": 1263988023,
+     "hasta": 1263988023
+    }
+   ]
+  },
+  "G0367": {
+   "clase": "uso",
+   "paso": "lote3",
+   "nota": "semilla entera derivada por _hashStr (src/engine/hash.js@308ef70) de literales acreditados (F-RV.13): valor 2102762501; reproducido por el titular (frv13_resultado.json sha256 28b03b19...55e4)",
+   "aportaUsos": [
+    {
+     "desde": 2102762501,
+     "hasta": 2102762501
+    }
+   ]
+  },
+  "G0368": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8): fuera de usos, en limitaciones",
+   "paso": "lote2b"
+  },
+  "G0369": {
+   "clase": "uso",
+   "nota": "llamada con constante entera SEED (123456 o 1); valor en su grupo R1",
+   "paso": "lote3"
+  },
+  "G0370": {
+   "clase": "uso",
+   "paso": "lote3",
+   "nota": "semilla entera derivada por _hashStr (src/engine/hash.js@308ef70) de literales acreditados (F-RV.13): valor 1263988022; reproducido por el titular (frv13_resultado.json sha256 28b03b19...55e4)",
+   "aportaUsos": [
+    {
+     "desde": 1263988022,
+     "hasta": 1263988022
+    }
+   ]
+  },
+  "G0371": {
+   "clase": "falso_positivo",
+   "nota": "identificador con seed que no contiene semilla (bySeed = mapa día->rol) o inicialización a null",
+   "paso": "lote2b"
+  },
+  "G0372": {
+   "clase": "falso_positivo",
+   "nota": "identificador con seed que no contiene semilla (bySeed = mapa día->rol) o inicialización a null",
+   "paso": "lote2b"
+  },
+  "G0373": {
+   "clase": "uso",
+   "nota": "llamada con constante entera (seed = 7 / 11, FIXTURE_INPUT.seed = 0); valor en su grupo R1",
+   "paso": "lote2c"
+  },
+  "G0374": {
+   "clase": "uso",
+   "nota": "llamada con constante entera (seed = 7 / 11, FIXTURE_INPUT.seed = 0); valor en su grupo R1",
+   "paso": "lote2c"
+  },
+  "G0375": {
+   "clase": "mencion/designacion",
+   "nota": "ruta instrumental de Fase 7 sobre SEMILLAS_EVALUACION (1001-1010); mencion/designacion por F-RV.10, sin evidencia versionada de ejecución",
+   "paso": "lote1"
+  },
+  "G0376": {
+   "clase": "falso_positivo",
+   "nota": "código, cadena o fixture del propio escáner de semillas",
+   "paso": "lote1"
+  },
+  "G0377": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8): fuera de usos, en limitaciones",
+   "paso": "lote2b"
+  },
+  "G0378": {
+   "clase": "uso",
+   "nota": "llamada con constante entera (seed = 7 / 11, FIXTURE_INPUT.seed = 0); valor en su grupo R1",
+   "paso": "lote2c"
+  },
+  "G0379": {
+   "clase": "uso",
+   "paso": "lote3",
+   "nota": "semilla entera derivada por _hashStr (src/engine/hash.js@308ef70) de literales acreditados (F-RV.13): valor 1880525077; reproducido por el titular (frv13_resultado.json sha256 28b03b19...55e4)",
+   "aportaUsos": [
+    {
+     "desde": 1880525077,
+     "hasta": 1880525077
+    }
+   ]
+  },
+  "G0380": {
+   "clase": "uso",
+   "paso": "lote3",
+   "nota": "semilla entera derivada por _hashStr (src/engine/hash.js@308ef70) de literales acreditados (F-RV.13): valor 1880525077; reproducido por el titular (frv13_resultado.json sha256 28b03b19...55e4)",
+   "aportaUsos": [
+    {
+     "desde": 1880525077,
+     "hasta": 1880525077
+    }
+   ]
+  },
+  "G0381": {
+   "clase": "uso",
+   "nota": "llamada con constante entera SEED (123456 o 1); valor en su grupo R1",
+   "paso": "lote3"
+  },
+  "G0382": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8): fuera de usos, en limitaciones",
+   "paso": "lote2b"
+  },
+  "G0383": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0384": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0385": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8): fuera de usos, en limitaciones",
+   "paso": "lote2b"
+  },
+  "G0386": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0387": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0388": {
+   "clase": "uso",
+   "nota": "semilla de cadena (F-RV.8): deriveSeed concatena userId+weekNumber (\"baseline-...NN\", \"...-mutada\") hacia buildWeekArc/runWalk; fuera de usos, en limitaciones",
+   "paso": "lote4"
+  },
+  "G0389": {
+   "clase": "uso",
+   "nota": "semilla de cadena (F-RV.8): deriveSeed concatena userId+weekNumber (\"baseline-...NN\", \"...-mutada\") hacia buildWeekArc/runWalk; fuera de usos, en limitaciones",
+   "paso": "lote4"
+  },
+  "G0390": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8): fuera de usos, en limitaciones",
+   "paso": "lote2b"
+  },
+  "G0391": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8): fuera de usos, en limitaciones",
+   "paso": "lote2b"
+  },
+  "G0392": {
+   "clase": "uso",
+   "nota": "llamada con la semilla encontrada por un bucle con corte; valor = punto de corte, dentro del rango del bucle; en versiones de 2000 heredan F-RV.5",
+   "paso": "lote2b"
+  },
+  "G0393": {
+   "clase": "uso",
+   "nota": "llamada con la semilla encontrada por un bucle con corte; valor = punto de corte, dentro del rango del bucle; en versiones de 2000 heredan F-RV.5",
+   "paso": "lote2b"
+  },
+  "G0394": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8): fuera de usos, en limitaciones",
+   "paso": "lote2b"
+  },
+  "G0395": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8): fuera de usos, en limitaciones",
+   "paso": "lote2b"
+  },
+  "G0396": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8): fuera de usos, en limitaciones",
+   "paso": "lote2b"
+  },
+  "G0397": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8): fuera de usos, en limitaciones",
+   "paso": "lote2b"
+  },
+  "G0398": {
+   "clase": "uso",
+   "nota": "llamada con constante entera SEED (123456 o 1); valor en su grupo R1",
+   "paso": "lote3"
+  },
+  "G0399": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0400": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8): fuera de usos, en limitaciones",
+   "paso": "lote2b"
+  },
+  "G0401": {
+   "clase": "uso",
+   "nota": "campañas docs/evidence/variedad-verdura/*: N=500, seed = i + 1 / runWeek(i+1) / run(i+1)",
+   "paso": "lote5",
+   "aportaUsos": [
+    {
+     "desde": 1,
+     "hasta": 500
+    }
+   ]
+  },
+  "G0402": {
+   "clase": "uso",
+   "nota": "semilla de cadena (F-RV.8): deriveSeed concatena userId+weekNumber (\"baseline-...NN\", \"...-mutada\") hacia buildWeekArc/runWalk; fuera de usos, en limitaciones",
+   "paso": "lote4"
+  },
+  "G0403": {
+   "clase": "uso",
+   "nota": "semilla de cadena (F-RV.8): deriveSeed concatena userId+weekNumber (\"baseline-...NN\", \"...-mutada\") hacia buildWeekArc/runWalk; fuera de usos, en limitaciones",
+   "paso": "lote4"
+  },
+  "G0404": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8): fuera de usos, en limitaciones",
+   "paso": "lote2b"
+  },
+  "G0405": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8): fuera de usos, en limitaciones",
+   "paso": "lote2b"
+  },
+  "G0406": {
+   "clase": "mencion/designacion",
+   "nota": "semilla escrita en log, objeto de salida o aserción, sin ejecución",
+   "paso": "lote4"
+  },
+  "G0407": {
+   "clase": "uso",
+   "nota": "seedsPorVariante = { A: 7, B: 1, C: 0 } -> for-of -> buildWeekArc; valores 0, 1, 7",
+   "paso": "lote2b",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 1
+    },
+    {
+     "desde": 7,
+     "hasta": 7
+    }
+   ]
+  },
+  "G0408": {
+   "clase": "uso",
+   "nota": "llamada con constante entera SEED (123456 o 1); valor en su grupo R1",
+   "paso": "lote3"
+  },
+  "G0409": {
+   "clase": "uso",
+   "paso": "lote3",
+   "nota": "semilla entera derivada por _hashStr (src/engine/hash.js@308ef70) de literales acreditados (F-RV.13): valor 1263988022; reproducido por el titular (frv13_resultado.json sha256 28b03b19...55e4)",
+   "aportaUsos": [
+    {
+     "desde": 1263988022,
+     "hasta": 1263988022
+    }
+   ]
+  },
+  "G0410": {
+   "clase": "uso",
+   "paso": "lote3",
+   "nota": "semilla entera derivada por _hashStr (src/engine/hash.js@308ef70) de literales acreditados (F-RV.13): valor 1880525078; reproducido por el titular (frv13_resultado.json sha256 28b03b19...55e4)",
+   "aportaUsos": [
+    {
+     "desde": 1880525078,
+     "hasta": 1880525078
+    }
+   ]
+  },
+  "G0411": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0412": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0413": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0414": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0415": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0416": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0417": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0418": {
+   "clase": "uso",
+   "nota": "llamada con constante entera (seed = 7 / 11, FIXTURE_INPUT.seed = 0); valor en su grupo R1",
+   "paso": "lote2c"
+  },
+  "G0419": {
+   "clase": "mencion/designacion",
+   "nota": "semilla escrita en log, objeto de salida o aserción, sin ejecución",
+   "paso": "lote4"
+  },
+  "G0420": {
+   "clase": "uso",
+   "nota": "campañas docs/evidence/variedad-verdura/*: N=500, seed = i + 1 / runWeek(i+1) / run(i+1)",
+   "paso": "lote5",
+   "aportaUsos": [
+    {
+     "desde": 1,
+     "hasta": 500
+    }
+   ]
+  },
+  "G0421": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0422": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0423": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0424": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0425": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0426": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0427": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0428": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0429": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0430": {
+   "clase": "uso",
+   "nota": "campañas docs/evidence/variedad-verdura/*: N=500, seed = i + 1 / runWeek(i+1) / run(i+1)",
+   "paso": "lote5",
+   "aportaUsos": [
+    {
+     "desde": 1,
+     "hasta": 500
+    }
+   ]
+  },
+  "G0431": {
+   "clase": "uso",
+   "nota": "llamada con constante entera (seed = 7 / 11, FIXTURE_INPUT.seed = 0); valor en su grupo R1",
+   "paso": "lote2c"
+  },
+  "G0432": {
+   "clase": "uso",
+   "nota": "campañas docs/evidence/variedad-verdura/*: N=500, seed = i + 1 / runWeek(i+1) / run(i+1)",
+   "paso": "lote5",
+   "aportaUsos": [
+    {
+     "desde": 1,
+     "hasta": 500
+    }
+   ]
+  },
+  "G0433": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8): fuera de usos, en limitaciones",
+   "paso": "lote2b"
+  },
+  "G0434": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8): fuera de usos, en limitaciones",
+   "paso": "lote2b"
+  },
+  "G0435": {
+   "clase": "uso",
+   "nota": "llamada con la semilla encontrada por un bucle con corte; valor = punto de corte, dentro del rango del bucle; en versiones de 2000 heredan F-RV.5",
+   "paso": "lote2b"
+  },
+  "G0436": {
+   "clase": "uso",
+   "nota": "llamada con la semilla encontrada por un bucle con corte; valor = punto de corte, dentro del rango del bucle; en versiones de 2000 heredan F-RV.5",
+   "paso": "lote2b"
+  },
+  "G0437": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8): fuera de usos, en limitaciones",
+   "paso": "lote2b"
+  },
+  "G0438": {
+   "clase": "uso",
+   "nota": "llamada con la semilla encontrada por un bucle con corte; valor = punto de corte, dentro del rango del bucle; en versiones de 2000 heredan F-RV.5",
+   "paso": "lote2b"
+  },
+  "G0439": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0440": {
+   "clase": "falso_positivo",
+   "nota": "código, cadena o fixture del propio escáner de semillas",
+   "paso": "lote1"
+  },
+  "G0441": {
+   "clase": "mencion/designacion",
+   "nota": "semilla interpolada en evidence del registro de decisiones",
+   "paso": "lote2a"
+  },
+  "G0442": {
+   "clase": "mencion/designacion",
+   "nota": "semilla interpolada en evidence del registro de decisiones",
+   "paso": "lote2a"
+  },
+  "G0443": {
+   "clase": "uso",
+   "nota": "llamada con constante entera (seed = 7 / 11, FIXTURE_INPUT.seed = 0); valor en su grupo R1",
+   "paso": "lote2c"
+  },
+  "G0444": {
+   "clase": "mencion/designacion",
+   "nota": "blind(items(), -1 / 1.5): la validación (blind.js:141-142) lanza antes de crear el generador (:147); no es uso",
+   "paso": "lote5"
+  },
+  "G0445": {
+   "clase": "mencion/designacion",
+   "nota": "blind(items(), -1 / 1.5): la validación (blind.js:141-142) lanza antes de crear el generador (:147); no es uso",
+   "paso": "lote5"
+  },
+  "G0446": {
+   "clase": "mencion/designacion",
+   "nota": "ruta instrumental de Fase 7 sobre SEMILLAS_EVALUACION (1001-1010); mencion/designacion por F-RV.10, sin evidencia versionada de ejecución",
+   "paso": "lote1"
+  },
+  "G0447": {
+   "clase": "mencion/designacion",
+   "nota": "ruta instrumental de Fase 7 sobre SEMILLAS_EVALUACION (1001-1010); mencion/designacion por F-RV.10, sin evidencia versionada de ejecución",
+   "paso": "lote1"
+  },
+  "G0448": {
+   "clase": "falso_positivo",
+   "nota": "toEqual(['version','seed','entradas'])",
+   "paso": "lote5"
+  },
+  "G0449": {
+   "clase": "falso_positivo",
+   "nota": "código, cadena o fixture del propio escáner de semillas",
+   "paso": "lote1"
+  },
+  "G0450": {
+   "clase": "falso_positivo",
+   "nota": "identificador con seed que no contiene semilla (bySeed = mapa día->rol) o inicialización a null",
+   "paso": "lote2b"
+  },
+  "G0451": {
+   "clase": "falso_positivo",
+   "nota": "identificador con seed que no contiene semilla (bySeed = mapa día->rol) o inicialización a null",
+   "paso": "lote2b"
+  },
+  "G0452": {
+   "clase": "falso_positivo",
+   "nota": "identificador con seed que no contiene semilla (bySeed = mapa día->rol) o inicialización a null",
+   "paso": "lote2b"
+  },
+  "G0453": {
+   "clase": "falso_positivo",
+   "nota": "identificador con seed que no contiene semilla (bySeed = mapa día->rol) o inicialización a null",
+   "paso": "lote2b"
+  },
+  "G0454": {
+   "clase": "falso_positivo",
+   "nota": "identificador con seed que no contiene semilla (bySeed = mapa día->rol) o inicialización a null",
+   "paso": "lote2b"
+  },
+  "G0455": {
+   "clase": "falso_positivo",
+   "nota": "identificador con seed que no contiene semilla (bySeed = mapa día->rol) o inicialización a null",
+   "paso": "lote2b"
+  },
+  "G0456": {
+   "clase": "mencion/designacion",
+   "nota": "S = 1 (casos.test.js:10) pasado a entradaLegacy/entradaEngine2, que solo construyen datos (casos.js:94-109); no se ejecuta motor",
+   "paso": "lote1"
+  },
+  "G0457": {
+   "clase": "mencion/designacion",
+   "nota": "S = 1 (casos.test.js:10) pasado a entradaLegacy/entradaEngine2, que solo construyen datos (casos.js:94-109); no se ejecuta motor",
+   "paso": "lote1"
+  },
+  "G0458": {
+   "clase": "mencion/designacion",
+   "nota": "semilla escrita en log, objeto de salida o aserción, sin ejecución",
+   "paso": "lote4"
+  },
+  "G0459": {
+   "clase": "falso_positivo",
+   "nota": "código, cadena o fixture del propio escáner de semillas",
+   "paso": "lote1"
+  },
+  "G0460": {
+   "clase": "falso_positivo",
+   "nota": "código, cadena o fixture del propio escáner de semillas",
+   "paso": "lote1"
+  },
+  "G0461": {
+   "clase": "falso_positivo",
+   "nota": "código, cadena o fixture del propio escáner de semillas",
+   "paso": "lote1"
+  },
+  "G0462": {
+   "clase": "falso_positivo",
+   "nota": "comentario",
+   "paso": "lote2b"
+  },
+  "G0463": {
+   "clase": "mencion/designacion",
+   "nota": "aserción sobre la semilla encontrada, sin ejecución",
+   "paso": "lote2b"
+  },
+  "G0464": {
+   "clase": "mencion/designacion",
+   "nota": "aserción sobre la semilla encontrada, sin ejecución",
+   "paso": "lote2b"
+  },
+  "G0465": {
+   "clase": "mencion/designacion",
+   "nota": "aserción sobre la semilla encontrada, sin ejecución",
+   "paso": "lote2b"
+  },
+  "G0466": {
+   "clase": "mencion/designacion",
+   "nota": "semilla escrita en log, objeto de salida o aserción, sin ejecución",
+   "paso": "lote4"
+  },
+  "G0467": {
+   "clase": "uso",
+   "nota": "seedsPorVariante = { A: 7, B: 1, C: 0 } -> for-of -> buildWeekArc; valores 0, 1, 7",
+   "paso": "lote2b"
+  },
+  "G0468": {
+   "clase": "falso_positivo",
+   "nota": "código, cadena o fixture del propio escáner de semillas",
+   "paso": "lote1"
+  },
+  "G0469": {
+   "clase": "falso_positivo",
+   "nota": "código, cadena o fixture del propio escáner de semillas",
+   "paso": "lote1"
+  },
+  "G0470": {
+   "clase": "mencion/designacion",
+   "nota": "prosa o aserción que nombra las semillas de test 1 y 2 sin ejecutarlas",
+   "paso": "lote1"
+  },
+  "G0471": {
+   "clase": "mencion/designacion",
+   "nota": "ruta instrumental de Fase 7 sobre SEMILLAS_EVALUACION (1001-1010); mencion/designacion por F-RV.10, sin evidencia versionada de ejecución",
+   "paso": "lote1"
+  },
+  "G0472": {
+   "clase": "uso",
+   "nota": "semillas 1-2: generarCasos.test.js:13 SEMILLAS_TEST=[1,2] -> :21 -> :23 generarCaso (ejecuta ambos motores)",
+   "paso": "lote1"
+  },
+  "G0473": {
+   "clase": "uso",
+   "nota": "llamada con constante entera (seed = 7 / 11, FIXTURE_INPUT.seed = 0); valor en su grupo R1",
+   "paso": "lote2c"
+  },
+  "G0474": {
+   "clase": "falso_positivo",
+   "nota": "firma de helper del test",
+   "paso": "lote2b"
+  },
+  "G0475": {
+   "clase": "falso_positivo",
+   "nota": "firma de helper del test",
+   "paso": "lote2b"
+  },
+  "G0476": {
+   "clase": "falso_positivo",
+   "nota": "firma de helper del test",
+   "paso": "lote2b"
+  },
+  "G0477": {
+   "clase": "falso_positivo",
+   "nota": "firma (deriveSeed, runWith)",
+   "paso": "lote4"
+  },
+  "G0478": {
+   "clase": "mencion/designacion",
+   "nota": "ruta instrumental de Fase 7 sobre SEMILLAS_EVALUACION (1001-1010); mencion/designacion por F-RV.10, sin evidencia versionada de ejecución",
+   "paso": "lote1"
+  },
+  "G0479": {
+   "clase": "uso",
+   "nota": "uso de paso (F-RV.12) en shuffle (frequencyCount.test.js:131); llamadores posicionales sin término shuffle(..., 42 / 999 / 7) (:146,154,179,192); aporta 7, 42, 999 por F-RV.7",
+   "paso": "lote2c",
+   "aportaUsos": [
+    {
+     "desde": 7,
+     "hasta": 7
+    },
+    {
+     "desde": 42,
+     "hasta": 42
+    },
+    {
+     "desde": 999,
+     "hasta": 999
+    }
+   ]
+  },
+  "G0480": {
+   "clase": "falso_positivo",
+   "nota": "identificador con seed que no contiene semilla (bySeed = mapa día->rol) o inicialización a null",
+   "paso": "lote2b"
+  },
+  "G0481": {
+   "clase": "falso_positivo",
+   "nota": "identificador con seed que no contiene semilla (bySeed = mapa día->rol) o inicialización a null",
+   "paso": "lote2b"
+  },
+  "G0482": {
+   "clase": "falso_positivo",
+   "nota": "identificador con seed que no contiene semilla (bySeed = mapa día->rol) o inicialización a null",
+   "paso": "lote2b"
+  },
+  "G0483": {
+   "clase": "mencion/designacion",
+   "nota": "semilla escrita en log, objeto de salida o aserción, sin ejecución",
+   "paso": "lote4"
+  },
+  "G0484": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0485": {
+   "clase": "falso_positivo",
+   "nota": "texto de uso de CLI o descripción en manifiesto",
+   "paso": "lote1"
+  },
+  "G0486": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0487": {
+   "clase": "mencion/designacion",
+   "nota": "semilla interpolada en etiqueta (idPlan, retorno, título de test); sin ejecución",
+   "paso": "lote1"
+  },
+  "G0488": {
+   "clase": "uso",
+   "nota": "uso de paso (F-RV.12): línea interna que recibe y transmite la semilla al generador o a otra función; sin valores propios; valores y bloqueo en los llamadores",
+   "paso": "lote2a",
+   "paso_interno": true
+  },
+  "G0489": {
+   "clase": "uso",
+   "nota": "uso de paso (F-RV.12): línea interna que recibe y transmite la semilla al generador o a otra función; sin valores propios; valores y bloqueo en los llamadores",
+   "paso": "lote2a",
+   "paso_interno": true
+  },
+  "G0490": {
+   "clase": "falso_positivo",
+   "nota": "texto de uso de CLI o descripción en manifiesto",
+   "paso": "lote1"
+  },
+  "G0491": {
+   "clase": "falso_positivo",
+   "nota": "planSeed = Date.now() solo alimenta day.id (App.jsx:4253,4442; buildPlan.js:2302,2491; documentado en buildPlan.js:2247); no siembra ningún generador",
+   "paso": "lote3"
+  },
+  "G0492": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0493": {
+   "clase": "uso",
+   "nota": "uso de paso (F-RV.12): línea interna que recibe y transmite la semilla al generador o a otra función; sin valores propios; valores y bloqueo en los llamadores",
+   "paso": "lote2a",
+   "paso_interno": true
+  },
+  "G0494": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8): fuera de usos, en limitaciones",
+   "paso": "lote2b"
+  },
+  "G0495": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8): fuera de usos, en limitaciones",
+   "paso": "lote2b"
+  },
+  "G0496": {
+   "clase": "uso",
+   "nota": "semillas 1-2: generarCasos.test.js:13 SEMILLAS_TEST=[1,2] -> :21 -> :23 generarCaso -> generarCasos.mjs:57-64 -> :45-48 mulberry32(entrada.semilla) / :52-53 materializePlan (seed de casos.js:106). Segundo origen potencial main()->listaCasos()->SEMILLAS_EVALUACION: mencion/designacion por F-RV.10, no acreditado como ejecución",
+   "paso": "lote1"
+  },
+  "G0497": {
+   "clase": "uso",
+   "nota": "semillas 1-2: generarCasos.test.js:13 SEMILLAS_TEST=[1,2] -> :21 -> :23 generarCaso -> generarCasos.mjs:57-64 -> :45-48 mulberry32(entrada.semilla) / :52-53 materializePlan (seed de casos.js:106). Segundo origen potencial main()->listaCasos()->SEMILLAS_EVALUACION: mencion/designacion por F-RV.10, no acreditado como ejecución",
+   "paso": "lote1"
+  },
+  "G0498": {
+   "clase": "mencion/designacion",
+   "nota": "ruta instrumental de Fase 7 sobre SEMILLAS_EVALUACION (1001-1010); mencion/designacion por F-RV.10, sin evidencia versionada de ejecución",
+   "paso": "lote1"
+  },
+  "G0499": {
+   "clase": "falso_positivo",
+   "nota": "mensaje o comprobación de estructura del registro en verificarSemillas; sin valor de semilla",
+   "paso": "lote1"
+  },
+  "G0500": {
+   "clase": "falso_positivo",
+   "nota": "mensaje o comprobación de estructura del registro en verificarSemillas; sin valor de semilla",
+   "paso": "lote1"
+  },
+  "G0501": {
+   "clase": "falso_positivo",
+   "nota": "mensaje o comprobación de estructura del registro en verificarSemillas; sin valor de semilla",
+   "paso": "lote1"
+  },
+  "G0502": {
+   "clase": "mencion/designacion",
+   "nota": "semilla en error, log, clave de cegado, verificación o validación; sin ejecución",
+   "paso": "lote5"
+  },
+  "G0503": {
+   "clase": "mencion/designacion",
+   "nota": "ruta instrumental de Fase 7 sobre SEMILLAS_EVALUACION (1001-1010); mencion/designacion por F-RV.10, sin evidencia versionada de ejecución",
+   "paso": "lote1"
+  },
+  "G0504": {
+   "clase": "uso",
+   "nota": "semilla de cadena (F-RV.8): deriveSeed concatena userId+weekNumber (\"baseline-...NN\", \"...-mutada\") hacia buildWeekArc/runWalk; fuera de usos, en limitaciones",
+   "paso": "lote4"
+  },
+  "G0505": {
+   "clase": "uso",
+   "nota": "uso de paso (F-RV.12): línea interna que recibe y transmite la semilla al generador o a otra función; sin valores propios; valores y bloqueo en los llamadores",
+   "paso": "lote2a",
+   "paso_interno": true
+  },
+  "G0506": {
+   "clase": "uso",
+   "nota": "campañas docs/evidence/variedad-verdura/*: N=500, seed = i + 1 / runWeek(i+1) / run(i+1)",
+   "paso": "lote5",
+   "aportaUsos": [
+    {
+     "desde": 1,
+     "hasta": 500
+    }
+   ]
+  },
+  "G0507": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0508": {
+   "clase": "uso",
+   "paso": "lote3",
+   "paso_interno": true,
+   "nota": "uso de paso (F-RV.12) en run(seed)/runBuildPlan(seed); llamadores run(SEED=123456) (R1) y posicionales run(123), run(456) (buildPlan.snapshot.test.js@7a278b8:80-81, @c4248d9:70-71); aporta 123 y 456 por F-RV.7",
+   "aportaUsos": [
+    {
+     "desde": 123,
+     "hasta": 123
+    },
+    {
+     "desde": 456,
+     "hasta": 456
+    }
+   ]
+  },
+  "G0509": {
+   "clase": "uso",
+   "nota": "analysis/gate2_measure.test.js: N=500 -> run(i+1) / seed = i + 1 (:222,236-237; :445,463-464) y run(12345) (:132-133,171)",
+   "paso": "lote5",
+   "aportaUsos": [
+    {
+     "desde": 1,
+     "hasta": 500
+    },
+    {
+     "desde": 12345,
+     "hasta": 12345
+    }
+   ]
+  },
+  "G0510": {
+   "clase": "uso",
+   "nota": "campañas docs/evidence/variedad-verdura/*: N=500, seed = i + 1 / runWeek(i+1) / run(i+1)",
+   "paso": "lote5",
+   "aportaUsos": [
+    {
+     "desde": 1,
+     "hasta": 500
+    }
+   ]
+  },
+  "G0511": {
+   "clase": "uso",
+   "nota": "analysis/gate4_protein_guard.test.js: N=200 -> run(i+1) (:46-50)",
+   "paso": "lote5",
+   "aportaUsos": [
+    {
+     "desde": 1,
+     "hasta": 200
+    }
+   ]
+  },
+  "G0512": {
+   "clase": "uso",
+   "paso": "lote3",
+   "paso_interno": true,
+   "nota": "uso de paso en run() de weeklyVegCount.test.js:60; único llamador run(SEED) con const SEED = 1 (:78, R1)"
+  },
+  "G0513": {
+   "clase": "uso",
+   "nota": "semillas 1-2: generarCasos.test.js:13 SEMILLAS_TEST=[1,2] -> :21 -> :23 generarCaso -> generarCasos.mjs:57-64 -> :45-48 mulberry32(entrada.semilla) / :52-53 materializePlan (seed de casos.js:106). Segundo origen potencial main()->listaCasos()->SEMILLAS_EVALUACION: mencion/designacion por F-RV.10, no acreditado como ejecución",
+   "paso": "lote1"
+  },
+  "G0514": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0515": {
+   "clase": "falso_positivo",
+   "nota": "cadena cause ..._por_seed en artefacto o planSeed citado",
+   "paso": "lote6"
+  },
+  "G0516": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0517": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0518": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0519": {
+   "clase": "falso_positivo",
+   "nota": "comentario",
+   "paso": "lote3"
+  },
+  "G0520": {
+   "clase": "falso_positivo",
+   "nota": "seedDemo: poblar cuentas de demostración, no RNG",
+   "paso": "lote5"
+  },
+  "G0521": {
+   "clase": "falso_positivo",
+   "nota": "comentario",
+   "paso": "lote3"
+  },
+  "G0522": {
+   "clase": "falso_positivo",
+   "nota": "seedDemo: poblar cuentas de demostración, no RNG",
+   "paso": "lote5"
+  },
+  "G0523": {
+   "clase": "falso_positivo",
+   "nota": "comentario",
+   "paso": "lote3"
+  },
+  "G0524": {
+   "clase": "falso_positivo",
+   "nota": "comentario",
+   "paso": "lote3"
+  },
+  "G0525": {
+   "clase": "falso_positivo",
+   "nota": "comentario",
+   "paso": "lote2c"
+  },
+  "G0526": {
+   "clase": "falso_positivo",
+   "nota": "comentario",
+   "paso": "lote2b"
+  },
+  "G0527": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0528": {
+   "clase": "falso_positivo",
+   "nota": "mensaje de commit: prosa sobre semillas sin valores",
+   "paso": "lote7"
+  },
+  "G0529": {
+   "clase": "falso_positivo",
+   "nota": "código, cadena o fixture del propio escáner de semillas",
+   "paso": "lote1"
+  },
+  "G0530": {
+   "clase": "falso_positivo",
+   "nota": "import",
+   "paso": "lote1"
+  },
+  "G0531": {
+   "clase": "falso_positivo",
+   "nota": "código, cadena o fixture del propio escáner de semillas",
+   "paso": "lote1"
+  },
+  "G0532": {
+   "clase": "falso_positivo",
+   "nota": "import",
+   "paso": "lote1"
+  },
+  "G0533": {
+   "clase": "falso_positivo",
+   "nota": "código, cadena o fixture del propio escáner de semillas",
+   "paso": "lote1"
+  },
+  "G0534": {
+   "clase": "mencion/designacion",
+   "nota": "describe el esquema de semillas de ejecuciones reales sin dar valores",
+   "paso": "lote6"
+  },
+  "G0535": {
+   "clase": "mencion/designacion",
+   "nota": "describe el esquema de semillas de ejecuciones reales sin dar valores",
+   "paso": "lote6"
+  },
+  "G0536": {
+   "clase": "falso_positivo",
+   "nota": "import",
+   "paso": "lote4"
+  },
+  "G0537": {
+   "clase": "uso",
+   "nota": "runBuildPlan(SEED) con SEED=123456 (r0-emision-productores.mjs:205,264; R1)",
+   "paso": "lote5",
+   "aportaUsos": [
+    {
+     "desde": 123456,
+     "hasta": 123456
+    }
+   ]
+  },
+  "G0538": {
+   "clase": "falso_positivo",
+   "nota": "mensaje de commit: prosa sobre semillas sin valores",
+   "paso": "lote7"
+  },
+  "G0539": {
+   "clase": "uso",
+   "paso": "lote3",
+   "paso_interno": true,
+   "nota": "uso de paso: ruta por defecto de legacy, mulberry32(_hashStr(String(userId ?? \"anon\") + \":\" + (weekNumber ?? 0))) (buildPlan.js:29); valores en los llamadores; derivación por F-RV.13 donde corresponda; aporta los 9 enteros de los pares del baseline (F-RV.13(b), frv13b_resultado.json sha256 47f8a0ef...7aef, reproducido por el titular)",
+   "aportaUsos": [
+    {
+     "desde": 532847468,
+     "hasta": 532847468
+    },
+    {
+     "desde": 588720795,
+     "hasta": 588720795
+    },
+    {
+     "desde": 756482041,
+     "hasta": 756482041
+    },
+    {
+     "desde": 1377073392,
+     "hasta": 1377073392
+    },
+    {
+     "desde": 1393820248,
+     "hasta": 1393820248
+    },
+    {
+     "desde": 1487635260,
+     "hasta": 1487635260
+    },
+    {
+     "desde": 1491109313,
+     "hasta": 1491109313
+    },
+    {
+     "desde": 1880525077,
+     "hasta": 1880525077
+    },
+    {
+     "desde": 1890273642,
+     "hasta": 1890273642
+    }
+   ]
+  },
+  "G0540": {
+   "clase": "uso",
+   "nota": "uso de paso (F-RV.12): línea interna que recibe y transmite la semilla al generador o a otra función; sin valores propios; valores y bloqueo en los llamadores",
+   "paso": "lote2a",
+   "paso_interno": true
+  },
+  "G0541": {
+   "clase": "uso",
+   "nota": "uso de paso (F-RV.12): línea interna que recibe y transmite la semilla al generador o a otra función; sin valores propios; valores y bloqueo en los llamadores",
+   "paso": "lote2a",
+   "paso_interno": true
+  },
+  "G0542": {
+   "clase": "falso_positivo",
+   "nota": "comentario, JSDoc o mensaje sin valor",
+   "paso": "lote5"
+  },
+  "G0543": {
+   "clase": "falso_positivo",
+   "nota": "comentario, JSDoc o mensaje sin valor",
+   "paso": "lote5"
+  },
+  "G0544": {
+   "clase": "uso",
+   "nota": "semillas 1-2: generarCasos.test.js:13 SEMILLAS_TEST=[1,2] -> :21 -> :23 generarCaso -> generarCasos.mjs:57-64 -> :45-48 mulberry32(entrada.semilla) / :52-53 materializePlan (seed de casos.js:106). Segundo origen potencial main()->listaCasos()->SEMILLAS_EVALUACION: mencion/designacion por F-RV.10, no acreditado como ejecución",
+   "paso": "lote1"
+  },
+  "G0545": {
+   "clase": "uso",
+   "nota": "semillas 1-2: generarCasos.test.js:13 SEMILLAS_TEST=[1,2] -> :21 -> :23 generarCaso -> generarCasos.mjs:57-64 -> :45-48 mulberry32(entrada.semilla) / :52-53 materializePlan (seed de casos.js:106). Segundo origen potencial main()->listaCasos()->SEMILLAS_EVALUACION: mencion/designacion por F-RV.10, no acreditado como ejecución",
+   "paso": "lote1"
+  },
+  "G0546": {
+   "clase": "falso_positivo",
+   "nota": "comentario, JSDoc o mensaje sin valor",
+   "paso": "lote5"
+  },
+  "G0547": {
+   "clase": "falso_positivo",
+   "nota": "planSeed = Date.now() solo alimenta day.id (App.jsx:4253,4442; buildPlan.js:2302,2491; documentado en buildPlan.js:2247); no siembra ningún generador",
+   "paso": "lote3"
+  },
+  "G0548": {
+   "clase": "uso",
+   "nota": "uso de paso (F-RV.12): línea interna que recibe y transmite la semilla al generador o a otra función; sin valores propios; valores y bloqueo en los llamadores",
+   "paso": "lote2a",
+   "paso_interno": true
+  },
+  "G0549": {
+   "clase": "uso",
+   "nota": "uso de paso (F-RV.12): línea interna que recibe y transmite la semilla al generador o a otra función; sin valores propios; valores y bloqueo en los llamadores",
+   "paso": "lote2a",
+   "paso_interno": true
+  },
+  "G0550": {
+   "clase": "uso",
+   "nota": "uso de paso (F-RV.12) en blind.js (const rng = mulberry32(seed)), dominio cegado (F-RV.9a); llamadores posicionales blind(..., 1/2/7/42/99/12345) en blind.test.js y blind.integration.test.js, blind(..., 0) en generarCasos.mjs:77",
+   "paso": "lote5",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 2
+    },
+    {
+     "desde": 7,
+     "hasta": 7
+    },
+    {
+     "desde": 42,
+     "hasta": 42
+    },
+    {
+     "desde": 99,
+     "hasta": 99
+    },
+    {
+     "desde": 12345,
+     "hasta": 12345
+    }
+   ],
+   "paso_interno": true
+  },
+  "G0551": {
+   "clase": "uso",
+   "nota": "uso de paso (F-RV.12): línea interna que recibe y transmite la semilla al generador o a otra función; sin valores propios; valores y bloqueo en los llamadores",
+   "paso": "lote2a",
+   "paso_interno": true
+  },
+  "G0552": {
+   "clase": "uso",
+   "nota": "uso de paso (F-RV.12): línea interna que recibe y transmite la semilla al generador o a otra función; sin valores propios; valores y bloqueo en los llamadores",
+   "paso": "lote2a",
+   "paso_interno": true
+  },
+  "G0553": {
+   "clase": "falso_positivo",
+   "nota": "código, cadena o fixture del propio escáner de semillas",
+   "paso": "lote1"
+  },
+  "G0554": {
+   "clase": "falso_positivo",
+   "nota": "código, cadena o fixture del propio escáner de semillas",
+   "paso": "lote1"
+  },
+  "G0555": {
+   "clase": "uso",
+   "nota": "semilla de cadena (F-RV.8): deriveSeed concatena userId+weekNumber (\"baseline-...NN\", \"...-mutada\") hacia buildWeekArc/runWalk; fuera de usos, en limitaciones",
+   "paso": "lote4"
+  },
+  "G0556": {
+   "clase": "uso",
+   "nota": "uso de paso (F-RV.12): línea interna que recibe y transmite la semilla al generador o a otra función; sin valores propios; valores y bloqueo en los llamadores",
+   "paso": "lote2a",
+   "paso_interno": true
+  },
+  "G0557": {
+   "clase": "uso",
+   "nota": "campañas docs/evidence/variedad-verdura/*: N=500, seed = i + 1 / runWeek(i+1) / run(i+1)",
+   "paso": "lote5",
+   "aportaUsos": [
+    {
+     "desde": 1,
+     "hasta": 500
+    }
+   ]
+  },
+  "G0558": {
+   "clase": "uso",
+   "nota": "semilla no entera (F-RV.8), incluidas plantillas `v..-${seed}` que transmiten cadenas: fuera de usos, en limitaciones",
+   "paso": "lote2c"
+  },
+  "G0559": {
+   "clase": "uso",
+   "nota": "uso de paso (F-RV.12): línea interna que recibe y transmite la semilla al generador o a otra función; sin valores propios; valores y bloqueo en los llamadores",
+   "paso": "lote2a",
+   "paso_interno": true
+  },
+  "G0560": {
+   "clase": "uso",
+   "nota": "semilla de cadena (F-RV.8): deriveSeed concatena userId+weekNumber (\"baseline-...NN\", \"...-mutada\") hacia buildWeekArc/runWalk; fuera de usos, en limitaciones",
+   "paso": "lote4"
+  },
+  "G0561": {
+   "clase": "uso",
+   "nota": "campañas docs/evidence/variedad-verdura/*: N=500, seed = i + 1 / runWeek(i+1) / run(i+1)",
+   "paso": "lote5",
+   "aportaUsos": [
+    {
+     "desde": 1,
+     "hasta": 500
+    }
+   ]
+  },
+  "G0562": {
+   "clase": "uso",
+   "nota": "uso de paso (F-RV.12): línea interna que recibe y transmite la semilla al generador o a otra función; sin valores propios; valores y bloqueo en los llamadores",
+   "paso": "lote2a",
+   "paso_interno": true
+  },
+  "G0563": {
+   "clase": "uso",
+   "nota": "uso de paso (F-RV.12): línea interna que recibe y transmite la semilla al generador o a otra función; sin valores propios; valores y bloqueo en los llamadores",
+   "paso": "lote2a",
+   "paso_interno": true
+  },
+  "G0564": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0565": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0566": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0567": {
+   "clase": "falso_positivo",
+   "nota": "mensaje de commit: prosa sobre semillas sin valores",
+   "paso": "lote7"
+  },
+  "G0568": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0569": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0570": {
+   "clase": "mencion/designacion",
+   "nota": "ruta instrumental de Fase 7 sobre SEMILLAS_EVALUACION (1001-1010); mencion/designacion por F-RV.10, sin evidencia versionada de ejecución",
+   "paso": "lote1"
+  },
+  "G0571": {
+   "clase": "mencion/designacion",
+   "nota": "ruta instrumental de Fase 7 sobre SEMILLAS_EVALUACION (1001-1010); mencion/designacion por F-RV.10, sin evidencia versionada de ejecución",
+   "paso": "lote1"
+  },
+  "G0572": {
+   "clase": "falso_positivo",
+   "nota": "firma de shuffle(array, seed)",
+   "paso": "lote2c"
+  },
+  "G0573": {
+   "clase": "falso_positivo",
+   "nota": "mensaje o comprobación de estructura del registro en verificarSemillas; sin valor de semilla",
+   "paso": "lote1"
+  },
+  "G0574": {
+   "clase": "mencion/designacion",
+   "nota": "ruta instrumental de Fase 7 sobre SEMILLAS_EVALUACION (1001-1010); mencion/designacion por F-RV.10, sin evidencia versionada de ejecución",
+   "paso": "lote1"
+  },
+  "G0575": {
+   "clase": "mencion/designacion",
+   "nota": "semilla en error, log, clave de cegado, verificación o validación; sin ejecución",
+   "paso": "lote5"
+  },
+  "G0576": {
+   "clase": "falso_positivo",
+   "nota": "mensaje o comprobación de estructura del registro en verificarSemillas; sin valor de semilla",
+   "paso": "lote1"
+  },
+  "G0577": {
+   "clase": "falso_positivo",
+   "nota": "texto de uso de CLI o descripción en manifiesto",
+   "paso": "lote1"
+  },
+  "G0578": {
+   "clase": "falso_positivo",
+   "nota": "mensaje o comprobación de estructura del registro en verificarSemillas; sin valor de semilla",
+   "paso": "lote1"
+  },
+  "G0579": {
+   "clase": "falso_positivo",
+   "nota": "mensaje o comprobación de estructura del registro en verificarSemillas; sin valor de semilla",
+   "paso": "lote1"
+  },
+  "G0580": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2b"
+  },
+  "G0581": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2c"
+  },
+  "G0582": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2b"
+  },
+  "G0583": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2b"
+  },
+  "G0584": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2b"
+  },
+  "G0585": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2b"
+  },
+  "G0586": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2b"
+  },
+  "G0587": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2c"
+  },
+  "G0588": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2c"
+  },
+  "G0589": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2b"
+  },
+  "G0590": {
+   "clase": "falso_positivo",
+   "nota": "título de describe/it sin valor",
+   "paso": "lote1"
+  },
+  "G0591": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2c"
+  },
+  "G0592": {
+   "clase": "falso_positivo",
+   "nota": "título de describe/it sin valor",
+   "paso": "lote1"
+  },
+  "G0593": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2b"
+  },
+  "G0594": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2b"
+  },
+  "G0595": {
+   "clase": "falso_positivo",
+   "nota": "título de test",
+   "paso": "lote5"
+  },
+  "G0596": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2b"
+  },
+  "G0597": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2b"
+  },
+  "G0598": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2b"
+  },
+  "G0599": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2b"
+  },
+  "G0600": {
+   "clase": "falso_positivo",
+   "nota": "título de test",
+   "paso": "lote4"
+  },
+  "G0601": {
+   "clase": "falso_positivo",
+   "nota": "título de describe/it sin valor",
+   "paso": "lote1"
+  },
+  "G0602": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2c"
+  },
+  "G0603": {
+   "clase": "falso_positivo",
+   "nota": "título de test",
+   "paso": "lote5"
+  },
+  "G0604": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2c"
+  },
+  "G0605": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2c"
+  },
+  "G0606": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2c"
+  },
+  "G0607": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2c"
+  },
+  "G0608": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe",
+   "paso": "lote3"
+  },
+  "G0609": {
+   "clase": "falso_positivo",
+   "nota": "título de test",
+   "paso": "lote4"
+  },
+  "G0610": {
+   "clase": "falso_positivo",
+   "nota": "código, cadena o fixture del propio escáner de semillas",
+   "paso": "lote1"
+  },
+  "G0611": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2b"
+  },
+  "G0612": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2c"
+  },
+  "G0613": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2c"
+  },
+  "G0614": {
+   "clase": "falso_positivo",
+   "nota": "código, cadena o fixture del propio escáner de semillas",
+   "paso": "lote1"
+  },
+  "G0615": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2b"
+  },
+  "G0616": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2b"
+  },
+  "G0617": {
+   "clase": "uso",
+   "nota": "uso de paso (F-RV.12): línea interna que recibe y transmite la semilla al generador o a otra función; sin valores propios; valores y bloqueo en los llamadores",
+   "paso": "lote2a",
+   "paso_interno": true
+  },
+  "G0618": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0619": {
+   "clase": "falso_positivo",
+   "nota": "firma de función o desestructuración en la firma; no transporta valor",
+   "paso": "lote2a"
+  },
+  "G0620": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0621": {
+   "clase": "mencion/designacion",
+   "nota": "semilla interpolada en etiqueta (idPlan, retorno, título de test); sin ejecución",
+   "paso": "lote1"
+  },
+  "G0622": {
+   "clase": "uso",
+   "nota": "uso de paso (F-RV.12): línea interna que recibe y transmite la semilla al generador o a otra función; sin valores propios; valores y bloqueo en los llamadores",
+   "paso": "lote2a",
+   "paso_interno": true
+  },
+  "G0623": {
+   "clase": "uso",
+   "nota": "uso de paso (F-RV.12): línea interna que recibe y transmite la semilla al generador o a otra función; sin valores propios; valores y bloqueo en los llamadores",
+   "paso": "lote2a",
+   "paso_interno": true
+  },
+  "G0624": {
+   "clase": "uso",
+   "nota": "uso de paso (F-RV.12): línea interna que recibe y transmite la semilla al generador o a otra función; sin valores propios; valores y bloqueo en los llamadores",
+   "paso": "lote2a",
+   "paso_interno": true
+  },
+  "G0625": {
+   "clase": "mencion/designacion",
+   "nota": "semilla escrita en log, objeto de salida o aserción, sin ejecución",
+   "paso": "lote4"
+  },
+  "G0626": {
+   "clase": "falso_positivo",
+   "nota": "cadena cause ..._por_seed en artefacto o planSeed citado",
+   "paso": "lote6"
+  },
+  "G0627": {
+   "clase": "R4_sin_resolver",
+   "nota": "no bloqueante (F-RV.7a): manifest.seed llega de un JSON indicado por argv (blind-run.mjs:36,51); ningún manifiesto de cegado versionado en todo el perímetro; entrada no versionada -> limitaciones",
+   "paso": "lote1",
+   "bloqueante": false
+  },
+  "G0628": {
+   "clase": "falso_positivo",
+   "nota": "seedDemo: poblar cuentas de demostración, no RNG",
+   "paso": "lote5"
+  },
+  "G0629": {
+   "clase": "falso_positivo",
+   "nota": "código, cadena o fixture del propio escáner de semillas",
+   "paso": "lote1"
+  },
+  "G0630": {
+   "clase": "falso_positivo",
+   "nota": "import",
+   "paso": "lote1"
+  },
+  "G0631": {
+   "clase": "falso_positivo",
+   "nota": "import",
+   "paso": "lote1"
+  },
+  "G0632": {
+   "clase": "uso",
+   "nota": "seed: SEED con const SEED = 0 (runAdapter.js:14, R1)",
+   "paso": "lote4"
+  },
+  "G0633": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0634": {
+   "clase": "falso_positivo",
+   "nota": "semillas como alimento (chía, lino, calabaza, girasol)",
+   "paso": "lote3"
+  },
+  "G0635": {
+   "clase": "falso_positivo",
+   "nota": "comentario, JSDoc o mensaje sin valor",
+   "paso": "lote5"
+  },
+  "G0636": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0637": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0638": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0639": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0640": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0641": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0642": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0643": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0644": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0645": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0646": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0647": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0648": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0649": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0650": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0651": {
+   "clase": "mencion/designacion",
+   "nota": "mensaje de commit que describe un esquema o nombra valores sin ejecutarlos; no genera uso nuevo",
+   "paso": "lote7"
+  },
+  "G0652": {
+   "clase": "falso_positivo",
+   "nota": "mensaje de commit: prosa sobre semillas sin valores",
+   "paso": "lote7"
+  },
+  "G0653": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0654": {
+   "clase": "falso_positivo",
+   "nota": "comentario o documento (incluido docstring inexacto de deriveSeed: concatena, no hashea)",
+   "paso": "lote4"
+  },
+  "G0655": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0656": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0657": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0658": {
+   "clase": "mencion/designacion",
+   "nota": "describe el esquema de semillas de ejecuciones reales sin dar valores",
+   "paso": "lote6"
+  },
+  "G0659": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0660": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0661": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0662": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0663": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0664": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0665": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0666": {
+   "clase": "mencion/designacion",
+   "nota": "mensaje de commit que describe un esquema o nombra valores sin ejecutarlos; no genera uso nuevo",
+   "paso": "lote7"
+  },
+  "G0667": {
+   "clase": "mencion/designacion",
+   "nota": "artefacto comparacion-D2 que deja constancia de la semilla de cadena usada, sin ejecutarla",
+   "paso": "lote4"
+  },
+  "G0668": {
+   "clase": "mencion/designacion",
+   "nota": "artefacto comparacion-D2 que deja constancia de la semilla de cadena usada, sin ejecutarla",
+   "paso": "lote4"
+  },
+  "G0669": {
+   "clase": "mencion/designacion",
+   "nota": "artefacto comparacion-D2 que deja constancia de la semilla de cadena usada, sin ejecutarla",
+   "paso": "lote4"
+  },
+  "G0670": {
+   "clase": "mencion/designacion",
+   "nota": "artefacto comparacion-D2 que deja constancia de la semilla de cadena usada, sin ejecutarla",
+   "paso": "lote4"
+  },
+  "G0671": {
+   "clase": "mencion/designacion",
+   "nota": "artefacto comparacion-D2 que deja constancia de la semilla de cadena usada, sin ejecutarla",
+   "paso": "lote4"
+  },
+  "G0672": {
+   "clase": "mencion/designacion",
+   "nota": "artefacto comparacion-D2 que deja constancia de la semilla de cadena usada, sin ejecutarla",
+   "paso": "lote4"
+  },
+  "G0673": {
+   "clase": "mencion/designacion",
+   "nota": "artefacto comparacion-D2 que deja constancia de la semilla de cadena usada, sin ejecutarla",
+   "paso": "lote4"
+  },
+  "G0674": {
+   "clase": "mencion/designacion",
+   "nota": "artefacto comparacion-D2 que deja constancia de la semilla de cadena usada, sin ejecutarla",
+   "paso": "lote4"
+  },
+  "G0675": {
+   "clase": "mencion/designacion",
+   "nota": "artefacto comparacion-D2 que deja constancia de la semilla de cadena usada, sin ejecutarla",
+   "paso": "lote4"
+  },
+  "G0676": {
+   "clase": "falso_positivo",
+   "nota": "comentario o documento (incluido docstring inexacto de deriveSeed: concatena, no hashea)",
+   "paso": "lote4"
+  },
+  "G0677": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0678": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0679": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0680": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0681": {
+   "clase": "falso_positivo",
+   "nota": "código, cadena o fixture del propio escáner de semillas",
+   "paso": "lote1"
+  },
+  "G0682": {
+   "clase": "falso_positivo",
+   "nota": "comentario o prosa sin valor de semilla",
+   "paso": "lote1"
+  },
+  "G0683": {
+   "clase": "falso_positivo",
+   "nota": "comentario o prosa sin valor de semilla",
+   "paso": "lote1"
+  },
+  "G0684": {
+   "clase": "falso_positivo",
+   "nota": "comentario o prosa sin valor de semilla",
+   "paso": "lote1"
+  },
+  "G0685": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0686": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0687": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0688": {
+   "clase": "falso_positivo",
+   "nota": "comentario o prosa sin valor de semilla",
+   "paso": "lote1"
+  },
+  "G0689": {
+   "clase": "falso_positivo",
+   "nota": "código, cadena o fixture del propio escáner de semillas",
+   "paso": "lote1"
+  },
+  "G0690": {
+   "clase": "falso_positivo",
+   "nota": "comentario",
+   "paso": "lote3"
+  },
+  "G0691": {
+   "clase": "falso_positivo",
+   "nota": "comentario",
+   "paso": "lote3"
+  },
+  "G0692": {
+   "clase": "falso_positivo",
+   "nota": "comentario o documento (incluido docstring inexacto de deriveSeed: concatena, no hashea)",
+   "paso": "lote4"
+  },
+  "G0693": {
+   "clase": "falso_positivo",
+   "nota": "comentario",
+   "paso": "lote3"
+  },
+  "G0694": {
+   "clase": "falso_positivo",
+   "nota": "código, cadena o fixture del propio escáner de semillas",
+   "paso": "lote1"
+  },
+  "G0695": {
+   "clase": "falso_positivo",
+   "nota": "código, cadena o fixture del propio escáner de semillas",
+   "paso": "lote1"
+  },
+  "G0696": {
+   "clase": "falso_positivo",
+   "nota": "comentario",
+   "paso": "lote3"
+  },
+  "G0697": {
+   "clase": "falso_positivo",
+   "nota": "comentario o prosa sin valor de semilla",
+   "paso": "lote1"
+  },
+  "G0698": {
+   "clase": "mencion/designacion",
+   "nota": "prosa o aserción que nombra las semillas de test 1 y 2 sin ejecutarlas",
+   "paso": "lote1"
+  },
+  "G0699": {
+   "clase": "falso_positivo",
+   "nota": "comentario o prosa sin valor de semilla",
+   "paso": "lote1"
+  },
+  "G0700": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0701": {
+   "clase": "falso_positivo",
+   "nota": "comentario o prosa sin valor de semilla",
+   "paso": "lote1"
+  },
+  "G0702": {
+   "clase": "falso_positivo",
+   "nota": "comentario o documento (incluido docstring inexacto de deriveSeed: concatena, no hashea)",
+   "paso": "lote4"
+  },
+  "G0703": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0704": {
+   "clase": "falso_positivo",
+   "nota": "comentario, JSDoc o mensaje sin valor",
+   "paso": "lote5"
+  },
+  "G0705": {
+   "clase": "falso_positivo",
+   "nota": "comentario, JSDoc o mensaje sin valor",
+   "paso": "lote5"
+  },
+  "G0706": {
+   "clase": "falso_positivo",
+   "nota": "comentario",
+   "paso": "lote3"
+  },
+  "G0707": {
+   "clase": "mencion/designacion",
+   "nota": "comentario o texto de informe que nombra el esquema de la campaña (N=500, seed=i+1)",
+   "paso": "lote5"
+  },
+  "G0708": {
+   "clase": "falso_positivo",
+   "nota": "comentario",
+   "paso": "lote3"
+  },
+  "G0709": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0710": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0711": {
+   "clase": "falso_positivo",
+   "nota": "comentario",
+   "paso": "lote3"
+  },
+  "G0712": {
+   "clase": "mencion/designacion",
+   "nota": "comentario o texto de informe que nombra el esquema de la campaña (N=500, seed=i+1)",
+   "paso": "lote5"
+  },
+  "G0713": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0714": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0715": {
+   "clase": "mencion/designacion",
+   "nota": "comentario o texto de informe que nombra el esquema de la campaña (N=500, seed=i+1)",
+   "paso": "lote5"
+  },
+  "G0716": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0717": {
+   "clase": "falso_positivo",
+   "nota": "comentario o prosa sin valor de semilla",
+   "paso": "lote1"
+  },
+  "G0718": {
+   "clase": "falso_positivo",
+   "nota": "comentario, JSDoc o mensaje sin valor",
+   "paso": "lote5"
+  },
+  "G0719": {
+   "clase": "falso_positivo",
+   "nota": "comentario o prosa sin valor de semilla",
+   "paso": "lote1"
+  },
+  "G0720": {
+   "clase": "falso_positivo",
+   "nota": "comentario o JSDoc",
+   "paso": "lote2a"
+  },
+  "G0721": {
+   "clase": "falso_positivo",
+   "nota": "comentario, JSDoc o mensaje sin valor",
+   "paso": "lote5"
+  },
+  "G0722": {
+   "clase": "falso_positivo",
+   "nota": "comentario o prosa sin valor de semilla",
+   "paso": "lote1"
+  },
+  "G0723": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0724": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0725": {
+   "clase": "falso_positivo",
+   "nota": "mensaje de commit: prosa sobre semillas sin valores",
+   "paso": "lote7"
+  },
+  "G0726": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0727": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0728": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0729": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0730": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0731": {
+   "clase": "falso_positivo",
+   "nota": "comentario, JSDoc o mensaje sin valor",
+   "paso": "lote5"
+  },
+  "G0732": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0733": {
+   "clase": "mencion/designacion",
+   "nota": "describe el esquema de semillas de ejecuciones reales sin dar valores",
+   "paso": "lote6"
+  },
+  "G0734": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0735": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0736": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0737": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0738": {
+   "clase": "falso_positivo",
+   "nota": "mensaje de commit: prosa sobre semillas sin valores",
+   "paso": "lote7"
+  },
+  "G0739": {
+   "clase": "mencion/designacion",
+   "nota": "cita N=500 (gate2), N=200 (gate4) y seed < 1000 de baseline_n1000.mjs (no versionado); clase cerrada; efecto en usos en suspenso hasta la regla de ejecuciones documentadas no versionadas",
+   "paso": "lote6",
+   "efectoUsos": "F-RV.14",
+   "aportaUsos": [
+    {
+     "desde": 0,
+     "hasta": 999,
+     "origen": "documental, no versionado: docs/evidence/protocolo-evaluacion/2026-07-18-R-protocolo-de-facto.md:85 (analysis/baseline_n1000.mjs:35)"
+    }
+   ]
+  },
+  "G0740": {
+   "clase": "falso_positivo",
+   "nota": "mensaje de commit: prosa sobre semillas sin valores",
+   "paso": "lote7"
+  },
+  "G0741": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0742": {
+   "clase": "falso_positivo",
+   "nota": "mensaje de commit: prosa sobre semillas sin valores",
+   "paso": "lote7"
+  },
+  "G0743": {
+   "clase": "falso_positivo",
+   "nota": "mensaje de commit: prosa sobre semillas sin valores",
+   "paso": "lote7"
+  },
+  "G0744": {
+   "clase": "falso_positivo",
+   "nota": "mensaje de commit: prosa sobre semillas sin valores",
+   "paso": "lote7"
+  },
+  "G0745": {
+   "clase": "falso_positivo",
+   "nota": "mensaje de commit: prosa sobre semillas sin valores",
+   "paso": "lote7"
+  },
+  "G0746": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0747": {
+   "clase": "falso_positivo",
+   "nota": "comentario, JSDoc o mensaje sin valor",
+   "paso": "lote5"
+  },
+  "G0748": {
+   "clase": "mencion/designacion",
+   "nota": "describe el esquema de semillas de ejecuciones reales sin dar valores",
+   "paso": "lote6"
+  },
+  "G0749": {
+   "clase": "mencion/designacion",
+   "nota": "comentario o texto de informe que nombra el esquema de la campaña (N=500, seed=i+1)",
+   "paso": "lote5"
+  },
+  "G0750": {
+   "clase": "mencion/designacion",
+   "nota": "comentario o texto de informe que nombra el esquema de la campaña (N=500, seed=i+1)",
+   "paso": "lote5"
+  },
+  "G0751": {
+   "clase": "falso_positivo",
+   "nota": "comentario, JSDoc o mensaje sin valor",
+   "paso": "lote5"
+  },
+  "G0752": {
+   "clase": "mencion/designacion",
+   "nota": "describe el esquema de semillas de ejecuciones reales sin dar valores",
+   "paso": "lote6"
+  },
+  "G0753": {
+   "clase": "mencion/designacion",
+   "nota": "describe el esquema de semillas de ejecuciones reales sin dar valores",
+   "paso": "lote6"
+  },
+  "G0754": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0755": {
+   "clase": "mencion/designacion",
+   "nota": "mensaje de commit que describe un esquema o nombra valores sin ejecutarlos; no genera uso nuevo",
+   "paso": "lote7"
+  },
+  "G0756": {
+   "clase": "falso_positivo",
+   "nota": "mensaje de commit: prosa sobre semillas sin valores",
+   "paso": "lote7"
+  },
+  "G0757": {
+   "clase": "falso_positivo",
+   "nota": "mensaje de commit: prosa sobre semillas sin valores",
+   "paso": "lote7"
+  },
+  "G0758": {
+   "clase": "falso_positivo",
+   "nota": "comentario, JSDoc o mensaje sin valor",
+   "paso": "lote5"
+  },
+  "G0759": {
+   "clase": "falso_positivo",
+   "nota": "comentario, JSDoc o mensaje sin valor",
+   "paso": "lote5"
+  },
+  "G0760": {
+   "clase": "mencion/designacion",
+   "nota": "semilla escrita en log, objeto de salida o aserción, sin ejecución",
+   "paso": "lote4"
+  },
+  "G0761": {
+   "clase": "R4_sin_resolver",
+   "nota": "no bloqueante (F-RV.7a): manifest.seed llega de un JSON indicado por argv (blind-run.mjs:36,51); ningún manifiesto de cegado versionado en todo el perímetro; entrada no versionada -> limitaciones",
+   "paso": "lote1",
+   "bloqueante": false
+  },
+  "G0762": {
+   "clase": "R4_sin_resolver",
+   "nota": "no bloqueante (F-RV.7a): manifest.seed llega de un JSON indicado por argv (blind-run.mjs:36,51); ningún manifiesto de cegado versionado en todo el perímetro; entrada no versionada -> limitaciones",
+   "paso": "lote1",
+   "bloqueante": false
+  },
+  "G0763": {
+   "clase": "R4_sin_resolver",
+   "nota": "no bloqueante (F-RV.7a): manifest.seed llega de un JSON indicado por argv (blind-run.mjs:36,51); ningún manifiesto de cegado versionado en todo el perímetro; entrada no versionada -> limitaciones",
+   "paso": "lote1",
+   "bloqueante": false
+  },
+  "G0764": {
+   "clase": "uso",
+   "nota": "seed: SEED con const SEED = 0 (runAdapter.js:14, R1)",
+   "paso": "lote4"
+  },
+  "G0765": {
+   "clase": "falso_positivo",
+   "nota": "comentario o documento (incluido docstring inexacto de deriveSeed: concatena, no hashea)",
+   "paso": "lote4"
+  },
+  "G0766": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0767": {
+   "clase": "falso_positivo",
+   "nota": "comentario o documento (incluido docstring inexacto de deriveSeed: concatena, no hashea)",
+   "paso": "lote4"
+  },
+  "G0768": {
+   "clase": "falso_positivo",
+   "nota": "mensaje de commit: prosa sobre semillas sin valores",
+   "paso": "lote7"
+  },
+  "G0769": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe",
+   "paso": "lote3"
+  },
+  "G0770": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe",
+   "paso": "lote3"
+  },
+  "G0771": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe",
+   "paso": "lote3"
+  },
+  "G0772": {
+   "clase": "falso_positivo",
+   "nota": "título de describe/it sin valor",
+   "paso": "lote1"
+  },
+  "G0773": {
+   "clase": "falso_positivo",
+   "nota": "título de test",
+   "paso": "lote4"
+  },
+  "G0774": {
+   "clase": "falso_positivo",
+   "nota": "título de test",
+   "paso": "lote4"
+  },
+  "G0775": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2b"
+  },
+  "G0776": {
+   "clase": "falso_positivo",
+   "nota": "título de describe/it sin valor",
+   "paso": "lote1"
+  },
+  "G0777": {
+   "clase": "falso_positivo",
+   "nota": "título de it/describe sin valor",
+   "paso": "lote2c"
+  },
+  "G0778": {
+   "clase": "falso_positivo",
+   "nota": "mensaje de commit: prosa sobre semillas sin valores",
+   "paso": "lote7"
+  },
+  "G0779": {
+   "clase": "falso_positivo",
+   "nota": "mensaje de commit: prosa sobre semillas sin valores",
+   "paso": "lote7"
+  },
+  "G0780": {
+   "clase": "falso_positivo",
+   "nota": "código, cadena o fixture del propio escáner de semillas",
+   "paso": "lote1"
+  },
+  "G0781": {
+   "clase": "falso_positivo",
+   "nota": "firma con parámetro seed",
+   "paso": "lote5"
+  },
+  "G0782": {
+   "clase": "falso_positivo",
+   "nota": "firma de función o desestructuración en la firma; no transporta valor",
+   "paso": "lote2a"
+  },
+  "G0783": {
+   "clase": "falso_positivo",
+   "nota": "firma de función o desestructuración en la firma; no transporta valor",
+   "paso": "lote2a"
+  },
+  "G0784": {
+   "clase": "falso_positivo",
+   "nota": "firma (deriveSeed, runWith)",
+   "paso": "lote4"
+  },
+  "G0785": {
+   "clase": "falso_positivo",
+   "nota": "firma de función; no transporta valor",
+   "paso": "lote1"
+  },
+  "G0786": {
+   "clase": "falso_positivo",
+   "nota": "firma de función; no transporta valor",
+   "paso": "lote1"
+  },
+  "G0787": {
+   "clase": "falso_positivo",
+   "nota": "firma de función o desestructuración en la firma; no transporta valor",
+   "paso": "lote2a"
+  },
+  "G0788": {
+   "clase": "falso_positivo",
+   "nota": "firma de función; no transporta valor",
+   "paso": "lote1"
+  },
+  "G0789": {
+   "clase": "falso_positivo",
+   "nota": "firma de función; no transporta valor",
+   "paso": "lote1"
+  },
+  "G0790": {
+   "clase": "falso_positivo",
+   "nota": "firma de función o desestructuración en la firma; no transporta valor",
+   "paso": "lote2a"
+  },
+  "G0791": {
+   "clase": "falso_positivo",
+   "nota": "firma de función o desestructuración en la firma; no transporta valor",
+   "paso": "lote2a"
+  },
+  "G0792": {
+   "clase": "falso_positivo",
+   "nota": "firma de función; no transporta valor",
+   "paso": "lote1"
+  },
+  "G0793": {
+   "clase": "falso_positivo",
+   "nota": "firma de función o desestructuración en la firma; no transporta valor",
+   "paso": "lote2a"
+  },
+  "G0794": {
+   "clase": "falso_positivo",
+   "nota": "firma de función o desestructuración en la firma; no transporta valor",
+   "paso": "lote2a"
+  },
+  "G0795": {
+   "clase": "falso_positivo",
+   "nota": "firma con parámetro seed",
+   "paso": "lote5"
+  },
+  "G0796": {
+   "clase": "falso_positivo",
+   "nota": "firma con parámetro seed; no demuestra valor ni ejecución",
+   "paso": "lote3"
+  },
+  "G0797": {
+   "clase": "falso_positivo",
+   "nota": "firma de función o desestructuración en la firma; no transporta valor",
+   "paso": "lote2a"
+  },
+  "G0798": {
+   "clase": "falso_positivo",
+   "nota": "firma con parámetro seed; no demuestra valor ni ejecución",
+   "paso": "lote3"
+  },
+  "G0799": {
+   "clase": "falso_positivo",
+   "nota": "firma con parámetro seed",
+   "paso": "lote5"
+  },
+  "G0800": {
+   "clase": "falso_positivo",
+   "nota": "firma con parámetro seed",
+   "paso": "lote5"
+  },
+  "G0801": {
+   "clase": "falso_positivo",
+   "nota": "firma con parámetro seed; no demuestra valor ni ejecución",
+   "paso": "lote3"
+  },
+  "G0802": {
+   "clase": "falso_positivo",
+   "nota": "firma con parámetro seed",
+   "paso": "lote5"
+  },
+  "G0803": {
+   "clase": "falso_positivo",
+   "nota": "firma de función o desestructuración en la firma; no transporta valor",
+   "paso": "lote2a"
+  },
+  "G0804": {
+   "clase": "falso_positivo",
+   "nota": "firma con parámetro seed",
+   "paso": "lote5"
+  },
+  "G0805": {
+   "clase": "falso_positivo",
+   "nota": "firma de función o desestructuración en la firma; no transporta valor",
+   "paso": "lote2a"
+  },
+  "G0806": {
+   "clase": "R4_sin_resolver",
+   "nota": "no bloqueante (F-RV.7a): manifest.seed llega de un JSON indicado por argv (blind-run.mjs:36,51); ningún manifiesto de cegado versionado en todo el perímetro; entrada no versionada -> limitaciones",
+   "paso": "lote1",
+   "bloqueante": false
+  },
+  "G0807": {
+   "clase": "falso_positivo",
+   "nota": "import",
+   "paso": "lote1"
+  },
+  "G0808": {
+   "clase": "falso_positivo",
+   "nota": "import",
+   "paso": "lote1"
+  },
+  "G0809": {
+   "clase": "falso_positivo",
+   "nota": "import",
+   "paso": "lote2c"
+  },
+  "G0810": {
+   "clase": "falso_positivo",
+   "nota": "import",
+   "paso": "lote2a"
+  },
+  "G0811": {
+   "clase": "falso_positivo",
+   "nota": "import",
+   "paso": "lote2a"
+  },
+  "G0812": {
+   "clase": "mencion/designacion",
+   "nota": "mensaje de commit que describe un esquema o nombra valores sin ejecutarlos; no genera uso nuevo",
+   "paso": "lote7"
+  },
+  "G0813": {
+   "clase": "falso_positivo",
+   "nota": "mensaje de commit: prosa sobre semillas sin valores",
+   "paso": "lote7"
+  },
+  "G0814": {
+   "clase": "falso_positivo",
+   "nota": "mensaje de commit: prosa sobre semillas sin valores",
+   "paso": "lote7"
+  },
+  "G0815": {
+   "clase": "falso_positivo",
+   "nota": "mensaje de commit: prosa sobre semillas sin valores",
+   "paso": "lote7"
+  },
+  "G0816": {
+   "clase": "mencion/designacion",
+   "nota": "mensaje de commit que describe un esquema o nombra valores sin ejecutarlos; no genera uso nuevo",
+   "paso": "lote7"
+  },
+  "G0817": {
+   "clase": "falso_positivo",
+   "nota": "comentario o documento (incluido docstring inexacto de deriveSeed: concatena, no hashea)",
+   "paso": "lote4"
+  },
+  "G0818": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0819": {
+   "clase": "falso_positivo",
+   "nota": "mensaje de commit: prosa sobre semillas sin valores",
+   "paso": "lote7"
+  },
+  "G0820": {
+   "clase": "falso_positivo",
+   "nota": "mensaje de commit: prosa sobre semillas sin valores",
+   "paso": "lote7"
+  },
+  "G0821": {
+   "clase": "falso_positivo",
+   "nota": "mensaje de commit: prosa sobre semillas sin valores",
+   "paso": "lote7"
+  },
+  "G0822": {
+   "clase": "falso_positivo",
+   "nota": "mensaje de commit: prosa sobre semillas sin valores",
+   "paso": "lote7"
+  },
+  "G0823": {
+   "clase": "falso_positivo",
+   "nota": "mensaje de commit: prosa sobre semillas sin valores",
+   "paso": "lote7"
+  },
+  "G0824": {
+   "clase": "falso_positivo",
+   "nota": "comentario o documento (incluido docstring inexacto de deriveSeed: concatena, no hashea)",
+   "paso": "lote4"
+  },
+  "G0825": {
+   "clase": "falso_positivo",
+   "nota": "mensaje de commit: prosa sobre semillas sin valores",
+   "paso": "lote7"
+  },
+  "G0826": {
+   "clase": "mencion/designacion",
+   "nota": "describe el esquema de semillas de ejecuciones reales sin dar valores",
+   "paso": "lote6"
+  },
+  "G0827": {
+   "clase": "mencion/designacion",
+   "nota": "comentario o texto de informe que nombra el esquema de la campaña (N=500, seed=i+1)",
+   "paso": "lote5"
+  },
+  "G0828": {
+   "clase": "falso_positivo",
+   "nota": "prosa sin valor de semilla (incluye \"semilla\" como corpus de partida, recuentos y encabezados)",
+   "paso": "lote6"
+  },
+  "G0829": {
+   "clase": "falso_positivo",
+   "nota": "import",
+   "paso": "lote1"
+  }
+ },
+ "frv11": {
+  "script": "frv11.mjs",
+  "scriptSha256": "b6374c61ad0f4838475d9f36199387a81f71bb59ada72c8f354acc8ec69c6fdc",
+  "resultadoSha256": "b995db0a7fc402c3686d91925a413facfe8c6d6538c16c2286da396faef1e108",
+  "resumen": "416 commits, 612 blobs (3 binarios), 39 apariciones en 14 lineas; 12 lineas ya en grupos clasificados; 2 lineas nuevas",
+  "nuevas": [
+   {
+    "blob": "c31da442fed57d4f15a4da10c31b55881f152e13",
+    "ruta": "scripts/fase7/escanearSemillas.test.js",
+    "linea": 2,
+    "texto": "// Ningún fixture usa enteros 1001-1010.",
+    "estado": "ratificada",
+    "clase": "mencion/designacion"
+   },
+   {
+    "blob": "0301bf0d286e48e97b39ff92ff584c913b3e9007",
+    "ruta": "scripts/fase7/generarCasos.test.js",
+    "linea": 2,
+    "texto": "// nunca las de evaluación (1001–1010), y no escriben archivos.",
+    "estado": "ratificada",
+    "clase": "mencion/designacion"
+   }
+  ],
+  "reproduccionTitular": "repetida por el titular en su equipo: mismos recuentos y frv11_hits.json sha256 b995db0a...e108 identico"
+ },
+ "frv13": {
+  "script": "frv13.mjs",
+  "scriptSha256": "c44ab4192c175f0cfecb12c13ddd0fbaf7e85fc78a8ad6efcebb6896423c6981",
+  "resultadoSha256": "28b03b191e002ece5285228e87e3d10277f1886956a19a778540802c9db255e4",
+  "hashJsBlob": "308ef701e2af084fd43fadbf2cb1f78d80595853",
+  "reproduccionTitular": "idéntica",
+  "ninguno_en_1001_1010": true
+ },
+ "frv13b": {
+  "script": "frv13b.mjs",
+  "scriptSha256": "c006b8ce28cb818b9aea0a8ba7d58d1d2a420eb404c0d7c52b35a71e4ab6490d",
+  "resultadoSha256": "47f8a0efc2d8524229e9cd3f5a551c63c5f366f01a99e70513d8c43cf61e7aef",
+  "estado": "reproducido_por_titular",
+  "alcance": "parcial: 9 pares userId:weekNumber literales de los fixtures del baseline (baselineFixtures.js@025652c y buildPlan.baseline.test.js@53ba827/@f64b15a); no enumera todos los llamadores de la ruta por defecto",
+  "valores": {
+   "baseline-defflexible:12": 532847468,
+   "baseline-defsaciante:11": 1393820248,
+   "baseline-fatlossgeneral:10": 1890273642,
+   "baseline-mant-intol:16": 756482041,
+   "baseline-mant-simple:18": 1491109313,
+   "baseline-mant-training:17": 1377073392,
+   "baseline-mantenimiento:13": 1880525077,
+   "baseline-volumenagresivo:15": 588720795,
+   "baseline-volumenlimpio:14": 1487635260
+  },
+  "ninguno_en_1001_1010": true
+ },
+ "limitacionesPropuestas": [
+  "semillas derivadas por hash de userId/weekNumber en la ruta por defecto de legacy (buildPlan.js:29) no enumeradas en su totalidad; F-RV.11 no las cubre (no son literales); cubiertos por cálculo solo los 9 pares del baseline (frv13b) y los de los 9 grupos de F-RV.13; no bloqueante"
+ ],
+ "frv11b": {
+  "script": "frv11b.mjs",
+  "resultadoSha256": "51be958f8eb350a0e7e36471b8e77901201543feebbd3d421c989fcf796b23e7",
+  "estado": "cerrada: reproducida por el titular y clasificación ratificada",
+  "resumen": "416 commits, 612 blobs; 30 grupos, 311 ocurrencias",
+  "clasificacion": {
+   "cota_de_semillas_que_alcanza_1001_1010": [
+    "C021",
+    "C022 (bucles 0-1999 de G0132/G0133, F-RV.5)"
+   ],
+   "cota_de_semillas_que_no_alcanza": [
+    "C007",
+    "C008",
+    "C018",
+    "C019",
+    "C029 (documentan bucles seed 0..999 de analysis/baseline_n1000.mjs y stage2a_n1000.mjs; ninguna ruta n1000/stage2a existe en ningún commit del perímetro)"
+   ],
+   "excluidas": {
+    "E1_umbral_kcal": [
+     "C001-C006",
+     "C009",
+     "C010",
+     "C024-C028"
+    ],
+    "E2_temporizador_ms": [
+     "C023"
+    ],
+    "E3_numeros_de_linea": [
+     "C011-C017 (salida de lint)",
+     "C020 (DECISIONS.md)"
+    ],
+    "E4_fixture_de_registro": [
+     "C030"
+    ]
+   }
+  },
+  "nota": "C021/C022: la cota es compatible con alcanzar 1001-1010; no demuestra ejecución; siguen en F-RV.5. Campaña 0-999 (n1000): presencia solo documental en el perímetro"
+ }
+}

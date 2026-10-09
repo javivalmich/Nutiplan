@@ -1,0 +1,1480 @@
+{
+  "generadorVersion": 1,
+  "generadoEn": "2026-10-06T12:22:58.901Z",
+  "codigo": {
+    "head": "765b90a265ade50ac07e99fab82012d565611e98",
+    "arbolLimpio": true
+  },
+  "registroSemillas": {
+    "ruta": "docs/evidence/fase7-semillas/registro-semillas.json",
+    "sha256": "cee27373cfaacc4658bf27241c6d82b1c36d6e10220ce2a315d01db363bc002b",
+    "ancla": "289d90d833bb4219707fbb3b18d31fdba0e4ebca",
+    "perimetro": "git rev-list --all en 289d90d (83 refs, 418 commits): 615 blobs de texto alcanzables y los mensajes de commit; excluidos el reflog, los objetos inalcanzables y 3 binarios. No cubre ejecuciones nunca versionadas. Completo solo respecto de este perímetro y de la fuente declarada en \"fuente\"."
+  },
+  "estrategia": "mantenimiento_equilibrado",
+  "semillas": [
+    2001,
+    2002,
+    2003,
+    2004,
+    2005,
+    2006,
+    2007,
+    2008,
+    2009,
+    2010
+  ],
+  "perfiles": {
+    "P1": {
+      "entreno": [
+        "lunes",
+        "miercoles",
+        "viernes"
+      ]
+    },
+    "P2": {
+      "entreno": []
+    }
+  },
+  "perfilBaseLegacy": {
+    "weight": 74,
+    "goal": "maintain",
+    "activity": "moderate",
+    "intolerances": [],
+    "trainingDays": [],
+    "extras": {},
+    "mealsPerDay": 3,
+    "tiempoCocina": "normal",
+    "experiencia": "intermedio",
+    "simpleMode": false,
+    "dob": "1990-01-01",
+    "gender": "male",
+    "height": 178
+  },
+  "targetKcalLegacy": 2000,
+  "opcionesLegacy": {
+    "month": 5,
+    "weekNumber": 23,
+    "pastProteins": {},
+    "freeFormPool": [],
+    "saveMealMemory": "función vacía",
+    "rng": "mulberry32(semilla) de src/engine/rng.js"
+  },
+  "traduccionPerfilBase": [
+    {
+      "campo": "weight",
+      "legacy": "se pasa tal cual",
+      "engine2": "no representable; no se pasa"
+    },
+    {
+      "campo": "goal",
+      "legacy": "se pasa tal cual (\"maintain\")",
+      "engine2": "equivale a strategy=\"mantenimiento_equilibrado\"; se verifica en la salida de ambos"
+    },
+    {
+      "campo": "activity",
+      "legacy": "se pasa tal cual",
+      "engine2": "no representable; no se pasa"
+    },
+    {
+      "campo": "intolerances",
+      "legacy": "se pasa tal cual (vacío)",
+      "engine2": "no representable; vacío en ambos"
+    },
+    {
+      "campo": "trainingDays",
+      "legacy": "según perfil, con nombres de día de legacy",
+      "engine2": "según perfil, con nombres de día de engine2"
+    },
+    {
+      "campo": "extras",
+      "legacy": "se pasa tal cual (vacío)",
+      "engine2": "no representable; no se pasa"
+    },
+    {
+      "campo": "mealsPerDay",
+      "legacy": "se pasa tal cual (3; el desayuno lo excluye el cegado)",
+      "engine2": "no representable; engine2 emite comida y cena"
+    },
+    {
+      "campo": "tiempoCocina",
+      "legacy": "se pasa tal cual",
+      "engine2": "no representable; no se pasa"
+    },
+    {
+      "campo": "experiencia",
+      "legacy": "se pasa tal cual",
+      "engine2": "no representable; no se pasa"
+    },
+    {
+      "campo": "simpleMode",
+      "legacy": "se pasa tal cual",
+      "engine2": "no representable; no se pasa"
+    },
+    {
+      "campo": "dob",
+      "legacy": "se pasa tal cual",
+      "engine2": "no representable; no se pasa"
+    },
+    {
+      "campo": "gender",
+      "legacy": "se pasa tal cual",
+      "engine2": "no representable; no se pasa"
+    },
+    {
+      "campo": "height",
+      "legacy": "se pasa tal cual",
+      "engine2": "no representable; no se pasa"
+    }
+  ],
+  "verificaciones": [
+    "estrategia",
+    "dia libre = dia 6 en ambos motores",
+    "determinismo de la vista adaptada",
+    "contrato del cegado"
+  ],
+  "casos": [
+    {
+      "caso": "P1-2001",
+      "perfil": "P1",
+      "semilla": 2001,
+      "planes": [
+        {
+          "id": "P1-2001-legacy",
+          "motor": "legacy",
+          "archivo": "planes/P1-2001-legacy.json",
+          "sha256Plan": "9908ba70f739096676f88e996f49dff43c6c1e99ba24a146a8438efbf91d2537",
+          "sha256Vista": "3dd3337394885da5f471c76b8c4ffbdde6a15ca9a4749bfc5b646b7e0c5675ef",
+          "entrada": {
+            "profile": {
+              "weight": 74,
+              "goal": "maintain",
+              "activity": "moderate",
+              "intolerances": [],
+              "trainingDays": [
+                "Lunes",
+                "Miércoles",
+                "Viernes"
+              ],
+              "extras": {},
+              "mealsPerDay": 3,
+              "tiempoCocina": "normal",
+              "experiencia": "intermedio",
+              "simpleMode": false,
+              "dob": "1990-01-01",
+              "gender": "male",
+              "height": 178
+            },
+            "targetKcal": 2000,
+            "opts": {
+              "month": 5,
+              "weekNumber": 23,
+              "pastProteins": {},
+              "freeFormPool": []
+            },
+            "semilla": 2001
+          }
+        },
+        {
+          "id": "P1-2001-engine2",
+          "motor": "engine2",
+          "archivo": "planes/P1-2001-engine2.json",
+          "sha256Plan": "85d0570e4627a9d905fb68cb8e3b5d3398723498c8bc63e7d9c032016de43783",
+          "sha256Vista": "65e359e3f28b5fdcbaede5cef3d9df614f5aee96c0379e2bca7e589676e3b465",
+          "entrada": {
+            "profile": {
+              "trainingDays": [
+                "Lunes",
+                "Miercoles",
+                "Viernes"
+              ]
+            },
+            "seed": 2001,
+            "strategy": "mantenimiento_equilibrado"
+          }
+        }
+      ]
+    },
+    {
+      "caso": "P1-2002",
+      "perfil": "P1",
+      "semilla": 2002,
+      "planes": [
+        {
+          "id": "P1-2002-legacy",
+          "motor": "legacy",
+          "archivo": "planes/P1-2002-legacy.json",
+          "sha256Plan": "cf399b1226daf505f973cc47f923ac4a630dc5429cf977aafa7b2597aa83ab35",
+          "sha256Vista": "1a44446dd4d5d75bd1386700c5553870696d0b27912123a71350aaca6fc8a816",
+          "entrada": {
+            "profile": {
+              "weight": 74,
+              "goal": "maintain",
+              "activity": "moderate",
+              "intolerances": [],
+              "trainingDays": [
+                "Lunes",
+                "Miércoles",
+                "Viernes"
+              ],
+              "extras": {},
+              "mealsPerDay": 3,
+              "tiempoCocina": "normal",
+              "experiencia": "intermedio",
+              "simpleMode": false,
+              "dob": "1990-01-01",
+              "gender": "male",
+              "height": 178
+            },
+            "targetKcal": 2000,
+            "opts": {
+              "month": 5,
+              "weekNumber": 23,
+              "pastProteins": {},
+              "freeFormPool": []
+            },
+            "semilla": 2002
+          }
+        },
+        {
+          "id": "P1-2002-engine2",
+          "motor": "engine2",
+          "archivo": "planes/P1-2002-engine2.json",
+          "sha256Plan": "09c90531c4be215cdf64463f1307e069503cbcc88a869b2c523fc583de4783db",
+          "sha256Vista": "9cb9c567d18059543b9980b5fcf981f4a71f772b43bac4ed242a78d209b56179",
+          "entrada": {
+            "profile": {
+              "trainingDays": [
+                "Lunes",
+                "Miercoles",
+                "Viernes"
+              ]
+            },
+            "seed": 2002,
+            "strategy": "mantenimiento_equilibrado"
+          }
+        }
+      ]
+    },
+    {
+      "caso": "P1-2003",
+      "perfil": "P1",
+      "semilla": 2003,
+      "planes": [
+        {
+          "id": "P1-2003-legacy",
+          "motor": "legacy",
+          "archivo": "planes/P1-2003-legacy.json",
+          "sha256Plan": "a905863b1e7565c772e1543506b8df8aff5a80eae549bccffcb9bff139a473c6",
+          "sha256Vista": "1a87aead4801521931231c051e3cc6604ed48b7d115eb8a89d0fc5f5ac697d4c",
+          "entrada": {
+            "profile": {
+              "weight": 74,
+              "goal": "maintain",
+              "activity": "moderate",
+              "intolerances": [],
+              "trainingDays": [
+                "Lunes",
+                "Miércoles",
+                "Viernes"
+              ],
+              "extras": {},
+              "mealsPerDay": 3,
+              "tiempoCocina": "normal",
+              "experiencia": "intermedio",
+              "simpleMode": false,
+              "dob": "1990-01-01",
+              "gender": "male",
+              "height": 178
+            },
+            "targetKcal": 2000,
+            "opts": {
+              "month": 5,
+              "weekNumber": 23,
+              "pastProteins": {},
+              "freeFormPool": []
+            },
+            "semilla": 2003
+          }
+        },
+        {
+          "id": "P1-2003-engine2",
+          "motor": "engine2",
+          "archivo": "planes/P1-2003-engine2.json",
+          "sha256Plan": "3d9bb13908db1826d66a401afed17ebff0603c90f7f42b502ffe78f3635f0032",
+          "sha256Vista": "bb40202e1767630a42880f40741e4a8ca233e8b5d32189ae497cd95e89180346",
+          "entrada": {
+            "profile": {
+              "trainingDays": [
+                "Lunes",
+                "Miercoles",
+                "Viernes"
+              ]
+            },
+            "seed": 2003,
+            "strategy": "mantenimiento_equilibrado"
+          }
+        }
+      ]
+    },
+    {
+      "caso": "P1-2004",
+      "perfil": "P1",
+      "semilla": 2004,
+      "planes": [
+        {
+          "id": "P1-2004-legacy",
+          "motor": "legacy",
+          "archivo": "planes/P1-2004-legacy.json",
+          "sha256Plan": "3760a56c5afb82f4406dc65ab612768bb854c15bead15dc79683858cc40132c1",
+          "sha256Vista": "ecdcf51178b67a3f9b792f2d007dd9baf2a9fffda371d49761a7586cf91ebabc",
+          "entrada": {
+            "profile": {
+              "weight": 74,
+              "goal": "maintain",
+              "activity": "moderate",
+              "intolerances": [],
+              "trainingDays": [
+                "Lunes",
+                "Miércoles",
+                "Viernes"
+              ],
+              "extras": {},
+              "mealsPerDay": 3,
+              "tiempoCocina": "normal",
+              "experiencia": "intermedio",
+              "simpleMode": false,
+              "dob": "1990-01-01",
+              "gender": "male",
+              "height": 178
+            },
+            "targetKcal": 2000,
+            "opts": {
+              "month": 5,
+              "weekNumber": 23,
+              "pastProteins": {},
+              "freeFormPool": []
+            },
+            "semilla": 2004
+          }
+        },
+        {
+          "id": "P1-2004-engine2",
+          "motor": "engine2",
+          "archivo": "planes/P1-2004-engine2.json",
+          "sha256Plan": "7f93964d82e536fd5de27f3e70bd349b23a7fa651d54fa51295b7c80347c2ab8",
+          "sha256Vista": "df4bb443b2c492d4efc02f3dbb7d6dc9fb996f64c67bd507143f40f95f2ca2e4",
+          "entrada": {
+            "profile": {
+              "trainingDays": [
+                "Lunes",
+                "Miercoles",
+                "Viernes"
+              ]
+            },
+            "seed": 2004,
+            "strategy": "mantenimiento_equilibrado"
+          }
+        }
+      ]
+    },
+    {
+      "caso": "P1-2005",
+      "perfil": "P1",
+      "semilla": 2005,
+      "planes": [
+        {
+          "id": "P1-2005-legacy",
+          "motor": "legacy",
+          "archivo": "planes/P1-2005-legacy.json",
+          "sha256Plan": "dcee8c2447d7f0875e986515dc607bc42658ba9f9d92ba942b1003ad5889fdf7",
+          "sha256Vista": "162bf9c529a8d88517fa0558e4d41a7b8b9506a2a0f5c032a8aa407666042b55",
+          "entrada": {
+            "profile": {
+              "weight": 74,
+              "goal": "maintain",
+              "activity": "moderate",
+              "intolerances": [],
+              "trainingDays": [
+                "Lunes",
+                "Miércoles",
+                "Viernes"
+              ],
+              "extras": {},
+              "mealsPerDay": 3,
+              "tiempoCocina": "normal",
+              "experiencia": "intermedio",
+              "simpleMode": false,
+              "dob": "1990-01-01",
+              "gender": "male",
+              "height": 178
+            },
+            "targetKcal": 2000,
+            "opts": {
+              "month": 5,
+              "weekNumber": 23,
+              "pastProteins": {},
+              "freeFormPool": []
+            },
+            "semilla": 2005
+          }
+        },
+        {
+          "id": "P1-2005-engine2",
+          "motor": "engine2",
+          "archivo": "planes/P1-2005-engine2.json",
+          "sha256Plan": "34169ca948a0ee79ceba4da4f49bea5da0ee19a4cc0426d0d661685cab45187a",
+          "sha256Vista": "8af20a20b1dbf826bd7c67272fa99bbbfb807dd389fe87a56fb9f437dfd5739a",
+          "entrada": {
+            "profile": {
+              "trainingDays": [
+                "Lunes",
+                "Miercoles",
+                "Viernes"
+              ]
+            },
+            "seed": 2005,
+            "strategy": "mantenimiento_equilibrado"
+          }
+        }
+      ]
+    },
+    {
+      "caso": "P1-2006",
+      "perfil": "P1",
+      "semilla": 2006,
+      "planes": [
+        {
+          "id": "P1-2006-legacy",
+          "motor": "legacy",
+          "archivo": "planes/P1-2006-legacy.json",
+          "sha256Plan": "09c92346a079d2898a93d1fc806d894c55d952eef667b35900e10ed988d1693d",
+          "sha256Vista": "39d3a35abfc1f42518a985b6620c51a48c93dbf2491142840c25ea9ba14d01c9",
+          "entrada": {
+            "profile": {
+              "weight": 74,
+              "goal": "maintain",
+              "activity": "moderate",
+              "intolerances": [],
+              "trainingDays": [
+                "Lunes",
+                "Miércoles",
+                "Viernes"
+              ],
+              "extras": {},
+              "mealsPerDay": 3,
+              "tiempoCocina": "normal",
+              "experiencia": "intermedio",
+              "simpleMode": false,
+              "dob": "1990-01-01",
+              "gender": "male",
+              "height": 178
+            },
+            "targetKcal": 2000,
+            "opts": {
+              "month": 5,
+              "weekNumber": 23,
+              "pastProteins": {},
+              "freeFormPool": []
+            },
+            "semilla": 2006
+          }
+        },
+        {
+          "id": "P1-2006-engine2",
+          "motor": "engine2",
+          "archivo": "planes/P1-2006-engine2.json",
+          "sha256Plan": "7fde941a76782fb2e739fad80eeec5b4e6dc7ac52a5392f7ac5658bac1709579",
+          "sha256Vista": "4d805b6be99aa46d75f8c1d043401f9c79038001d337b0eabfa47f834f7d0e54",
+          "entrada": {
+            "profile": {
+              "trainingDays": [
+                "Lunes",
+                "Miercoles",
+                "Viernes"
+              ]
+            },
+            "seed": 2006,
+            "strategy": "mantenimiento_equilibrado"
+          }
+        }
+      ]
+    },
+    {
+      "caso": "P1-2007",
+      "perfil": "P1",
+      "semilla": 2007,
+      "planes": [
+        {
+          "id": "P1-2007-legacy",
+          "motor": "legacy",
+          "archivo": "planes/P1-2007-legacy.json",
+          "sha256Plan": "1bf96ce66a4d1c4ebc159db598cffecf9edbf254d278a2a0fec1103529a93235",
+          "sha256Vista": "ee0392b80b44d0ccc0551ab12f884456c27b8fa3b1f1d8e669826aa9dcfe11d7",
+          "entrada": {
+            "profile": {
+              "weight": 74,
+              "goal": "maintain",
+              "activity": "moderate",
+              "intolerances": [],
+              "trainingDays": [
+                "Lunes",
+                "Miércoles",
+                "Viernes"
+              ],
+              "extras": {},
+              "mealsPerDay": 3,
+              "tiempoCocina": "normal",
+              "experiencia": "intermedio",
+              "simpleMode": false,
+              "dob": "1990-01-01",
+              "gender": "male",
+              "height": 178
+            },
+            "targetKcal": 2000,
+            "opts": {
+              "month": 5,
+              "weekNumber": 23,
+              "pastProteins": {},
+              "freeFormPool": []
+            },
+            "semilla": 2007
+          }
+        },
+        {
+          "id": "P1-2007-engine2",
+          "motor": "engine2",
+          "archivo": "planes/P1-2007-engine2.json",
+          "sha256Plan": "dea56d3c3024ca9473b850d47d807ea3260164a4e33fa85bde2f66b8d251b8ed",
+          "sha256Vista": "998bccd425d5751dea718711e835b9fcbc5f70837829ce2a25c6d1c6d9f6d753",
+          "entrada": {
+            "profile": {
+              "trainingDays": [
+                "Lunes",
+                "Miercoles",
+                "Viernes"
+              ]
+            },
+            "seed": 2007,
+            "strategy": "mantenimiento_equilibrado"
+          }
+        }
+      ]
+    },
+    {
+      "caso": "P1-2008",
+      "perfil": "P1",
+      "semilla": 2008,
+      "planes": [
+        {
+          "id": "P1-2008-legacy",
+          "motor": "legacy",
+          "archivo": "planes/P1-2008-legacy.json",
+          "sha256Plan": "bf2edf9dbab5e2e88c76914543b06a4125cedb51883c026114f3c453d1a42626",
+          "sha256Vista": "8c8d3f97dbd3e1be52ada5e2d2d4b2ff46208c80252cb5e09819762505c5bb4f",
+          "entrada": {
+            "profile": {
+              "weight": 74,
+              "goal": "maintain",
+              "activity": "moderate",
+              "intolerances": [],
+              "trainingDays": [
+                "Lunes",
+                "Miércoles",
+                "Viernes"
+              ],
+              "extras": {},
+              "mealsPerDay": 3,
+              "tiempoCocina": "normal",
+              "experiencia": "intermedio",
+              "simpleMode": false,
+              "dob": "1990-01-01",
+              "gender": "male",
+              "height": 178
+            },
+            "targetKcal": 2000,
+            "opts": {
+              "month": 5,
+              "weekNumber": 23,
+              "pastProteins": {},
+              "freeFormPool": []
+            },
+            "semilla": 2008
+          }
+        },
+        {
+          "id": "P1-2008-engine2",
+          "motor": "engine2",
+          "archivo": "planes/P1-2008-engine2.json",
+          "sha256Plan": "df6d6ca58d4383d4296a537f01a183571bce759480cb69525e6693eab511f927",
+          "sha256Vista": "3143708ef3e98105ae59e3c247d5307f2b361eee6937bc3a8293956a773cebc6",
+          "entrada": {
+            "profile": {
+              "trainingDays": [
+                "Lunes",
+                "Miercoles",
+                "Viernes"
+              ]
+            },
+            "seed": 2008,
+            "strategy": "mantenimiento_equilibrado"
+          }
+        }
+      ]
+    },
+    {
+      "caso": "P1-2009",
+      "perfil": "P1",
+      "semilla": 2009,
+      "planes": [
+        {
+          "id": "P1-2009-legacy",
+          "motor": "legacy",
+          "archivo": "planes/P1-2009-legacy.json",
+          "sha256Plan": "d5fcc5bc6a156d2deecb98af034c0391fdc22c62cfba802f30980d243721221f",
+          "sha256Vista": "adc2985bb8bcd67ac8a2d82126e94dc865d711e88a6c90429a5f415a6653a4f7",
+          "entrada": {
+            "profile": {
+              "weight": 74,
+              "goal": "maintain",
+              "activity": "moderate",
+              "intolerances": [],
+              "trainingDays": [
+                "Lunes",
+                "Miércoles",
+                "Viernes"
+              ],
+              "extras": {},
+              "mealsPerDay": 3,
+              "tiempoCocina": "normal",
+              "experiencia": "intermedio",
+              "simpleMode": false,
+              "dob": "1990-01-01",
+              "gender": "male",
+              "height": 178
+            },
+            "targetKcal": 2000,
+            "opts": {
+              "month": 5,
+              "weekNumber": 23,
+              "pastProteins": {},
+              "freeFormPool": []
+            },
+            "semilla": 2009
+          }
+        },
+        {
+          "id": "P1-2009-engine2",
+          "motor": "engine2",
+          "archivo": "planes/P1-2009-engine2.json",
+          "sha256Plan": "62e187d52241a7af01e937d03f20199bf597720ee3aaa7a5047b0e791e3e2b05",
+          "sha256Vista": "cbd372e023d04ddb06bb5017c2e639cbba6a7cb9f99e875e5be4b7da6d2e2635",
+          "entrada": {
+            "profile": {
+              "trainingDays": [
+                "Lunes",
+                "Miercoles",
+                "Viernes"
+              ]
+            },
+            "seed": 2009,
+            "strategy": "mantenimiento_equilibrado"
+          }
+        }
+      ]
+    },
+    {
+      "caso": "P1-2010",
+      "perfil": "P1",
+      "semilla": 2010,
+      "planes": [
+        {
+          "id": "P1-2010-legacy",
+          "motor": "legacy",
+          "archivo": "planes/P1-2010-legacy.json",
+          "sha256Plan": "b857badfe876a6868c89802a001d2094a53597976941868c333820e0bde153e9",
+          "sha256Vista": "b292981eb948577d33e7947e3f66c56212f05b7ad079ebf49e6ba5b0dcc00f8b",
+          "entrada": {
+            "profile": {
+              "weight": 74,
+              "goal": "maintain",
+              "activity": "moderate",
+              "intolerances": [],
+              "trainingDays": [
+                "Lunes",
+                "Miércoles",
+                "Viernes"
+              ],
+              "extras": {},
+              "mealsPerDay": 3,
+              "tiempoCocina": "normal",
+              "experiencia": "intermedio",
+              "simpleMode": false,
+              "dob": "1990-01-01",
+              "gender": "male",
+              "height": 178
+            },
+            "targetKcal": 2000,
+            "opts": {
+              "month": 5,
+              "weekNumber": 23,
+              "pastProteins": {},
+              "freeFormPool": []
+            },
+            "semilla": 2010
+          }
+        },
+        {
+          "id": "P1-2010-engine2",
+          "motor": "engine2",
+          "archivo": "planes/P1-2010-engine2.json",
+          "sha256Plan": "61837490abcb3ad89ea4bb2218d5e19d2c7441dc3acda0a20a06cc5cf34f05a8",
+          "sha256Vista": "0e43f11c977746ad3a0fa9875d7ec5d5c60519c9fd2f5ba016b104a991252f0f",
+          "entrada": {
+            "profile": {
+              "trainingDays": [
+                "Lunes",
+                "Miercoles",
+                "Viernes"
+              ]
+            },
+            "seed": 2010,
+            "strategy": "mantenimiento_equilibrado"
+          }
+        }
+      ]
+    },
+    {
+      "caso": "P2-2001",
+      "perfil": "P2",
+      "semilla": 2001,
+      "planes": [
+        {
+          "id": "P2-2001-legacy",
+          "motor": "legacy",
+          "archivo": "planes/P2-2001-legacy.json",
+          "sha256Plan": "00f727d5aa6ec31852ec1d99e180bc1bd98ac60e972e1689e33e8b2c629dfa41",
+          "sha256Vista": "61515007a536c1a6ed5ccb987fbca6d89d27482aff9acae99a2e465c0edfd6ff",
+          "entrada": {
+            "profile": {
+              "weight": 74,
+              "goal": "maintain",
+              "activity": "moderate",
+              "intolerances": [],
+              "trainingDays": [],
+              "extras": {},
+              "mealsPerDay": 3,
+              "tiempoCocina": "normal",
+              "experiencia": "intermedio",
+              "simpleMode": false,
+              "dob": "1990-01-01",
+              "gender": "male",
+              "height": 178
+            },
+            "targetKcal": 2000,
+            "opts": {
+              "month": 5,
+              "weekNumber": 23,
+              "pastProteins": {},
+              "freeFormPool": []
+            },
+            "semilla": 2001
+          }
+        },
+        {
+          "id": "P2-2001-engine2",
+          "motor": "engine2",
+          "archivo": "planes/P2-2001-engine2.json",
+          "sha256Plan": "be8850cbfffd9ecd67280c2f22eedf0f48fbe509134b52b8146406da707fa7ed",
+          "sha256Vista": "3aaa9a751c2db769ba473e2babc0a6ff935f5eaba59519795c4f415860a96b8f",
+          "entrada": {
+            "profile": {
+              "trainingDays": []
+            },
+            "seed": 2001,
+            "strategy": "mantenimiento_equilibrado"
+          }
+        }
+      ]
+    },
+    {
+      "caso": "P2-2002",
+      "perfil": "P2",
+      "semilla": 2002,
+      "planes": [
+        {
+          "id": "P2-2002-legacy",
+          "motor": "legacy",
+          "archivo": "planes/P2-2002-legacy.json",
+          "sha256Plan": "4e6abadd7bfee63feab717966ad5d6f0719a4297c5698d8e462c794c24c362ae",
+          "sha256Vista": "46267710beff21342cc95374874425dee5aac3c69853dc6d4be91a78797bad5f",
+          "entrada": {
+            "profile": {
+              "weight": 74,
+              "goal": "maintain",
+              "activity": "moderate",
+              "intolerances": [],
+              "trainingDays": [],
+              "extras": {},
+              "mealsPerDay": 3,
+              "tiempoCocina": "normal",
+              "experiencia": "intermedio",
+              "simpleMode": false,
+              "dob": "1990-01-01",
+              "gender": "male",
+              "height": 178
+            },
+            "targetKcal": 2000,
+            "opts": {
+              "month": 5,
+              "weekNumber": 23,
+              "pastProteins": {},
+              "freeFormPool": []
+            },
+            "semilla": 2002
+          }
+        },
+        {
+          "id": "P2-2002-engine2",
+          "motor": "engine2",
+          "archivo": "planes/P2-2002-engine2.json",
+          "sha256Plan": "659cab896cf20738acc4a0c0769fd489f6a43a25c079882a75ca8ee7fe917f12",
+          "sha256Vista": "19a4ef44b730e5f90e421870f1e36261e13b46a5cead82dead61526ff749ed03",
+          "entrada": {
+            "profile": {
+              "trainingDays": []
+            },
+            "seed": 2002,
+            "strategy": "mantenimiento_equilibrado"
+          }
+        }
+      ]
+    },
+    {
+      "caso": "P2-2003",
+      "perfil": "P2",
+      "semilla": 2003,
+      "planes": [
+        {
+          "id": "P2-2003-legacy",
+          "motor": "legacy",
+          "archivo": "planes/P2-2003-legacy.json",
+          "sha256Plan": "aa953a677a55bc4ff72bceb7dda92c1ae6d0135e9a8c0dd9dfdd1fd0fd87d46b",
+          "sha256Vista": "4bb1f0f5db3a66a40559e3467f37b3ba84cbee55110f0686ce3b2cb4d66d69ac",
+          "entrada": {
+            "profile": {
+              "weight": 74,
+              "goal": "maintain",
+              "activity": "moderate",
+              "intolerances": [],
+              "trainingDays": [],
+              "extras": {},
+              "mealsPerDay": 3,
+              "tiempoCocina": "normal",
+              "experiencia": "intermedio",
+              "simpleMode": false,
+              "dob": "1990-01-01",
+              "gender": "male",
+              "height": 178
+            },
+            "targetKcal": 2000,
+            "opts": {
+              "month": 5,
+              "weekNumber": 23,
+              "pastProteins": {},
+              "freeFormPool": []
+            },
+            "semilla": 2003
+          }
+        },
+        {
+          "id": "P2-2003-engine2",
+          "motor": "engine2",
+          "archivo": "planes/P2-2003-engine2.json",
+          "sha256Plan": "6b8b10b58f871bc8d852685f45a797ae312bdae08df843152c217d035ac3592d",
+          "sha256Vista": "809c87318294f2fc8b1f1140214dc92c29c7bc5c92833b8e717a2e87d2f95394",
+          "entrada": {
+            "profile": {
+              "trainingDays": []
+            },
+            "seed": 2003,
+            "strategy": "mantenimiento_equilibrado"
+          }
+        }
+      ]
+    },
+    {
+      "caso": "P2-2004",
+      "perfil": "P2",
+      "semilla": 2004,
+      "planes": [
+        {
+          "id": "P2-2004-legacy",
+          "motor": "legacy",
+          "archivo": "planes/P2-2004-legacy.json",
+          "sha256Plan": "acb8bf08b551ee6090e311ac4cbec1976919896e3743c05aca7b9900f677c609",
+          "sha256Vista": "4812ed70c2c90636180f5ad029ddf79cdba6bbea8e4a8c0e05729c6233fde44c",
+          "entrada": {
+            "profile": {
+              "weight": 74,
+              "goal": "maintain",
+              "activity": "moderate",
+              "intolerances": [],
+              "trainingDays": [],
+              "extras": {},
+              "mealsPerDay": 3,
+              "tiempoCocina": "normal",
+              "experiencia": "intermedio",
+              "simpleMode": false,
+              "dob": "1990-01-01",
+              "gender": "male",
+              "height": 178
+            },
+            "targetKcal": 2000,
+            "opts": {
+              "month": 5,
+              "weekNumber": 23,
+              "pastProteins": {},
+              "freeFormPool": []
+            },
+            "semilla": 2004
+          }
+        },
+        {
+          "id": "P2-2004-engine2",
+          "motor": "engine2",
+          "archivo": "planes/P2-2004-engine2.json",
+          "sha256Plan": "3ac48b485033c01369015c216060f6d171a652ddf6555b872406490cdb8a40ec",
+          "sha256Vista": "8c983c60c82c3a3295758acc25cb51741eae5553e25a7001f6470cf09a7dd654",
+          "entrada": {
+            "profile": {
+              "trainingDays": []
+            },
+            "seed": 2004,
+            "strategy": "mantenimiento_equilibrado"
+          }
+        }
+      ]
+    },
+    {
+      "caso": "P2-2005",
+      "perfil": "P2",
+      "semilla": 2005,
+      "planes": [
+        {
+          "id": "P2-2005-legacy",
+          "motor": "legacy",
+          "archivo": "planes/P2-2005-legacy.json",
+          "sha256Plan": "7ce247fb10d93766ea42ec79aa27d5c597a2f078d0dd899779764f0638636639",
+          "sha256Vista": "58d9daace2908164d40c9f84c0b0c4b0b69061b68baea5e37e93351a58b92de1",
+          "entrada": {
+            "profile": {
+              "weight": 74,
+              "goal": "maintain",
+              "activity": "moderate",
+              "intolerances": [],
+              "trainingDays": [],
+              "extras": {},
+              "mealsPerDay": 3,
+              "tiempoCocina": "normal",
+              "experiencia": "intermedio",
+              "simpleMode": false,
+              "dob": "1990-01-01",
+              "gender": "male",
+              "height": 178
+            },
+            "targetKcal": 2000,
+            "opts": {
+              "month": 5,
+              "weekNumber": 23,
+              "pastProteins": {},
+              "freeFormPool": []
+            },
+            "semilla": 2005
+          }
+        },
+        {
+          "id": "P2-2005-engine2",
+          "motor": "engine2",
+          "archivo": "planes/P2-2005-engine2.json",
+          "sha256Plan": "b5b413b6d3a884739734c2753bbaf97b1a8fa85db7100de6bc6a42a2f282d0a1",
+          "sha256Vista": "b7c2ea7cbd76b8c891fe3ab9d4c0da58bfc5f1b33438f442a3caae323f3ae60e",
+          "entrada": {
+            "profile": {
+              "trainingDays": []
+            },
+            "seed": 2005,
+            "strategy": "mantenimiento_equilibrado"
+          }
+        }
+      ]
+    },
+    {
+      "caso": "P2-2006",
+      "perfil": "P2",
+      "semilla": 2006,
+      "planes": [
+        {
+          "id": "P2-2006-legacy",
+          "motor": "legacy",
+          "archivo": "planes/P2-2006-legacy.json",
+          "sha256Plan": "9ab544a79116f3adb9fbd70531e9ecfcfebfb4df044364b9cac670ae1e58288c",
+          "sha256Vista": "3ee2962e7415146f73c118c5bfeaffdcd207630306300ceec4ee0e1cc2c663df",
+          "entrada": {
+            "profile": {
+              "weight": 74,
+              "goal": "maintain",
+              "activity": "moderate",
+              "intolerances": [],
+              "trainingDays": [],
+              "extras": {},
+              "mealsPerDay": 3,
+              "tiempoCocina": "normal",
+              "experiencia": "intermedio",
+              "simpleMode": false,
+              "dob": "1990-01-01",
+              "gender": "male",
+              "height": 178
+            },
+            "targetKcal": 2000,
+            "opts": {
+              "month": 5,
+              "weekNumber": 23,
+              "pastProteins": {},
+              "freeFormPool": []
+            },
+            "semilla": 2006
+          }
+        },
+        {
+          "id": "P2-2006-engine2",
+          "motor": "engine2",
+          "archivo": "planes/P2-2006-engine2.json",
+          "sha256Plan": "499a0d468574e1879584c9b9b79554fa41cbce6a6666ced746521219f5d054e5",
+          "sha256Vista": "fc7c48946bb027f0a27feaf743d70fd64fc744e9f684ec780a341114bf1505d0",
+          "entrada": {
+            "profile": {
+              "trainingDays": []
+            },
+            "seed": 2006,
+            "strategy": "mantenimiento_equilibrado"
+          }
+        }
+      ]
+    },
+    {
+      "caso": "P2-2007",
+      "perfil": "P2",
+      "semilla": 2007,
+      "planes": [
+        {
+          "id": "P2-2007-legacy",
+          "motor": "legacy",
+          "archivo": "planes/P2-2007-legacy.json",
+          "sha256Plan": "991e5261ea6f331d2b8ff084448401a541ba57e7ae365496cdcef6c24f82b4c7",
+          "sha256Vista": "64a25b0b1f1d7e2dc03fb95409ba28eda1364812701a1a22fd8bb736ef7dc095",
+          "entrada": {
+            "profile": {
+              "weight": 74,
+              "goal": "maintain",
+              "activity": "moderate",
+              "intolerances": [],
+              "trainingDays": [],
+              "extras": {},
+              "mealsPerDay": 3,
+              "tiempoCocina": "normal",
+              "experiencia": "intermedio",
+              "simpleMode": false,
+              "dob": "1990-01-01",
+              "gender": "male",
+              "height": 178
+            },
+            "targetKcal": 2000,
+            "opts": {
+              "month": 5,
+              "weekNumber": 23,
+              "pastProteins": {},
+              "freeFormPool": []
+            },
+            "semilla": 2007
+          }
+        },
+        {
+          "id": "P2-2007-engine2",
+          "motor": "engine2",
+          "archivo": "planes/P2-2007-engine2.json",
+          "sha256Plan": "2d52073725376f0fe1c8ca458d67430487757898fcc9de2df64115232e1c7c52",
+          "sha256Vista": "b4d62f9f159d88e640035a88ca64b754324beca49fe555ec05c1f701b4de288b",
+          "entrada": {
+            "profile": {
+              "trainingDays": []
+            },
+            "seed": 2007,
+            "strategy": "mantenimiento_equilibrado"
+          }
+        }
+      ]
+    },
+    {
+      "caso": "P2-2008",
+      "perfil": "P2",
+      "semilla": 2008,
+      "planes": [
+        {
+          "id": "P2-2008-legacy",
+          "motor": "legacy",
+          "archivo": "planes/P2-2008-legacy.json",
+          "sha256Plan": "8e6a958994f85fb37fcb0e60eec9e51a6a3ed75ec89053c7da82dc3f8a575159",
+          "sha256Vista": "492eecc760a6a1a7d4580a0fa8a992b4ed2655d0ae88df26854811b85c1350dc",
+          "entrada": {
+            "profile": {
+              "weight": 74,
+              "goal": "maintain",
+              "activity": "moderate",
+              "intolerances": [],
+              "trainingDays": [],
+              "extras": {},
+              "mealsPerDay": 3,
+              "tiempoCocina": "normal",
+              "experiencia": "intermedio",
+              "simpleMode": false,
+              "dob": "1990-01-01",
+              "gender": "male",
+              "height": 178
+            },
+            "targetKcal": 2000,
+            "opts": {
+              "month": 5,
+              "weekNumber": 23,
+              "pastProteins": {},
+              "freeFormPool": []
+            },
+            "semilla": 2008
+          }
+        },
+        {
+          "id": "P2-2008-engine2",
+          "motor": "engine2",
+          "archivo": "planes/P2-2008-engine2.json",
+          "sha256Plan": "85c06d7dc7f19f9de93d633b6d77b4a554ce5228af520718c2adddf08f319c9e",
+          "sha256Vista": "0c33edf024c73dae3b8fd22121e924c7a53da66f003c18f77a09d2e79323c616",
+          "entrada": {
+            "profile": {
+              "trainingDays": []
+            },
+            "seed": 2008,
+            "strategy": "mantenimiento_equilibrado"
+          }
+        }
+      ]
+    },
+    {
+      "caso": "P2-2009",
+      "perfil": "P2",
+      "semilla": 2009,
+      "planes": [
+        {
+          "id": "P2-2009-legacy",
+          "motor": "legacy",
+          "archivo": "planes/P2-2009-legacy.json",
+          "sha256Plan": "be7abd2ce77166a5c6294f24c0af3e0c9ff0abff9bb13274289004e9de33ffa2",
+          "sha256Vista": "6989616f3937419d0c63df6d3f77bea44e73fe3f2bcf04dfbc30676fd9feb57a",
+          "entrada": {
+            "profile": {
+              "weight": 74,
+              "goal": "maintain",
+              "activity": "moderate",
+              "intolerances": [],
+              "trainingDays": [],
+              "extras": {},
+              "mealsPerDay": 3,
+              "tiempoCocina": "normal",
+              "experiencia": "intermedio",
+              "simpleMode": false,
+              "dob": "1990-01-01",
+              "gender": "male",
+              "height": 178
+            },
+            "targetKcal": 2000,
+            "opts": {
+              "month": 5,
+              "weekNumber": 23,
+              "pastProteins": {},
+              "freeFormPool": []
+            },
+            "semilla": 2009
+          }
+        },
+        {
+          "id": "P2-2009-engine2",
+          "motor": "engine2",
+          "archivo": "planes/P2-2009-engine2.json",
+          "sha256Plan": "612e49383f4f41b9ac80ba7ba0b1ed48698cc9d92867c0b079104156d50ee173",
+          "sha256Vista": "b9580b3d2ea5a68c1e89c9132f3e9d78a43ee1c054a2a3e067d0acd04e26e011",
+          "entrada": {
+            "profile": {
+              "trainingDays": []
+            },
+            "seed": 2009,
+            "strategy": "mantenimiento_equilibrado"
+          }
+        }
+      ]
+    },
+    {
+      "caso": "P2-2010",
+      "perfil": "P2",
+      "semilla": 2010,
+      "planes": [
+        {
+          "id": "P2-2010-legacy",
+          "motor": "legacy",
+          "archivo": "planes/P2-2010-legacy.json",
+          "sha256Plan": "d1aab194f30aa1bbeed94d4e539da9dfdec03d010fe6e21c8cc4db885704b2d7",
+          "sha256Vista": "bc255168315a8c2970eb358559f1d5bc53cd38a5fd79d6098c5d19eecfb8bb2e",
+          "entrada": {
+            "profile": {
+              "weight": 74,
+              "goal": "maintain",
+              "activity": "moderate",
+              "intolerances": [],
+              "trainingDays": [],
+              "extras": {},
+              "mealsPerDay": 3,
+              "tiempoCocina": "normal",
+              "experiencia": "intermedio",
+              "simpleMode": false,
+              "dob": "1990-01-01",
+              "gender": "male",
+              "height": 178
+            },
+            "targetKcal": 2000,
+            "opts": {
+              "month": 5,
+              "weekNumber": 23,
+              "pastProteins": {},
+              "freeFormPool": []
+            },
+            "semilla": 2010
+          }
+        },
+        {
+          "id": "P2-2010-engine2",
+          "motor": "engine2",
+          "archivo": "planes/P2-2010-engine2.json",
+          "sha256Plan": "7c5405f91c459bd2ce406c84e0ffb527c144b1f0f03490e0baa3b859ea4f4073",
+          "sha256Vista": "06e1b3b3420e99e08f5a7699528f0154aec19ba88e77c641248e87c6c7544804",
+          "entrada": {
+            "profile": {
+              "trainingDays": []
+            },
+            "seed": 2010,
+            "strategy": "mantenimiento_equilibrado"
+          }
+        }
+      ]
+    }
+  ],
+  "planes": [
+    {
+      "id": "P1-2001-legacy",
+      "motor": "legacy",
+      "archivo": "planes/P1-2001-legacy.json"
+    },
+    {
+      "id": "P1-2001-engine2",
+      "motor": "engine2",
+      "archivo": "planes/P1-2001-engine2.json"
+    },
+    {
+      "id": "P1-2002-legacy",
+      "motor": "legacy",
+      "archivo": "planes/P1-2002-legacy.json"
+    },
+    {
+      "id": "P1-2002-engine2",
+      "motor": "engine2",
+      "archivo": "planes/P1-2002-engine2.json"
+    },
+    {
+      "id": "P1-2003-legacy",
+      "motor": "legacy",
+      "archivo": "planes/P1-2003-legacy.json"
+    },
+    {
+      "id": "P1-2003-engine2",
+      "motor": "engine2",
+      "archivo": "planes/P1-2003-engine2.json"
+    },
+    {
+      "id": "P1-2004-legacy",
+      "motor": "legacy",
+      "archivo": "planes/P1-2004-legacy.json"
+    },
+    {
+      "id": "P1-2004-engine2",
+      "motor": "engine2",
+      "archivo": "planes/P1-2004-engine2.json"
+    },
+    {
+      "id": "P1-2005-legacy",
+      "motor": "legacy",
+      "archivo": "planes/P1-2005-legacy.json"
+    },
+    {
+      "id": "P1-2005-engine2",
+      "motor": "engine2",
+      "archivo": "planes/P1-2005-engine2.json"
+    },
+    {
+      "id": "P1-2006-legacy",
+      "motor": "legacy",
+      "archivo": "planes/P1-2006-legacy.json"
+    },
+    {
+      "id": "P1-2006-engine2",
+      "motor": "engine2",
+      "archivo": "planes/P1-2006-engine2.json"
+    },
+    {
+      "id": "P1-2007-legacy",
+      "motor": "legacy",
+      "archivo": "planes/P1-2007-legacy.json"
+    },
+    {
+      "id": "P1-2007-engine2",
+      "motor": "engine2",
+      "archivo": "planes/P1-2007-engine2.json"
+    },
+    {
+      "id": "P1-2008-legacy",
+      "motor": "legacy",
+      "archivo": "planes/P1-2008-legacy.json"
+    },
+    {
+      "id": "P1-2008-engine2",
+      "motor": "engine2",
+      "archivo": "planes/P1-2008-engine2.json"
+    },
+    {
+      "id": "P1-2009-legacy",
+      "motor": "legacy",
+      "archivo": "planes/P1-2009-legacy.json"
+    },
+    {
+      "id": "P1-2009-engine2",
+      "motor": "engine2",
+      "archivo": "planes/P1-2009-engine2.json"
+    },
+    {
+      "id": "P1-2010-legacy",
+      "motor": "legacy",
+      "archivo": "planes/P1-2010-legacy.json"
+    },
+    {
+      "id": "P1-2010-engine2",
+      "motor": "engine2",
+      "archivo": "planes/P1-2010-engine2.json"
+    },
+    {
+      "id": "P2-2001-legacy",
+      "motor": "legacy",
+      "archivo": "planes/P2-2001-legacy.json"
+    },
+    {
+      "id": "P2-2001-engine2",
+      "motor": "engine2",
+      "archivo": "planes/P2-2001-engine2.json"
+    },
+    {
+      "id": "P2-2002-legacy",
+      "motor": "legacy",
+      "archivo": "planes/P2-2002-legacy.json"
+    },
+    {
+      "id": "P2-2002-engine2",
+      "motor": "engine2",
+      "archivo": "planes/P2-2002-engine2.json"
+    },
+    {
+      "id": "P2-2003-legacy",
+      "motor": "legacy",
+      "archivo": "planes/P2-2003-legacy.json"
+    },
+    {
+      "id": "P2-2003-engine2",
+      "motor": "engine2",
+      "archivo": "planes/P2-2003-engine2.json"
+    },
+    {
+      "id": "P2-2004-legacy",
+      "motor": "legacy",
+      "archivo": "planes/P2-2004-legacy.json"
+    },
+    {
+      "id": "P2-2004-engine2",
+      "motor": "engine2",
+      "archivo": "planes/P2-2004-engine2.json"
+    },
+    {
+      "id": "P2-2005-legacy",
+      "motor": "legacy",
+      "archivo": "planes/P2-2005-legacy.json"
+    },
+    {
+      "id": "P2-2005-engine2",
+      "motor": "engine2",
+      "archivo": "planes/P2-2005-engine2.json"
+    },
+    {
+      "id": "P2-2006-legacy",
+      "motor": "legacy",
+      "archivo": "planes/P2-2006-legacy.json"
+    },
+    {
+      "id": "P2-2006-engine2",
+      "motor": "engine2",
+      "archivo": "planes/P2-2006-engine2.json"
+    },
+    {
+      "id": "P2-2007-legacy",
+      "motor": "legacy",
+      "archivo": "planes/P2-2007-legacy.json"
+    },
+    {
+      "id": "P2-2007-engine2",
+      "motor": "engine2",
+      "archivo": "planes/P2-2007-engine2.json"
+    },
+    {
+      "id": "P2-2008-legacy",
+      "motor": "legacy",
+      "archivo": "planes/P2-2008-legacy.json"
+    },
+    {
+      "id": "P2-2008-engine2",
+      "motor": "engine2",
+      "archivo": "planes/P2-2008-engine2.json"
+    },
+    {
+      "id": "P2-2009-legacy",
+      "motor": "legacy",
+      "archivo": "planes/P2-2009-legacy.json"
+    },
+    {
+      "id": "P2-2009-engine2",
+      "motor": "engine2",
+      "archivo": "planes/P2-2009-engine2.json"
+    },
+    {
+      "id": "P2-2010-legacy",
+      "motor": "legacy",
+      "archivo": "planes/P2-2010-legacy.json"
+    },
+    {
+      "id": "P2-2010-engine2",
+      "motor": "engine2",
+      "archivo": "planes/P2-2010-engine2.json"
+    }
+  ]
+}

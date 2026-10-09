@@ -4096,3 +4096,41 @@ A.8. Instrucciones del reconocimiento:
    Conserva los archivos hasta que se te indique que la evaluación ha terminado.»
 A.9. Mensaje de envío, igual en todas las fases: «Te adjunto el material. Las instrucciones están en la hoja “Instrucciones” del archivo .xlsx.»
 A.10. Aviso de recepción no válida: «El archivo recibido no se puede abrir o no contiene la hoja “Respuestas”. Envíalo de nuevo antes del {PLAZO}.»
+
+## D-096 — [2026-10-09] Precomprobación de F-095.7 sobre la vista real (alcance de D-095, Autorización y límites)
+
+Decide: Javi. HEAD: `39e60b0`.
+
+Contexto
+F-095.7 (D-095) somete el HTML y todas las entradas del ZIP de cada `.xlsx` a una lista cerrada de identificadores; cualquier coincidencia detiene la entrega. En `39e60b0`, la función de entrega aplica esa lista con los términos fijos de `scripts/fase7/entrega.js:690–693` y con los términos del manifiesto de `:696–712`, que son el `id` y el `archivo` de cada plan (`:704–706`) y, además, el nombre base de cada `archivo` (`:707–708`). Compara en minúsculas y como subcadena (`:715–717`), examina el HTML y todas las entradas del ZIP (`:722–739`) y, si encuentra alguna coincidencia, lanza `EntregaError` antes de devolver ningún fichero (`:777–778`). El HTML contiene literalmente el contexto, el perfil de cada par, las etiquetas y los nombres de los platos (D-095, puntos 5.a y 5.e; `entrega.js:222`, `:225`, `:198`, `:192`), y los nombres no se alteran (D-086, punto 5; D-095, punto 1.a). Las etiquetas son `P-` seguido de cuatro caracteres del alfabeto de `src/eval/blind/blind.js:37–38` (`:136–142`); entre las etiquetas posibles está `P-SEED`, que contiene un término de la lista. La vista ya está generada y custodiada conforme a D-094, de modo que su contexto, sus perfiles, sus etiquetas y sus nombres están fijados: una coincidencia en ellos detendría la generación de la entrega real y no podría resolverse sin un acto sobre D-095. D-095 (Autorización y límites) no autoriza «ejecutar la función sobre la vista real». En las líneas de D-094 (`DECISIONS.md:3864–4003`) que contienen «vista» no consta ninguna restricción a su lectura; esta constatación se limita a esas líneas. En `39e60b0`, el blob de `docs/evidence/fase7-generacion/manifiesto-generacion.json` tiene sha256 `51e6cbf7c5305447f1ed6e46ca094cbe442740965b3abd8882894bdefe240a98`, igual a `MANIFIESTO_SHA256` (`scripts/fase7/pares.js:15`). En `39e60b0`, `docs/evidence/fase7-pares/README.md:77` registra para `vista-pares.json` el sha256 `4242f89de6a44a4c20584b3166b0a2eeae57da5e7a0341d43281a0cc0500ed59`, seguido de «igual a H0» en las dos columnas siguientes. Las decisiones de este asiento son constitutivas del titular.
+
+Decisión
+1. Alcance. Una precomprobación limitada a lectura y diagnóstico, en los términos de este asiento, no constituye «ejecutar la función sobre la vista real» en el sentido de D-095 (Autorización y límites). Esta disposición no autoriza generar la entrega real ni modifica ninguna otra restricción de D-095.
+2. Objeto. La precomprobación determina si algún valor de la vista contiene algún término de la lista de F-095.7, con la regla del punto 5. No examina los textos fijos del HTML ni de las hojas, ni las instrucciones con su plazo y su dirección, que siguen sometidos a F-095.7 en la generación de la entrega real.
+3. Instrumento. Script `C:\Users\javiv\fase7-materiales\d096\precomprobacion.mjs`, fuera del repositorio, con sha256 `c653a650547587079600df1c73d35b7d2d0c41bb08d41a7fcdbf28d910a0b21f`. No importa código del repositorio; solo usa los módulos `node:fs` y `node:crypto`. No escribe ficheros. No admite la clave ni ningún argumento distinto de `--vista` y `--manifiesto`.
+4. Entradas. La vista `C:\Users\javiv\fase7-materiales\pares-evaluador\vista-pares.json`, con sha256 `4242f89de6a44a4c20584b3166b0a2eeae57da5e7a0341d43281a0cc0500ed59`, que es su H0 de custodia (`docs/evidence/fase7-pares/README.md:77`); y el manifiesto `C:\Users\javiv\fase7-materiales\generacion-2001-2010\manifiesto-generacion.json`, con sha256 `51e6cbf7c5305447f1ed6e46ca094cbe442740965b3abd8882894bdefe240a98`. Ambos valores están fijados en el script, que calcula el sha256 de cada entrada y aborta, antes de interpretar ninguna, si alguno no coincide con el fijado. Un sha256 calculado por el propio script no sustituye a los fijados en este asiento.
+5. Campos, términos y regla.
+   a. Campos: el contexto (1 valor), el perfil de cada par (20), la etiqueta de A y de B de cada par (40) y los nombres de comida y cena, sin la comida del día 6 (520). Se exige la forma de la vista de `entrega.js:122–148`; si no la tiene, el script aborta. Los valores que no son texto se cuentan y no se examinan.
+   b. Términos, en tres clases: fijos (`entrega.js:690–693`); del manifiesto, el `id` y el `archivo` de cada plan (`:696–706`); y nombres base de cada `archivo` (`:707–708`). Cada término se cuenta en una sola clase, con esta prioridad: fijos, del manifiesto, nombres base. La clase de los nombres base es diagnóstica: refleja una diferencia del código respecto del literal de F-095.7, no la aprueba, no modifica F-095.7 y no amplía la lista.
+   c. Regla: el valor y el término se pasan a minúsculas, y hay coincidencia si el valor contiene el término como subcadena (`entrega.js:715–717`). No se aplica ninguna otra transformación.
+6. Salida. El script imprime el sha256 de cada entrada; el número de términos de cada clase; por campo, el número de valores examinados y el de valores que no son texto; y el número de valores con coincidencia, por clase y campo y por término y campo. No imprime valores de la vista, números de par ni posiciones. Termina con código 0 si no hay coincidencias, 1 si las hay y 2 ante un error o una entrada no válida.
+7. Procedimiento, en este orden y con un comando por línea:
+   a. `certutil -hashfile C:\Users\javiv\fase7-materiales\d096\precomprobacion.mjs SHA256`, que debe dar el sha256 del punto 3.
+   b. `certutil -hashfile C:\Users\javiv\fase7-materiales\pares-evaluador\vista-pares.json SHA256`, que debe dar H0.
+   c. `node C:\Users\javiv\fase7-materiales\d096\precomprobacion.mjs --vista C:\Users\javiv\fase7-materiales\pares-evaluador\vista-pares.json --manifiesto C:\Users\javiv\fase7-materiales\generacion-2001-2010\manifiesto-generacion.json > C:\Users\javiv\fase7-materiales\d096\stdout.txt 2> C:\Users\javiv\fase7-materiales\d096\stderr.txt`
+   d. `echo CODIGO=%ERRORLEVEL% > C:\Users\javiv\fase7-materiales\d096\codigo.txt`, inmediatamente después de c.
+   e. `certutil -hashfile C:\Users\javiv\fase7-materiales\pares-evaluador\vista-pares.json SHA256`, que debe dar H0.
+   La salida de a, b y e se guarda en `C:\Users\javiv\fase7-materiales\d096\`.
+8. Resultado y consecuencias.
+   a. Código 0, con a, b y e conformes: la precomprobación se cierra como «sin coincidencias en los valores de la vista para la lista y la regla de este asiento». No acredita la conformidad de la entrega real con F-095.7 (punto 2).
+   b. Código 1: parada. No se genera la entrega real, no se designa evaluador y no se inicia la evaluación. Resolverla requiere un acto posterior sobre D-095. La coincidencia no se localiza ni se revela con este script.
+   c. Si a o b no son conformes, no se ejecuta c. Si el código es 2, o si e no es conforme, la precomprobación se detiene sin resultado. En todos estos casos se registra la causa, y una nueva ejecución requiere una disposición del titular. Si e no es conforme, la vista no se usa hasta un acto del titular.
+9. Evidencia. El script, los ficheros de `C:\Users\javiv\fase7-materiales\d096\` y el registro de los comandos se versionan en un PR documental posterior, sin la vista ni la clave.
+
+Autorización y límites
+- Una vez versionado este asiento, se autoriza una única ejecución de la precomprobación conforme al punto 7.
+- Este asiento no autoriza ejecutar sobre la vista real ninguna función de `scripts/fase7/entrega.js` ni de `scripts/fase7/entrega-run.mjs`, generar la entrega real, designar ni contactar con ningún evaluador, iniciar la evaluación ni abrir la clave.
+- El asiento de designación de D-095 (punto 3.e) es posterior a este.
+
+Estado resultante
+Precomprobación autorizada, no ejecutada. Entrega real no generada; evaluador no designado; evaluación no iniciada; clave sin abrir.

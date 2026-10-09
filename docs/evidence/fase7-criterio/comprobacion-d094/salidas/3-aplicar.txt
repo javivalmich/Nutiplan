@@ -1,0 +1,49 @@
+aplicar-d094
+  node:  v24.14.1
+  fecha: 2026-10-09T16:11:47.603Z
+PASA  P-1  raíz del repo C:/Users/javiv/app-comida
+PASA  P-2  rama docs/d-094-autorizacion-pares
+PASA  P-3  HEAD 38cd9eea1ef50cacc57aa176b8fc3fe53b7a3b9d
+PASA  P-4  árbol limpio (sin cambios)
+PASA  P-5  origin https://github.com/javivalmich/Nutiplan.git
+PASA  P-6  docs/evidence/fase7-criterio/comprobacion-d093 no existe en A10 ni en disco
+PASA  A-0  DECISIONS.md en A10 sha256 a4691660de43a859e9c0dcc2673e610c3bac84cebfb05f01e586961b09b8b72e
+PASA  A-1  la cabecera «## D-094 » no aparece en DECISIONS.md de A10
+PASA  E-0  d094-entrada.txt sha256 7c123b7253ec5adeb0464a87669bb432c011834cf4e491ac5b14ab8f83d28a4b
+PASA  E-1  acta-comprobacion-d093.md sha256 06164b8e4cc26c89368837ba64eb40c03b6902a1ae9977dafff4c17ff1c4252b
+PASA  E-d093 verificar-d093.mjs  sha256 f96406c61173e2adfdeb560428b9fe832c9681873277bfda373727c35f4f948f
+PASA  E-d093 d093-entrada.txt  sha256 3e90860eaee23aa45edd4e880043e8a57e651f8f1a7dd51cf09a07f797cf99ef
+PASA  E-d093 salidas/1-puerta.txt  sha256 4c8332fda400482c15da74ec5452748e2dcecbc0f5eead4628bd398859774992
+PASA  E-d093 salidas/1-puerta.txttype  sha256 8ec338231b3eeb7e0646542ccf180478969702e97ec4fe03cbff5ef559887cbf
+PASA  E-d093 salidas/2-check-attr.txt  sha256 8e9cf06cd12438da13b7e07b635af5fbb6a3e0c421aa51555c8c386df0a593b8
+PASA  E-d093 salidas/2-check-attr.txttype  sha256 212db553a60d7546f432f80a1b836d5cea539f74c8c1177c9fba02e19d0be858
+PASA  E-d093 salidas/3-rama.txt  sha256 af096ccee2e0dd22c04b0e2f44ec9fc40f34757d6b0bc01c52c9e268f7f57ff0
+PASA  E-d093 salidas/4-aplicar.txt  sha256 2b0199f2d3ddb3cd7009fc64eeabb57e81d7da87285d742b5247eb8c5a3a7b2a
+PASA  E-d093 salidas/5-pre.txt  sha256 d43436ed1a2ac2809289265ef01b37cf96abcd43a145062f214dce337d347dd1
+PASA  E-d093 salidas/6-rama.txt  sha256 81dc5e81bb1ee82a1520b75f1e73a7d376ab85d8380441db5e7c1dc7867bfe07
+PASA  E-d093 salidas/7-main.txt  sha256 8e5bc15198f4020822a925e83685526fc24638cf5a9343f56606d3264dbecc0b
+PASA  E-d093 salidas/8-log.txt  sha256 808bbebcf487f06b77ae0326b83b31b889bbc319fc13c7697923ce6841f95ea0
+PASA  E-d093 salidas/8-push.txt  sha256 afebe6ab0c0741130c4eb55544f8b16d21beb721df905bc2d17bf736b93cd7b6
+PASA  E-d093 salidas/8-status.txt  sha256 5fbcb2990ad25e368c12219bf3ddca36e464d044e7acac16696fa8cd54159185
+PASA  E-2  el blob de A10 y la entrada no contienen CR
+  DECISIONS.md antes de escribir: sha256 copia de trabajo b976fe949b2710ec95eee2ad90dcee18e111a6f68816361b96268fbf550e98a9
+  DECISIONS.md en copia de trabajo: CRLF; se escribe con el mismo fin de línea
+  sha256 del blob esperado de DECISIONS.md: 1f6b6f03ed4f335cd3030e3924cf3917ad23b1ad0dd877f384d040c893a291d8
+ESCRITO  DECISIONS.md  sha256 copia de trabajo da14610b42ac4245799cb4458c005cf2d2397d08f95b1043d2f77ecfeebaca99
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d093/README.md  sha256 06164b8e4cc26c89368837ba64eb40c03b6902a1ae9977dafff4c17ff1c4252b
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d093/verificar-d093.mjs  sha256 f96406c61173e2adfdeb560428b9fe832c9681873277bfda373727c35f4f948f
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d093/d093-entrada.txt  sha256 3e90860eaee23aa45edd4e880043e8a57e651f8f1a7dd51cf09a07f797cf99ef
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d093/salidas/1-puerta.txt  sha256 4c8332fda400482c15da74ec5452748e2dcecbc0f5eead4628bd398859774992
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d093/salidas/1-puerta.txttype  sha256 8ec338231b3eeb7e0646542ccf180478969702e97ec4fe03cbff5ef559887cbf
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d093/salidas/2-check-attr.txt  sha256 8e9cf06cd12438da13b7e07b635af5fbb6a3e0c421aa51555c8c386df0a593b8
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d093/salidas/2-check-attr.txttype  sha256 212db553a60d7546f432f80a1b836d5cea539f74c8c1177c9fba02e19d0be858
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d093/salidas/3-rama.txt  sha256 af096ccee2e0dd22c04b0e2f44ec9fc40f34757d6b0bc01c52c9e268f7f57ff0
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d093/salidas/4-aplicar.txt  sha256 2b0199f2d3ddb3cd7009fc64eeabb57e81d7da87285d742b5247eb8c5a3a7b2a
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d093/salidas/5-pre.txt  sha256 d43436ed1a2ac2809289265ef01b37cf96abcd43a145062f214dce337d347dd1
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d093/salidas/6-rama.txt  sha256 81dc5e81bb1ee82a1520b75f1e73a7d376ab85d8380441db5e7c1dc7867bfe07
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d093/salidas/7-main.txt  sha256 8e5bc15198f4020822a925e83685526fc24638cf5a9343f56606d3264dbecc0b
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d093/salidas/8-log.txt  sha256 808bbebcf487f06b77ae0326b83b31b889bbc319fc13c7697923ce6841f95ea0
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d093/salidas/8-push.txt  sha256 afebe6ab0c0741130c4eb55544f8b16d21beb721df905bc2d17bf736b93cd7b6
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d093/salidas/8-status.txt  sha256 5fbcb2990ad25e368c12219bf3ddca36e464d044e7acac16696fa8cd54159185
+RESULTADO: APLICADO
+CODIGO=0 

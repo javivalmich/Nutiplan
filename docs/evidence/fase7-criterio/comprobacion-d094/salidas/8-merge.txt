@@ -1,0 +1,34 @@
+Merge made by the 'ort' strategy.
+ DECISIONS.md                                       | 140 +++++++++++++++++++++
+ .../fase7-criterio/comprobacion-d093/README.md     |  91 ++++++++++++++
+ .../comprobacion-d093/d093-entrada.txt             |  52 ++++++++
+ .../comprobacion-d093/salidas/1-puerta.txt         |  19 +++
+ .../comprobacion-d093/salidas/1-puerta.txttype     |   1 +
+ .../comprobacion-d093/salidas/2-check-attr.txt     |   2 +
+ .../comprobacion-d093/salidas/2-check-attr.txttype |   1 +
+ .../comprobacion-d093/salidas/3-rama.txt           |   1 +
+ .../comprobacion-d093/salidas/4-aplicar.txt        |  27 ++++
+ .../comprobacion-d093/salidas/5-pre.txt            |  24 ++++
+ .../comprobacion-d093/salidas/6-rama.txt           |  23 ++++
+ .../comprobacion-d093/salidas/7-main.txt           |  23 ++++
+ .../comprobacion-d093/salidas/8-log.txt            |   6 +
+ .../comprobacion-d093/salidas/8-push.txt           |   3 +
+ .../comprobacion-d093/salidas/8-status.txt         |   1 +
+ .../comprobacion-d093/verificar-d093.mjs           | 121 ++++++++++++++++++
+ 16 files changed, 535 insertions(+)
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/README.md
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/d093-entrada.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/salidas/1-puerta.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/salidas/1-puerta.txttype
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/salidas/2-check-attr.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/salidas/2-check-attr.txttype
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/salidas/3-rama.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/salidas/4-aplicar.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/salidas/5-pre.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/salidas/6-rama.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/salidas/7-main.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/salidas/8-log.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/salidas/8-push.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/salidas/8-status.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/verificar-d093.mjs
+CODIGO=0 

@@ -1,0 +1,27 @@
+verificar-d094
+  modo:              puerta
+  commit verificado: (copia de trabajo)
+  padres:            aa63f901f389d8fad8acc4c90c37b3a7aa9cf843 e81d8934c2fccef2286f0787a66886d1f151ae97
+  asunto:            Merge D-093 criterio de superacion
+  rama actual:       main
+  HEAD actual:       38cd9eea1ef50cacc57aa176b8fc3fe53b7a3b9d
+  raíz del repo:     C:/Users/javiv/app-comida
+  ancla de partida:  38cd9eea1ef50cacc57aa176b8fc3fe53b7a3b9d
+  sha de la rama:    (no indicado)
+  node:              v24.14.1
+  fecha:             2026-10-09T16:11:16.524Z
+PASA  E-0  d094-entrada.txt sha256 7c123b7253ec5adeb0464a87669bb432c011834cf4e491ac5b14ab8f83d28a4b
+PASA  A-0  DECISIONS.md en A10 sha256 a4691660de43a859e9c0dcc2673e610c3bac84cebfb05f01e586961b09b8b72e
+PASA  P-1  raíz del repo C:/Users/javiv/app-comida
+PASA  P-2  rama main
+PASA  P-3  HEAD 38cd9eea1ef50cacc57aa176b8fc3fe53b7a3b9d
+PASA  P-4  árbol limpio (sin cambios)
+PASA  P-5  origin https://github.com/javivalmich/Nutiplan.git
+PASA  P-6  docs/evidence/fase7-criterio/comprobacion-d093/ no existe en A10 ni en disco
+PASA  P-7  origin/main 38cd9eea1ef50cacc57aa176b8fc3fe53b7a3b9d
+PASA  P-8  la rama docs/d-094-autorizacion-pares no existe todavía
+PASA  E-1  la cabecera «## D-094 » no aparece en DECISIONS.md de A10
+PASA  E-2  la entrada tiene una sola cabecera de asiento y es la de D-094 (1)
+PASA  E-3  sin CR en la entrada ni en el blob de A10; entrada sin BOM y con salto final
+RESULTADO: TODO PASA
+CODIGO=0 

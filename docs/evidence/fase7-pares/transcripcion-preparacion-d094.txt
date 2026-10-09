@@ -1,0 +1,128 @@
+=== A · mensaje del titular 2026-10-09 18:21 (contiene íntegro el de 18:20) ===
+Microsoft Windows [Versión 10.0.19045.7725]
+(c) Microsoft Corporation. Todos los derechos reservados.
+
+C:\Users\javiv\app-comida>git log -1
+commit 660eb6b5de6e3a04e369ea65ac0ec149a04ce3b4 (HEAD -> main, origin/main, origin/HEAD)
+Merge: 38cd9ee 57b86b7
+Author: Javi <javivalmich@gmail.com>
+Date:   Fri Oct 9 18:15:00 2026 +0200
+
+    Merge D-094 autorizacion modo pares
+
+C:\Users\javiv\app-comida>git status --short
+
+C:\Users\javiv\app-comida>git --no-pager diff 38cd9ee 660eb6b -- DECISIONS.md > C:\Users\javiv\fase7-materiales\lectura-d094-660eb6b.txt
+
+C:\Users\javiv\app-comida>echo CODIGO=%ERRORLEVEL%
+CODIGO=0
+
+C:\Users\javiv\app-comida>git ls-remote origin refs/heads/main
+660eb6b5de6e3a04e369ea65ac0ec149a04ce3b4        refs/heads/main
+
+C:\Users\javiv\app-comida>
+=== B · mensaje del titular 2026-10-09 18:22 ===
+C:\Users\javiv\app-comida>dir C:\Users\javiv\fase7-materiales\lectura-d094-660eb6b.txt
+ El volumen de la unidad C no tiene etiqueta.
+ El número de serie del volumen es: 2006-0CF7
+
+ Directorio de C:\Users\javiv\fase7-materiales
+
+09/10/2026  18:21            13.981 lectura-d094-660eb6b.txt
+               1 archivos         13.981 bytes
+               0 dirs  140.355.096.576 bytes libres
+
+C:\Users\javiv\app-comida>
+=== C · mensaje del titular 2026-10-09 18:24 ===
+C:\Users\javiv\app-comida>dir /a C:\Users\javiv\fase7-materiales\pares-*
+ El volumen de la unidad C no tiene etiqueta.
+ El número de serie del volumen es: 2006-0CF7
+
+ Directorio de C:\Users\javiv\fase7-materiales
+
+No se encuentra el archivo
+
+C:\Users\javiv\app-comida>dir /a E:\fase7-custodia
+El sistema no puede encontrar la ruta especificada.
+
+C:\Users\javiv\app-comida>
+=== D · mensaje del titular 2026-10-09 18:26 (primero) ===
+C:\Users\javiv\app-comida>dir E:\
+ El volumen de la unidad E es SAMSUNG
+ El número de serie del volumen es: 50CA-9E30
+
+ Directorio de E:\
+
+[omitidas 3 líneas del listado: contenido ajeno a la evaluación]
+09/10/2026  09:21    <DIR>          fase7-custodia
+[omitidas 6 líneas del listado: contenido ajeno a la evaluación]
+               1 archivos 15.395.805.184 bytes
+               9 dirs  140.136.759.296 bytes libres
+
+C:\Users\javiv\app-comida>wmic logicaldisk get caption,drivetype,volumename
+Caption  DriveType  VolumeName
+C:       3
+E:       3          SAMSUNG
+
+
+C:\Users\javiv\app-comida>
+=== E · mensaje del titular 2026-10-09 18:26 (segundo) ===
+C:\Users\javiv\app-comida>dir /a E:\fase7-custodia
+ El volumen de la unidad E es SAMSUNG
+ El número de serie del volumen es: 50CA-9E30
+
+ Directorio de E:\fase7-custodia
+
+09/10/2026  09:21    <DIR>          .
+09/10/2026  09:21    <DIR>          ..
+06/10/2026  14:22    <DIR>          generacion-2001-2010
+               0 archivos              0 bytes
+               3 dirs  140.136.759.296 bytes libres
+
+C:\Users\javiv\app-comida>
+=== F · mensaje del titular 2026-10-09 18:27 ===
+C:\Users\javiv\app-comida>dir /a E:\fase7-custodia
+ El volumen de la unidad E es SAMSUNG
+ El número de serie del volumen es: 50CA-9E30
+
+ Directorio de E:\fase7-custodia
+
+09/10/2026  09:21    <DIR>          .
+09/10/2026  09:21    <DIR>          ..
+06/10/2026  14:22    <DIR>          generacion-2001-2010
+               0 archivos              0 bytes
+               3 dirs  140.136.759.296 bytes libres
+
+C:\Users\javiv\app-comida>mkdir C:\Users\javiv\fase7-materiales\pares-evaluador
+
+C:\Users\javiv\app-comida>mkdir C:\Users\javiv\fase7-materiales\pares-clave
+
+C:\Users\javiv\app-comida>mkdir C:\Users\javiv\fase7-materiales\pares-ejecucion
+
+C:\Users\javiv\app-comida>mkdir E:\fase7-custodia\pares-evaluador
+
+C:\Users\javiv\app-comida>mkdir E:\fase7-custodia\pares-clave
+
+C:\Users\javiv\app-comida>dir /a E:\fase7-custodia\pares-evaluador
+ El volumen de la unidad E es SAMSUNG
+ El número de serie del volumen es: 50CA-9E30
+
+ Directorio de E:\fase7-custodia\pares-evaluador
+
+09/10/2026  18:27    <DIR>          .
+09/10/2026  18:27    <DIR>          ..
+               0 archivos              0 bytes
+               2 dirs  140.136.755.200 bytes libres
+
+C:\Users\javiv\app-comida>dir /a E:\fase7-custodia\pares-clave
+ El volumen de la unidad E es SAMSUNG
+ El número de serie del volumen es: 50CA-9E30
+
+ Directorio de E:\fase7-custodia\pares-clave
+
+09/10/2026  18:27    <DIR>          .
+09/10/2026  18:27    <DIR>          ..
+               0 archivos              0 bytes
+               2 dirs  140.136.755.200 bytes libres
+
+C:\Users\javiv\app-comida>

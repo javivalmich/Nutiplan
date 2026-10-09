@@ -1,0 +1,3 @@
+Switched to a new branch 'docs/d-094-autorizacion-pares'
+CODIGO=0 
+docs/d-094-autorizacion-pares

@@ -1,0 +1,38 @@
+verificar-d094
+  modo:              commit
+  commit verificado: 57b86b7892fcd695da0c05bb10dae72eea3ac415
+  padres:            38cd9eea1ef50cacc57aa176b8fc3fe53b7a3b9d
+  asunto:            D-094 autorizacion de una unica ejecucion del modo pares
+  rama actual:       docs/d-094-autorizacion-pares
+  HEAD actual:       57b86b7892fcd695da0c05bb10dae72eea3ac415
+  raíz del repo:     C:/Users/javiv/app-comida
+  ancla de partida:  38cd9eea1ef50cacc57aa176b8fc3fe53b7a3b9d
+  sha de la rama:    (no indicado)
+  node:              v24.14.1
+  fecha:             2026-10-09T16:12:39.449Z
+PASA  E-0  d094-entrada.txt sha256 7c123b7253ec5adeb0464a87669bb432c011834cf4e491ac5b14ab8f83d28a4b
+PASA  A-0  DECISIONS.md en A10 sha256 a4691660de43a859e9c0dcc2673e610c3bac84cebfb05f01e586961b09b8b72e
+PASA  V-p  primer padre 38cd9eea1ef50cacc57aa176b8fc3fe53b7a3b9d (1 padre(s))
+PASA  V-r  rama actual docs/d-094-autorizacion-pares (commit de la rama)
+PASA  V-s  asunto «D-094 autorizacion de una unica ejecucion del modo pares»
+PASA  V-b  DECISIONS.md blob = A10 + LF + entrada (sha256 commit 1f6b6f03ed4f335cd3030e3924cf3917ad23b1ad0dd877f384d040c893a291d8; sha256 esperado 1f6b6f03ed4f335cd3030e3924cf3917ad23b1ad0dd877f384d040c893a291d8)
+PASA  V-c.0  la subcarpeta contiene exactamente 15 rutas (encontradas: 15)
+PASA  V-c README.md  sha256 blob 06164b8e4cc26c89368837ba64eb40c03b6902a1ae9977dafff4c17ff1c4252b
+PASA  V-c verificar-d093.mjs  sha256 blob f96406c61173e2adfdeb560428b9fe832c9681873277bfda373727c35f4f948f
+PASA  V-c d093-entrada.txt  sha256 blob 3e90860eaee23aa45edd4e880043e8a57e651f8f1a7dd51cf09a07f797cf99ef
+PASA  V-c salidas/1-puerta.txt  sha256 blob 4c8332fda400482c15da74ec5452748e2dcecbc0f5eead4628bd398859774992
+PASA  V-c salidas/1-puerta.txttype  sha256 blob 8ec338231b3eeb7e0646542ccf180478969702e97ec4fe03cbff5ef559887cbf
+PASA  V-c salidas/2-check-attr.txt  sha256 blob 8e9cf06cd12438da13b7e07b635af5fbb6a3e0c421aa51555c8c386df0a593b8
+PASA  V-c salidas/2-check-attr.txttype  sha256 blob 212db553a60d7546f432f80a1b836d5cea539f74c8c1177c9fba02e19d0be858
+PASA  V-c salidas/3-rama.txt  sha256 blob af096ccee2e0dd22c04b0e2f44ec9fc40f34757d6b0bc01c52c9e268f7f57ff0
+PASA  V-c salidas/4-aplicar.txt  sha256 blob 2b0199f2d3ddb3cd7009fc64eeabb57e81d7da87285d742b5247eb8c5a3a7b2a
+PASA  V-c salidas/5-pre.txt  sha256 blob d43436ed1a2ac2809289265ef01b37cf96abcd43a145062f214dce337d347dd1
+PASA  V-c salidas/6-rama.txt  sha256 blob 81dc5e81bb1ee82a1520b75f1e73a7d376ab85d8380441db5e7c1dc7867bfe07
+PASA  V-c salidas/7-main.txt  sha256 blob 8e5bc15198f4020822a925e83685526fc24638cf5a9343f56606d3264dbecc0b
+PASA  V-c salidas/8-log.txt  sha256 blob 808bbebcf487f06b77ae0326b83b31b889bbc319fc13c7697923ce6841f95ea0
+PASA  V-c salidas/8-push.txt  sha256 blob afebe6ab0c0741130c4eb55544f8b16d21beb721df905bc2d17bf736b93cd7b6
+PASA  V-c salidas/8-status.txt  sha256 blob 5fbcb2990ad25e368c12219bf3ddca36e464d044e7acac16696fa8cd54159185
+PASA  V-d  git diff --name-only 38cd9ee..57b86b7 = 16 rutas (esperadas 16)
+PASA  V-e pares-run.mjs  blob df12fa7e98287510612034019dca4f08024469d2
+PASA  V-e pares.js  blob 85f636c37e671d3d6af8e4da66ce1058c340593d
+RESULTADO: TODO PASA

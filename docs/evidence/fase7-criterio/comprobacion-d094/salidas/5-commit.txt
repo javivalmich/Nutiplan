@@ -1,0 +1,18 @@
+[docs/d-094-autorizacion-pares 57b86b7] D-094 autorizacion de una unica ejecucion del modo pares
+ 16 files changed, 535 insertions(+)
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/README.md
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/d093-entrada.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/salidas/1-puerta.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/salidas/1-puerta.txttype
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/salidas/2-check-attr.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/salidas/2-check-attr.txttype
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/salidas/3-rama.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/salidas/4-aplicar.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/salidas/5-pre.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/salidas/6-rama.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/salidas/7-main.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/salidas/8-log.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/salidas/8-push.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/salidas/8-status.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d093/verificar-d093.mjs
+CODIGO=0 

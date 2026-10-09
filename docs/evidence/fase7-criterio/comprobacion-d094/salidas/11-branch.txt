@@ -1,0 +1,2 @@
+Deleted branch docs/d-094-autorizacion-pares (was 57b86b7).
+CODIGO=0 

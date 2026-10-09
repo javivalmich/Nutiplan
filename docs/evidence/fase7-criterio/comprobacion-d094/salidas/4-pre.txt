@@ -1,0 +1,37 @@
+verificar-d094
+  modo:              pre
+  commit verificado: (copia de trabajo)
+  padres:            aa63f901f389d8fad8acc4c90c37b3a7aa9cf843 e81d8934c2fccef2286f0787a66886d1f151ae97
+  asunto:            Merge D-093 criterio de superacion
+  rama actual:       docs/d-094-autorizacion-pares
+  HEAD actual:       38cd9eea1ef50cacc57aa176b8fc3fe53b7a3b9d
+  raíz del repo:     C:/Users/javiv/app-comida
+  ancla de partida:  38cd9eea1ef50cacc57aa176b8fc3fe53b7a3b9d
+  sha de la rama:    (no indicado)
+  node:              v24.14.1
+  fecha:             2026-10-09T16:11:59.492Z
+PASA  E-0  d094-entrada.txt sha256 7c123b7253ec5adeb0464a87669bb432c011834cf4e491ac5b14ab8f83d28a4b
+PASA  A-0  DECISIONS.md en A10 sha256 a4691660de43a859e9c0dcc2673e610c3bac84cebfb05f01e586961b09b8b72e
+PASA  P-1  raíz del repo C:/Users/javiv/app-comida
+PASA  R-1  rama docs/d-094-autorizacion-pares
+PASA  R-2  HEAD 38cd9eea1ef50cacc57aa176b8fc3fe53b7a3b9d
+PASA  V-a.1  DECISIONS.md: blob que generaría git add d007feb44a2cf673dfa0fb57fe7e6c556608624f; esperado d007feb44a2cf673dfa0fb57fe7e6c556608624f (sha256 esperado 1f6b6f03ed4f335cd3030e3924cf3917ad23b1ad0dd877f384d040c893a291d8)
+PASA  V-a README.md  sha256 en disco 06164b8e4cc26c89368837ba64eb40c03b6902a1ae9977dafff4c17ff1c4252b; sin conversión al añadir: sí
+PASA  V-a verificar-d093.mjs  sha256 en disco f96406c61173e2adfdeb560428b9fe832c9681873277bfda373727c35f4f948f; sin conversión al añadir: sí
+PASA  V-a d093-entrada.txt  sha256 en disco 3e90860eaee23aa45edd4e880043e8a57e651f8f1a7dd51cf09a07f797cf99ef; sin conversión al añadir: sí
+PASA  V-a salidas/1-puerta.txt  sha256 en disco 4c8332fda400482c15da74ec5452748e2dcecbc0f5eead4628bd398859774992; sin conversión al añadir: sí
+PASA  V-a salidas/1-puerta.txttype  sha256 en disco 8ec338231b3eeb7e0646542ccf180478969702e97ec4fe03cbff5ef559887cbf; sin conversión al añadir: sí
+PASA  V-a salidas/2-check-attr.txt  sha256 en disco 8e9cf06cd12438da13b7e07b635af5fbb6a3e0c421aa51555c8c386df0a593b8; sin conversión al añadir: sí
+PASA  V-a salidas/2-check-attr.txttype  sha256 en disco 212db553a60d7546f432f80a1b836d5cea539f74c8c1177c9fba02e19d0be858; sin conversión al añadir: sí
+PASA  V-a salidas/3-rama.txt  sha256 en disco af096ccee2e0dd22c04b0e2f44ec9fc40f34757d6b0bc01c52c9e268f7f57ff0; sin conversión al añadir: sí
+PASA  V-a salidas/4-aplicar.txt  sha256 en disco 2b0199f2d3ddb3cd7009fc64eeabb57e81d7da87285d742b5247eb8c5a3a7b2a; sin conversión al añadir: sí
+PASA  V-a salidas/5-pre.txt  sha256 en disco d43436ed1a2ac2809289265ef01b37cf96abcd43a145062f214dce337d347dd1; sin conversión al añadir: sí
+PASA  V-a salidas/6-rama.txt  sha256 en disco 81dc5e81bb1ee82a1520b75f1e73a7d376ab85d8380441db5e7c1dc7867bfe07; sin conversión al añadir: sí
+PASA  V-a salidas/7-main.txt  sha256 en disco 8e5bc15198f4020822a925e83685526fc24638cf5a9343f56606d3264dbecc0b; sin conversión al añadir: sí
+PASA  V-a salidas/8-log.txt  sha256 en disco 808bbebcf487f06b77ae0326b83b31b889bbc319fc13c7697923ce6841f95ea0; sin conversión al añadir: sí
+PASA  V-a salidas/8-push.txt  sha256 en disco afebe6ab0c0741130c4eb55544f8b16d21beb721df905bc2d17bf736b93cd7b6; sin conversión al añadir: sí
+PASA  V-a salidas/8-status.txt  sha256 en disco 5fbcb2990ad25e368c12219bf3ddca36e464d044e7acac16696fa8cd54159185; sin conversión al añadir: sí
+PASA  V-a.3  atributo text unset en 15 de 15 rutas
+PASA  V-a.2  git status: 16 entradas (esperadas 16)
+RESULTADO: TODO PASA
+CODIGO=0 

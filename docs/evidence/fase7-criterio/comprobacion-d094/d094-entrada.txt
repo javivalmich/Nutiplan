@@ -1,0 +1,139 @@
+## D-094 — [2026-10-09] Autorización de una única ejecución del modo pares de la primera Fase 7 (D-091)
+
+Decide: Javi. HEAD: `38cd9ee`.
+
+Contexto
+D-091 (Autorización y límites) autoriza implementar el modo pares y reserva su ejecución sobre el material a un asiento posterior, una vez versionado el código. D-093 (Consecuencias) dispone que esa autorización se constituya con freeze en un asiento posterior que lo cite. Este es ese asiento; lleva freeze conforme a D-084, porque la ejecución afecta a la evaluación y al cegado. El criterio de superación está fijado en D-093 antes de cualquier resultado; a la fecha no existe ninguna vista ni ninguna respuesta. En `38cd9ee`, el blob de `docs/evidence/fase7-generacion/manifiesto-generacion.json` tiene sha256 `51e6cbf7c5305447f1ed6e46ca094cbe442740965b3abd8882894bdefe240a98`, que es el valor fijado en `scripts/fase7/pares.js:15`, y el `README.md:12` de esa carpeta lo identifica como manifiesto de la generación original. Correspondencia de la semilla (D-091, F-3), acreditada con la salida de `git` del titular sobre `38cd9ee`, donde `origin/main` = `38cd9ee`: `git merge-base --is-ancestor 9277e6f1e0c1ff539125c334462f8dff051a6807 origin/main` termina con código 0; `git log --first-parent --format="%H %s" origin/main` contiene la línea `9277e6f1e0c1ff539125c334462f8dff051a6807 Merge D-091: emparejamiento A/B y presentacion de Fase 7`; la cabecera `## D-091 ` aparece en `DECISIONS.md:3737` de ese commit y no aparece en el de su primer padre. `9277e6f1e0c1ff539125c334462f8dff051a6807` es, por tanto, el commit de fusión con el que D-091 entró en `origin/main`. `parseInt('9277e6f1', 16)` = 2457331441. Los rótulos F-092.x del freeze, ratificados en la sesión del 2026-10-09 por la mañana, se renumeran en F-094.0. Las decisiones de este asiento son constitutivas del titular.
+
+Decisión
+**Objeto.** Autorizar una única ejecución de `scripts/fase7/pares-run.mjs` sobre el material de evaluación de la primera Fase 7.
+
+**Régimen.** Freeze, conforme a D-084, porque afecta a la ejecución de la evaluación y al cegado.
+
+**F-094.0 Rótulos.** Los rótulos F-092.x de la sesión del 2026-10-09 por la mañana pasan a F-094.x:
+
+| F-092 | F-094 | Estado |
+|---|---|---|
+| F-092.1 | — | Agotado: D-093 quedó versionado antes de este freeze (`38cd9ee`) |
+| — | F-094.1 | Nuevo |
+| F-092.2 | F-094.2 | Con su enmienda |
+| F-092.3 | F-094.3 | Con condición de directorios |
+| F-092.4 | F-094.4 | Con su enmienda y protección de destinos |
+| F-092.5 | F-094.5 | Con alcance de la evidencia |
+| F-092.6 | F-094.6 | Con su enmienda |
+| F-092.7 | F-094.7 | Opción (i) |
+| — | F-094.8 | Nuevo |
+
+**F-094.1 Ancla y código.** La ejecución se hace sobre A11, el commit de merge de D-094 en `main`. A11 cumple:
+- (a) La rama activa es `main`.
+- (b) A11 es un commit de merge con dos padres:
+  - el primero es `38cd9eea1ef50cacc57aa176b8fc3fe53b7a3b9d`;
+  - el segundo es el commit de la rama `docs/d-094-autorizacion-pares`, con el sha registrado durante el procedimiento de versionado de D-094.
+- (c) Su asunto es literalmente `Merge D-094 autorizacion modo pares`.
+- (d) `git --no-pager diff --name-only 38cd9ee..HEAD` lista solo `DECISIONS.md` y rutas bajo `docs/evidence/fase7-criterio/comprobacion-d093/`.
+- (e) Árbol limpio.
+- (f) `HEAD:scripts/fase7/pares-run.mjs` = `df12fa7e98287510612034019dca4f08024469d2`.
+- (g) `HEAD:scripts/fase7/pares.js` = `85f636c37e671d3d6af8e4da66ce1058c340593d`.
+
+**F-094.2 Entrada.**
+- Manifiesto: `C:\Users\javiv\fase7-materiales\generacion-2001-2010\manifiesto-generacion.json`, el material de la generación autorizada por D-089.
+- `--sha`: `9277e6f1e0c1ff539125c334462f8dff051a6807`.
+- La identificación fichero a fichero de los 40 planes por su `sha256Plan` la hace el propio script, sin comprobación externa previa. El script comprueba:
+  - el hash del manifiesto (`pares-run.mjs:75`) contra `pares.js:15`, que es el sha256 del manifiesto original versionado (`docs/evidence/fase7-generacion/manifiesto-generacion.json`, `README.md:12`);
+  - la estructura de 20 casos × 2 planes con identificadores únicos (`pares.js:29`, `:55`, `:64–67`, `:84–87`);
+  - el hash de cada plan (`pares-run.mjs:103`).
+
+**F-094.3 Ubicación y salida parcial.**
+- Vista: `C:\Users\javiv\fase7-materiales\pares-evaluador\vista-pares.json`.
+- Clave: `C:\Users\javiv\fase7-materiales\pares-clave\clave-pares.json`.
+- Salida de consola: `C:\Users\javiv\fase7-materiales\pares-ejecucion\`.
+- Antes de ejecutar, los tres directorios existen, están vacíos y son accesibles.
+- «Accesible» significa que `dir /a` los lista sin error. No acredita permiso de escritura. Un fallo de escritura durante la ejecución es una parada de F-094.6(b).
+- Si la ejecución deja solo uno de los dos ficheros, por cualquier causa, ninguno de los dos es material de evaluación válido. No se intenta completar la pareja. Los ficheros se conservan donde están, no se entregan y se registran en el acta.
+
+**F-094.4 Custodia.**
+- (a) **Destinos.** `E:\fase7-custodia\pares-evaluador\` y `E:\fase7-custodia\pares-clave\`. Antes de copiar, `dir /a` comprueba que existen y no contienen ficheros. Si no se cumple, no se copia hasta corregirlo. Esto no agota la autorización de ejecución.
+- (b) **Hashes de referencia.** Tras el paso 11 de F-094.8, se calcula `certutil -hashfile … SHA256` de la vista y de la clave originales. Es H0.
+- (c) **Copia.** `copy /b /-y`, origen a destino, un comando por fichero. `/-y` impide sobrescribir sin confirmación. Ante cualquier pregunta de confirmación se responde que no y se registra.
+- (d) **Verificación.** Se calcula el sha256 de las copias (H1) y de nuevo el de los originales (H2). La custodia es válida solo si H1 = H0 y H2 = H0, para la vista y para la clave.
+- (e) **Repetición.** Si H1 no coincide con H0, pero H2 sí coincide con H0 para ambos originales, la copia no válida se mueve a `E:\fase7-custodia\pares-descartes\intento-N\`, sin borrarla ni sobrescribirla. El número `N` identifica un intento de copia y no se reutiliza. Antes de mover una copia no válida, se comprueba que el destino `intento-N` no existe; si existe, se elige otro número libre. No se sobrescribe ni se elimina ninguna prueba previa. Se repiten la comprobación del destino, la copia y el cálculo de H1 únicamente para el fichero cuya copia no sea válida, manteniendo los H0 originales como referencia. La copia ya verificada del otro fichero se conserva sin moverla ni sobrescribirla. Tras el nuevo intento, se calcula H2 para ambos originales y se comprueba que cada H2 coincide con su H0 correspondiente. Si algún H2 calculado antes de repetir la copia no coincide con su H0, se aplica inmediatamente la parada por discrepancia de F-094.4(f), sin realizar otro intento de copia. Si algún H2 no coincide con su H0, se aplica la parada por discrepancia descrita a continuación.
+- (f) **Parada por discrepancia.** Si algún H2 no coincide con su H0, se detiene el procedimiento de custodia: no se recalcula H0 ni se repite la copia bajo esta autorización. En ese caso, ni la vista ni la clave se consideran material de evaluación válido y no se entregan. La discrepancia se registra en el acta y se conservan las pruebas disponibles sin sobrescribirlas.
+- (g) Los originales no se modifican en ningún momento. Toda discrepancia se registra en el acta.
+- (h) Repetir la copia no es ejecutar y no agota la autorización.
+
+**F-094.5 Evidencia.**
+- Va en `docs/evidence/fase7-pares/`, en un PR posterior a la ejecución, con `.gitattributes` `* -text`.
+- Contenido:
+  - las salidas literales de F-094.8;
+  - `stdout.txt`, `stderr.txt` y el código de salida;
+  - A11 y los dos blobs de F-094.1;
+  - H0, H1 y H2;
+  - un README como acta factual.
+- No entran ni la vista ni la clave.
+- El acta distingue tres categorías y no las mezcla:
+  - (i) **Observado y registrado.** Las salidas literales de los comandos de F-094.8 y F-094.4, con su código de salida.
+  - (ii) **Limitación conocida por inspección del código** en la sesión del freeze: las escrituras de `pares-run.mjs:132–133` no están protegidas frente a una salida parcial.
+  - (iii) **Declarado y no verificado de forma independiente:**
+    - que la parada por hash de plan distinto no tiene test;
+    - que `309fdf3` lleva un `Co-Authored-By`;
+    - que Code citó mal las líneas en su primer informe.
+- El acta deja escrito, además:
+  - Que no haya test de la parada por hash de plan no acredita que el control funcione ni que falle.
+  - La condición de D-090.6 es procedimental y no constituye una demostración técnica del cegado.
+
+**F-094.6 Paradas.** Hay tres casos de agotamiento:
+- (a) **Parada previa.** Si falla cualquiera de las comprobaciones de F-094.8, pasos 1 a 7, el script no se ejecuta y la autorización queda agotada. El paso 8 (`node -v`) es informativo: debe ejecutarse correctamente y su salida se registra, pero la versión devuelta no constituye por sí misma una condición de autorización. Si el paso 8 no se ejecuta correctamente, se aplica esta misma parada.
+- (b) **Fallo durante la ejecución.** Si el paso 10 devuelve un código distinto de 0, sea cual sea la causa y aunque sea un argumento mal escrito, la autorización queda agotada y el procedimiento se detiene. El paso 11 no se ejecuta.
+- (c) **Parada posterior.** Con código 0, si el paso 11 no muestra los dos ficheros de salida, se aplica F-094.3 y la autorización queda agotada.
+
+En ninguno de los tres casos se puede corregir y repetir bajo esta autorización. Repetir exige un asiento nuevo. Los fallos de F-094.4 no son paradas de ejecución y se rigen por F-094.4.
+
+**F-094.7 Límite del cegado.**
+- El repositorio `javivalmich/Nutiplan` es público. El cegado frente al evaluador descansa en la condición de D-090.6, que es una condición del procedimiento y no una barrera técnica.
+- Este asiento no afirma ni niega que la asignación A/B pueda reconstruirse a partir del repositorio, y no subordina la ejecución a comprobarlo.
+
+**F-094.8 Secuencia literal.**
+- Los comandos se ejecutan en CMD, desde `C:\Users\javiv\app-comida`, uno por línea y en este orden.
+- Cada uno se copia del texto de D-094, sin editarlo.
+- Cada salida se pega literal.
+
+1. `git branch --show-current`: `main`.
+2. `git --no-pager log -1 --format="%H %P %s"`: conforme a F-094.1(b) y (c).
+3. `git status --short`: sin salida.
+4. `git --no-pager diff --name-only 38cd9ee..HEAD`: conforme a F-094.1(d).
+5. `git rev-parse HEAD:scripts/fase7/pares-run.mjs`: conforme a F-094.1(f).
+6. `git rev-parse HEAD:scripts/fase7/pares.js`: conforme a F-094.1(g).
+7. Tres comandos, uno por directorio:
+   - `dir /a C:\Users\javiv\fase7-materiales\pares-evaluador`
+   - `dir /a C:\Users\javiv\fase7-materiales\pares-clave`
+   - `dir /a C:\Users\javiv\fase7-materiales\pares-ejecucion`
+
+   Cada uno existe y no contiene ficheros.
+8. `node -v`: informativo. Se ejecuta y su salida se registra, conforme a F-094.6(a).
+9. Ejecución, una sola vez, en una línea:
+   `node C:\Users\javiv\app-comida\scripts\fase7\pares-run.mjs --manifiesto C:\Users\javiv\fase7-materiales\generacion-2001-2010\manifiesto-generacion.json --sha 9277e6f1e0c1ff539125c334462f8dff051a6807 --salida-evaluador C:\Users\javiv\fase7-materiales\pares-evaluador\vista-pares.json --salida-clave C:\Users\javiv\fase7-materiales\pares-clave\clave-pares.json --confirmo-ejecucion > C:\Users\javiv\fase7-materiales\pares-ejecucion\stdout.txt 2> C:\Users\javiv\fase7-materiales\pares-ejecucion\stderr.txt`
+10. `echo %errorlevel%`, inmediatamente después del paso 9 y sin ningún comando entre ambos.
+    - Si devuelve un valor distinto de `0`: F-094.6(b). El procedimiento se detiene aquí.
+    - Solo si devuelve `0` se pasa al paso 11.
+11. Dos comandos:
+    - `dir /a C:\Users\javiv\fase7-materiales\pares-evaluador`
+    - `dir /a C:\Users\javiv\fase7-materiales\pares-clave`
+
+    Cada uno contiene exactamente su fichero. Si no es así: F-094.6(c).
+
+**Orden general.**
+1. PR documental de D-094: `DECISIONS.md`, más la comprobación posterior de D-093 desde `fase7-materiales\d093\`, con la incidencia 6. Rama `docs/d-094-autorizacion-pares`.
+2. Merge con el asunto de F-094.1(c): A11.
+3. F-094.8, pasos 1 a 11.
+4. Custodia (F-094.4).
+5. PR de evidencia (F-094.5).
+
+**Alcance de la ratificación.** Ratificar este freeze fija el contenido de la autorización, pero no autoriza ejecutar. La autorización nace solo con D-094 versionado en `main`, y es para una única ejecución.
+
+Consecuencias
+- El PR de este asiento contiene esta entrada de `DECISIONS.md` y, en `docs/evidence/fase7-criterio/comprobacion-d093/`, la comprobación posterior de D-093 (`verificar-d093.mjs`, `d093-entrada.txt` y las doce salidas de `salidas/`, incluidos `1-puerta.txttype` y `2-check-attr.txttype`) con el registro de sus incidencias.
+- La ejecución autorizada y su custodia se rigen por F-094.1 a F-094.8; su evidencia se versiona en un PR posterior (F-094.5).
+- Quedan fuera de este asiento la forma de entregar el instrumento al evaluador, incluida la pregunta de reconocimiento por par (D-093, punto 10), y la designación del evaluador con la comprobación de D-090 (punto 6).
+
+Estado resultante
+Autorizada una única ejecución del modo pares sobre el material de la primera Fase 7. Vista y clave no generadas. Pendientes antes de evaluar: la ejecución y su custodia conforme a este asiento, la forma de entrega del instrumento y la designación del evaluador.

@@ -1,0 +1,3 @@
+pares-run: 20 pares escritos (seed 2457331441).
+  vista del evaluador: C:\Users\javiv\fase7-materiales\pares-evaluador\vista-pares.json
+  clave (no entregar al evaluador): C:\Users\javiv\fase7-materiales\pares-clave\clave-pares.json

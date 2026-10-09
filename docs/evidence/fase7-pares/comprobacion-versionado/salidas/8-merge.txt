@@ -1,0 +1,53 @@
+Merge made by the 'ort' strategy.
+ .../fase7-criterio/comprobacion-d094/README.md     | 108 +++++++++
+ .../comprobacion-d094/d094-entrada.txt             | 139 +++++++++++
+ .../comprobacion-d094/salidas/1-puerta.txt         |  27 +++
+ .../comprobacion-d094/salidas/10-push.txt          |   3 +
+ .../comprobacion-d094/salidas/11-branch.txt        |   2 +
+ .../comprobacion-d094/salidas/12-log.txt           |   2 +
+ .../comprobacion-d094/salidas/12-status.txt        |   1 +
+ .../comprobacion-d094/salidas/2-checkout.txt       |   3 +
+ .../comprobacion-d094/salidas/3-aplicar.txt        |  49 ++++
+ .../comprobacion-d094/salidas/4-pre.txt            |  37 +++
+ .../comprobacion-d094/salidas/5-add.txt            |   1 +
+ .../comprobacion-d094/salidas/5-commit.txt         |  18 ++
+ .../comprobacion-d094/salidas/6-rama.txt           |  38 +++
+ .../comprobacion-d094/salidas/6b-rama.txt          |  39 +++
+ .../comprobacion-d094/salidas/7-checkout.txt       |   1 +
+ .../comprobacion-d094/salidas/7b-checkout.txt      |   3 +
+ .../comprobacion-d094/salidas/8-merge.txt          |  34 +++
+ .../comprobacion-d094/salidas/9-main.txt           |  40 ++++
+ .../comprobacion-d094/verificar-d094.mjs           | 170 +++++++++++++
+ docs/evidence/fase7-pares/.gitattributes           |   1 +
+ docs/evidence/fase7-pares/README.md                | 132 ++++++++++
+ .../fase7-pares/consola-ejecucion-d094.txt         | 265 +++++++++++++++++++++
+ docs/evidence/fase7-pares/stderr.txt               |   0
+ docs/evidence/fase7-pares/stdout.txt               |   3 +
+ .../fase7-pares/transcripcion-preparacion-d094.txt | 128 ++++++++++
+ 25 files changed, 1244 insertions(+)
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/README.md
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/d094-entrada.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/1-puerta.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/10-push.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/11-branch.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/12-log.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/12-status.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/2-checkout.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/3-aplicar.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/4-pre.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/5-add.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/5-commit.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/6-rama.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/6b-rama.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/7-checkout.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/7b-checkout.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/8-merge.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/9-main.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/verificar-d094.mjs
+ create mode 100644 docs/evidence/fase7-pares/.gitattributes
+ create mode 100644 docs/evidence/fase7-pares/README.md
+ create mode 100644 docs/evidence/fase7-pares/consola-ejecucion-d094.txt
+ create mode 100644 docs/evidence/fase7-pares/stderr.txt
+ create mode 100644 docs/evidence/fase7-pares/stdout.txt
+ create mode 100644 docs/evidence/fase7-pares/transcripcion-preparacion-d094.txt
+CODIGO=0 

@@ -1,0 +1,63 @@
+aplicar-evidencia
+  node:  v24.14.1
+  fecha: 2026-10-09T17:03:56.858Z
+PASA  P-1  raíz del repo C:/Users/javiv/app-comida
+PASA  P-2  rama docs/evidencia-pares
+PASA  P-3  HEAD 660eb6b5de6e3a04e369ea65ac0ec149a04ce3b4
+PASA  P-4  árbol limpio (sin cambios)
+PASA  P-5  origin https://github.com/javivalmich/Nutiplan.git
+PASA  P-6  docs/evidence/fase7-pares/ no existe en A11 ni en disco
+PASA  P-6  docs/evidence/fase7-criterio/comprobacion-d094/ no existe en A11 ni en disco
+PASA  C-0  la carpeta de contenido tiene exactamente 25 ficheros (encontrados: 25)
+PASA  C-1 fase7-criterio/comprobacion-d094/README.md  sha256 5401118bcf560f094c904089fc920ba705924cedae5d75d71770cf24a06430db
+PASA  C-1 fase7-criterio/comprobacion-d094/d094-entrada.txt  sha256 7c123b7253ec5adeb0464a87669bb432c011834cf4e491ac5b14ab8f83d28a4b
+PASA  C-1 fase7-criterio/comprobacion-d094/salidas/1-puerta.txt  sha256 a303ba7e90883930bfb9914190441928b9229c063d3fe2c0d95d5ecd43d719cb
+PASA  C-1 fase7-criterio/comprobacion-d094/salidas/10-push.txt  sha256 d60f45d58b747e9821815773123c6d587e112882d78af8346a98f6488d0f8bd0
+PASA  C-1 fase7-criterio/comprobacion-d094/salidas/11-branch.txt  sha256 d47475046fa0476b546dd31e7374b3dc557cb266086ef679c61a9165b13f5faf
+PASA  C-1 fase7-criterio/comprobacion-d094/salidas/12-log.txt  sha256 88cca898aa08713158daa0d515706b70606e203f07d1c0ead730f04cb12a837f
+PASA  C-1 fase7-criterio/comprobacion-d094/salidas/12-status.txt  sha256 5fbcb2990ad25e368c12219bf3ddca36e464d044e7acac16696fa8cd54159185
+PASA  C-1 fase7-criterio/comprobacion-d094/salidas/2-checkout.txt  sha256 779b5a6b0f82bb247ca62a21ae06aaa727f7cea70c14352a6f75eff406bb6cac
+PASA  C-1 fase7-criterio/comprobacion-d094/salidas/3-aplicar.txt  sha256 8ef70acfcb4cd5484c9edd005f6b4a9c9cd6d2e5876ed27034a928e75fd0fc17
+PASA  C-1 fase7-criterio/comprobacion-d094/salidas/4-pre.txt  sha256 b3415caa591389900cb720b34fede3d4443f575ab7d0768f0d748d301cd7715e
+PASA  C-1 fase7-criterio/comprobacion-d094/salidas/5-add.txt  sha256 6057f53f80391a7bda9a92b40ce0ac688727b12650dd4ecee8531e47924ac6ac
+PASA  C-1 fase7-criterio/comprobacion-d094/salidas/5-commit.txt  sha256 e1587ddfea6960e66b351bec3253763cc4fbfc0ef94ea2dddee8916d2839a351
+PASA  C-1 fase7-criterio/comprobacion-d094/salidas/6-rama.txt  sha256 1e7850421465239093252deb3a420067f4587e1163df1c911503a36621cb7722
+PASA  C-1 fase7-criterio/comprobacion-d094/salidas/6b-rama.txt  sha256 f59ec0bbf9065d09c99aac50e1e685daa9863b958b27da1383318abdbe9b63ee
+PASA  C-1 fase7-criterio/comprobacion-d094/salidas/7-checkout.txt  sha256 6057f53f80391a7bda9a92b40ce0ac688727b12650dd4ecee8531e47924ac6ac
+PASA  C-1 fase7-criterio/comprobacion-d094/salidas/7b-checkout.txt  sha256 6878c32723d0cc340b614f2e3d2b694ceb82820faa4cfd98f1d6d75d704d46ba
+PASA  C-1 fase7-criterio/comprobacion-d094/salidas/8-merge.txt  sha256 26a1912a0b0aaf6eb0be446732f0ea1ae3ac479295c3f9e725b2420c8bf19eab
+PASA  C-1 fase7-criterio/comprobacion-d094/salidas/9-main.txt  sha256 5882e3dd6bf10e9cd435fb16d00fab8d8078f8ab0049c3d27e17036129a79d72
+PASA  C-1 fase7-criterio/comprobacion-d094/verificar-d094.mjs  sha256 9931be9c835679dec3dcf4342cfb3e1898010a99c538bcb639556aca94a8032d
+PASA  C-1 fase7-pares/.gitattributes  sha256 705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da
+PASA  C-1 fase7-pares/README.md  sha256 754b65d106bbd1baf28a716df316943853b74201829063c5c7b2c8cb1da7352f
+PASA  C-1 fase7-pares/consola-ejecucion-d094.txt  sha256 384101ccff3c10ca59478839209917164f1f3917aac40582dd4f0f3813ce218b
+PASA  C-1 fase7-pares/stderr.txt  sha256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+PASA  C-1 fase7-pares/stdout.txt  sha256 078e43b64dbd1836b26ca9f3d4e5bf928da85a32833bd66ba5471c917adbaf2f
+PASA  C-1 fase7-pares/transcripcion-preparacion-d094.txt  sha256 a5a6a027285595f9031336f04c7f3c5aa72062de239e464f7103079c9355a029
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d094/README.md  sha256 5401118bcf560f094c904089fc920ba705924cedae5d75d71770cf24a06430db
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d094/d094-entrada.txt  sha256 7c123b7253ec5adeb0464a87669bb432c011834cf4e491ac5b14ab8f83d28a4b
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d094/salidas/1-puerta.txt  sha256 a303ba7e90883930bfb9914190441928b9229c063d3fe2c0d95d5ecd43d719cb
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d094/salidas/10-push.txt  sha256 d60f45d58b747e9821815773123c6d587e112882d78af8346a98f6488d0f8bd0
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d094/salidas/11-branch.txt  sha256 d47475046fa0476b546dd31e7374b3dc557cb266086ef679c61a9165b13f5faf
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d094/salidas/12-log.txt  sha256 88cca898aa08713158daa0d515706b70606e203f07d1c0ead730f04cb12a837f
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d094/salidas/12-status.txt  sha256 5fbcb2990ad25e368c12219bf3ddca36e464d044e7acac16696fa8cd54159185
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d094/salidas/2-checkout.txt  sha256 779b5a6b0f82bb247ca62a21ae06aaa727f7cea70c14352a6f75eff406bb6cac
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d094/salidas/3-aplicar.txt  sha256 8ef70acfcb4cd5484c9edd005f6b4a9c9cd6d2e5876ed27034a928e75fd0fc17
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d094/salidas/4-pre.txt  sha256 b3415caa591389900cb720b34fede3d4443f575ab7d0768f0d748d301cd7715e
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d094/salidas/5-add.txt  sha256 6057f53f80391a7bda9a92b40ce0ac688727b12650dd4ecee8531e47924ac6ac
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d094/salidas/5-commit.txt  sha256 e1587ddfea6960e66b351bec3253763cc4fbfc0ef94ea2dddee8916d2839a351
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d094/salidas/6-rama.txt  sha256 1e7850421465239093252deb3a420067f4587e1163df1c911503a36621cb7722
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d094/salidas/6b-rama.txt  sha256 f59ec0bbf9065d09c99aac50e1e685daa9863b958b27da1383318abdbe9b63ee
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d094/salidas/7-checkout.txt  sha256 6057f53f80391a7bda9a92b40ce0ac688727b12650dd4ecee8531e47924ac6ac
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d094/salidas/7b-checkout.txt  sha256 6878c32723d0cc340b614f2e3d2b694ceb82820faa4cfd98f1d6d75d704d46ba
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d094/salidas/8-merge.txt  sha256 26a1912a0b0aaf6eb0be446732f0ea1ae3ac479295c3f9e725b2420c8bf19eab
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d094/salidas/9-main.txt  sha256 5882e3dd6bf10e9cd435fb16d00fab8d8078f8ab0049c3d27e17036129a79d72
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d094/verificar-d094.mjs  sha256 9931be9c835679dec3dcf4342cfb3e1898010a99c538bcb639556aca94a8032d
+ESCRITO  docs/evidence/fase7-pares/.gitattributes  sha256 705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da
+ESCRITO  docs/evidence/fase7-pares/README.md  sha256 754b65d106bbd1baf28a716df316943853b74201829063c5c7b2c8cb1da7352f
+ESCRITO  docs/evidence/fase7-pares/consola-ejecucion-d094.txt  sha256 384101ccff3c10ca59478839209917164f1f3917aac40582dd4f0f3813ce218b
+ESCRITO  docs/evidence/fase7-pares/stderr.txt  sha256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+ESCRITO  docs/evidence/fase7-pares/stdout.txt  sha256 078e43b64dbd1836b26ca9f3d4e5bf928da85a32833bd66ba5471c917adbaf2f
+ESCRITO  docs/evidence/fase7-pares/transcripcion-preparacion-d094.txt  sha256 a5a6a027285595f9031336f04c7f3c5aa72062de239e464f7103079c9355a029
+RESULTADO: APLICADO
+CODIGO=0 

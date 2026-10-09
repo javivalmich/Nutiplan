@@ -1,0 +1,25 @@
+verificar-evidencia
+  modo:              puerta
+  commit verificado: (copia de trabajo)
+  padres:            38cd9eea1ef50cacc57aa176b8fc3fe53b7a3b9d 57b86b7892fcd695da0c05bb10dae72eea3ac415
+  asunto:            Merge D-094 autorizacion modo pares
+  rama actual:       main
+  HEAD actual:       660eb6b5de6e3a04e369ea65ac0ec149a04ce3b4
+  raíz del repo:     C:/Users/javiv/app-comida
+  ancla de partida:  660eb6b5de6e3a04e369ea65ac0ec149a04ce3b4
+  sha de la rama:    (no indicado)
+  node:              v24.14.1
+  fecha:             2026-10-09T17:03:33.977Z
+PASA  C-0  la carpeta de contenido tiene exactamente 25 ficheros (encontrados: 25)
+PASA  C-1  sha256 de los 25 ficheros de contenido iguales a los fijados (distintos: 0)
+PASA  P-1  raíz del repo C:/Users/javiv/app-comida
+PASA  P-2  rama main
+PASA  P-3  HEAD 660eb6b5de6e3a04e369ea65ac0ec149a04ce3b4
+PASA  P-4  árbol limpio (sin cambios)
+PASA  P-5  origin https://github.com/javivalmich/Nutiplan.git
+PASA  P-6  docs/evidence/fase7-pares/ no existe en A11 ni en disco
+PASA  P-6  docs/evidence/fase7-criterio/comprobacion-d094/ no existe en A11 ni en disco
+PASA  P-7  origin/main 660eb6b5de6e3a04e369ea65ac0ec149a04ce3b4
+PASA  P-8  la rama docs/evidencia-pares no existe todavía
+RESULTADO: TODO PASA
+CODIGO=0 

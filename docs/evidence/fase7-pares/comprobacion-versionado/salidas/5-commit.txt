@@ -1,0 +1,28 @@
+[docs/evidencia-pares b5ad383] Evidencia de la ejecucion del modo pares (D-094)
+ 25 files changed, 1244 insertions(+)
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/README.md
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/d094-entrada.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/1-puerta.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/10-push.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/11-branch.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/12-log.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/12-status.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/2-checkout.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/3-aplicar.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/4-pre.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/5-add.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/5-commit.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/6-rama.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/6b-rama.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/7-checkout.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/7b-checkout.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/8-merge.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/salidas/9-main.txt
+ create mode 100644 docs/evidence/fase7-criterio/comprobacion-d094/verificar-d094.mjs
+ create mode 100644 docs/evidence/fase7-pares/.gitattributes
+ create mode 100644 docs/evidence/fase7-pares/README.md
+ create mode 100644 docs/evidence/fase7-pares/consola-ejecucion-d094.txt
+ create mode 100644 docs/evidence/fase7-pares/stderr.txt
+ create mode 100644 docs/evidence/fase7-pares/stdout.txt
+ create mode 100644 docs/evidence/fase7-pares/transcripcion-preparacion-d094.txt
+CODIGO=0 

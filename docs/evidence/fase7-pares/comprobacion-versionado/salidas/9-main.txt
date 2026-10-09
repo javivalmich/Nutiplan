@@ -1,0 +1,47 @@
+verificar-evidencia
+  modo:              commit
+  commit verificado: 94e61157e2d83f84acd101ac24fea66262637667
+  padres:            660eb6b5de6e3a04e369ea65ac0ec149a04ce3b4 b5ad3832b0e3107751f9cfb07916f5739392d17b
+  asunto:            Merge evidencia ejecucion modo pares
+  rama actual:       main
+  HEAD actual:       94e61157e2d83f84acd101ac24fea66262637667
+  raíz del repo:     C:/Users/javiv/app-comida
+  ancla de partida:  660eb6b5de6e3a04e369ea65ac0ec149a04ce3b4
+  sha de la rama:    b5ad3832b0e3107751f9cfb07916f5739392d17b
+  node:              v24.14.1
+  fecha:             2026-10-09T17:05:55.791Z
+PASA  C-0  la carpeta de contenido tiene exactamente 25 ficheros (encontrados: 25)
+PASA  C-1  sha256 de los 25 ficheros de contenido iguales a los fijados (distintos: 0)
+PASA  V-p  primer padre 660eb6b5de6e3a04e369ea65ac0ec149a04ce3b4 (2 padre(s))
+PASA  V-r  rama actual main; 2 padres (merge)
+PASA  V-q  segundo padre b5ad3832b0e3107751f9cfb07916f5739392d17b; sha de la rama indicado b5ad3832b0e3107751f9cfb07916f5739392d17b
+PASA  V-s  asunto «Merge evidencia ejecucion modo pares»
+PASA  V-c.0  las dos carpetas contienen exactamente 25 rutas (encontradas: 25)
+PASA  V-c fase7-criterio/comprobacion-d094/README.md  sha256 blob 5401118bcf560f094c904089fc920ba705924cedae5d75d71770cf24a06430db
+PASA  V-c fase7-criterio/comprobacion-d094/d094-entrada.txt  sha256 blob 7c123b7253ec5adeb0464a87669bb432c011834cf4e491ac5b14ab8f83d28a4b
+PASA  V-c fase7-criterio/comprobacion-d094/salidas/1-puerta.txt  sha256 blob a303ba7e90883930bfb9914190441928b9229c063d3fe2c0d95d5ecd43d719cb
+PASA  V-c fase7-criterio/comprobacion-d094/salidas/10-push.txt  sha256 blob d60f45d58b747e9821815773123c6d587e112882d78af8346a98f6488d0f8bd0
+PASA  V-c fase7-criterio/comprobacion-d094/salidas/11-branch.txt  sha256 blob d47475046fa0476b546dd31e7374b3dc557cb266086ef679c61a9165b13f5faf
+PASA  V-c fase7-criterio/comprobacion-d094/salidas/12-log.txt  sha256 blob 88cca898aa08713158daa0d515706b70606e203f07d1c0ead730f04cb12a837f
+PASA  V-c fase7-criterio/comprobacion-d094/salidas/12-status.txt  sha256 blob 5fbcb2990ad25e368c12219bf3ddca36e464d044e7acac16696fa8cd54159185
+PASA  V-c fase7-criterio/comprobacion-d094/salidas/2-checkout.txt  sha256 blob 779b5a6b0f82bb247ca62a21ae06aaa727f7cea70c14352a6f75eff406bb6cac
+PASA  V-c fase7-criterio/comprobacion-d094/salidas/3-aplicar.txt  sha256 blob 8ef70acfcb4cd5484c9edd005f6b4a9c9cd6d2e5876ed27034a928e75fd0fc17
+PASA  V-c fase7-criterio/comprobacion-d094/salidas/4-pre.txt  sha256 blob b3415caa591389900cb720b34fede3d4443f575ab7d0768f0d748d301cd7715e
+PASA  V-c fase7-criterio/comprobacion-d094/salidas/5-add.txt  sha256 blob 6057f53f80391a7bda9a92b40ce0ac688727b12650dd4ecee8531e47924ac6ac
+PASA  V-c fase7-criterio/comprobacion-d094/salidas/5-commit.txt  sha256 blob e1587ddfea6960e66b351bec3253763cc4fbfc0ef94ea2dddee8916d2839a351
+PASA  V-c fase7-criterio/comprobacion-d094/salidas/6-rama.txt  sha256 blob 1e7850421465239093252deb3a420067f4587e1163df1c911503a36621cb7722
+PASA  V-c fase7-criterio/comprobacion-d094/salidas/6b-rama.txt  sha256 blob f59ec0bbf9065d09c99aac50e1e685daa9863b958b27da1383318abdbe9b63ee
+PASA  V-c fase7-criterio/comprobacion-d094/salidas/7-checkout.txt  sha256 blob 6057f53f80391a7bda9a92b40ce0ac688727b12650dd4ecee8531e47924ac6ac
+PASA  V-c fase7-criterio/comprobacion-d094/salidas/7b-checkout.txt  sha256 blob 6878c32723d0cc340b614f2e3d2b694ceb82820faa4cfd98f1d6d75d704d46ba
+PASA  V-c fase7-criterio/comprobacion-d094/salidas/8-merge.txt  sha256 blob 26a1912a0b0aaf6eb0be446732f0ea1ae3ac479295c3f9e725b2420c8bf19eab
+PASA  V-c fase7-criterio/comprobacion-d094/salidas/9-main.txt  sha256 blob 5882e3dd6bf10e9cd435fb16d00fab8d8078f8ab0049c3d27e17036129a79d72
+PASA  V-c fase7-criterio/comprobacion-d094/verificar-d094.mjs  sha256 blob 9931be9c835679dec3dcf4342cfb3e1898010a99c538bcb639556aca94a8032d
+PASA  V-c fase7-pares/.gitattributes  sha256 blob 705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da
+PASA  V-c fase7-pares/README.md  sha256 blob 754b65d106bbd1baf28a716df316943853b74201829063c5c7b2c8cb1da7352f
+PASA  V-c fase7-pares/consola-ejecucion-d094.txt  sha256 blob 384101ccff3c10ca59478839209917164f1f3917aac40582dd4f0f3813ce218b
+PASA  V-c fase7-pares/stderr.txt  sha256 blob e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+PASA  V-c fase7-pares/stdout.txt  sha256 blob 078e43b64dbd1836b26ca9f3d4e5bf928da85a32833bd66ba5471c917adbaf2f
+PASA  V-c fase7-pares/transcripcion-preparacion-d094.txt  sha256 blob a5a6a027285595f9031336f04c7f3c5aa72062de239e464f7103079c9355a029
+PASA  V-d  git diff --name-only 660eb6b..94e6115 = 25 rutas (esperadas 25)
+RESULTADO: TODO PASA
+CODIGO=0 

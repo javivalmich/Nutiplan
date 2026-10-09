@@ -1,0 +1,2 @@
+docs/evidence/fase7-criterio/comprobacion-d092/README.md: text: unset
+docs/evidence/fase7-criterio/comprobacion-d092/verificar-rama.txt: text: unset

@@ -1,0 +1,22 @@
+verificar-d092
+  commit verificado: 67094ee0d0c98a833f3eb08b244bb4ed5d1ba76a
+  padres:            ff0779974492f68ee704a91f73393fbb8b0b08de
+  rama actual:       docs/d-092-motivo-condicion
+  HEAD actual:       67094ee0d0c98a833f3eb08b244bb4ed5d1ba76a
+  ancla de partida:  ff0779974492f68ee704a91f73393fbb8b0b08de
+  node:              v24.14.1
+  fecha:             2026-10-09T12:06:46.076Z
+PASA  E-0  d092-entrada.txt sha256 137729d61490ad97b0457ecdcb43929f4e24d58b17d087074e6e33ea24317241
+PASA  V-b.1  CLAUDE.md blob = ancla con una sola sustitución (ocurrencias en ancla: 1; sha256 ancla ed1a49f8f8e901210dd21b4d2b8a6afbd27c956d146ebb58d616c365c3369f60; sha256 commit 08fbb7e9668c13fef1093e72335f36c426c42b83f6c3306941efd5a0a6f8ec6a)
+PASA  V-b.2  DECISIONS.md blob = ancla + LF + entrada (sha256 ancla b7bc8ecbcd5fc28f16d16f9d0bbe1bec534d9f7265e5aa9e7cb3c78b4eca6635; sha256 commit 412de41c37d8be4034b3e53e684e9f01bcbce594e9b752a676d5aed289b08d25; sha256 esperado 412de41c37d8be4034b3e53e684e9f01bcbce594e9b752a676d5aed289b08d25)
+PASA  V-c.0  la carpeta contiene exactamente 8 rutas (encontradas: 8)
+PASA  V-c .gitattributes  sha256 blob 705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da
+PASA  V-c README.md  sha256 blob b2482beb7dba4976f9eb6c98cc5b32987d9464c7c39808e5da83e2127041018d
+PASA  V-c freeze-r0-motivo-v2.md  sha256 blob ac38535a71e0fadc5933ae47f5b2170de9b7f63bf463f97df67f0cdd2282ffdb
+PASA  V-c fase0.txt  sha256 blob ecf72d84c9b29324f20e21844faf25562ce3b6ccfd85b2dc8a20a0ba868d96e4
+PASA  V-c fase1.txt  sha256 blob 8043cd84b8f6d9aa1867732a739a0f910cb599e3daf3e4ec299c34791760c909
+PASA  V-c fase2.txt  sha256 blob 5bb32cd9487888f8a3368db088618773d858770da3617915bd326ab68fe7e714
+PASA  V-c fase2-total.txt  sha256 blob 90f12a442e6e1161fe0a6cbb37ea5df5bb4fe0268196cd367ee86968bd0d0216
+PASA  V-c fase3.txt  sha256 blob 8edcf741b6f59bcd2aae01b14bff5d7f63a726d46a86aaf47f0d9f48fbc24d95
+PASA  V-d  git diff --name-only ff07799..67094ee = 10 rutas
+RESULTADO: TODO PASA

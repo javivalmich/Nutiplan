@@ -1,0 +1,9 @@
+sha256 manifiesto original: 51e6cbf7c5305447f1ed6e46ca094cbe442740965b3abd8882894bdefe240a98
+sha256 manifiesto copia:    51e6cbf7c5305447f1ed6e46ca094cbe442740965b3abd8882894bdefe240a98
+OK    manifiesto idéntico
+OK    raíz de la copia = manifiesto + planes (manifiesto-generacion.json|planes)
+OK    40 archivos (copia 40, declarados 40)
+OK    mismos nombres que el manifiesto original
+OK    sha256Plan 40/40 contra el manifiesto original
+VEREDICTO: COPIA VERIFICADA
+codigo de salida: 0

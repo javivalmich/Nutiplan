@@ -1,0 +1,25 @@
+Patrones de ruta que difieren (20 legacy), con nº de ocurrencias:
+  140 $.days[*].id
+Ejemplo P1-2001-legacy.json - primeras 15 diferencias:
+  $.days[0].id 
+    orig:  "day-0-1791289377658" 
+    regen: "day-0-1791529860587"
+  $.days[1].id 
+    orig:  "day-1-1791289377658" 
+    regen: "day-1-1791529860587"
+  $.days[2].id 
+    orig:  "day-2-1791289377658" 
+    regen: "day-2-1791529860587"
+  $.days[3].id 
+    orig:  "day-3-1791289377658" 
+    regen: "day-3-1791529860587"
+  $.days[4].id 
+    orig:  "day-4-1791289377658" 
+    regen: "day-4-1791529860587"
+  $.days[5].id 
+    orig:  "day-5-1791289377658" 
+    regen: "day-5-1791529860587"
+  $.days[6].id 
+    orig:  "day-6-1791289377658" 
+    regen: "day-6-1791529860587"
+codigo de salida: 0

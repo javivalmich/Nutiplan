@@ -1,0 +1,42 @@
+--- (0) procedencia
+OK    orig: sha256 del registro = cee27373…002b
+OK    orig: codigo.head = 765b90a
+OK    orig: arbolLimpio = true
+OK    regen: sha256 del registro = cee27373…002b
+OK    regen: codigo.head = 765b90a
+OK    regen: arbolLimpio = true
+--- (iii) nombres
+OK    40 archivos en disco (orig 40, regen 40)
+OK    40 sha256Plan declarados (orig 40, regen 40)
+OK    mismos nombres en disco orig/regen
+OK    nombres en disco orig = manifiesto orig
+--- (ii) original conservado vs manifiesto original
+OK    40/40
+--- (i) regenerado vs manifiesto original
+  difiere: planes/P1-2001-legacy.json
+  difiere: planes/P1-2002-legacy.json
+  difiere: planes/P1-2003-legacy.json
+  difiere: planes/P1-2004-legacy.json
+  difiere: planes/P1-2005-legacy.json
+  difiere: planes/P1-2006-legacy.json
+  difiere: planes/P1-2007-legacy.json
+  difiere: planes/P1-2008-legacy.json
+  difiere: planes/P1-2009-legacy.json
+  difiere: planes/P1-2010-legacy.json
+  difiere: planes/P2-2001-legacy.json
+  difiere: planes/P2-2002-legacy.json
+  difiere: planes/P2-2003-legacy.json
+  difiere: planes/P2-2004-legacy.json
+  difiere: planes/P2-2005-legacy.json
+  difiere: planes/P2-2006-legacy.json
+  difiere: planes/P2-2007-legacy.json
+  difiere: planes/P2-2008-legacy.json
+  difiere: planes/P2-2009-legacy.json
+  difiere: planes/P2-2010-legacy.json
+FALLO 20/40
+--- coherencia interna regen (manifiesto regen vs su disco)
+OK    40/40
+--- secundaria (no criterio): sha256Vista orig vs regen
+  40/40
+VEREDICTO: NO REPRODUCE
+codigo de salida: 1

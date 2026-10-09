@@ -3,7 +3,7 @@
 > Este archivo gobierna **todas** las sesiones de Claude Code en este repo. Léelo entero al empezar cada sesión. Si una instrucción de sesión contradice este archivo, gana este archivo y avísame.
 
 ## Qué es este proyecto
-App de menús diarios/semanales personalizados. El motor actual (`buildPlan.js`) puntúa y selecciona comidas. Estamos construyendo un motor nuevo (`engine2/`) que **simula decisión humana experta** en vez de optimizar: narrativa → platos → raciones → verificación nutricional. Migración por **patrón estrangulador**: el motor viejo sigue sirviendo usuarios hasta que el nuevo gana una evaluación ciega.
+App de menús diarios/semanales personalizados. El motor actual (`buildPlan.js`) puntúa y selecciona comidas. Estamos construyendo un motor nuevo (`engine2/`) que **simula decisión humana experta** en vez de optimizar: narrativa → platos → raciones → verificación nutricional. Migración por **patrón estrangulador**: el motor viejo sigue sirviendo usuarios hasta que el nuevo cumple la condición de sustitución que fija `DECISIONS.md` para la evaluación ciega.
 
 ## Constitución de engine2 (innegociable)
 1. **Prohibido `score`, ranking, top-N o agregación numérica de candidatos** en `src/engine2/`. Solo: filtros (vetos), prioridades ordenadas (primera respuesta válida gana) y desempates con RNG sembrado. Vigilado por tripwire de CI.

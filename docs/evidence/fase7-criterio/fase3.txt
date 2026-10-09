@@ -1,0 +1,424 @@
+﻿=== CLAUDE.md:6
+   3: > Este archivo gobierna **todas** las sesiones de Claude Code en este repo. Léelo entero al empezar cada sesión. Si una instrucción de sesión contradice este archivo, gana este archivo y avísame.
+   4: 
+   5: ## Qué es este proyecto
+>> 6: App de menús diarios/semanales personalizados. El motor actual (`buildPlan.js`) puntúa y selecciona comidas. Estamos construyendo un motor nuevo (`engine2/`) que **simula decisión humana experta** en vez de optimizar: narrativa → platos → raciones → verificación nutricional. Migración por **patrón estrangulador**: el motor viejo sigue sirviendo usuarios hasta que el nuevo gana una evaluación ciega.
+   7: 
+   8: ## Constitución de engine2 (innegociable)
+   9: 1. **Prohibido `score`, ranking, top-N o agregación numérica de candidatos** en `src/engine2/`. Solo: filtros (vetos), prioridades ordenadas (primera respuesta válida gana) y desempates con RNG sembrado. Vigilado por tripwire de CI.
+=== CLAUDE.md:12
+   9: 1. **Prohibido `score`, ranking, top-N o agregación numérica de candidatos** en `src/engine2/`. Solo: filtros (vetos), prioridades ordenadas (primera respuesta válida gana) y desempates con RNG sembrado. Vigilado por tripwire de CI.
+   10: 2. **`eval/` jamás se importa desde `engine2/`.** Las métricas humanas miden, no deciden. Termómetro, no termostato. Vigilado por tripwire de CI.
+   11: 3. **Toda decisión registra su causa** en el decision log. Una elección sin causa textual es un bug.
+>> 12: 4. **Archivo canónico del motor viejo: `buildPlan.js`.** `main_buildPlan_tmp.js` está DEPRECATED: no se lee, no se edita, no se importa.
+   13: 5. **Motor viejo congelado:** ninguna heurística nueva ni evolución de las existentes (`weeklySaucePen` y compañía quedan como están). Solo se tocan los bugs listados en la Fase 1.
+   14: 6. **Determinismo:** misma seed → mismo plan, byte a byte, en ambos motores. `seed = hash(userId + weekNumber)`.
+   15: 7. **`engine/` (motor viejo) no se importa desde `engine2/`** — jamás, salvo `*.test.js` de parity; `engine2` mantiene copias paritarias propias (p.ej. `deriveTempFeelEngine2`). Vigilado por tripwire de CI (`tripwire-engine2-engine-isolation.test.js`): escaneo AST de imports de `engine/` en archivos bajo `engine2/`, excepción por patrón de nombre (`*.test.js` + `__selftest_*__`), nunca por carpeta `tests/` genérica.
+=== DECISIONS.md:276
+   273: - Evidencia: causa trazada de los 30/64 combos muertos observados en `gate2b` (T10b). Confirmado por
+   274:   lectura directa de ambas funciones en `src/engine/buildPlan.js` (líneas citadas arriba), sin
+   275:   necesidad de instrumentación adicional.
+>> 276: - Decide: NO es una feature a preservar en la migración. `engine2` resuelve esta asimetría
+   277:   arquitectónicamente (sin scoring numérico, CLAUDE.md invariante 1); el diseño de selección de
+   278:   Fase 4 en adelante debe conocer esta causa para no reproducirla por descuido al portar heurísticas
+   279:   del motor viejo como referencia.
+=== DECISIONS.md:305
+   302:     `src/`, solo en `analysis/gate2_measure.test.js` (líneas 434, 462).
+   303: - Decide: no se toca la suite de medición en este PR (fuera de scope — solo documental). Resolución:
+   304:   PR de sincronización de gates, próximo, con fork pendiente de ratificar sobre la sonda
+>> 305:   `__noSlotHint` (si se implementa de verdad en el motor o se retira del gate).
+   306: 
+   307: ## D-016 — [2026-07-03] Ratificación de la sonda __noSlotHint: opción (a), flag permanente default-off
+   308: - Decisión/Hallazgo: de las dos resoluciones abiertas por D-015 para `__noSlotHint`, se ratifica la
+=== DECISIONS.md:413
+   410:     `rol:"ancla"` (los que resuelve `chooseAnchor` en `buildWeekArc`), los 6 tienen `momento` de un
+   411:     solo valor — cero ambigüedad real alcanzable hoy; el eslabón 0 de desempate RNG se verifica con
+   412:     fixture construido (v3, v5).
+>> 413:   - p2: `src/engine/buildPlan.js:2434-2443` confirma que `TRAINING_DINNERS` sustituye la CENA
+   414:     (objetos con `slot:"Cena"` en `buildPlan.js:1157-1165`), nunca la comida.
+   415:   - p3: `src/engine2/skeleton/buildWeekArc.js:285-336` — `beats[]` es un array de 7 (uno por día,
+   416:     sin distinguir comida/cena, deuda explícita para F4 en el comentario de
+=== DECISIONS.md:707
+   704:     libre), f14 (asimetría: `evaluateVeto` devuelve `[]` temprano si `vista.origen === 'scaffold'`
+   705:     → 4 tests caen en `vetoes.test.js`/`runWalk.test.js`), f15 (fail-open: rama `estado ===
+   706:     "desconocida"` deja de empujar razón de veto → mismos 4 tests caen), f16 (enum abierto: chequeo
+>> 707:     `!INTOLERANCE_VALUES.includes(valor)` sustituido por `typeof valor !== 'string'` → el test de
+   708:     rechazo de `"marisco"` cae en `profile.test.js`). Las 4 mutaciones revertidas; `sha256sum` de
+   709:     `runWalk.js` idéntico antes/después del ciclo f13 (restaurado desde backup exacto).
+   710:   - Suite dirigida tras cada revert: `npx vitest run src/engine2` → 31 archivos / 401 tests VERDE.
+=== DECISIONS.md:804
+   801:   - Tests existentes actualizados (no re-escritos): `buildWeekArc.test.js` — el fixture
+   802:     `"...+ intolerancias (lactosa+gluten)"` de `baselineFixtures.js` activa el veto sobre las 6 anclas
+   803:     reales (todas `"desconocida"`), así que la aserción previa ("intolerancias NO cambia la
+>> 804:     estructura") quedó reemplazada por una que afirma el NUEVO contrato (semana sin ancla, ver
+   805:     D-023); dos barridos mecánicos de `batchDay`/sobras que iteraban las 9 fixtures excluyen
+   806:     explícitamente esa fixture (comentario cita D-023) porque su premisa ("toda fixture tiene ancla
+   807:     para alguna seed") deja de sostenerse bajo veto activo.
+=== DECISIONS.md:852
+   849: - **Addendum (mismo PR, previo al push) — ratificación del before/after de los 3 tests preexistentes
+   850:   modificados, y corrección de una afirmación de esta misma entrada**:
+   851:   1. Ratificados con diff literal los 3 cambios sobre tests preexistentes: (i)
+>> 852:      `buildWeekArc.test.js` — "intolerancias NO cambia la estructura" reemplazada (no ajustada) por
+   853:      una aserción que verifica el contrato de ausencia (D-023 asiento 1) sobre el mismo fixture; (ii)
+   854:      y (iii) los dos barridos mecánicos de `batchDay`/sobras excluyen la fixture con intolerancias
+   855:      activas vía `FIXTURES_CON_ANCLA = FIXTURES.filter((f) => !(f.profile.intolerances?.length))`.
+=== DECISIONS.md:1016
+   1013:      de mensaje). `frequencies.js` (`resolveFrequencyVista`) discrimina ahora por
+   1014:      `instanceof UnresolvableOriginError`, no por `/origen indeterminado/.test(err.message)`.
+   1015:   2. **Narración de la neutralización**: `createFrequencyState` gana `idsIrresolubles: new Set()`;
+>> 1016:      `resolveFrequencyVista(dish, onIrresoluble)` invoca el callback una vez por sustitución;
+   1017:      `registerConsumption`/`chooseFrequencyLevel` sin `getVista` explícito construyen su propio
+   1018:      resolver por defecto atado a `state.idsIrresolubles`. `runWalk.js`, al final del walk (una vez,
+   1019:      no por hueco): si `freqState.idsIrresolubles.size > 0`, una entrada `evento:true`,
+=== DECISIONS.md:1030
+   1027:      (`.toContain` tolerante a texto añadido) sigue cubriendo esto: la nueva entrada es aditiva, no
+   1028:      reescribe ninguna evidencia existente.
+   1029:   3. **Riesgo nombrado + invariante compensatorio**: la tolerancia (capturar `UnresolvableOriginError`
+>> 1030:      y sustituir vista neutral) tiene un riesgo real: un `id` CORRUPTO en el catálogo real (typo,
+   1031:      entrada mal generada) atravesaría el paso 4 como neutral — sin cobertura de target ni verdura —
+   1032:      EN SILENCIO si no fuera por el punto 2. Invariante compensatorio citado: D-021 verificó en
+   1033:      runtime *"241 platos, 178 resuelven como tupla... 63 hacen join limpio... 0 platos sin origen
+=== DECISIONS.md:1065
+   1062:     explicado y corregido, punto 5). `eslint` sobre los 6 archivos tocados → 0 problemas.
+   1063:   - Regla de proceso ratificada por Javi, efectiva desde ahora (no solo para esta sesión):
+   1064:     **"Verificación limpia no autoriza implementación."** Un análisis que confirma "cero efecto" es
+>> 1065:     INPUT para que Javi autorice, nunca sustituto de esa autorización explícita. Guardado como
+   1066:     memoria de feedback para sesiones futuras.
+   1067: 
+   1068: ## D-025 — [2026-07-07] Contrato del adaptador humanScore (F4-P2c): criterio de
+=== DECISIONS.md:1275
+   1272:     vocabulario (ej.: edamame respecto a los guisantes, ambos legumbre fresca de
+   1273:     vaina con la misma función): entra por coherencia entre análogos.
+   1274:   - Eje propio — un ingrediente con perfil y papel en plato propios, distinto de
+>> 1275:     cualquier hortaliza (ej.: setas, hongo con perfil umami, a menudo sustituto
+   1276:     de proteína): eje propio, separado del eje hortícola más cercano (ej.:
+   1277:     champiñones queda como eje distinto).
+   1278:   - Exclusión por dominio — ingredientes que aportan sabor/acidez en dosis
+=== DECISIONS.md:1409
+   1406: Decisión (fork F-V1, opción A1, ratificada 2026-07-13):
+   1407: `evaluateVetoFromVista` (src/engine2/walk/vetoes.js) pasa a ser un
+   1408: consumidor puro de `valorEfectivo`. No ramifica por `origen`. El throw
+>> 1409: sobre `origen="confirmada"` (vetoes.js:65-68 al HEAD a0d95c0) se retira
+   1410: porque la decisión que custodiaba ya no está pendiente: la precedencia
+   1411: entre confirmada, derivada y desconocida es responsabilidad exclusiva de
+   1412: `buildCampoComposicion` (compositionResolver.js:185-194 al mismo HEAD),
+=== DECISIONS.md:1494
+   1491: verdura ya lanzan ante estado no contemplado.
+   1492: 
+   1493: **Salvaguardas registradas para el PR de implementación (PR-4):**
+>> 1494: 1. Retirada segura por construcción: sin cableado de fuenteEditorial
+   1495:    a call-sites de producción, `origen='confirmada'` es inalcanzable
+   1496:    en runtime (corroborado: runWalk.frequencies.test.js sin
+   1497:    ocurrencias). El wiring es PR posterior e independiente.
+=== DECISIONS.md:1570
+   1567: verdura confirmada con contenido dice "brócoli, zanahoria", no
+   1568: "brócoli, zanahoria — confirmado por ti"; la procedencia se lee en las
+   1569: columnas por/fecha. El vacío confirmado no es excepción a esa regla.
+>> 1570: Corolario de coherencia: "sin verdura" reemplaza a '(ninguna)' para
+   1571: AMBOS orígenes (derivada y confirmada), porque la afirmación es sobre
+   1572: el plato, no sobre quién la hizo; derivada-vacía y confirmada-vacía
+   1573: dicen lo mismo en valor_actual y se separan por origen_actual. Si el
+=== DECISIONS.md:1605
+   1602: la puerta antes de que se abra.
+   1603: 
+   1604: **Salvaguardas para el PR de implementación (PR-5):**
+>> 1605: 1. Retirada segura por construcción: sin fuenteEditorial en el runner,
+   1606:    'confirmada' es inalcanzable en producción. El cableado del runner
+   1607:    (inyectar el lateral) es PR posterior e independiente; el render se
+   1608:    define y testea con vistas sintéticas.
+=== DECISIONS.md:1664
+   1661: producción pasa fuenteEditorial" a allowlist explícita con un único
+   1662: call-site ratificado (la cadena del export V5). Conserva su función
+   1663: de tripwire para el resto del árbol: en particular, el walk no puede
+>> 1664: cablearse silenciosamente antes de PR-1b. La retirada total fue
+   1665: rechazada. La reescritura viaja en PR-1a.
+   1666: 
+   1667: **Resolución de unidad del lateral (cierra la discrepancia B5 del
+=== DECISIONS.md:1855
+   1852: 
+   1853: - **Decisión/Hallazgo.** La anotación original del cocinero
+   1854:   (`Anotacion_cocinero_242_v4.xlsx`) constituye un activo canónico del
+>> 1855:   proyecto: es insustituible (no hay generador que la reproduzca; es
+   1856:   captura única de la sesión editorial del cocinero) y forma parte de los
+   1857:   datos necesarios para reproducir el catálogo (los 63 platos freeform de
+   1858:   `dishes.json`, D-009) y la suite de pruebas (leída en vivo por
+=== DECISIONS.md:1917
+   1914:   documentada en la que ambos difieren
+   1915:   (legacyCombos.plateTypeCorrections.js:38: tmpl='sopa_crema' ->
+   1916:   plateType final 'plancha_verdura'), por lo que no pueden
+>> 1917:   considerarse equivalentes por contrato — sustituir uno por otro
+   1918:   redefiniría la métrica, y aun redefinida, el valor 'legumbre' de
+   1919:   CUCHARA_TMPLS es inalcanzable desde el mapa freeform existente
+   1920:   (cero vías de salida hacia 'legumbre'). Diseñar un vocabulario de
+=== DECISIONS.md:1966
+   1963:   JSON idéntico, tripwires en suite 836/836.
+   1964: - Decide: Javi.
+   1965: 
+>> 1966: ## D-042 — [2026-07-16] Retiro del ~49,8% como referencia de variedad de verdura; sustitución por artefacto reproducible
+   1967: 
+   1968: - Contexto: existía una cifra conversacional (~49,8% de semanas con alguna
+   1969:   verdura repetida >=3 días) usada informalmente como referencia de variedad
+=== DECISIONS.md:1974
+   1971:   reproducible con el estado actual: el gate legacy (`analysis/gate4_veg_baseline.test.js`,
+   1972:   N=500) produce 69,6% para "alguna verdura >=3 días" y 38,0% para
+   1973:   "calabacín específico >=3 días" — ninguna de las dos coincide con 49,8%.
+>> 1974: - Decisión/Hallazgo: se retira el ~49,8% como referencia de variedad de
+   1975:   verdura. NO se afirma que fuera "incorrecto" — no se sabe y no hace falta —
+   1976:   se retira porque no es reproducible ni está sustentado por artefacto
+   1977:   versionado. La nueva referencia oficial de variedad de verdura pasa a ser
+=== DECISIONS.md:1976
+   1973:   "calabacín específico >=3 días" — ninguna de las dos coincide con 49,8%.
+   1974: - Decisión/Hallazgo: se retira el ~49,8% como referencia de variedad de
+   1975:   verdura. NO se afirma que fuera "incorrecto" — no se sabe y no hace falta —
+>> 1976:   se retira porque no es reproducible ni está sustentado por artefacto
+   1977:   versionado. La nueva referencia oficial de variedad de verdura pasa a ser
+   1978:   la campaña reproducible anclada en
+   1979:   `docs/evidence/variedad-verdura/baseline-variedad-verdura.md` (commit
+=== DECISIONS.md:2175
+   2172:   sin reproducir el perfil estadístico de legacy. Las cifras no se
+   2173:   transcriben a este asiento — viven en el artefacto (misma disciplina de
+   2174:   no duplicar cifras entre artefacto y asiento ya aplicada en D-042/D-043).
+>> 2175: - Causa/Lección (retirada del ~55,7% conversacional): durante el R-0 se
+   2176:   constató que la cifra utilizada como referencia conversacional carecía
+   2177:   de definición y artefacto versionados. Se retiró antes de convertirse
+   2178:   en insumo de diseño. Tercer caso de la serie, tras el ~49,8% (retirado
+=== DECISIONS.md:2177
+   2174:   no duplicar cifras entre artefacto y asiento ya aplicada en D-042/D-043).
+   2175: - Causa/Lección (retirada del ~55,7% conversacional): durante el R-0 se
+   2176:   constató que la cifra utilizada como referencia conversacional carecía
+>> 2177:   de definición y artefacto versionados. Se retiró antes de convertirse
+   2178:   en insumo de diseño. Tercer caso de la serie, tras el ~49,8% (retirado
+   2179:   en D-042) y el "23/241 platos con V2" (referencia conversacional
+   2180:   retirada en F-E2, sellada en D-043; la medición real fue sustancialmente
+=== DECISIONS.md:2178
+   2175: - Causa/Lección (retirada del ~55,7% conversacional): durante el R-0 se
+   2176:   constató que la cifra utilizada como referencia conversacional carecía
+   2177:   de definición y artefacto versionados. Se retiró antes de convertirse
+>> 2178:   en insumo de diseño. Tercer caso de la serie, tras el ~49,8% (retirado
+   2179:   en D-042) y el "23/241 platos con V2" (referencia conversacional
+   2180:   retirada en F-E2, sellada en D-043; la medición real fue sustancialmente
+   2181:   menor): la
+=== DECISIONS.md:2180
+   2177:   de definición y artefacto versionados. Se retiró antes de convertirse
+   2178:   en insumo de diseño. Tercer caso de la serie, tras el ~49,8% (retirado
+   2179:   en D-042) y el "23/241 platos con V2" (referencia conversacional
+>> 2180:   retirada en F-E2, sellada en D-043; la medición real fue sustancialmente
+   2181:   menor): la
+   2182:   no-versión de una DEFINICIÓN de métrica es tan
+   2183:   fantasma como la no-versión de una cifra — ninguna referencia
+=== DECISIONS.md:2209
+   2206:   sesión 2026-07-17, PR documental en rama `docs/asiento-cierre-fm` sobre
+   2207:   `main` post-F-M).
+   2208: 
+>> 2209: ## D-046 — [2026-07-17] Gobierno por frentes reemplaza al roadmap numerado como fuente normativa
+   2210: - Decisión/Hallazgo:
+   2211:   Hallazgo: incoherencia entre el estado declarado en CLAUDE.md y el estado real del
+   2212:   proyecto. CLAUDE.md fija "Fase actual: 4. No trabajes fases futuras en esta sesión",
+=== DECISIONS.md:2225
+   2222:   evolución D-042…D-045.
+   2223:   Consecuencia: las decisiones nuevas —incluida Fase 7— se abren y cierran como frentes
+   2224:   independientes, respetando los contratos existentes, sin quedar condicionadas por la
+>> 2225:   numeración histórica del roadmap. En CLAUDE.md se sustituye el concepto de "Fase actual"
+   2226:   por el de "Frente activo".
+   2227: - Evidencia:
+   2228:   - HEAD de main en el reconocimiento: 72b2fba913a7ceb0c5664551d3247c201705820e (D-045, merge).
+=== DECISIONS.md:2330
+   2327: Fecha: 2026-07-17 · HEAD de referencia: `c315d2e` · Tipo: decisión fundacional
+   2328: 
+   2329: ### Contexto
+>> 2330: D-045 dejó explícitamente abierta la interpretación de la tesis de humanización ("distinción deliberada de legacy o repetición más realista del mismo fenómeno", DECISIONS.md:2200-2207). D-047 heredó al Frente B la pregunta "¿sobre qué evalúa el juez la tesis de humanización?" (DECISIONS.md:2320). Una micro-verificación documental de solo lectura, anclada a `c315d2e`, constató que no existe formulación operacional de la tesis en el corpus normativo: CLAUDE.md:6 describe el proceso del motor y el mecanismo de migración ("evaluación ciega") sin definir qué se mide; ninguna entrada previa de DECISIONS.md la fija. La presente entrada es por tanto una decisión fundacional, no un hallazgo de reconocimiento.
+   2331: 
+   2332: ### Decide
+   2333: 1. Tesis. Engine2 pretende aproximar el proceso de decisión de un nutricionista humano experto mejor de lo que lo aproxima el motor legacy. Es una afirmación sobre el motor, independiente de cualquier diseño experimental.
+=== DECISIONS.md:2342
+   2339: Separar tres niveles hasta ahora entremezclados — qué afirma el proyecto (tesis), qué entidad se evalúa (objeto), cómo se diseña el experimento (protocolo) — evita dos fallos: que la tesis deba reescribirse si cambia el protocolo experimental, y que la representación, un artefacto propio, se convierta en lo evaluado. La disyuntiva de D-045 se difiere al nivel al que pertenece.
+   2340: 
+   2341: ### Consecuencias provisionales para el trabajo del Frente B
+>> 2342: Las siguientes consecuencias se derivan del estado actual del repositorio y del alcance de esta decisión. No forman parte de la tesis y podrán revisarse únicamente mediante una decisión posterior que las sustituya explícitamente.
+   2343: 
+   2344: - Descartada la observación asimétrica (juez ve UI legacy y un artefacto ad hoc para engine2): la asimetría de presentación contamina el juicio, incompatible con el punto 3.
+   2345: - Descartada la observación de estructuras crudas (juez lee objetos serializados): traslada al juez interpretación técnica de estructuras no diseñadas para consumo humano.
+=== DECISIONS.md:2415
+   2412: 
+   2413: ### Decide
+   2414: 1. Corrección de la cita. La referencia de verificación pasa de `buildPlan.js:2780` a `buildPlan.js:2808-2815`, acotada al productor legacy (único con productor identificado en este estado, según D-049).
+>> 2415: 2. Reformulación del contrato como garantía mínima. "Ambos motores devuelven EXACTAMENTE estas claves" se sustituye por "Todo productor de plan deberá garantizar la presencia de estas claves". La intención del contrato siempre fue fijar qué pueden asumir los consumidores, no inventariar el return. La enumeración exhaustiva era una afirmación más fuerte que esa intención, y el código la falsifica bajo `QA_TRACE` activo.
+   2416: 3. Estatus de los campos instrumentales. Los campos instrumentales o condicionados por mecanismos de depuración (p.ej. `qaTrace` bajo `QA_TRACE`) no forman parte del contrato y no podrán ser utilizados por consumidores como requisitos funcionales. Esta regla es genérica por diseño: futuros campos instrumentales quedan cubiertos sin necesidad de nueva corrección normativa.
+   2417: 
+   2418: ### Alcance
+=== DECISIONS.md:2472
+   2469: Fecha: 2026-07-18 · HEAD de referencia: `b5684be` · Tipo: ratificación de especificación
+   2470: 
+   2471: ### Contexto
+>> 2472: `docs/spec/plan-observable.md` v1.0 (D-052) anuncia y delega en un documento propio el diseño del protocolo ciego de evaluación (`docs/spec/plan-observable.md:13`, §1.2.b) y la definición de las unidades temporales de `days` (§4.2.1, `docs/spec/plan-observable.md:49`). Antes de redactar esa segunda especificación se ejecutaron dos reconocimientos de solo lectura sobre HEAD `b5684be` — uno sobre las cláusulas madre y los invariantes de facto del protocolo de medición ya practicado en `analysis/` y `docs/evidence/`, otro sobre las unidades temporales que ese mismo protocolo practica — sellados como evidencia versionada en `docs/evidence/protocolo-evaluacion/2026-07-18-R-protocolo-de-facto.md`. El reconocimiento precedió a la redacción porque existía práctica evaluativa consolidada cuya observación debía fundar la norma — evidencia antes que norma nueva, precedente ya establecido por `plan-observable.md` respecto de legacy.
+   2473: 
+   2474: ### Decide
+   2475: 1. **Ratificación.** Se ratifica `docs/spec/protocolo-evaluacion.md` v1.0 como segunda especificación del género `docs/spec/`, en cumplimiento de la delegación de `docs/spec/plan-observable.md:13` y §1.2.b (`docs/spec/plan-observable.md:21`).
+=== DECISIONS.md:2503
+   2500:   tocados; títulos D-044..D-047) falsificó la premisa de pendencia de los
+   2501:   dos primeros frentes y del mecanismo.
+   2502: - Decisión/Hallazgo:
+>> 2503:   1. F-E3 (retirada del fantasma ~49,8% de docs) se declara satisfecho
+   2504:      con anterioridad por D-042. El censo no halló ninguna ocurrencia en
+   2505:      docs vivos: todas las apariciones restantes son asientos históricos
+   2506:      (append-only, intocables), evidencia sellada, o la definición
+=== DECISIONS.md:2521
+   2518:   `docs/spec/protocolo-evaluacion.md` v1.0 (primer uso operacional de la
+   2519:   norma, en modo auditoría retrospectiva sobre artefacto anterior a ella):
+   2520:   - Cumple: §5.2 (doble ancla), §5.3 (HEAD declarado), §5.4
+>> 2521:     (admisibilidad; su §7 es el acto de retirada que la norma luego
+   2522:     generalizó), §5.5 (semillas 1..500 con punto inicial explícito),
+   2523:     §5.6 (N=500 declarado).
+   2524:   - Carencia 1 (§5.1): self-check de determinismo declarado solo para el
+=== DECISIONS.md:2615
+   2612: 
+   2613: 2. Decisión de gobierno
+   2614: 
+>> 2615: * El objetivo del Frente A se considera alcanzado con la existencia del productor (`materializePlan`, D-056) y la conformidad §7.5 registrada de engine2, que lo situó en estado "Verificable con verificación de conformidad registrada" (D-057). Ese era el objetivo declarado del frente: dejar engine2 en condiciones de ser sometido a verificación estructural para Fase 7.
+   2616: * R-A9 observa que la instanciación del cegado requiere decisiones cuyo sujeto es el protocolo de evaluación y no el productor; por ello, ese trabajo se transfiere al Frente B. Las tres dependencias (b), (c) y (d) del punto 1 estaban ya explícitamente heredadas a Frente B por D-047/D-048; esta transferencia las reúne con la instanciación del cegado bajo el mismo gobierno, sin duplicar frentes.
+   2617: * El Frente A se declara cerrado. El siguiente ciclo comienza como apertura del Frente B (diseño del protocolo de evaluación), no como continuación del Frente A.
+   2618: 
+=== DECISIONS.md:2959
+   2956: No responde ningún componente de 2.a. No fija observable. No decide la suficiencia de
+   2957: C v1. No deriva la relación entre C v1 y `plan-observable.md` §2/§4. No constituye,
+   2958: nombra ni atribuye competencia a acto alguno. No adjudica la tensión del punto 5. No
+>> 2959: retira, sustituye ni modifica rótulo alguno. No modifica A1-P1–P5
+   2960: (`DECISIONS.md:2711-2775`) ni los criterios normativos de D-063 (`:2832-2833`) y D-064
+   2961: (`:2860-2861`). No altera ninguna otra deuda de higiene registrada.
+   2962: 
+=== DECISIONS.md:2997
+   2994: asiento que declare qué designa, conforme a la constatación de D-065
+   2995: (`DECISIONS.md:2924-2928`).
+   2996: 
+>> 2997: La denominación funcional no prejuzga ninguna correferencia y no retira, sustituye
+   2998: ni impugna rótulo ni sintagma alguno del corpus.
+   2999: 
+   3000: ### Competencia del acto
+=== DECISIONS.md:3121
+   3118: (`DECISIONS.md:2668`). No se localiza el vehículo de observación entre sus cuestiones
+   3119: cerradas (`DECISIONS.md:2675-2682`) ni entre sus cuestiones abiertas
+   3120: (`DECISIONS.md:2684-2688`). No se localiza en D-061 (`DECISIONS.md:2668-2696`) enunciado
+>> 3121: que declare la exhaustividad del inventario, ni enunciado que retire, difiera o resuelva
+   3122: esa cuestión.
+   3123: 
+   3124: ### 6. Alcance / no-alcance
+=== DECISIONS.md:3164
+   3161: ### 2. Asimetría documental demostrada
+   3162: a. La línea definicional `:2335` está comprendida en el rango `DECISIONS.md:2333-2335`, que D-061 (`:2676`) declara fijado entre sus cuestiones cerradas, bajo un rótulo —«tesis, regla de evidencia y objeto de evaluación»— que no nombra el vehículo.
+   3163: b. Esa misma línea `:2335` difiere expresamente parte de su materia: la definición formal del objeto en cada motor «queda encomendada al reconocimiento R-1 del Frente B». El cierre de `:2676` recae sobre el acto de fijación, no sobre la resolución de lo que la línea delega.
+>> 3164: c. D-048 `:2346` declara que no existe artefacto observable que represente un plan de engine2 y que la construcción de un vehículo de observación es trabajo previsible del frente. `:2346` queda fuera del rango cerrado por `:2676`, y bajo el régimen de revisión propio que `:2342` fija para `:2344-2346`: revisables únicamente mediante decisión posterior que las sustituya explícitamente.
+   3165: d. D-058 enumera el vehículo entre las dependencias transferidas al Frente B (`:2610`, sub-ítem (b), que cita `:2346`), entre las heredadas por D-047/D-048 (`:2616`) y entre los sujetos del frente por abrir (`:2623`). D-067 (`:3116-3122`) registra que el término no se localiza en las listas de D-061.
+   3166: e. La cuestión formulada en `:2685` es, en cambio, objeto de tratamiento constitutivo propio: D-066 (`:2977-2978`) dota de existencia normativa al acto en que resulta seleccionado el observable de evaluación, y sitúa ese acto dentro de 2.a (`:2984-2985`), cuestión que `:2691` ordena tratar en primer lugar. D-066 no constituye ni define la designación misma.
+   3167: 
+=== DECISIONS.md:3176
+   3173: ### 4. Lo que queda constituido
+   3174: Queda constituido como cuestión documental con estatuto propio: que la relación entre ambas designaciones permanece sin acto declarativo localizado dentro del perímetro documental citado en §3. Nada más.
+   3175: 
+>> 3176: En particular, no queda constituida ninguna de las explicaciones posibles de ese estado —omisión, exclusión deliberada, sustitución, correferencia tácita u otra—, que permanecen todas indeterminadas y no ordenadas entre sí.
+   3177: 
+   3178: ### 5. Alcance / no-alcance
+   3179: - No adjudica la correferencia. No afirma ni niega que ambas designaciones refieran al mismo objeto.
+=== DECISIONS.md:3207
+   3204: - `docs/evidence/R-1-productores-plan.md` — corresponde a la R-1 encomendada por D-048 y reconocida en D-049, cuyo título es «R-1 Frente B: Reconocimiento de productores de plan» (`DECISIONS.md:2351`): reconocimiento de qué produce cada motor como «el plan generado».
+   3205: - `docs/evidence/protocolo-evaluacion/R-1-objeto-producido-por-motor.md` — artefacto distinto, bajo el subárbol `protocolo-evaluacion/`, cuyo rótulo de identidad refiere al objeto producido por el motor.
+   3206: 
+>> 3207: Ambos paths existen en el árbol versionado `@72ceae7`. La coexistencia de la misma designación «R-1» sobre dos artefactos distintos se registra aquí como deuda de higiene de nomenclatura. Este asiento no decide cuál conserva la designación, no la retira de ninguno, no declara que designen el mismo objeto ni objetos distintos, y no ordena su resolución.
+   3208: 
+   3209: ### 2. La sección de deuda de D-065 no registra los objetos (i)–(v) del traspaso
+   3210: La sección «6. Deuda de higiene registrada» de D-065 (`DECISIONS.md:2948-2953`) registra una única deuda: que D-062 se autodenomina «subfrente α» y que el rótulo «subfrente» / «A1» no se localiza en D-061 (`:2668-2696`).
+=== DECISIONS.md:3350
+   3347: 
+   3348: ## D-077 — Estatus de ii-auto: no decidible como está formulado; subordinación a acto de criterio
+   3349: 
+>> 3350: **Contexto / dependencia.** D-076 (`DECISIONS.md:3346`) difirió de propia mano el estatus de ii-auto —frente operativo propio vs. sub-cuestión— a un «acto de estatus, futuro»; este es ese acto. Al abrirlo, el reconocimiento previo estableció que la distinción sobre la que descansaría la clasificación no está fijada por el corpus sellado: `DECISIONS.md:3346` (D-076) deja el estatus frente-vs-sub-cuestión diferido de propia mano como acto futuro, sin resolverlo; el R-0 de reconocimiento (`docs/evidence/protocolo-evaluacion/R-0-reconocimiento-ii-auto.md:106`, sellado en `4c886f5`, vigente en `7edb6dc`) sella la promovibilidad de ii-auto —si su naturaleza puede tratarse operativamente como frente propio— como NO LOCALIZADA, sin que el corpus lo declare en un sentido ni en otro; y D-046 (`DECISIONS.md:2209-2237`) define «frente» únicamente como mecanismo organizativo que reemplaza al roadmap numerado, sin contrastarlo con «sub-cuestión» ni fijar criterio de promoción entre ambos.
+   3351: 
+   3352: **Decisión 1 — No decidibilidad.** La cuestión de estatus de ii-auto —«frente operativo propio vs. sub-cuestión»—, tal como está formulada, NO ES DECIDIBLE sobre el corpus vigente: presupone un contraste frente/sub-cuestión cuyo criterio no está fijado (D-046 define «frente» solo organizativamente; la promovibilidad quedó NO LOCALIZADO en el R-0).
+   3353: 
+=== DECISIONS.md:3354
+   3351: 
+   3352: **Decisión 1 — No decidibilidad.** La cuestión de estatus de ii-auto —«frente operativo propio vs. sub-cuestión»—, tal como está formulada, NO ES DECIDIBLE sobre el corpus vigente: presupone un contraste frente/sub-cuestión cuyo criterio no está fijado (D-046 define «frente» solo organizativamente; la promovibilidad quedó NO LOCALIZADO en el R-0).
+   3353: 
+>> 3354: **Decisión 2 — Subordinación.** La cuestión se RETIRA como está planteada y queda SUBORDINADA a un acto futuro de criterio que fije, con carácter general, la distinción «frente operativo» vs. «sub-cuestión». Hasta que ese acto exista, no procede clasificar ii-auto en ninguno de los dos sentidos.
+   3355: 
+   3356: **Alcance.** Este asiento no clasifica ii-auto (ni promueve a frente ni ratifica sub-cuestión) ni define el criterio frente/sub-cuestión: solo constata su ausencia en el corpus sellado y difiere la definición a acto futuro. No afirma exhaustividad —no sostiene que el criterio no exista en ninguna parte, sino que los hechos sellados citados no lo fijan—; el barrido de perímetro amplio del reconocimiento de sesión no se adopta como normativo.
+   3357: 
+=== DECISIONS.md:3439
+   3436: **Cierre de ii-med.** Con la Decisión 1 y la Decisión 2, ii-med queda resuelto en su plano estructural: el conjunto de campos del objeto §4 que exceden a C v1 queda dispuesto normativamente. (ii) NO queda cerrada: la disposición de (ii) post-D-077 (Fork B — si (ii) cierra sobre ii-med en solitario o exige disposición propia de la no-decidibilidad de ii-auto sellada en D-077) permanece en cola, aguas abajo de este asiento.
+   3437: 
+   3438: **Consecuencias de higiene (registradas, no resueltas aquí).**
+>> 3439: - El fantasma «§6.1 del protocolo» vuelve al saco de higiene sin destino asignado. El R-0 ii-med (`R-0-reconocimiento-ii-med.md:98-101`) atribuyó su retirada «al asiento de ii-med, primer acto que cita el cegado de forma normativa»; esa atribución presuponía que ii-med citaría el cegado. Bajo el alcance estructural aquí adoptado, ii-med NO cita el cegado de forma normativa, por lo que no es el hogar de esa retirada. La regla de citación (`protocolo-evaluacion.md:53` o «§6, ítem 1», no «§6.1 del protocolo») se retirará en el acto propio que toque el plano de cegado. No se retira aquí por vía indirecta.
+   3440: - Colisión de líneas `:53` entre specs, registrada: `plan-observable.md:53` designa §4.2.5 (composición); `protocolo-evaluacion.md:53` designa §6 ítem 1 (cegado). Toda cita de este asiento al primero va calificada.
+   3441: 
+   3442: **Alcance append-only.** No deroga D-047, D-075, D-078 ni D-079 ni ningún asiento previo. No resuelve en qué lado de la distinción objeto/proyección cae C v1 (no reabierto; dispuesto negativamente por D-078/D-079). No valora suficiencia de cegado (β, fuera). No toca Fork B (en cola). No incorpora los `.xlsx`.
+=== DECISIONS.md:3613
+   3610: Decide: Javi. HEAD: `98509ec`.
+   3611: 
+   3612: Contexto
+>> 3613: `docs/spec/protocolo-evaluacion.md:54` exige que toda transformación destinada al cegado sea común a todos los motores comparados. D-084 fijó que su sentido se determina por acto constitutivo, con la finalidad del cegado como única base. D-083 clasifica como contenido evaluado los rasgos cuya presencia y estructura norma `plan-observable.md §4`, con independencia de su valor. Entre ellos hay rasgos que los motores emiten de forma distinta (D-057: `decisionLog` presente solo en engine2; `weekScore` numérico frente a `null`; `weekWarnings` con contenido frente a vacío), de modo que presentarlos al evaluador permitiría identificar el origen.
+   3614: 
+   3615: Decisión
+   3616: 1. Común. Una transformación de cegado es común cuando: (a) es la misma función, del mismo código y con los mismos parámetros, para las salidas de todos los motores; (b) no recibe ni consulta el motor de procedencia, ni contiene ramas que dependan de él; (c) trata cada rasgo por una regla general, nunca por una regla nombrada para un motor.
+=== DECISIONS.md:3636
+   3633: 
+   3634: Decisión
+   3635: 1. Alcance. La Fase 7 compara la selección de platos de comida y cena durante los siete días: el subconjunto observable que ambos motores producen en común. Quedan fuera el desayuno, las cantidades, las recetas, la lista de la compra, los emojis, los metadatos no comunes y las claves internas de cada motor.
+>> 3636: 2. Diferencia funcional. Lo excluido no se declara equivalente. La ausencia en engine2 de desayuno, cantidades y recetas queda registrada como diferencia de capacidad independiente. Un resultado de Fase 7 no acredita la sustitución de legacy en producción sobre el plan completo; la paridad funcional del plan completo es cuestión distinta y no resuelta.
+   3637: 3. Contrato común. Cada productor entrega la misma forma observable antes del cegado (día → momento → nombre del plato). La transformación ciega recibe solo ese contrato y no contiene reglas que lean claves propias de un motor. La adaptación se hace en los productores. D-085 no se enmienda.
+   3638: 4. Vista evaluable. 7 días × 2 momentos (comida, cena) × nombre original del plato, con posición del día 1–7 y etiqueta aleatoria por plan. La tabla etiqueta → motor se guarda fuera de la vista del evaluador.
+   3639: 5. Nombres. El nombre del plato es contenido y no se altera (`plan-observable.md` §6.3). La aleatorización oculta la correspondencia formal, no los estilos culinarios. Si un evaluador reconoce el origen por el nombre, se registra como condición de la prueba y no se corrige.
+=== DECISIONS.md:3698
+   3695: Decide: Javi. HEAD: `c24541a`.
+   3696: 
+   3697: Contexto
+>> 3698: D-087 (punto 5) condicionó las semillas de evaluación a acreditar que no se habían usado antes, y D-088 sustituyó la ventana por 2001–2010, condicionada al re-escaneo en su ancla (`289d90d`), a la revisión incremental, a las comprobaciones F-RV.11 y F-RV.11b sobre 2001–2010 y al registro final. Esos pasos están hechos y versionados en `docs/evidence/fase7-semillas/` (merge `c24541a`): registro final `registro-semillas.json` (sha256 `cee27373…002b`; ancla `289d90d`; `completo: true`; 127 entradas en `usos`; 10 limitaciones), revisión definitiva, borradores de `2aa1157` y `289d90d`, y los guiones de comprobación con sus salidas. El titular reprodujo en su equipo cada comprobación con hash idéntico. `verificarSemillas` del código de `289d90d` acepta 2001–2010 con ese registro y rechaza 1001–1010. `git diff --name-only 289d90d..c24541a` contiene únicamente la carpeta `docs/evidence/fase7-semillas/`.
+   3699: 
+   3700: Decisión
+   3701: 1. La ventana 2001–2010 queda acreditada respecto del registro: libre bajo su perímetro, su fuente y sus reglas de revisión, con las limitaciones que el registro declara; no en términos absolutos.
+=== DECISIONS.md:3723
+   3720: Decisión
+   3721: 1. F-EG.2 queda como no satisfecho en su criterio de igualdad byte a byte. No se reformula ni se tiene por superado.
+   3722: 2. Se adopta, con posterioridad al resultado y a la vista del diagnóstico, un criterio de reproducibilidad de contenido que admite como excepción las diferencias en `$.days[*].id` de los planes legacy, cuyo contenido variable procede de `Date.now()` (`buildPlan.js:2267`). La evidencia del acta satisface este criterio: los 40 planes coinciden en el resto de su contenido y los `sha256Vista` coinciden 40/40. Este criterio posterior no altera el resultado negativo de F-EG.2.
+>> 3723: 3. Los 40 planes de la generación del 2026-10-06, ligados al manifiesto `51e6cbf7…0a98`, son el material de la evaluación; ninguna regeneración los sustituye. Se custodian en la ubicación original y en una copia en disco externo, verificada el 2026-10-09 (manifiesto idéntico; 40/40 `sha256Plan`).
+   3724: 4. Los planes no se versionan. Esto modifica la consecuencia de D-089 que preveía versionar los planes crudos; el resto de D-089 queda intacto. Se versionan el manifiesto, los guiones de cotejo, diagnóstico y verificación, y sus salidas.
+   3725: 5. Se descartan acreditar la reproducibilidad solo en la vista, porque el punto 2 ya la incluye, y hacer determinista `day.id` en legacy, porque modificaría un motor comparado después de la generación autorizada.
+   3726: 6. Condición de cegado: como el repositorio es público y permite reconstruir los planes, el evaluador, antes de terminar la evaluación, no accede al repositorio, a los planes ni a su custodia, ni ejecuta el generador. La condición se comprueba al designar al evaluador y antes de iniciar la evaluación; su enunciado aquí no la da por satisfecha.
+=== DECISIONS.md:3725
+   3722: 2. Se adopta, con posterioridad al resultado y a la vista del diagnóstico, un criterio de reproducibilidad de contenido que admite como excepción las diferencias en `$.days[*].id` de los planes legacy, cuyo contenido variable procede de `Date.now()` (`buildPlan.js:2267`). La evidencia del acta satisface este criterio: los 40 planes coinciden en el resto de su contenido y los `sha256Vista` coinciden 40/40. Este criterio posterior no altera el resultado negativo de F-EG.2.
+   3723: 3. Los 40 planes de la generación del 2026-10-06, ligados al manifiesto `51e6cbf7…0a98`, son el material de la evaluación; ninguna regeneración los sustituye. Se custodian en la ubicación original y en una copia en disco externo, verificada el 2026-10-09 (manifiesto idéntico; 40/40 `sha256Plan`).
+   3724: 4. Los planes no se versionan. Esto modifica la consecuencia de D-089 que preveía versionar los planes crudos; el resto de D-089 queda intacto. Se versionan el manifiesto, los guiones de cotejo, diagnóstico y verificación, y sus salidas.
+>> 3725: 5. Se descartan acreditar la reproducibilidad solo en la vista, porque el punto 2 ya la incluye, y hacer determinista `day.id` en legacy, porque modificaría un motor comparado después de la generación autorizada.
+   3726: 6. Condición de cegado: como el repositorio es público y permite reconstruir los planes, el evaluador, antes de terminar la evaluación, no accede al repositorio, a los planes ni a su custodia, ni ejecuta el generador. La condición se comprueba al designar al evaluador y antes de iniciar la evaluación; su enunciado aquí no la da por satisfecha.
+   3727: 7. Este asiento no autoriza la evaluación ni fija el criterio de superación (D-087, punto 7).
+   3728: 
+=== docs/spec/plan-observable.md:13
+   10: 
+   11: Principios rectores:
+   12: 
+>> 13: 1. **Norma del objeto de evaluación, no especificación de migración.** Este documento deberá leerse como la norma que define qué es un plan evaluable. No deberá leerse como un plan de trabajo, una guía de implementación ni una especificación del proceso de migración legacy→engine2. El protocolo de evaluación que operará sobre este objeto será materia de norma propia.
+   14: 2. **Agnóstica de motor (B-E1→B).** Las obligaciones de este documento deberán aplicar a cualquier plan que pretenda ser evaluado, con independencia del motor que lo produzca.
+   15: 3. **Agnóstica ≠ mínimo común denominador.** Si la evaluación requiere una propiedad que algún motor existente no expone, este documento deberá exigirla igualmente. La no conformidad de un motor deberá registrarse como deuda de ese motor, no como recorte de la norma.
+   16: 4. **Verificabilidad sobre el objeto terminado.** Toda obligación relativa al objeto de plan observable deberá poder verificarse mediante la observación del propio objeto terminado, sin ejecutar ningún motor y sin conocer el proceso de generación.
+=== docs/spec/plan-observable.md:36
+   33: 
+   34: ## §3 — Relación con normas existentes
+   35: 
+>> 36: 1. Esta especificación **desarrolla el contrato de shape definido en `CLAUDE.md:17-28`**, en su redacción corregida por D-051. No lo sustituye ni lo excepciona: donde CLAUDE.md fija el contrato mínimo, este documento fija las obligaciones adicionales que la evaluación requiere.
+   37: 2. En caso de conflicto entre este documento y CLAUDE.md, deberá prevalecer CLAUDE.md. El conflicto deberá registrarse como defecto de esta especificación y resolverse mediante su propio ciclo de modificación.
+   38: 3. Este documento se apoya en, pero no repite: D-048 (tesis y objeto de evaluación), D-049/R-1 (estado de productores), D-050 (arquitectura del frente y frontera de decisión), D-051 (contrato corregido).
+   39: 4. Ninguna entrada futura de DECISIONS.md deberá reinterpretar este documento sin modificarlo; los cambios deberán versionarse en el propio documento conforme a §8.
+=== docs/spec/protocolo-evaluacion.md:34
+   31: 
+   32: 1. Este documento se apoya en `docs/spec/plan-observable.md` v1.0: dicha especificación norma el objeto evaluado — el plan observable (§4, `docs/spec/plan-observable.md:42-68`; §5, `docs/spec/plan-observable.md:70-82`; §6, `docs/spec/plan-observable.md:84-94`) —; este documento norma el proceso que evalúa ese objeto. No repite ni reinterpreta las obligaciones de esas secciones.
+   33: 2. Este documento se apoya en el contrato mínimo de `CLAUDE.md:17-28` (Contrato de shape entre motores), en los mismos términos de prevalencia que establece `docs/spec/plan-observable.md` §3.2 (`docs/spec/plan-observable.md:37`): en caso de conflicto, prevalece `CLAUDE.md`.
+>> 34: 3. Este documento hereda como precedente, sin reemplazarlo, el procedimiento de D-053 (`DECISIONS.md:2448-2457`): ubicación y forma de artefactos de verificación de conformidad en `docs/evidence/<nombre-spec>/` (F-V1), y doble ancla de hash (F-V2). D-053 rige la forma de los artefactos de verificación de conformidad exigidos por `docs/spec/plan-observable.md` §7.3 (`docs/spec/plan-observable.md:106`); este documento no modifica esa forma ni la extiende a los artefactos de medición propios de la evaluación comparativa: dichos artefactos quedan fuera del alcance de D-053; su forma no queda regulada por este documento (§1.2.b), sin perjuicio de las obligaciones de reproducibilidad que §5 les impone.
+   35: 
+   36: ## §4 — Admisibilidad
+   37: 
+=== docs/spec/protocolo-evaluacion.md:45
+   42: 1. **Self-check de determinismo bloqueante.** Antes de toda medición, el protocolo deberá ejecutar un self-check de determinismo: misma semilla, dos ejecuciones, comparación por igualdad. Si las dos ejecuciones difieren, la medición deberá abortarse.
+   43: 2. **Doble ancla.** Toda cifra citable deberá contar con script versionado ejecutable por un tercero y con artefacto que declare el resultado exacto esperado.
+   44: 3. **Ancla a commit.** Todo artefacto de evidencia deberá declarar el HEAD del repositorio sobre el que se realizó la medición.
+>> 45: 4. **Admisibilidad de cifras.** Solo las cifras citables (§2) podrán entrar al protocolo de evaluación. Las cifras fantasma (§2) se retiran sin disputa.
+   46: 5. **Semillas.** El rango de semillas deberá ser secuencial y contiguo, de orden conocido, con punto inicial declarado explícitamente en el artefacto o en el script. Este documento no prescribe una convención concreta de punto inicial.
+   47: 6. **Tamaño de muestra.** El tamaño de muestra N deberá declararse explícitamente en el artefacto o en el script. N no deberá quedar implícito ni derivarse de otro valor.
+   48: 7. **PRNG.** El generador de números pseudoaleatorios deberá ser determinista, con implementación identificada de forma inequívoca, e idéntica entre todos los objetos sometidos a una misma comparación. Este documento no prescribe una implementación concreta de PRNG.

@@ -66,11 +66,21 @@ function main() {
   }
 
   const manifiestoAbs = path.resolve(manifiestoPath);
-  const bytesManifiesto = fs.readFileSync(manifiestoAbs);
+  let bytesManifiesto;
+  try {
+    bytesManifiesto = fs.readFileSync(manifiestoAbs);
+  } catch (e) {
+    fail(e.message);
+  }
   if (sha256(bytesManifiesto) !== MANIFIESTO_SHA256) {
     fail('el sha256 del manifiesto no es el fijado por D-091');
   }
-  const manifiesto = JSON.parse(bytesManifiesto.toString('utf8'));
+  let manifiesto;
+  try {
+    manifiesto = JSON.parse(bytesManifiesto.toString('utf8'));
+  } catch (e) {
+    fail(e.message);
+  }
 
   let validado;
   try {
@@ -84,18 +94,22 @@ function main() {
   const bytesPorId = {};
   for (const c of manifiesto.casos) {
     for (const p of c.planes) {
-      const bytes = fs.readFileSync(path.resolve(baseDir, p.archivo));
+      let bytes;
+      try {
+        bytes = fs.readFileSync(path.resolve(baseDir, p.archivo));
+      } catch (e) {
+        fail(e.message);
+      }
       if (sha256(bytes) !== p.sha256Plan) fail(`sha256 del plan distinto de sha256Plan: ${p.id}`);
       bytesPorId[p.id] = bytes;
     }
   }
 
-  const items = manifiesto.planes.map((p) => {
-    const plan = JSON.parse(bytesPorId[p.id].toString('utf8'));
-    return { id: p.id, view: ADAPTADORES[p.motor](plan) };
-  });
-
   const ejecutar = () => {
+    const items = manifiesto.planes.map((p) => {
+      const plan = JSON.parse(bytesPorId[p.id].toString('utf8'));
+      return { id: p.id, view: ADAPTADORES[p.motor](plan) };
+    });
     const resultado = blind(items, seed);
     const pares = formarPares(resultado, casoPorId);
     const { evaluador, clave } = construirSalidas({

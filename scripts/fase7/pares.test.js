@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, afterEach } from 'vitest';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -99,6 +99,35 @@ describe('validarManifiesto', () => {
     m2.casos[0].perfil = 'P2';
     expect(() => validarManifiesto(m2)).toThrow(/10 casos P1/);
   });
+  it('rechaza un manifiesto que no es un objeto', () => {
+    expect(() => validarManifiesto(null)).toThrow(/debe ser un objeto/);
+  });
+  it('rechaza planes que no es un array', () => {
+    const m = manifiestoSintetico();
+    m.planes = 'no';
+    expect(() => validarManifiesto(m)).toThrow(/manifiesto\.planes: debe ser un array/);
+  });
+  it('rechaza un caso con nombre vacío', () => {
+    const m = manifiestoSintetico();
+    m.casos[0].caso = '';
+    expect(() => validarManifiesto(m)).toThrow(/casos\[0\]\.caso: vacío/);
+  });
+  it('rechaza nombres de caso duplicados', () => {
+    const m = manifiestoSintetico();
+    m.casos[1].caso = m.casos[0].caso;
+    expect(() => validarManifiesto(m)).toThrow(/casos\[1\]\.caso: duplicado/);
+  });
+  it('rechaza un id vacío dentro de casos[].planes[]', () => {
+    const m = manifiestoSintetico();
+    m.casos[0].planes[0].id = '';
+    expect(() => validarManifiesto(m)).toThrow(/casos\[0\]\.planes\[0\]\.id: vacío/);
+  });
+  it('rechaza un id duplicado dentro de planes[] raíz', () => {
+    // casos[] intacto y válido: el primer error es el duplicado en planes[].
+    const m = manifiestoSintetico();
+    m.planes[1].id = m.planes[0].id;
+    expect(() => validarManifiesto(m)).toThrow(/planes\[1\]\.id: duplicado/);
+  });
   it('rechaza ids duplicados', () => {
     const m = manifiestoSintetico();
     m.casos[1].planes[0].id = m.casos[0].planes[0].id;
@@ -186,6 +215,11 @@ describe('formarPares', () => {
     mapa[tercero.id] = mapa[extra.id];
     expect(() => formarPares(r, mapa)).toThrow(/tercer plan/);
   });
+  it('lanza error si la clave contiene etiquetas que no aparecen en el evaluador', () => {
+    const r = blind(items, 3);
+    r.clave.entradas.push({ etiqueta: 'ZZ-sobrante', id: 'sobrante' });
+    expect(() => formarPares(r, casoPorId)).toThrow(/no aparecen en el evaluador/);
+  });
   it('lanza error ante un par incompleto', () => {
     const r = blind(items.slice(0, 3), 3);
     expect(() => formarPares(r, casoPorId)).toThrow(/incompleto/);
@@ -228,8 +262,15 @@ describe('formarPares', () => {
 });
 
 describe('CLI pares-run.mjs', () => {
+  const dirsTemporales = [];
+  afterEach(() => {
+    while (dirsTemporales.length) {
+      fs.rmSync(dirsTemporales.pop(), { recursive: true, force: true });
+    }
+  });
   function entorno() {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'pares-test-'));
+    dirsTemporales.push(dir);
     const manifiesto = path.join(dir, 'manifiesto.json');
     fs.writeFileSync(manifiesto, JSON.stringify(manifiestoSintetico()));
     return {

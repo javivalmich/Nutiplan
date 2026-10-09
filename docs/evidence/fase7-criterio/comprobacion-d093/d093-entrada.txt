@@ -1,0 +1,52 @@
+## D-093 — [2026-10-09] Criterio de superación de la primera Fase 7 (D-087, punto 7); enmienda de D-087, punto 2
+
+Decide: Javi. HEAD: `aa63f90`.
+
+Contexto
+D-087 (punto 7) encomienda a un asiento propio el criterio de superación y su interpretación, constituido con su justificación antes de que exista ningún resultado. D-092 (punto 2) determina la condición sustantiva de la sustitución: que engine2 no resulte peor que legacy conforme a un criterio fijado antes de ver resultados, y que la decisión siga justificada por el motivo declarado; la superioridad no forma parte de ella, y su operacionalización se remite a este asiento. A la fecha no existe ningún resultado: la ejecución del modo pares sobre el material requiere un asiento posterior (D-091) y el evaluador no está designado. La pregunta principal del instrumento tiene cinco opciones: claramente A, algo A, igual, algo B, claramente B (D-087, punto 2.a). En el manifiesto de la generación (`docs/evidence/fase7-generacion/manifiesto-generacion.json`), cada semilla de 2001 a 2010 aparece en dos casos, uno del perfil P1 y otro del P2. Una búsqueda en `scripts/` y `src/` en `aa63f90`, con los términos `reconoc` y `sistemas distintos`, no localizó la pregunta de reconocimiento; solo dos comentarios ajenos del validador de perfil de engine2. Las decisiones de este asiento son constitutivas del titular: ninguna se deriva de D-087 ni de datos previos.
+
+Decisión
+1. Denominación. Este asiento cumple D-087 (punto 7). «Superación» significa aquí cumplir la condición de D-092 (punto 2), operacionalizada como no inferioridad; no significa superioridad.
+2. Secuencia. Primero se miden y registran las respuestas A/B tal como se emiten, sin la clave; después se comprueba su completitud y, si procede, se realiza y se cierra la ronda de reanudación (punto 11); solo cuando esa ronda está cerrada se decodifican las respuestas con la clave; y solo entonces se interpretan con este criterio.
+3. Alcance. El criterio se aplica exclusivamente a la pregunta principal (D-087, punto 2.a). Las tres dimensiones (D-087, punto 2.b) y la pregunta de reconocimiento quedan fuera de la decisión.
+4. Codificación. Tras decodificar, cada par recibe una puntuación desde engine2: claramente engine2 = +2; algo engine2 = +1; igual = 0; algo legacy = −1; claramente legacy = −2. Tratar la escala como equidistante es una convención de análisis, no una propiedad demostrada de la escala.
+5. Nivel 1: no inferioridad. Es la puerta de la sustitución.
+   a. Estimación puntual: la media de las 20 puntuaciones, incluidas las imputaciones que correspondan conforme al punto 11.f. La media coincide con la media de las diez medias por semilla d_s.
+   b. Unidad de análisis: la semilla. Para cada semilla s (2001–2010), d_s es la media de las dos puntuaciones de sus pares, uno de P1 y otro de P2. Si una respuesta principal sigue ausente tras la ronda de reanudación, se utiliza para ese par la puntuación imputada de −2 conforme al punto 11.f. Cada bloque contiene, por tanto, dos puntuaciones, observadas o imputadas según corresponda.
+   c. Límite: L = m − t(0,95; 9) · s_d / √10, donde m y s_d son la media y la desviación típica muestral de las diez medias por semilla d_s, calculadas tras aplicar las imputaciones que correspondan conforme al punto 11.f. t(0,95; 9) ≈ 1,833. L es el límite inferior de confianza unilateral al 95 % y coincide con el límite inferior del intervalo bilateral al 90 % calculado con el mismo método.
+   d. Margen: δ = 0,5. Se declara que una desventaja media inferior a medio escalón «algo» es irrelevante para el motivo declarado en D-092.
+   e. Veto descriptivo: si 3 o más de los 20 pares tienen una puntuación observada de −2 tras la decodificación, no se declara la no inferioridad, con independencia de L. El recuento es absoluto: las puntuaciones +2 no compensan las puntuaciones −2, y las imputaciones del punto 11.f no cuentan. El veto es una salvaguarda descriptiva, no un contraste.
+   f. Regla: se declara la no inferioridad si L > −δ y el veto no se activa. En cualquier otro caso se informa «no se acredita la no inferioridad», no «engine2 es inferior».
+   g. Supuestos y límites: se supone que las semillas son intercambiables, que las d_s son independientes condicionadas al diseño y al evaluador, y que la distribución t es una aproximación adecuada. Los bloques por semilla evitan tratar los 20 pares como independientes, pero no garantizan por sí solos que esos supuestos se cumplan. No se modelan la variación entre evaluadores, los efectos de orden o fatiga, ni perfiles distintos de P1 y P2. La conclusión vale para P1 y P2, para semillas del mismo mecanismo de generación y para este evaluador.
+   h. Cumplir el nivel 1 es condición necesaria y no suficiente de la sustitución (D-092). No autoriza por sí mismo ninguna sustitución.
+6. Nivel 2: superioridad.
+   a. Hay superioridad observada si L > 0, con el mismo L del punto 5.c.
+   b. Secuencia fija: el nivel 2 solo se examina si el nivel 1 se cumple, veto incluido. Si no se cumple, el nivel 2 se informa como «no examinado», no como «fallido».
+   c. El resultado del nivel 2 no abre ni cierra la sustitución.
+   d. Alcance probatorio: cualquier resultado de Fase 7 sobre la tesis será evidencia limitada a lo observable conforme a D-048, al subconjunto de comidas y cenas de D-086.1 y al diseño de un evaluador y 20 pares. No se presentará como acreditación completa de la tesis.
+   e. Tener dos niveles no presupone que la evidencia parcial baste para sostener una conclusión de superioridad. Un L > 0 permite declarar superioridad respecto de cero bajo el modelo del punto 5; no demuestra superioridad general.
+7. Informe. Los resultados se informan con estas fórmulas cerradas, completando solo los valores entre corchetes; cuando un corchete ofrece alternativas separadas por «|», se escribe solo la que corresponde. El recuento y el estado del veto se completan con las puntuaciones observadas, sin las imputaciones. Las dos fórmulas de nivel 2 examinado solo se usan si el nivel 1 se cumple; si no se cumple, se usa exclusivamente la fórmula de nivel 2 no examinado:
+   - Nivel 1, se cumple: «Se acredita la no inferioridad de engine2 frente a legacy conforme a D-093: L = [L] > −0,5; pares con −2 observado: [n] (veto a partir de 3; veto no activado).»
+   - Nivel 1, no se cumple: «No se acredita la no inferioridad de engine2 frente a legacy conforme a D-093: L = [L] [> | ≤] −0,5; pares con −2 observado: [n] (veto a partir de 3; veto [activado | no activado]).»
+   - Nivel 2 examinado, superioridad observada: «En los 20 pares de la primera Fase 7, valorados por un único evaluador sobre la vista común de comidas y cenas (D-086.1), se observa preferencia por engine2 respecto de cero: L = [L] > 0. Es evidencia limitada en los términos de D-093 (punto 6.d) y no acredita la tesis de D-048.»
+   - Nivel 2 examinado, superioridad no observada: «En los 20 pares de la primera Fase 7, valorados por un único evaluador sobre la vista común de comidas y cenas (D-086.1), no se observa preferencia por engine2 respecto de cero: L = [L] ≤ 0. Es evidencia limitada en los términos de D-093 (punto 6.d) y no acredita la tesis de D-048.»
+   - Nivel 2, no examinado: «Nivel 2 no examinado: no se cumplió el nivel 1 (D-093, punto 6.b).»
+8. Dimensiones. Las tres dimensiones de D-087 (punto 2.b) se informan con frecuencias y media por dimensión, sin intervalos ni valores p, y con la indicación expresa de que no forman parte del criterio.
+9. Perfiles. La decisión se toma sobre los 20 pares agregados. El detalle de P1 y P2 se informa solo de forma descriptiva; si la media de algún perfil queda por debajo de −δ, el informe lo señala expresamente, sin efecto sobre la decisión.
+10. Reconocimiento. Se enmienda D-087 (punto 2) solo en lo relativo a la pregunta de reconocimiento, sin reescribirlo. Esa pregunta se formula para cada par, una vez completadas todas las valoraciones de todos los pares, como «¿Vienen A y B de sistemas distintos?», y se suprime «¿cuál es cuál?». La respuesta se registra y se describe. Mide si el evaluador percibe una diferencia, no si identifica el origen, y no prueba que el cegado se haya mantenido. No invalida la evaluación ni actúa como veto. El resto de D-087 (punto 2) sigue vigente.
+11. Pares sin respuesta.
+    a. Antes de decodificar se comprueba que la pregunta principal tiene respuesta en todos los pares.
+    b. Al evaluador se le presentan únicamente los pares incompletos, con la misma vista cegada y el mismo instrumento.
+    c. El evaluador no ve ni puede modificar las respuestas que ya había emitido.
+    d. La ronda de reanudación se registra como tal, vinculada a los pares incompletos originales, identificando qué se volvió a presentar y qué respuestas se obtuvieron, sin revelar la identidad de los motores.
+    e. Solo se permite una ronda de reanudación.
+    f. Si después de esa ronda sigue faltando la respuesta principal de algún par, se asigna a ese par una puntuación imputada de −2. Esta puntuación se incorpora al cálculo de su media por semilla d_s y, a través de ella, al cálculo de m, s_d y L. Las respuestas emitidas y las imputadas se registran por separado. El −2 imputado es una regla conservadora para datos ausentes, deliberadamente desfavorable a engine2; no es una puntuación observada y no cuenta en el veto del punto 5.e.
+12. Si no se cumple. La primera Fase 7 no se repite cambiando de evaluador ni de semillas hasta obtener un resultado favorable. Una nueva Fase 7 exige un asiento propio, semillas nuevas acreditadas y un criterio fijado antes de conocer sus resultados. Se informa de todos los intentos, incluidos los que no se cumplen. Mientras tanto, legacy se mantiene conforme a `CLAUDE.md:6`.
+13. Fuera de este asiento: la autorización de ejecutar el modo pares sobre el material, la forma de entregar el instrumento al evaluador y la designación del evaluador con la comprobación de D-090 (punto 6).
+
+Consecuencias
+- El PR de este asiento contiene esta entrada de `DECISIONS.md` y, en `docs/evidence/fase7-criterio/`, la comprobación posterior de D-092 (`verificar-d092.mjs`, `d092-entrada.txt`, `verificar-rama.txt`, `verificar-main.txt`) con el registro de sus incidencias.
+- La autorización del modo pares se constituye con freeze en un asiento posterior y cita este asiento.
+
+Estado resultante
+Criterio de superación de la primera Fase 7 fijado antes de cualquier resultado. Pendientes antes de evaluar: autorización de la ejecución del modo pares y designación del evaluador.

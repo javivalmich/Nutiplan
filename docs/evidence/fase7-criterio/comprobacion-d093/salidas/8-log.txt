@@ -1,0 +1,6 @@
+commit 38cd9eea1ef50cacc57aa176b8fc3fe53b7a3b9d
+Merge: aa63f90 e81d893
+Author: Javi <javivalmich@gmail.com>
+Date:   Fri Oct 9 14:56:37 2026 +0200
+
+    Merge D-093 criterio de superacion

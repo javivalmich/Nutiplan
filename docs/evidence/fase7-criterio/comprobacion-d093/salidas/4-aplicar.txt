@@ -1,0 +1,27 @@
+aplicar-d093
+  node:  v24.14.1
+  fecha: 2026-10-09T12:55:28.264Z
+PASA  P-1  raíz del repo C:/Users/javiv/app-comida
+PASA  P-2  rama docs/d-093-criterio
+PASA  P-3  HEAD aa63f901f389d8fad8acc4c90c37b3a7aa9cf843
+PASA  P-4  árbol limpio (sin cambios)
+PASA  P-5  origin https://github.com/javivalmich/Nutiplan.git
+PASA  P-6  docs/evidence/fase7-criterio/comprobacion-d092 no existe en A9 ni en disco
+PASA  A-0  DECISIONS.md en A9 sha256 412de41c37d8be4034b3e53e684e9f01bcbce594e9b752a676d5aed289b08d25
+PASA  E-0  d093-entrada.txt sha256 3e90860eaee23aa45edd4e880043e8a57e651f8f1a7dd51cf09a07f797cf99ef
+PASA  E-1  acta-comprobacion-d092.md sha256 db0dfce5abbd4296ebe8d1d74393abc071bf06feb4bc2ac14b353c70c0849e29
+PASA  E-d092 verificar-d092.mjs  sha256 9e98051dfcf388972d543454fcc2d053edd70f9e6f3e12498a15ba7c9f5d6597
+PASA  E-d092 d092-entrada.txt  sha256 137729d61490ad97b0457ecdcb43929f4e24d58b17d087074e6e33ea24317241
+PASA  E-d092 verificar-rama.txt  sha256 df0243293d2167965c4cef589cb677d9467ebd1f362193523c3bbcd42454ad0d
+PASA  E-d092 verificar-main.txt  sha256 4a87faff9f91be76a51a4c8624515f3054a81513e4f506b30f14f11ae7a14c3b
+PASA  E-2  el blob de A9 y la entrada no contienen CR
+  DECISIONS.md en copia de trabajo: CRLF; se escribe con el mismo fin de línea
+  sha256 del blob esperado de DECISIONS.md: a4691660de43a859e9c0dcc2673e610c3bac84cebfb05f01e586961b09b8b72e
+ESCRITO  DECISIONS.md  sha256 copia de trabajo b976fe949b2710ec95eee2ad90dcee18e111a6f68816361b96268fbf550e98a9
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d092/README.md  sha256 db0dfce5abbd4296ebe8d1d74393abc071bf06feb4bc2ac14b353c70c0849e29
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d092/verificar-d092.mjs  sha256 9e98051dfcf388972d543454fcc2d053edd70f9e6f3e12498a15ba7c9f5d6597
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d092/d092-entrada.txt  sha256 137729d61490ad97b0457ecdcb43929f4e24d58b17d087074e6e33ea24317241
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d092/verificar-rama.txt  sha256 df0243293d2167965c4cef589cb677d9467ebd1f362193523c3bbcd42454ad0d
+ESCRITO  docs/evidence/fase7-criterio/comprobacion-d092/verificar-main.txt  sha256 4a87faff9f91be76a51a4c8624515f3054a81513e4f506b30f14f11ae7a14c3b
+RESULTADO: APLICADO
+CODIGO=0 

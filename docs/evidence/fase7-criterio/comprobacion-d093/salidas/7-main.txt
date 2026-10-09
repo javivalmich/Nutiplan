@@ -1,0 +1,23 @@
+verificar-d093
+  modo:              commit
+  commit verificado: 38cd9eea1ef50cacc57aa176b8fc3fe53b7a3b9d
+  padres:            aa63f901f389d8fad8acc4c90c37b3a7aa9cf843 e81d8934c2fccef2286f0787a66886d1f151ae97
+  rama actual:       main
+  HEAD actual:       38cd9eea1ef50cacc57aa176b8fc3fe53b7a3b9d
+  raíz del repo:     C:/Users/javiv/app-comida
+  ancla de partida:  aa63f901f389d8fad8acc4c90c37b3a7aa9cf843
+  node:              v24.14.1
+  fecha:             2026-10-09T12:56:41.160Z
+PASA  E-0  d093-entrada.txt sha256 3e90860eaee23aa45edd4e880043e8a57e651f8f1a7dd51cf09a07f797cf99ef
+PASA  A-0  DECISIONS.md en A9 sha256 412de41c37d8be4034b3e53e684e9f01bcbce594e9b752a676d5aed289b08d25
+PASA  V-p  primer padre aa63f901f389d8fad8acc4c90c37b3a7aa9cf843 (2 padre(s))
+PASA  V-b  DECISIONS.md blob = A9 + LF + entrada (sha256 commit a4691660de43a859e9c0dcc2673e610c3bac84cebfb05f01e586961b09b8b72e; sha256 esperado a4691660de43a859e9c0dcc2673e610c3bac84cebfb05f01e586961b09b8b72e)
+PASA  V-c.0  la subcarpeta contiene exactamente 5 rutas (encontradas: 5)
+PASA  V-c README.md  sha256 blob db0dfce5abbd4296ebe8d1d74393abc071bf06feb4bc2ac14b353c70c0849e29
+PASA  V-c verificar-d092.mjs  sha256 blob 9e98051dfcf388972d543454fcc2d053edd70f9e6f3e12498a15ba7c9f5d6597
+PASA  V-c d092-entrada.txt  sha256 blob 137729d61490ad97b0457ecdcb43929f4e24d58b17d087074e6e33ea24317241
+PASA  V-c verificar-rama.txt  sha256 blob df0243293d2167965c4cef589cb677d9467ebd1f362193523c3bbcd42454ad0d
+PASA  V-c verificar-main.txt  sha256 blob 4a87faff9f91be76a51a4c8624515f3054a81513e4f506b30f14f11ae7a14c3b
+PASA  V-d  git diff --name-only aa63f90..38cd9ee = 6 rutas
+RESULTADO: TODO PASA
+CODIGO=0 

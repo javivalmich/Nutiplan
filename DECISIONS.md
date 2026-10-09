@@ -3733,3 +3733,45 @@ Consecuencias
 
 Estado resultante
 Generación de la primera Fase 7 documentada; material de evaluación identificado y custodiado; evaluación no autorizada.
+
+## D-091 — [2026-10-09] Emparejamiento A/B y presentación de la primera Fase 7 (enmienda de D-086, punto 6)
+
+Decide: Javi. HEAD: `c82ab01`.
+
+Contexto
+D-087 (punto 1) fija la comparación por pares, en orden A/B aleatorizado por el cegado, y D-090 deja pendiente el emparejamiento A/B en el runner. En `3ccd122`, el runner del cegado hace una única llamada a `blind()` con todos los planes del manifiesto y produce una permutación plana, sin pares (`scripts/fase7/blind-run.mjs:57–67`). `blind()` siembra `mulberry32` con la semilla recibida y de ese único flujo obtiene el orden de presentación y las etiquetas, que son únicas dentro de la llamada (`src/eval/blind/blind.js:152–185`). En el manifiesto de la generación (`docs/evidence/fase7-generacion/manifiesto-generacion.json`, sha256 `51e6cbf7…240a98`), `casos[]` contiene 20 casos, 10 del perfil P1 y 10 del P2, cada uno con un plan legacy y un plan engine2. Del perfil base, engine2 solo recibe los días de entreno y la estrategia; el resto de campos se declara no representable (`scripts/fase7/casos.js:46–60`, `:103–109`). Una comprobación de solo lectura sobre los 40 planes originales establece que la posición 1–7 corresponde a lunes–domingo en ambos motores (`docs/evidence/fase7-emparejamiento/`, merge `c82ab01`). Como el repositorio es público y permite reconstruir los planes (D-090, punto 6), ninguna semilla protege el orden frente a quien acceda a él.
+
+Decisión
+1. Aleatorización. Se hace una sola llamada a `blind()` con los 40 planes de la generación del 2026-10-06 (D-090, punto 3), en el orden de `planes[]` del manifiesto y con una sola semilla. La orientación A/B y el orden de los pares se leen del orden de `evaluador.planes[]` que devuelve `blind()`, que es el mismo de `clave.entradas[]` y se cruza por etiqueta. En cada par, A es el plan que ocupa antes posición en ese orden, y los pares se presentan por orden de primera aparición de cualquiera de sus planes en él. El orden de `planes[]` del manifiesto es solo el orden de entrada y no se usa para orientar ni para ordenar. Las etiquetas son las de esa llamada, únicas en todo el lote. `blind.js` no se modifica.
+2. Reagrupación. La función que forma los pares recibe solo la salida de `blind()` y la correspondencia id → caso tomada de `casos[]`; no recibe ni consulta el motor. El motor se añade después, solo a la clave. Así, el orden A/B lo aleatoriza el cegado (D-087, punto 1) y la transformación sigue siendo común en el sentido de D-085 (punto 1).
+3. Reparto. La orientación es una aleatorización simple. No se garantiza equilibrio entre motores, ni global ni por perfil.
+4. Semilla. `seed = parseInt(sha.slice(0, 8), 16)`, donde `sha` es el hash completo del commit de fusión con el que este asiento entra en `main` (o del commit directo, si no hay fusión). El commit se hace una sola vez, y la semilla definitiva es la del sha que queda en `origin/main` tras el push. La regla es auditable, pero no impide técnicamente rehacer commits antes del push ni protege el orden frente a la reconstrucción desde el repositorio público. La protección frente al evaluador es la condición de D-090 (punto 6).
+5. Contexto del instrumento. Junto a la vista cegada, el evaluador recibe:
+   a. Para cada par, solo la descripción del perfil del caso, con los datos que recibieron ambos motores y sin el identificador del perfil. La correspondencia entre identificador y descripción consta solo en este asiento y en la clave:
+      - Casos del perfil P1: «Objetivo: mantener el peso. Entrena lunes, miércoles y viernes. Sin intolerancias.»
+      - Casos del perfil P2: «Objetivo: mantener el peso. No entrena. Sin intolerancias.»
+   b. Una sola vez, para todos los planes: «Los días van del 1 (lunes) al 7 (domingo). En todos los planes se omite la comida del día 6.»
+   El perfil y la frase forman parte del instrumento (D-087, punto 2), no de la vista. Son iguales para los dos planes de cada par y no contienen información del motor. D-086 (punto 6) se enmienda en este único extremo, sin reescribirlo: el evaluador recibe la vista cegada y, además, el instrumento de D-087 (punto 2) con el contexto de este punto. El resto de D-086 (punto 6) sigue vigente. El evaluador no recibe el identificador del perfil, del caso ni del plan, ni la semilla.
+6. Salidas. El archivo del evaluador contiene el contexto común y, por cada par, el número de par, el perfil, y A y B con su etiqueta y sus días tal como los proyecta `blind()`. La clave va en un archivo distinto, que no se entrega al evaluador, y contiene el sha, la semilla, el sha256 del manifiesto y, por cada par, el caso y el id y el motor de A y de B.
+7. Modo plano. `blind-run.mjs` permanece sin cambios. El modo pares es un comando independiente.
+
+Freeze del modo pares
+F-1. Archivos: `scripts/fase7/pares.js` (lógica pura: reagrupación y construcción de las dos salidas; sin I/O y sin importar de los motores), `scripts/fase7/pares-run.mjs` (CLI) y `scripts/fase7/pares.test.js`. No se modifican `src/eval/blind/**`, `src/engine/**`, `src/engine2/**` ni los demás archivos de `scripts/fase7/`.
+F-2. Entrada: el manifiesto de la generación y el directorio de sus planes; `--sha <40 hex>`; `--confirmo-ejecucion`. Antes de cegar, se aborta si el sha256 del manifiesto no es `51e6cbf7c5305447f1ed6e46ca094cbe442740965b3abd8882894bdefe240a98`, si falta un plan o su sha256 difiere de su `sha256Plan`, si no hay exactamente 20 casos con dos planes cada uno, uno de cada motor, o si los perfiles no son P1 y P2 con 10 casos cada uno.
+F-3. Semilla: la calcula el comando a partir de `--sha` con la regla del punto 4. No admite una semilla directa. El comando solo valida la forma del argumento (40 caracteres hexadecimales en minúscula). No acredita que corresponda al commit de `origin/main` que incorpora este asiento: esa correspondencia se acredita documentalmente, con la salida de `git` del titular, en el asiento que autorice la ejecución.
+F-4. Determinismo: dos ejecuciones completas en memoria, cuyas salidas se comparan después de serializar la vista y la clave conforme a F-5. Si no coinciden byte a byte, se aborta sin escribir, como en `blind-run.mjs:66–71`. Las salidas no contienen fecha, hora, rutas ni ningún otro valor que no derive del manifiesto, de los planes y del sha.
+F-5. Escritura: vista y clave en archivos distintos, fuera del repositorio y sin sobrescribir; UTF-8 sin BOM, LF y la serialización de `blind.js`.
+F-6. Tests: con planes sintéticos (20 casos de dos planes) y semillas de test en 0–999. Ningún test usa el material de evaluación. Comprueban la reagrupación, que la función de pares no recibe el motor, la unicidad de etiquetas en todo el lote y las paradas de F-2 y F-3. Además, recorren las 1000 semillas y miden, con las tolerancias siguientes, fijadas aquí antes de la primera ejecución (unos 5 σ con p = ½ o p = 1/20):
+   a. Por caso k, n_k = número de semillas en que el primer plan del caso en el orden de entrada sale como A: |n_k − 500| ≤ 79 para cada k.
+   b. Global, N = Σ n_k: |N − 10000| ≤ 353.
+   c. Por caso k, m_k = número de semillas en que el caso se presenta como par 1: |m_k − 50| ≤ 34 para cada k.
+   Solo el test conoce el orden de entrada; la función de pares no lo recibe como dato de orientación. El test aporta evidencia sobre esas 1000 semillas; no demuestra la uniformidad para cualquier semilla.
+F-7. Paradas: cualquier anomalía aborta sin escribir; nada se corrige ni se omite en silencio. Si el código no puede cumplir este freeze sin tocar archivos fuera de F-1, se para y se informa.
+
+Autorización y límites
+- Una vez versionado este asiento, se autoriza implementar el modo pares conforme al freeze, en la rama `fase-7-modo-pares`. El commit en la rama lo hace Code; el merge y el push, el titular.
+- Este asiento no autoriza modificar `blind.js`, ejecutar el modo pares sobre el material, generar vistas ni iniciar la evaluación. La ejecución requiere un asiento posterior, una vez versionado el código.
+- Pendientes antes de evaluar: asiento del criterio de superación (D-087, punto 7) y designación del evaluador con la comprobación de D-090 (punto 6).
+
+Estado resultante
+Emparejamiento A/B y presentación determinados. Semilla fijada por regla, determinable al versionar este asiento. Implementación pendiente; vistas no generadas; evaluación no autorizada.

@@ -3709,3 +3709,27 @@ Consecuencias
 
 Estado resultante
 Generación de los casos de la primera Fase 7 autorizada sobre la ventana 2001–2010.
+
+## D-090 — [2026-10-09] Reproducibilidad y custodia de la generación de la primera Fase 7
+
+Decide: Javi. HEAD: `84eac38`.
+
+Contexto
+D-089 autorizó la generación de los casos de la primera Fase 7. La generación se ejecutó el 2026-10-06 en `765b90a` (manifiesto `manifiesto-generacion.json`, sha256 `51e6cbf7…0a98`; registro `cee27373…002b`). Su evidencia está versionada en `docs/evidence/fase7-generacion/` (merge `84eac38`), cuyo `README.md` es el acta de los hechos que este asiento toma como base. El titular fijó y ratificó, antes de lanzar la regeneración, el criterio de reproducibilidad F-EG.2 (acta, §4): los `sha256Plan` de los 40 planes regenerados en un clon limpio de `765b90a` coinciden con los del manifiesto original. Resultado: 20/40; coinciden los 20 planes de engine2 y difieren los 20 de legacy. El diagnóstico halla una única ruta distinta, `$.days[*].id` (140 ocurrencias), cuyo sufijo procede de `const planSeed = Date.now();` (`src/engine/buildPlan.js:2267`), usado en `:2319` y `:2508`. Los `sha256Vista` coinciden 40/40. Los 40 planes originales tienen una copia en soporte externo verificada contra el manifiesto. El repositorio es público.
+
+Decisión
+1. F-EG.2 queda como no satisfecho en su criterio de igualdad byte a byte. No se reformula ni se tiene por superado.
+2. Se adopta, con posterioridad al resultado y a la vista del diagnóstico, un criterio de reproducibilidad de contenido que admite como excepción las diferencias en `$.days[*].id` de los planes legacy, cuyo contenido variable procede de `Date.now()` (`buildPlan.js:2267`). La evidencia del acta satisface este criterio: los 40 planes coinciden en el resto de su contenido y los `sha256Vista` coinciden 40/40. Este criterio posterior no altera el resultado negativo de F-EG.2.
+3. Los 40 planes de la generación del 2026-10-06, ligados al manifiesto `51e6cbf7…0a98`, son el material de la evaluación; ninguna regeneración los sustituye. Se custodian en la ubicación original y en una copia en disco externo, verificada el 2026-10-09 (manifiesto idéntico; 40/40 `sha256Plan`).
+4. Los planes no se versionan. Esto modifica la consecuencia de D-089 que preveía versionar los planes crudos; el resto de D-089 queda intacto. Se versionan el manifiesto, los guiones de cotejo, diagnóstico y verificación, y sus salidas.
+5. Se descartan acreditar la reproducibilidad solo en la vista, porque el punto 2 ya la incluye, y hacer determinista `day.id` en legacy, porque modificaría un motor comparado después de la generación autorizada.
+6. Condición de cegado: como el repositorio es público y permite reconstruir los planes, el evaluador, antes de terminar la evaluación, no accede al repositorio, a los planes ni a su custodia, ni ejecuta el generador. La condición se comprueba al designar al evaluador y antes de iniciar la evaluación; su enunciado aquí no la da por satisfecha.
+7. Este asiento no autoriza la evaluación ni fija el criterio de superación (D-087, punto 7).
+
+Consecuencias
+- El material de evaluación es reproducible salvo `day.id`, que queda fuera de la vista común (D-085).
+- El no determinismo de `planSeed` permanece en legacy; no se corrige en Fase 7.
+- Pendientes antes de evaluar: emparejamiento A/B en el runner (una semilla de orden versionada sería igualmente reconstruible desde el repositorio), asiento del criterio de superación y designación del evaluador con la comprobación del punto 6.
+
+Estado resultante
+Generación de la primera Fase 7 documentada; material de evaluación identificado y custodiado; evaluación no autorizada.

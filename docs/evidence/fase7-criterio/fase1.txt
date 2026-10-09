@@ -1,0 +1,7 @@
+﻿EXISTE: DECISIONS.md
+EXISTE: CLAUDE.md
+EXISTE: docs/spec
+CLAUDE.md
+DECISIONS.md
+docs/spec/plan-observable.md
+docs/spec/protocolo-evaluacion.md

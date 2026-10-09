@@ -3775,3 +3775,35 @@ Autorización y límites
 
 Estado resultante
 Emparejamiento A/B y presentación determinados. Semilla fijada por regla, determinable al versionar este asiento. Implementación pendiente; vistas no generadas; evaluación no autorizada.
+
+## D-092 — [2026-10-09] Motivo y condición de la sustitución de legacy; enmienda de CLAUDE.md:6
+
+Decide: Javi. HEAD: `ff07799`.
+
+Contexto
+D-087 (punto 7) encomienda a un asiento propio el criterio de superación, constituido con su justificación antes de que exista ningún resultado. Al constituirlo, el titular exigió que el motivo de la migración constara respaldado y no inferido. Un R-0 de solo lectura en `ff07799` (perímetro `DECISIONS.md`, `CLAUDE.md` y `docs/spec/**`; términos y reglas congelados antes de ejecutar; 53 coincidencias) no localizó ningún motivo enunciado: L1 = 0; L2 = `CLAUDE.md:6` y `DECISIONS.md:276`; 51 L3. La evidencia está en `docs/evidence/fase7-criterio/`. El resultado vale solo dentro de ese perímetro, esos términos y una regla de coincidencia por línea; no afirma que el motivo no exista.
+`CLAUDE.md:6` condiciona la migración a que «el nuevo gana una evaluación ciega», y `CLAUDE.md:3` da prevalencia a ese archivo sobre las instrucciones de sesión. La tesis de D-048 (`DECISIONS.md:2333`) es comparativa; su regla de evidencia (`:2334`) remite a la evidencia observable en el plan generado, y `:2336` destina el diseño experimental a contrastar la tesis. D-046 (`:2225`) es precedente de modificación de `CLAUDE.md` por asiento.
+
+Decisión
+1. Declaración del titular. Se asienta en los términos ratificados el 2026-10-09:
+
+   Declaración del titular sobre el motivo de la migración — 2026-10-09
+
+   Naturaleza. Declaración constitutiva del titular, no hallazgo documental. El R-0 del motivo (perímetro `DECISIONS.md`, `CLAUDE.md` y `docs/spec/**` en `ff07799`) no localizó ningún motivo enunciado. Solo encontró candidatas L2 (`CLAUDE.md:6`, `DECISIONS.md:276`), y ninguna se elevó.
+
+   1. Motivo. A fecha de 2026-10-09, la sustitución de `legacy` por `engine2` se plantea porque `engine2` se ha diseñado para aproximar el proceso de decisión de un nutricionista humano experto. La sustitución es un cambio de implementación del motor, cuya conveniencia debe evaluarse antes de decidir si procede completarla.
+   2. Condición de la sustitución. La sustitución puede completarse aunque `engine2` no resulte mejor que `legacy`, siempre que no resulte peor conforme al criterio fijado antes de ver resultados, y que la decisión siga justificada por el motivo del punto 1. Cumplir el criterio es condición necesaria, no suficiente: no obliga a sustituir.
+   3. Relación con la tesis de D-048. `DECISIONS.md:2333`: «Engine2 pretende aproximar el proceso de decisión de un nutricionista humano experto mejor de lo que lo aproxima el motor legacy». La tesis expresa una pretensión comparativa, no un resultado demostrado. El motivo del punto 1 no presupone que esté demostrada, y un resultado de no inferioridad no la acredita. El alcance probatorio de Fase 7 respecto de la tesis se decide en un acto propio.
+   4. Alcance temporal. Esta declaración expresa la posición del titular a fecha de 2026-10-09. No afirma cuál fue la intención original al iniciar el desarrollo de `engine2`, ni atribuye retroactivamente esta formulación a decisiones anteriores.
+
+2. Condición de sustitución. La condición sustantiva queda determinada por el punto 2 de la declaración: que engine2 no resulte peor que legacy conforme a un criterio fijado antes de ver resultados, y que la decisión siga justificada por el motivo del punto 1. La superioridad no forma parte de ella. D-087 (punto 7) ya establece que el criterio se fija en un asiento propio antes de que exista ningún resultado. Cómo se operacionaliza la condición de no resultar peor sigue abierto y se resuelve en ese asiento.
+3. Enmienda de `CLAUDE.md:6`. En esa línea, «hasta que el nuevo gana una evaluación ciega.» se sustituye por «hasta que el nuevo cumple la condición de sustitución que fija `DECISIONS.md` para la evaluación ciega.». El resto de la línea y del archivo no cambia. «Gana» no se interpreta: se reemplaza.
+4. Transitorio. Desde que se versiona este asiento, la condición de sustitución está determinada en su contenido sustantivo (punto 2). Hasta que se versione el asiento del criterio, no está operacionalizada: no existe regla con la que comprobar que se cumple, y la remisión de `CLAUDE.md:6` no puede tenerse por satisfecha. Esta enmienda no autoriza por sí misma ninguna sustitución, no fija el criterio y no altera la regla de prevalencia de `CLAUDE.md:3`.
+5. Fuera de este asiento. El criterio de superación y sus dos niveles, el alcance probatorio de Fase 7 respecto de la tesis de D-048, la autorización del modo pares y la designación del evaluador.
+
+Consecuencias
+- El PR de este asiento contiene solo esta entrada de `DECISIONS.md`, la línea 6 de `CLAUDE.md` y la carpeta `docs/evidence/fase7-criterio/` con la evidencia del R-0.
+- El asiento del criterio cita este asiento.
+
+Estado resultante
+Motivo y condición sustantiva de sustitución determinados; `CLAUDE.md:6` remite a `DECISIONS.md`. Pendientes: el asiento del criterio, que operacionaliza la condición; la autorización del modo pares; la designación del evaluador.

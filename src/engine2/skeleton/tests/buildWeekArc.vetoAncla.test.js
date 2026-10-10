@@ -11,7 +11,7 @@
 // que dispara el contrato de ausencia.
 
 import { describe, it, expect } from 'vitest';
-import { buildWeekArc, chooseAnchor } from '../buildWeekArc.js';
+import { chooseAnchor } from '../buildWeekArc.js';
 import { ANCHORS } from '../../dishes/anchors.js';
 
 function vistaConocida(valorEfectivo) {
@@ -125,67 +125,6 @@ describe('chooseAnchor - f20: invariante RNG sobre supervivientes (el vetado nun
 // identico al actual). Son complementarios del test nuevo mas abajo (D-038:
 // consecuencia observable), que SI inyecta la fuente y prueba la rama
 // contraria (supervivencia) sobre el mismo catalogo real de 6 anclas.
-describe('buildWeekArc - f18: contrato de ausencia sobre el catalogo REAL (las 6 anclas son "desconocida", cero supervivientes)', () => {
-  const profileBase = { trainingDays: ['Lunes', 'Miercoles', 'Viernes'], intolerances: ['gluten'] };
-
-  it('(a) LO QUE SE PIERDE: sin batchDay, sin leftoverDays, ningun beat "ancla", causa de ausencia en el log', () => {
-    const { weekArc, decisionLog } = buildWeekArc({ profile: profileBase, seed: 'f18-perdida', strategy: 'mantenimiento_equilibrado' });
-
-    expect(weekArc.anchors).toEqual([]);
-    expect(weekArc).not.toHaveProperty('batchDay');
-    expect(weekArc.beats.some((b) => b.slotRole === 'ancla')).toBe(false);
-
-    const causa = decisionLog.find((d) => d.cause === 'ancla_ausente');
-    expect(causa).toBeDefined();
-    expect(causa.evidence).toContain('gluten');
-    expect(causa.consequence).toContain('sin batchDay');
-    expect(causa.consequence).toContain('sin leftoverDays');
-  });
-
-  it('(a) MUTACION dirty->red: si buildWeekArc dejara un batchDay fijado pese a cero supervivientes (cascada incompleta), esta asercion lo detectaria', () => {
-    const { weekArc } = buildWeekArc({ profile: profileBase, seed: 'f18-perdida', strategy: 'mantenimiento_equilibrado' });
-    // Simulacion de la cascada incompleta (sin tocar buildWeekArc.js real):
-    const weekArcSucio = { ...weekArc, batchDay: 'Miercoles' };
-    expect(weekArcSucio).toHaveProperty('batchDay'); // demuestra que la asercion de arriba SI habria fallado sobre esta variante rota
-  });
-
-  it('(b) LO QUE SE CONSERVA: mismo seed -> mismo plan, capricho normal, fixedRoles intactos', () => {
-    const r1 = buildWeekArc({ profile: profileBase, seed: 'f18-conserva', strategy: 'mantenimiento_equilibrado' });
-    const r2 = buildWeekArc({ profile: profileBase, seed: 'f18-conserva', strategy: 'mantenimiento_equilibrado' });
-    expect(JSON.stringify(r1.weekArc)).toBe(JSON.stringify(r2.weekArc));
-
-    // capricho operando normal: sigue existiendo un beat "capricho" (mismo
-    // mecanismo, sin ocupacion del ancla que evitar).
-    expect(r1.weekArc.beats.some((b) => b.slotRole === 'capricho')).toBe(true);
-
-    // fixedRoles intactos: Sabado=libre, Domingo=familiar, entreno segun perfil.
-    const bySeed = Object.fromEntries(r1.weekArc.beats.map((b) => [b.day, b.fixedRole]));
-    expect(bySeed.Sabado).toBe('libre');
-    expect(bySeed.Domingo).toBe('familiar');
-    expect(bySeed.Lunes).toBe('entreno');
-    expect(bySeed.Miercoles).toBe('entreno');
-    expect(bySeed.Viernes).toBe('entreno');
-
-    // sin IDs repetidos (trivial aqui: no hay ids en absoluto sin ancla,
-    // pero el arco no colapsa ni duplica beats por dia).
-    expect(r1.weekArc.beats.map((b) => b.day)).toEqual(['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo']);
-  });
-
-  it('(b) MUTACION dirty->red: si una invariante conservada solo en la rama sin-ancla se rompiera (p.ej. Sabado dejara de ser "libre"), esta asercion lo detectaria', () => {
-    const { weekArc } = buildWeekArc({ profile: profileBase, seed: 'f18-conserva', strategy: 'mantenimiento_equilibrado' });
-    const weekArcSucio = {
-      ...weekArc,
-      beats: weekArc.beats.map((b) => (b.day === 'Sabado' ? { ...b, fixedRole: undefined } : b)),
-    };
-    const bySeedSucio = Object.fromEntries(weekArcSucio.beats.map((b) => [b.day, b.fixedRole]));
-    expect(bySeedSucio.Sabado).not.toBe('libre'); // demuestra que la asercion de (b) SI habria fallado sobre esta variante rota
-  });
-
-  it('con intolerances=["lactosa"] (el otro campo del enum) tambien produce cero supervivientes -- las 6 anclas son "desconocida" en AMBOS campos', () => {
-    const { weekArc } = buildWeekArc({ profile: { trainingDays: [], intolerances: ['lactosa'] }, seed: 0, strategy: 'x' });
-    expect(weekArc.anchors).toEqual([]);
-  });
-});
 
 // D-038 (consecuencia observable de la ingesta real D6, ver DECISIONS.md):
 // con fuenteEditorial inyectada confirmando gluten:false/lactosa:false para
@@ -194,80 +133,4 @@ describe('buildWeekArc - f18: contrato de ausencia sobre el catalogo REAL (las 6
 // sesion), las anclas dejan de vetarse por "desconocida" y SOBREVIVEN --
 // contraste directo con f18 (mismo catalogo real de 6 anclas, mismo perfil
 // intolerante, la UNICA variable es la fuente inyectada).
-describe('buildWeekArc - D-038: consecuencia observable -- con fuenteEditorial inyectada, las 6 anclas reales SOBREVIVEN al veto', () => {
-  const fuenteEditorialAnclasLimpias = {
-    version: 1,
-    confirmed: Object.fromEntries(
-      ANCHORS.map((a) => [a.identityKey, {
-        gluten: { valor: false, por: 'D-038-test', fecha: '2026-07-14' },
-        lactosa: { valor: false, por: 'D-038-test', fecha: '2026-07-14' },
-      }]),
-    ),
-  };
 
-  it('intolerances=["gluten"] + fuente inyectada: ancla presente (contraste con f18(a), que sin fuente da weekArc.anchors=[])', () => {
-    const profile = { trainingDays: [], intolerances: ['gluten'] };
-    const { weekArc } = buildWeekArc({
-      profile, seed: 'D-038-gluten', strategy: 'x', fuenteEditorial: fuenteEditorialAnclasLimpias,
-    });
-    expect(weekArc.anchors).toHaveLength(1);
-    expect(weekArc).toHaveProperty('batchDay');
-  });
-
-  it('intolerances=["lactosa"] + fuente inyectada: ancla presente (contraste con f18, ultimo test, que sin fuente da weekArc.anchors=[])', () => {
-    const profile = { trainingDays: [], intolerances: ['lactosa'] };
-    const { weekArc } = buildWeekArc({
-      profile, seed: 'D-038-lactosa', strategy: 'x', fuenteEditorial: fuenteEditorialAnclasLimpias,
-    });
-    expect(weekArc.anchors).toHaveLength(1);
-  });
-
-  it('sobre las 6 anclas: cada una sigue siendo alcanzable con la fuente inyectada (ninguna quedo vetada por otra via)', () => {
-    const profile = { trainingDays: [], intolerances: ['gluten'] };
-    for (let targetIndex = 0; targetIndex < ANCHORS.length; targetIndex++) {
-      let found = false;
-      for (let seed = 0; seed < 500 && !found; seed++) {
-        const { weekArc } = buildWeekArc({
-          profile, seed, strategy: 'x', fuenteEditorial: fuenteEditorialAnclasLimpias,
-        });
-        if (weekArc.anchors[0]?.anchorId === ANCHORS[targetIndex].identityKey) found = true;
-      }
-      expect(found, `ancla #${targetIndex} nunca alcanzada en 500 seeds con fuente inyectada`).toBe(true);
-    }
-  });
-});
-
-describe('buildWeekArc - f19: paridad sin veto activo (cero regresion del camino feliz)', () => {
-  it('intolerances ausente: ancla SIEMPRE presente, sin entradas de log de veto/ausencia, evidencia identica al formato pre-D-023, sobre 50 seeds', () => {
-    for (let seed = 0; seed < 50; seed++) {
-      const profile = { trainingDays: [] };
-      const { weekArc, decisionLog } = buildWeekArc({ profile, seed, strategy: 'x' });
-      expect(weekArc.anchors).toHaveLength(1);
-      expect(weekArc).toHaveProperty('batchDay');
-      expect(decisionLog.some((d) => d.cause === 'ancla_ausente')).toBe(false);
-      expect(decisionLog.some((d) => d.cause === 'veto_ancla_universo_reducido')).toBe(false);
-
-      const eleccion = decisionLog.find((d) => d.cause === 'eleccion_ancla_por_seed');
-      expect(eleccion.evidence).toMatch(/de 6 anclas catalogadas en CP2 \(sin filtros\)$/);
-    }
-  });
-
-  it('intolerances=[] (presente pero vacio) es identico a intolerances ausente, misma seed', () => {
-    const seed = 'f19-vacio-vs-ausente';
-    const resAusente = buildWeekArc({ profile: { trainingDays: [] }, seed, strategy: 'x' });
-    const resVacio = buildWeekArc({ profile: { trainingDays: [], intolerances: [] }, seed, strategy: 'x' });
-    expect(JSON.stringify(resVacio.weekArc)).toBe(JSON.stringify(resAusente.weekArc));
-    expect(JSON.stringify(resVacio.decisionLog)).toBe(JSON.stringify(resAusente.decisionLog));
-  });
-
-  it('sobre las 6 anclas del catalogo real: cada una sigue siendo alcanzable sin veto (mismo universo de siempre)', () => {
-    for (let targetIndex = 0; targetIndex < ANCHORS.length; targetIndex++) {
-      let found = false;
-      for (let seed = 0; seed < 500 && !found; seed++) {
-        const { weekArc } = buildWeekArc({ profile: { trainingDays: [] }, seed, strategy: 'x' });
-        if (weekArc.anchors[0].anchorId === ANCHORS[targetIndex].identityKey) found = true;
-      }
-      expect(found, `ancla #${targetIndex} nunca alcanzada en 500 seeds sin veto`).toBe(true);
-    }
-  });
-});

@@ -1,0 +1,423 @@
+<title>Visor de menús Nutiplan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Literata:opsz,wght@7..72,400;7..72,500;7..72,600&display=swap">
+<style>
+/* Layout: hoja de lectura de menús; resumen arriba, selector de semana, dos cartas lado a lado (una columna en móvil). */
+:root {
+  --bg: #f3f5f1;
+  --surface: #ffffff;
+  --ink: #1b221e;
+  --muted: #5b6760;
+  --line: #dce1da;
+  --soft: #eaeee8;
+  --legacy: #3b5675;
+  --legacy-soft: #e4eaf1;
+  --nuevo: #2d6a4c;
+  --nuevo-soft: #e1eee6;
+  --r0: #a8650c; --r0-bg: #fbefd9;
+  --r1: #a83a5f; --r1-bg: #f8e2ea;
+  --r2: #5e4fb0; --r2-bg: #e9e5f8;
+  --r3: #1f7280; --r3-bg: #dcf0f2;
+  --off: #8c958f;
+  --f-plato: "Literata", Georgia, "Times New Roman", serif;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #131714; --surface: #1b201d; --ink: #e5eae6; --muted: #9ba69f; --line: #2d3430; --soft: #232925;
+    --legacy: #93b0d2; --legacy-soft: #222c37; --nuevo: #86c7a2; --nuevo-soft: #1f2e26;
+    --r0: #f0b55a; --r0-bg: #3a2c15; --r1: #f08fb0; --r1-bg: #3b1f2a; --r2: #b3a8f2; --r2-bg: #29253f; --r3: #7fd0dc; --r3-bg: #173439;
+    --off: #6c766f; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #131714; --surface: #1b201d; --ink: #e5eae6; --muted: #9ba69f; --line: #2d3430; --soft: #232925;
+  --legacy: #93b0d2; --legacy-soft: #222c37; --nuevo: #86c7a2; --nuevo-soft: #1f2e26;
+  --r0: #f0b55a; --r0-bg: #3a2c15; --r1: #f08fb0; --r1-bg: #3b1f2a; --r2: #b3a8f2; --r2-bg: #29253f; --r3: #7fd0dc; --r3-bg: #173439;
+  --off: #6c766f; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-ui); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 64px; display: grid; gap: 28px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+h1 { font-family: var(--f-plato); font-weight: 600; font-size: 2rem; line-height: 1.15; }
+.lead { color: var(--muted); max-width: 70ch; margin: 8px 0 0; }
+.meta { font-family: var(--f-mono); font-size: 0.78rem; color: var(--muted); margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 600; }
+
+/* Resumen */
+.resumen { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 16px; }
+.motorRes { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; display: grid; gap: 12px; min-width: 0; }
+.motorRes h2 { font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+.dot.legacy { background: var(--legacy); } .dot.nuevo { background: var(--nuevo); }
+.cifras { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.cifra b { display: block; font-size: 1.45rem; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.cifra span { font-size: 0.8rem; color: var(--muted); }
+.top { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+.top li { display: grid; grid-template-columns: 1fr auto; gap: 12px; font-size: 0.88rem; border-top: 1px solid var(--soft); padding-top: 4px; }
+.top li span:first-child { font-family: var(--f-plato); min-width: 0; }
+.top li span:last-child { font-variant-numeric: tabular-nums; color: var(--muted); white-space: nowrap; }
+
+/* Selector */
+.selector { display: grid; gap: 10px; }
+.tabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
+.tab { font: inherit; font-size: 0.86rem; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 8px; padding: 6px 12px; cursor: pointer; white-space: nowrap; display: grid; text-align: left; line-height: 1.25; }
+.tab small { font-size: 0.72rem; color: var(--muted); }
+.tab[aria-selected="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.tab[aria-selected="true"] small { color: var(--bg); opacity: 0.75; }
+.tab:focus-visible, .toggle input:focus-visible, summary:focus-visible { outline: 2px solid var(--nuevo); outline-offset: 2px; }
+.opciones { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; font-size: 0.88rem; color: var(--muted); }
+.toggle { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+
+/* Semana */
+.semanaHead { display: grid; gap: 4px; }
+.semanaHead h2 { font-family: var(--f-plato); font-size: 1.4rem; font-weight: 600; }
+.semanaHead p { margin: 0; color: var(--muted); }
+.cartas { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr)); gap: 16px; align-items: start; }
+.carta { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; min-width: 0; }
+.cartaHead { padding: 14px 16px; display: grid; gap: 6px; border-bottom: 1px solid var(--line); }
+.carta.legacy .cartaHead { background: var(--legacy-soft); }
+.carta.nuevo .cartaHead { background: var(--nuevo-soft); }
+.cartaHead h3 { font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.cartaHead p { margin: 0; font-size: 0.88rem; color: var(--muted); max-width: 70ch; }
+.cartaHead p strong { color: var(--ink); font-weight: 500; }
+.dia { display: grid; grid-template-columns: 92px 1fr; border-top: 1px solid var(--soft); }
+.dia:first-of-type { border-top: 0; }
+.diaNom { padding: 12px 10px 12px 16px; display: grid; align-content: start; gap: 4px; }
+.diaNom b { font-weight: 600; font-size: 0.92rem; }
+.huecos { display: grid; min-width: 0; }
+.hueco { display: grid; grid-template-columns: 64px 1fr; gap: 8px; padding: 9px 14px 9px 10px; border-top: 1px dashed var(--soft); min-width: 0; }
+.hueco:first-child { border-top: 0; }
+.momento { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); padding-top: 3px; }
+.plato { font-family: var(--f-plato); font-size: 0.98rem; line-height: 1.38; min-width: 0; overflow-wrap: anywhere; }
+.platoLinea { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+.hueco.off .plato { color: var(--off); }
+.hueco.desayuno .plato { color: var(--muted); font-size: 0.9rem; }
+.chips { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.chip { font-family: var(--f-ui); font-size: 0.7rem; font-weight: 500; letter-spacing: 0.02em; border-radius: 999px; padding: 1px 8px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+.tag { font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.tag.entreno { color: var(--legacy); } .tag.libre { color: var(--off); } .tag.familiar, .tag.capricho { color: var(--r2); } .tag.ancla, .tag.sobras { color: var(--r0); }
+.rep { box-shadow: inset 3px 0 0 var(--rc); background: var(--rb); }
+.rep .chip.repChip { color: var(--rc); border-color: var(--rc); }
+.rc0 { --rc: var(--r0); --rb: var(--r0-bg); } .rc1 { --rc: var(--r1); --rb: var(--r1-bg); } .rc2 { --rc: var(--r2); --rb: var(--r2-bg); } .rc3 { --rc: var(--r3); --rb: var(--r3-bg); }
+.chip.causa { border-style: dashed; }
+.chip.cruce { color: var(--r1); border-color: var(--r1); background: var(--r1-bg); }
+details.porque { margin-top: 4px; font-family: var(--f-ui); }
+details.porque summary { font-size: 0.75rem; color: var(--muted); cursor: pointer; list-style: none; display: inline; }
+details.porque summary::-webkit-details-marker { display: none; }
+details.porque summary::before { content: "▸ "; }
+details.porque[open] summary::before { content: "▾ "; }
+details.porque p { margin: 4px 0 0; font-family: var(--f-mono); font-size: 0.74rem; line-height: 1.5; color: var(--muted); overflow-wrap: anywhere; }
+.sinLog { font-size: 0.8rem; color: var(--muted); font-style: italic; }
+.notas { font-size: 0.86rem; color: var(--muted); max-width: 80ch; display: grid; gap: 6px; }
+.notas p { margin: 0; }
+@media (max-width: 480px) {
+  .dia { grid-template-columns: 1fr; }
+  .diaNom { padding: 10px 14px 0; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .hueco { grid-template-columns: 58px 1fr; padding-left: 14px; }
+  .cifras { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.comps { display: flex; flex-wrap: wrap; gap: 6px; }
+.sugerencia { display: block; font-family: var(--f-ui); font-size: 0.8rem; color: var(--muted); margin-top: 2px; }
+.protLinea { margin: 0; font-size: 0.88rem; color: var(--muted); }
+.protLinea strong { color: var(--ink); font-weight: 600; }
+.cambios { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; display: grid; gap: 6px; }
+.cambios ul { margin: 0; padding-left: 18px; display: grid; gap: 2px; }
+.cambios p { margin: 0; color: var(--muted); font-size: 0.88rem; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+
+<div class="wrap">
+  <header>
+    <h1>Visor de menús</h1>
+    <p class="lead">Semanas de prueba de los motores con la misma entrada. No forman parte de ninguna evaluación: sirven para leer los menús y decir qué sobra y qué falta. Las semanas 1 a 5 son semanas seguidas de un mismo usuario (P1) y las 6 a 10 de otro (P2). Un mismo color dentro de una carta marca el mismo plato repetido en la semana; la etiqueta rosa, un plato que ya salió la semana anterior.</p>
+    <div class="meta" id="meta"></div>
+  </header>
+
+  <section class="selector" aria-label="Elegir comparación">
+    <span class="label">Comparar</span>
+    <div class="comps" role="tablist" id="comps"></div>
+  </section>
+
+  <section class="cambios" id="cambios" hidden></section>
+
+  <section class="resumen" id="resumen" aria-label="Resumen de las semanas"></section>
+
+  <section class="selector" aria-label="Elegir semana">
+    <span class="label">Semana</span>
+    <div class="tabs" role="tablist" id="tabs"></div>
+    <div class="opciones">
+      <label class="toggle"><input type="checkbox" id="optDesayuno"> Mostrar desayunos (solo los genera el motor actual)</label>
+      <label class="toggle"><input type="checkbox" id="optPorque"> Abrir todos los motivos del motor nuevo</label>
+    </div>
+  </section>
+
+  <section id="semana" aria-live="polite"></section>
+
+  <footer class="notas">
+    <p>Los recuentos usan comida y cena de los 7 días menos la comida del sábado, que es la libre en los dos motores: 13 huecos por semana, 130 en total. El motor actual escribe «Comida libre» en ese hueco; el nuevo marca el sábado como libre en su registro, pero aun así sirve un plato, que aquí aparece en gris.</p>
+    <p>Perfil de entrada igual al de Fase 7: mantenimiento, 2000 kcal en el motor actual. P1 entrena lunes, miércoles y viernes; P2 no entrena. El motor nuevo no recibe peso, edad ni kcal.</p>
+    <p>Memoria entre semanas: el motor actual recibe la misma que en producción, que solo recuerda las proteínas de las 4 últimas semanas. El motor nuevo recibe los platos de la semana anterior; la versión «antes» no sabe usarlos.</p>
+    <p>El motor actual no guarda por qué elige cada plato. El nuevo sí, y su motivo aparece debajo de cada plato.</p>
+  </footer>
+</div>
+
+<script>
+const DATOS = /*__DATOS__*/null;
+const ACENTO = { Miercoles: 'miércoles', Sabado: 'sábado', Lunes: 'lunes', Martes: 'martes', Jueves: 'jueves', Viernes: 'viernes', Domingo: 'domingo' };
+const PERFIL = { P1: 'P1 · entrena lunes, miércoles y viernes', P2: 'P2 · sin entreno' };
+const CAUSA = {
+  ancla_momento_unico: 'ancla · se cocina hoy',
+  sobra_momento_unico: 'sobra del ancla',
+  ancla_base_cocinado: 'ancla · se cocina',
+  ancla_base_aprovechado: 'aprovecha el ancla',
+  seleccion_rotativo_candidato_unico: 'único candidato',
+  seleccion_rotativo_desempate_rng: null,
+};
+const CAUSA_LARGA = {
+  ancla_momento_unico: 'Plato ancla de la semana: se cocina este día.',
+  sobra_momento_unico: 'Sobra del plato ancla cocinado antes.',
+  ancla_base_cocinado: 'Se cocina el ingrediente ancla de la semana en cantidad.',
+  ancla_base_aprovechado: 'Otro plato que aprovecha el ingrediente ancla ya cocinado.',
+  seleccion_rotativo_candidato_unico: 'Solo un plato pasaba todos los filtros.',
+  seleccion_rotativo_desempate_rng: 'Elegido al azar entre los platos que pasaban los filtros.',
+};
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const dia = (d) => ACENTO[d] || d.toLowerCase();
+const V = DATOS.versiones;
+const ultima = V[V.length - 1];
+const tituloDe = (clave) => (clave === 'legacy' ? 'Motor actual (legacy)' : V.find((v) => v.clave === clave).titulo);
+const esNuevoClave = (clave) => clave !== 'legacy';
+
+// Comparaciones: motor actual frente a la última versión del nuevo, y cada versión del nuevo frente a la anterior.
+const COMPS = [{ a: 'legacy', b: ultima.clave }];
+for (let j = V.length - 1; j >= 1; j--) COMPS.push({ a: V[j - 1].clave, b: V[j].clave });
+
+function huecos(clave, semana) {
+  const out = [];
+  semana[clave].dias.forEach((d, i) => {
+    for (const m of ['comida', 'cena']) {
+      if (m === 'comida' && i === 5) continue;
+      if (d[m]) out.push({ plato: d[m].plato, i, m });
+    }
+  });
+  return out;
+}
+
+function repeticiones(clave, semana) {
+  const cuenta = new Map();
+  for (const h of huecos(clave, semana)) cuenta.set(h.plato, (cuenta.get(h.plato) || 0) + 1);
+  const rep = new Map();
+  let k = 0;
+  for (const [plato, c] of cuenta) if (c > 1) rep.set(plato, { c, color: k++ % 4 });
+  return rep;
+}
+
+// Platos de la semana anterior del mismo usuario (misma corrida de perfil).
+function previas(s) {
+  return DATOS.semanas.filter((x) => x.perfil === s.perfil && s.semanaDelUsuario - x.semanaDelUsuario === 1);
+}
+function cruces(clave, s) {
+  const mapa = new Map();
+  for (const p of previas(s)) for (const h of huecos(clave, p).concat(p[clave].dias[5].comida ? [{ plato: p[clave].dias[5].comida.plato }] : [])) {
+    if (!mapa.has(h.plato) || mapa.get(h.plato) < p.n) mapa.set(h.plato, p.n);
+  }
+  return mapa;
+}
+
+function estadisticas(clave) {
+  const todos = new Map();
+  let extra = 0, maxSemana = 0, cruce = 0, protMax = { n: 0 };
+  for (const s of DATOS.semanas) {
+    const c = cruces(clave, s);
+    const pc = {};
+    s[clave].dias.forEach((d, i) => ['comida', 'cena'].forEach((m) => {
+      if ((m === 'comida' && i === 5) || !d[m] || !d[m].proteina) return;
+      pc[d[m].proteina] = (pc[d[m].proteina] || 0) + 1;
+    }));
+    for (const [pr, n] of Object.entries(pc)) if (n > protMax.n) protMax = { n, pr, sem: s.n };
+    const enSemana = new Map();
+    for (const h of huecos(clave, s)) enSemana.set(h.plato, (enSemana.get(h.plato) || 0) + 1);
+    for (const p of enSemana.keys()) if (c.has(p) && p !== 'Comida libre 🎉') cruce++;
+    for (const [p, c] of enSemana) {
+      extra += c - 1;
+      maxSemana = Math.max(maxSemana, c);
+      const t = todos.get(p) || { veces: 0, semanas: 0 };
+      t.veces += c; t.semanas += 1; todos.set(p, t);
+    }
+  }
+  const top = [...todos.entries()].sort((a, b) => b[1].veces - a[1].veces || b[1].semanas - a[1].semanas).slice(0, 6);
+  return { distintos: todos.size, extra, maxSemana, cruce, protMax, top };
+}
+
+function notaMotor(clave) {
+  if (clave === 'legacy') return 'en producción';
+  const crudos = DATOS.semanas.filter((s) => (s[clave].resumen.anclaId || '').includes('"crudo"')).length;
+  return `ancla en crudo en ${crudos} de ${DATOS.semanas.length} semanas`;
+}
+
+function pintarResumen(comp) {
+  document.getElementById('resumen').innerHTML = [comp.a, comp.b].map((clave) => {
+    const e = estadisticas(clave);
+    const cls = esNuevoClave(clave) ? 'nuevo' : 'legacy';
+    return `<article class="motorRes">
+      <h2><span class="dot ${cls}"></span>${esc(tituloDe(clave))}<span class="chip">${esc(notaMotor(clave))}</span></h2>
+      <div class="cifras">
+        <div class="cifra"><b>${e.distintos}</b><span>platos distintos en 130 huecos</span></div>
+        <div class="cifra"><b>${e.extra}</b><span>huecos repetidos dentro de su semana</span></div>
+        <div class="cifra"><b>${e.cruce}</b><span>platos que repiten la semana siguiente</span></div>
+        <div class="cifra"><b>${e.maxSemana}×</b><span>máximo de un plato en una semana</span></div>
+      </div>
+      <p class="protLinea">${e.protMax.n ? `Proteína que más se repite en una semana: <strong>${esc(e.protMax.pr)} ×${e.protMax.n}</strong> (semana ${e.protMax.sem}).` : 'Sin datos de proteína.'}</p>
+      <div><span class="label">Platos que más salen en las 10 semanas</span>
+        <ul class="top">${e.top.map(([p, t]) => `<li><span>${esc(p)}</span><span>${t.veces} veces · ${t.semanas} sem.</span></li>`).join('')}</ul>
+      </div>
+    </article>`;
+  }).join('');
+}
+
+function pintarCambios(comp) {
+  const caja = document.getElementById('cambios');
+  const v = esNuevoClave(comp.b) ? V.find((x) => x.clave === comp.b) : null;
+  if (!v || !v.notas.length) { caja.hidden = true; return; }
+  caja.hidden = false;
+  caja.innerHTML = `<span class="label">Qué cambia en «${esc(v.titulo)}»</span><ul>${v.notas.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>${v.variante ? `<p>Prototipo sin commit sobre ${esc(v.head.slice(0, 7))}: ${esc(v.variante)}.</p>` : ''}`;
+}
+
+function frasesNuevo(r) {
+  const cocina = (r.batchDay || '').match(/= (\w+)/);
+  const sobras = (r.sobras || '').startsWith('sobras servidas en: ')
+    ? r.sobras.replace('sobras servidas en: ', '').split(', ').map(dia)
+    : [];
+  const capricho = (r.capricho || '').match(/capricho realizado en (\w+)/);
+  if (!r.ancla) return `Plantilla <strong>${esc(r.esqueleto)}</strong>. Semana sin ancla.`;
+  if (r.anclaBase && r.cocinadoAntes) {
+    return `Ancla: <strong>${esc(r.ancla)}</strong>. El usuario cocina el domingo anterior y se usa en dos platos: el ${sobras.join(' y el ')}.`;
+  }
+  if (r.anclaBase) {
+    return `Plantilla <strong>${esc(r.esqueleto)}</strong>. Ancla: <strong>${esc(r.ancla)}</strong>. Se cocina el ${cocina ? dia(cocina[1]) : '—'}${r.diaElegido ? ' (día elegido por el usuario)' : ''}`
+      + (sobras.length ? ` y se aprovecha el ${sobras.join(', el ')} en otro plato.` : ', sin día para aprovecharlo.');
+  }
+  let t = `Plantilla <strong>${esc(r.esqueleto)}</strong>. Ancla: <strong>${esc(r.ancla)}</strong>, cocinada el ${cocina ? dia(cocina[1]) : '—'}`;
+  t += sobras.length ? `, con sobras el ${sobras.join(', el ')}.` : ', sin días de sobras.';
+  if (capricho) {
+    t += ` Día de capricho: ${dia(capricho[1])}`;
+    t += r.caprichoDegradado ? ', pero el catálogo no tiene platos de capricho y ese día se rellena como uno normal.' : '.';
+  } else {
+    t += ' Sin día de capricho: no quedaba un día libre de entreno y de ancla.';
+  }
+  return t;
+}
+
+function etiquetasDia(clave, d, resumen) {
+  const tags = [];
+  if (!esNuevoClave(clave)) {
+    if (d.etiqueta === 'entrenamiento') tags.push(['entreno', 'entreno']);
+    else if (d.etiqueta === 'libre') tags.push(['libre', 'comida libre']);
+    else if (d.etiqueta) tags.push(['', d.etiqueta]);
+  } else {
+    if (['entreno', 'libre', 'familiar'].includes(d.etiqueta)) tags.push([d.etiqueta, d.etiqueta === 'libre' ? 'comida libre' : d.etiqueta]);
+    const causas = [d.comida && d.comida.causa, d.cena && d.cena.causa];
+    if (causas.includes('ancla_base_cocinado') && resumen && resumen.cocinadoAntes) tags.push(['sobras', 'usa el ancla']);
+    else if (causas.includes('ancla_momento_unico') || causas.includes('ancla_base_cocinado')) tags.push(['ancla', 'cocina ancla']);
+    else if (causas.includes('ancla_base_aprovechado')) tags.push(['sobras', 'aprovecha']);
+    else if (causas.some((c) => c && c.startsWith('sobra_'))) tags.push(['sobras', 'sobras']);
+    if (d.slotRole === 'capricho') tags.push(['capricho', 'capricho']);
+  }
+  return tags.map(([c, t]) => `<span class="tag ${c}">${esc(t)}</span>`).join('');
+}
+
+function celda(clave, d, i, m, rep, opts, cr) {
+  const c = d[m];
+  if (!c) return '';
+  const nuevo = esNuevoClave(clave);
+  const off = m === 'comida' && i === 5;
+  const r = !off && rep.get(c.plato);
+  const clases = ['hueco', m === 'desayuno' ? 'desayuno' : '', off ? 'off' : '', r ? `rep rc${r.color}` : ''].filter(Boolean).join(' ');
+  const chips = [];
+  if (r) chips.push(`<span class="chip repChip">×${r.c} en la semana</span>`);
+  if (!off && m !== 'desayuno' && cr && cr.has(c.plato)) chips.push(`<span class="chip cruce">ya salió en la semana ${cr.get(c.plato)}</span>`);
+  const antes = nuevo && opts.resumen && opts.resumen.cocinadoAntes;
+  if (nuevo && c.causa === 'ancla_base_cocinado' && antes) chips.push('<span class="chip causa">usa el ancla del domingo</span>');
+  else if (nuevo && CAUSA[c.causa]) chips.push(`<span class="chip causa">${esc(CAUSA[c.causa])}</span>`);
+  if (off && nuevo) chips.push('<span class="chip">sábado libre, no cuenta</span>');
+  let porque = '';
+  if (nuevo && c.causa) {
+    porque = `<details class="porque"${opts.porque ? ' open' : ''}><summary>por qué</summary><p>${esc(CAUSA_LARGA[c.causa] || c.causa)}${c.evidencia ? '<br>' + esc(c.evidencia) : ''}</p></details>`;
+  }
+  if (c.libre) {
+    return `<div class="${clases}"><span class="momento">${m}</span><div class="plato"><div class="platoLinea"><span>Comida libre</span><span class="chips"><span class="chip">no cuenta</span></span></div><span class="sugerencia">Si quieres cocinar: ${esc(c.plato)}</span></div></div>`;
+  }
+  return `<div class="${clases}"><span class="momento">${m}</span><div class="plato"><div class="platoLinea"><span>${esc(c.plato)}</span>${chips.length ? `<span class="chips">${chips.join('')}</span>` : ''}</div>${porque}</div></div>`;
+}
+
+function carta(clave, s, opts) {
+  const rep = repeticiones(clave, s);
+  const cr = cruces(clave, s);
+  const nuevo = esNuevoClave(clave);
+  const cabeza = nuevo
+    ? `<h3><span class="dot nuevo"></span>${esc(tituloDe(clave))}</h3><p>${frasesNuevo(s[clave].resumen)}</p>`
+    : '<h3><span class="dot legacy"></span>Motor actual (legacy)</h3><p class="sinLog">No registra por qué elige cada plato.</p>';
+  const dias = s[clave].dias.map((d, i) => {
+    const momentos = (opts.desayuno && !nuevo ? ['desayuno'] : []).concat(['comida', 'cena']);
+    const o = { ...opts, resumen: s[clave].resumen };
+    return `<div class="dia"><div class="diaNom"><b>${esc(d.dia)}</b>${etiquetasDia(clave, d, s[clave].resumen)}</div>
+      <div class="huecos">${momentos.map((m) => celda(clave, d, i, m, rep, o, cr)).join('')}</div></div>`;
+  }).join('');
+  return `<article class="carta ${nuevo ? 'nuevo' : 'legacy'}"><div class="cartaHead">${cabeza}</div>${dias}</article>`;
+}
+
+const estado = { semana: 0, comp: COMPS.length > 1 ? 1 : 0, desayuno: false, porque: false };
+try { Object.assign(estado, JSON.parse(localStorage.getItem('visor-menus') || '{}')); } catch (e) { /* sin almacenamiento */ }
+const h = (location.hash || '').match(/^#s(\d+)$/);
+if (h && DATOS.semanas[Number(h[1]) - 1]) estado.semana = Number(h[1]) - 1;
+if (!DATOS.semanas[estado.semana]) estado.semana = 0;
+if (!COMPS[estado.comp]) estado.comp = 0;
+function guardar() { try { localStorage.setItem('visor-menus', JSON.stringify(estado)); } catch (e) { /* nada */ } }
+
+function pintarSelectores() {
+  document.getElementById('comps').innerHTML = COMPS.map((c, k) =>
+    `<button class="tab" role="tab" aria-selected="${k === estado.comp}" data-c="${k}">${esc(tituloDe(c.a))}<small>frente a ${esc(tituloDe(c.b))}</small></button>`).join('');
+  document.getElementById('tabs').innerHTML = DATOS.semanas.map((s, k) =>
+    `<button class="tab" role="tab" aria-selected="${k === estado.semana}" data-k="${k}">Semana ${s.n}<small>${s.perfil} · su semana ${s.semanaDelUsuario}</small></button>`).join('');
+}
+
+function pintar() {
+  const comp = COMPS[estado.comp];
+  const s = DATOS.semanas[estado.semana];
+  pintarCambios(comp);
+  pintarResumen(comp);
+  const ra = repeticiones(comp.a, s), rb = repeticiones(comp.b, s);
+  document.getElementById('semana').innerHTML = `
+    <div class="semanaHead"><h2>Semana ${s.n}</h2><p>${esc(PERFIL[s.perfil])} · semana ${s.semanaDelUsuario} de este usuario · semilla ${s.semilla} · platos repetidos en la semana: ${ra.size} en «${esc(tituloDe(comp.a))}» y ${rb.size} en «${esc(tituloDe(comp.b))}»</p></div>
+    <div class="cartas" style="margin-top:14px">${carta(comp.a, s, estado)}${carta(comp.b, s, estado)}</div>`;
+  document.querySelectorAll('#tabs .tab').forEach((b) => b.setAttribute('aria-selected', String(Number(b.dataset.k) === estado.semana)));
+  document.querySelectorAll('#comps .tab').forEach((b) => b.setAttribute('aria-selected', String(Number(b.dataset.c) === estado.comp)));
+}
+
+document.getElementById('meta').innerHTML = [
+  `código ${DATOS.head.slice(0, 7)}`,
+  `semillas ${DATOS.semanas[0].semilla}–${DATOS.semanas[DATOS.semanas.length - 1].semilla}`,
+  `${DATOS.semanas.length} semanas por motor`,
+  `generado ${DATOS.generadoEn.slice(0, 10)}`,
+].map((t) => `<span>${esc(t)}</span>`).join('');
+
+pintarSelectores();
+pintar();
+const optD = document.getElementById('optDesayuno'), optP = document.getElementById('optPorque');
+optD.checked = !!estado.desayuno; optP.checked = !!estado.porque;
+document.getElementById('tabs').addEventListener('click', (e) => {
+  const b = e.target.closest('.tab'); if (!b) return;
+  estado.semana = Number(b.dataset.k); guardar(); pintar();
+});
+document.getElementById('comps').addEventListener('click', (e) => {
+  const b = e.target.closest('.tab'); if (!b) return;
+  estado.comp = Number(b.dataset.c); guardar(); pintar();
+});
+optD.addEventListener('change', () => { estado.desayuno = optD.checked; guardar(); pintar(); });
+optP.addEventListener('change', () => { estado.porque = optP.checked; guardar(); pintar(); });
+</script>

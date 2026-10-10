@@ -24,7 +24,10 @@ const catalogReal = loadCatalog();
 
 // Ancla real cuya verdura deriva estructuralmente de su tupla (D-021: sin
 // necesidad de fuenteEditorial -- V/V2 siempre se derivan para scaffold).
-const anclaTomate = catalogReal.find((d) => d.id === '["sopa_crema","huevo",null,"tomate",null,null,"crudo"]');
+// D-099: «Huevo con tomate en crudo» paso a ser plato de cena; este test fija
+// la identidad de verdura con el plato colocado a la comida, asi que usa una
+// copia con momento=['comida'] (la composicion se resuelve por id, no cambia).
+const anclaTomate = { ...catalogReal.find((d) => d.id === '["sopa_crema","huevo",null,"tomate",null,null,"crudo"]'), momento: ['comida'] };
 // Rotativo/comida que REPITE la identidad del ancla ('tomate').
 const rotativoRepite = catalogReal.find((d) => d.id === '["pasta","pollo","pasta","tomate",null,"tomate_casero","salteado"]');
 // Rotativo/comida con identidad DISJUNTA ('brocoli') -- ni proteinType

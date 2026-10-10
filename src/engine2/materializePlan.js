@@ -11,6 +11,7 @@
 // modulos (prohibido por el encargo).
 
 import { buildWeekArc } from './skeleton/buildWeekArc.js';
+import { aplicarAjustesD099 } from './dishes/ajustesD099.js';
 import { runWalk } from './walk/runWalk.js';
 import { DAYS_ORDER } from './skeleton/days.js';
 import { MOMENTOS } from './dishes/schema.js';
@@ -32,14 +33,17 @@ function findDish(catalog, dishId) {
  */
 export function materializePlan(input) {
   const {
-    profile, seed, strategy, catalog, fuenteEditorial,
+    profile, seed, strategy, fuenteEditorial, platosRecientes = [], cocinarEnCantidad,
   } = input;
+  // D-099: ajustes de catalogo (legumbres solo de comida; huevo con tomate en
+  // crudo, plato normal de cena) sin tocar dishes.json (hash de D-028).
+  const catalog = aplicarAjustesD099(input.catalog);
 
   const { weekArc, decisionLog: arcLog } = buildWeekArc({
-    profile, seed, strategy, fuenteEditorial,
+    profile, seed, strategy, fuenteEditorial, cocinarEnCantidad,
   });
   const { slots, decisionLog: walkLog } = runWalk({
-    weekArc, catalog, seed, profile, fuenteEditorial,
+    weekArc, catalog, seed, profile, fuenteEditorial, platosRecientes,
   });
 
   const slotsByKey = new Map(slots.map((s) => [`${s.day}::${s.momento}`, s]));
@@ -48,7 +52,11 @@ export function materializePlan(input) {
     day,
     meals: MOMENTOS.map((momento) => {
       const slot = slotsByKey.get(`${day}::${momento}`);
-      return { momento, dish: findDish(catalog, slot.dishId) };
+      // Prototipo (visor): la comida del dia libre es libre; el plato queda como
+      // sugerencia por si el usuario quiere cocinar.
+      const beat = weekArc.beats.find((b) => b.day === day);
+      const libre = momento === 'comida' && beat && beat.fixedRole === 'libre';
+      return { momento, dish: findDish(catalog, slot.dishId), ...(libre ? { libre: true } : {}) };
     }),
   }));
 

@@ -51,7 +51,10 @@ describe('T-INV (D-036) -- unicidad logica de instancia de fuenteEditorial a tra
       confirmed: {
         [targetRotativo.id]: { gluten: { valor: true, por: 'T-INV', fecha: '2026-07-14' } },
         ...Object.fromEntries(
-          ANCHORS.map((a) => [a.identityKey, { gluten: { valor: false, por: 'T-INV', fecha: '2026-07-14' } }]),
+          // D-099: «Huevo con tomate en crudo» dejo de ser ancla (ahora rotativo):
+          // confirmarlo moveria el conteo «desconocida» del canal veto.
+          ANCHORS.filter((a) => catalogReal.find((d) => d.id === a.identityKey)?.rol === 'ancla')
+            .map((a) => [a.identityKey, { gluten: { valor: false, por: 'T-INV', fecha: '2026-07-14' } }]),
         ),
       },
     };
@@ -69,8 +72,8 @@ describe('T-INV (D-036) -- unicidad logica de instancia de fuenteEditorial a tra
     expect(conteo.valor).toBe(conteoBase.valor + 1);
     expect(conteo.desconocida).toBe(conteoBase.desconocida);
 
-    // Canal 2 (anchorVista via buildWeekArc/chooseAnchor): las 6 anclas confirmadas gluten:false
-    // sobreviven -- ancla presente donde, sin la MISMA fuente inyectada, estaria ausente (baseline).
-    expect(weekArc.anchors).toHaveLength(1);
+    // Canal 2 retirado (D-099): el ancla ya no es un plato del catalogo sino un
+    // ingrediente base, y solo existe si el usuario elige cocinar en cantidad.
+    expect(weekArc.anchors).toEqual([]);
   });
 });

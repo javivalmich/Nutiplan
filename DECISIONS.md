@@ -4199,3 +4199,45 @@ Autorización y límites
 
 Estado resultante
 Recogida cerrada. Sellado público autorizado sin las hojas recibidas. Decodificación autorizada tras la fusión. Clave sin abrir.
+
+## D-099 — [2026-10-10] Primera Fase 7 superada por orden del titular, reglas de menú de engine2 y sustitución de legacy
+
+Decide: Javi. HEAD: `486eb38`.
+
+Contexto
+La decodificación autorizada por D-098 (punto 6) se ejecutó. Según la comunicación del titular, el resultado de la evaluación ciega de la primera Fase 7 es que no se acredita la no inferioridad (nivel 1 de D-093): L = −1,57 y el veto descriptivo se activó (E-1 prefirió claramente legacy en al menos 3 pares). El nivel 2 no se examina. El sha256 de `C:\Users\javiv\fase7-materiales\d098\resultado.txt` es `ff538d6989cfed82db31792e9f590947eccb3e325ad2e6da1e43a331bfa8effe` (certutil, ejecutado por el titular el 2026-10-11). Conforme a D-092 (punto 2) y D-093, ese resultado no permite la sustitución.
+Después, el titular revisó los menús de engine2 en un visor (`scripts/visor/`), sin cegado y fuera de cualquier evaluación: 10 semanas seguidas por motor (perfiles P1 y P2 de Fase 7, semillas 90001–90010), con las repeticiones dentro de la semana y entre semanas marcadas. Sobre lo que vio fijó las reglas del punto 3, que se probaron en el mismo visor ciclo a ciclo. Con ellas, los menús le convencen.
+
+Decisión
+1. Forma. Asiento directo sin freeze, por decisión del titular. Es una excepción expresa a D-084 (punto 5) para este asiento, porque afecta al motor; la regla no se modifica.
+2. Resultado de la evaluación ciega. Se registra como está en el contexto: no acredita la no inferioridad. No se repite (D-093, punto 9) y no se modifica.
+3. Reglas de menú de engine2.
+   a. Cocinar en cantidad es una elección del usuario cada semana (`cocinarEnCantidad: {activo, dia}`). Sin respuesta o con «no», la semana no tiene ancla.
+   b. El ancla es un ingrediente, no un plato: garbanzos, alubias, pollo, pavo, ternera, cerdo, arroz o quinoa (`src/engine2/dishes/bases.js`). Las lentejas no son ancla. Se cocina un día en un plato que lo lleva y otro día se aprovecha en un plato distinto que también lo lleva; para la carne, el segundo plato es uno donde entra ya cocinada. Como mucho 2 platos por semana, en los 3 días que aguanta lo cocinado.
+   c. El usuario elige el día de cocinar. «Domingo» es el domingo anterior a la semana: los dos platos caen entre lunes y miércoles. El aprovechamiento puede caer en un día de entreno (a la comida), nunca en sábado ni domingo.
+   d. Ningún plato sale dos veces en la misma semana, ni la semana siguiente a haber salido (si sale en la semana 1, puede volver en la 3). Se compara por el nombre que ve el usuario.
+   e. Una misma proteína principal sale como mucho 2 veces por semana, contando el ancla, y nunca el mismo día ni en días seguidos, salvo los dos platos del ancla.
+   f. Ninguna legumbre a la cena: hummus con pita y pollo, curry de garbanzos y ensalada tibia de lentejas pasan a ser solo de comida.
+   g. El huevo con tomate en crudo deja de ser ancla y pasa a plato normal, solo de cena (como mucho una vez por semana, por d).
+   h. Sin día de capricho: el capricho de la semana es la comida libre del sábado.
+   i. La comida del sábado es libre (`libre: true`); el plato elegido queda como sugerencia por si el usuario quiere cocinar.
+   Las reglas d y e se aplican como filtros con vuelta atrás: si dejaran un hueco sin candidatos, no se aplican y la evidencia lo dice. Los ajustes f y g se aplican sobre el catálogo al materializar el plan (`src/engine2/dishes/ajustesD099.js`): `scripts/phaseB2/output/dishes.json` no se modifica y su sha256 ratificado en D-028 se mantiene. Las reglas quedan fijadas por `src/engine2/tests/reglasD099.test.js`.
+4. Fase 7 y sustitución. Por orden del titular, la primera Fase 7 se da por superada. La base es su revisión de los menús en el visor con las reglas del punto 3, no la evaluación ciega de D-087 y D-093, cuyo resultado (punto 2) queda como está. Quedan sin efecto, para esta sustitución, la condición de D-092 (punto 2) y la de D-093. engine2 pasa a ser el motor por defecto de la app para todos los usuarios.
+5. Legacy se conserva. `src/engine/buildPlan.js` no se modifica ni se borra. Vuelta atrás: `VITE_MOTOR_PLAN=legacy` en el despliegue (para todos) o `profile.motorPlan = 'legacy'` (para un usuario). Si engine2 falla al generar, la app usa legacy y lo anota en el plan (`motor`, `motorFallo`). Las regeneraciones parciales (cambiar una comida, recalcular un día con o sin batido) siguen en legacy. Los planes guardados no se migran: se sustituyen en su próximo cambio de semana.
+6. Composición. engine2 elige los platos; las cantidades, la receta, la compra por comida, los desayunos y los tentempiés salen de legacy por la vía que ya usa la app para el batido (`profile._regenContext.dayPortionsRegen`), sin copiar ni tocar su código (`src/plan/engine2App.js`). engine2 sigue sin importar `src/engine` (CLAUDE.md, reglas 2 y 7).
+7. Seguridad alimentaria. engine2 solo veta gluten y lactosa. El resto de intolerancias y los alimentos eliminados del perfil se quitan del catálogo antes de que engine2 elija, por la proteína del plato y por el texto del plato compuesto (título, preparación y compra). Límite: es un filtro por texto, no por ficha estructurada de alérgenos.
+8. Enmienda de CLAUDE.md:6: «el motor viejo sigue sirviendo usuarios hasta que el nuevo cumple la condición de sustitución que fija `DECISIONS.md` para la evaluación ciega.» pasa a «desde D-099, engine2 es el motor por defecto y el motor viejo se conserva como reserva y para las regeneraciones parciales.» El resto de la línea no cambia.
+9. Semillas. 90001–90010 quedan usadas por el visor; una futura ventana de evaluación debe excluirlas.
+
+Pendiente (no se decide aquí)
+- Receta del aprovechamiento: el segundo plato del ancla todavía dice cómo cocinar el ingrediente; la nota del día lo aclara.
+- Lista de la compra semanal agregada, con avisos de congelar o de comprar una vez para dos comidas.
+- Ciclo semanal de la app (cambio de semana el domingo a las 24:00, semana siguiente visible desde el principio, pregunta de cocinar en cantidad y día): trabajo de producto. Revisar `src/data/runtime.js:313–317`, donde el número de semana cambia el sábado de madrugada.
+- Regenerar una comida con engine2 en lugar de legacy.
+
+Autorización y límites
+- Se autoriza fusionar en `main` el PR que contiene este asiento y el código del punto 3 a 8, y desplegarlo.
+- La Fase 7 se da por superada por orden del titular (punto 4); el resultado de la evaluación ciega (punto 2) no se modifica.
+
+Estado resultante
+Primera Fase 7 superada por orden del titular; la evaluación ciega no acreditó no inferioridad. engine2 es el motor por defecto; legacy se conserva como reserva.

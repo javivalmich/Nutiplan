@@ -1,0 +1,4 @@
+2026-10-10 00:45; fase valoraciones; enviado; pares.html 390c8ad7f7e97de247d187c77f62175d96403d8a016fb3b342b8579cd68185be; respuestas-valoraciones.xlsx 897fc8491f93487513a7609c35ae5d04c35726428f2c07e7813f9a31772a4449; canal soporte@puntostudio.es 
+2026-10-10 12:43; fase valoraciones; valida; respuestas-valoraciones.xlsx 2f99fa20f57e523c73ecf7f2998961d22ea5c9d8ae9c43e638edd7357b9e65f9; canal soporte@puntostudio.es 
+2026-10-10 13:02; fase reconocimiento; enviado; respuestas-reconocimiento.xlsx 0e32dfea4f31f32519f257aa4fe9d97a045295339bfd851b6900f45c8853d0fc; canal soporte@puntostudio.es 
+2026-10-10 13:20; fase reconocimiento; valida; respuestas-reconocimiento.xlsx 1717a61f6443b1cb7fa58d0166064a0c22a943d6ee9a15e8a75f2bfea422aa17; canal soporte@puntostudio.es 

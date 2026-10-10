@@ -4171,3 +4171,31 @@ Autorización y límites
 
 Estado resultante
 Evaluador designado. Generación de la entrega real e inicio de la evaluación autorizados. Entrega real no generada; evaluación no iniciada; clave sin abrir.
+
+## D-098 — [2026-10-10] Cierre de la recogida, sellado público sin las hojas recibidas y autorización de la decodificación de la primera Fase 7
+
+Decide: Javi. HEAD: `ec637b5`.
+
+Contexto
+La evaluación se inició conforme a D-097 (punto 8) el 2026-10-10. Fase de valoraciones: recepción válida con sha256 `2f99fa20f57e523c73ecf7f2998961d22ea5c9d8ae9c43e638edd7357b9e65f9`, custodiada en `C:\Users\javiv\fase7-materiales\entrega\valoraciones\valida\` y en `E:\fase7-custodia\entrega\valoraciones\valida\`; `comprobar` terminó con código 0: estructura íntegra, 20 pares asignados, 80 preguntas válidas, 0 ausentes, 20 de 20 pares completos y 0 incidencias (informe `3b7b88068c155811d1972f3fb37e270e20cc732aea0f34476b0912881bbf44e3`, extracción `b82a30f3b63887c8ab2595453ed31511e9c8d43b72dc48e261a00bcd8804e46b`). El titular declara que esa hoja es la recepción válida de E-1; la hora anotada en el registro de recepción (12:43) es anterior a la fecha de modificación interna del fichero (12:47:48, hora de Madrid), y el titular la mantiene. Antes de esa recepción, el titular mostró en la conversación una captura de un visor con la hoja rellenada y una copia del fichero enviado sin modificar; ninguna se registró como recepción. Ningún par quedó sin respuesta principal, por lo que no procede la reanudación (D-093, punto 11). Fase de reconocimiento: enviada a las 13:02 y recibida a las 13:20, con sha256 `1717a61f6443b1cb7fa58d0166064a0c22a943d6ee9a15e8a75f2bfea422aa17`, custodiada de igual forma; `comprobar` terminó con código 0: estructura íntegra, 20 válidas, 0 ausentes y 0 incidencias (informe `da898ce0554b7201583275c4293998e58dbcdf9f12416e67e3cf145df4327676`, extracción `ea50ab3678bea8ab2a9ec3965175ad6d0fc63e699444c1d50543f9764e47315b`). D-095 (punto 7) exige que el PR de evidencia previo a la decodificación contenga las hojas recibidas. D-097 (punto 2) dispone que la identidad de E-1 no se registre, y una hoja guardada con Excel puede contener datos de quien la guarda; en las dos hojas recibidas, los campos de autor, último autor y empresa están vacíos y no consta ninguna ruta de carpeta. La clave tiene sha256 `97cf01877e8d6587f17e2a5375095f6652a18b16de0b193a9bb54ce0631336b6`, registrado como H0 en `docs/evidence/fase7-pares/README.md:75` y `:78`, y no se ha abierto. Las decisiones de este asiento son constitutivas del titular.
+
+Decisión
+1. Forma. Este asiento afecta a la ejecución de la evaluación y se registra, por decisión del titular, como asiento directo, sin freeze. Es una excepción expresa a D-084 (punto 5) para este asiento; la regla no se modifica.
+2. Recogida cerrada. Quedan selladas las dos fases con las recepciones válidas del contexto. No hay ronda de reanudación.
+3. Enmienda de D-095 (punto 7), solo en cuanto al contenido del PR de evidencia: las hojas recibidas no se versionan. En su lugar se versionan su sha256, el informe y la extracción de cada fase. Las hojas se conservan en las carpetas `valida` y en su custodia. Límite: el contenido de las hojas no es verificable públicamente; solo su sha256. El resto de D-095 (punto 7) sigue vigente.
+4. Comprobación previa al PR. Antes de versionar las extracciones, el titular comprueba que los comentarios de la extracción de valoraciones no contienen datos que identifiquen a E-1. Si los contienen, no se versiona y una nueva disposición del titular decide cómo seguir.
+5. Contenido del PR. En `docs/evidence/fase7-evaluacion/`: `.gitattributes` con `* -text`; `registro-recepcion.txt`; `valoraciones/informe-valoraciones.txt` y `valoraciones/extraccion-valoraciones.json`; `reconocimiento/informe-reconocimiento.txt` y `reconocimiento/extraccion-reconocimiento.json`; `hashes.txt`, con el sha256 de los ficheros enviados y recibidos que no se versionan; y `decodificar.mjs`, con sha256 `dc6623ab3dd87d8ff86786b5285f417692ed8c2b450f46a0571fa3fad33189ad`. No entran la vista, la clave, el HTML enviado, las hojas enviadas o recibidas ni las copias de revisión. Las demás carpetas de evidencia pendientes van a un PR documental posterior y no condicionan la decodificación.
+6. Decodificación. Una vez fusionado el PR en `origin/main`, se autoriza una única ejecución, en este orden y con un comando por línea:
+   a. `certutil -hashfile C:\Users\javiv\fase7-materiales\pares-clave\clave-pares.json SHA256`, que debe dar el sha256 de la clave del contexto.
+   b. `mkdir C:\Users\javiv\fase7-materiales\d098`.
+   c. `node C:\Users\javiv\app-comida\docs\evidence\fase7-evaluacion\decodificar.mjs --clave C:\Users\javiv\fase7-materiales\pares-clave\clave-pares.json --ext-valoraciones C:\Users\javiv\fase7-materiales\entrega\valoraciones\comprobacion\extraccion-valoraciones.json --ext-reconocimiento C:\Users\javiv\fase7-materiales\entrega\reconocimiento\comprobacion\extraccion-reconocimiento.json --manifiesto C:\Users\javiv\fase7-materiales\generacion-2001-2010\manifiesto-generacion.json > C:\Users\javiv\fase7-materiales\d098\resultado.txt 2> C:\Users\javiv\fase7-materiales\d098\stderr.txt`
+   d. `echo CODIGO=%ERRORLEVEL% > C:\Users\javiv\fase7-materiales\d098\codigo.txt`, inmediatamente después de c.
+   El script comprueba el sha256 de sus cuatro entradas y aplica D-093 (puntos 4 a 10) con t(0,95; 9) = 1,8331129. Si a no coincide o el código no es 0, no hay resultado y una nueva ejecución requiere una disposición del titular.
+7. Resultado. El texto de `resultado.txt` en la sección «Resultado (D-093, punto 7)» es el resultado de la primera Fase 7. Se registra en un asiento posterior con su evidencia. Ese asiento decide, en su caso, sobre la sustitución conforme a D-092 (punto 2): cumplir el nivel 1 es condición necesaria y no suficiente.
+
+Autorización y límites
+- Una vez versionado este asiento, se autorizan el PR del punto 5, que es a la vez el de este asiento, y, tras su fusión, la decodificación del punto 6.
+- Este asiento no autoriza sustituir el motor ni modificar ningún motor.
+
+Estado resultante
+Recogida cerrada. Sellado público autorizado sin las hojas recibidas. Decodificación autorizada tras la fusión. Clave sin abrir.

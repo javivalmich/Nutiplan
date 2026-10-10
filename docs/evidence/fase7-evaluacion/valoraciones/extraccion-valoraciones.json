@@ -1,0 +1,668 @@
+{
+  "fase": "valoraciones",
+  "hojaSha256": "2f99fa20f57e523c73ecf7f2998961d22ea5c9d8ae9c43e638edd7357b9e65f9",
+  "estructuraAlterada": false,
+  "pares": [
+    {
+      "par": 1,
+      "etiquetaA": "P-UYFW",
+      "etiquetaB": "P-X7Z9",
+      "asignada": true,
+      "respuestas": {
+        "principal": {
+          "literal": "Claramente B",
+          "valido": "Claramente B",
+          "ausente": false,
+          "abierta": true
+        },
+        "variedad": {
+          "literal": "Claramente B",
+          "valido": "Claramente B",
+          "ausente": false,
+          "abierta": true
+        },
+        "coherencia": {
+          "literal": "Claramente B",
+          "valido": "Claramente B",
+          "ausente": false,
+          "abierta": true
+        },
+        "equilibrio": {
+          "literal": "Claramente B",
+          "valido": "Claramente B",
+          "ausente": false,
+          "abierta": true
+        }
+      },
+      "comentario": null
+    },
+    {
+      "par": 2,
+      "etiquetaA": "P-QDUZ",
+      "etiquetaB": "P-AWNZ",
+      "asignada": true,
+      "respuestas": {
+        "principal": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "variedad": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "coherencia": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "equilibrio": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        }
+      },
+      "comentario": null
+    },
+    {
+      "par": 3,
+      "etiquetaA": "P-RDA4",
+      "etiquetaB": "P-YGVX",
+      "asignada": true,
+      "respuestas": {
+        "principal": {
+          "literal": "Igual",
+          "valido": "Igual",
+          "ausente": false,
+          "abierta": true
+        },
+        "variedad": {
+          "literal": "Igual",
+          "valido": "Igual",
+          "ausente": false,
+          "abierta": true
+        },
+        "coherencia": {
+          "literal": "Igual",
+          "valido": "Igual",
+          "ausente": false,
+          "abierta": true
+        },
+        "equilibrio": {
+          "literal": "Algo B",
+          "valido": "Algo B",
+          "ausente": false,
+          "abierta": true
+        }
+      },
+      "comentario": "Falta pescado en B"
+    },
+    {
+      "par": 4,
+      "etiquetaA": "P-27W5",
+      "etiquetaB": "P-FENR",
+      "asignada": true,
+      "respuestas": {
+        "principal": {
+          "literal": "Algo B",
+          "valido": "Algo B",
+          "ausente": false,
+          "abierta": true
+        },
+        "variedad": {
+          "literal": "Algo B",
+          "valido": "Algo B",
+          "ausente": false,
+          "abierta": true
+        },
+        "coherencia": {
+          "literal": "Algo B",
+          "valido": "Algo B",
+          "ausente": false,
+          "abierta": true
+        },
+        "equilibrio": {
+          "literal": "Algo B",
+          "valido": "Algo B",
+          "ausente": false,
+          "abierta": true
+        }
+      },
+      "comentario": null
+    },
+    {
+      "par": 5,
+      "etiquetaA": "P-JT82",
+      "etiquetaB": "P-Q5NH",
+      "asignada": true,
+      "respuestas": {
+        "principal": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "variedad": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "coherencia": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "equilibrio": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        }
+      },
+      "comentario": "Falta pescado en A"
+    },
+    {
+      "par": 6,
+      "etiquetaA": "P-GSNX",
+      "etiquetaB": "P-5WZF",
+      "asignada": true,
+      "respuestas": {
+        "principal": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "variedad": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "coherencia": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "equilibrio": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        }
+      },
+      "comentario": null
+    },
+    {
+      "par": 7,
+      "etiquetaA": "P-XRX7",
+      "etiquetaB": "P-MFA2",
+      "asignada": true,
+      "respuestas": {
+        "principal": {
+          "literal": "Algo A",
+          "valido": "Algo A",
+          "ausente": false,
+          "abierta": true
+        },
+        "variedad": {
+          "literal": "Algo B",
+          "valido": "Algo B",
+          "ausente": false,
+          "abierta": true
+        },
+        "coherencia": {
+          "literal": "Algo B",
+          "valido": "Algo B",
+          "ausente": false,
+          "abierta": true
+        },
+        "equilibrio": {
+          "literal": "Algo B",
+          "valido": "Algo B",
+          "ausente": false,
+          "abierta": true
+        }
+      },
+      "comentario": "Faltan platos tipicos, como el que hay en A, de caldo, tom kha gai, y falta pescado"
+    },
+    {
+      "par": 8,
+      "etiquetaA": "P-FP3M",
+      "etiquetaB": "P-G67Q",
+      "asignada": true,
+      "respuestas": {
+        "principal": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "variedad": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "coherencia": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "equilibrio": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        }
+      },
+      "comentario": null
+    },
+    {
+      "par": 9,
+      "etiquetaA": "P-Y93N",
+      "etiquetaB": "P-4MMA",
+      "asignada": true,
+      "respuestas": {
+        "principal": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "variedad": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "coherencia": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "equilibrio": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        }
+      },
+      "comentario": null
+    },
+    {
+      "par": 10,
+      "etiquetaA": "P-DA43",
+      "etiquetaB": "P-ZD6G",
+      "asignada": true,
+      "respuestas": {
+        "principal": {
+          "literal": "Claramente B",
+          "valido": "Claramente B",
+          "ausente": false,
+          "abierta": true
+        },
+        "variedad": {
+          "literal": "Algo B",
+          "valido": "Algo B",
+          "ausente": false,
+          "abierta": true
+        },
+        "coherencia": {
+          "literal": "Igual",
+          "valido": "Igual",
+          "ausente": false,
+          "abierta": true
+        },
+        "equilibrio": {
+          "literal": "Algo B",
+          "valido": "Algo B",
+          "ausente": false,
+          "abierta": true
+        }
+      },
+      "comentario": null
+    },
+    {
+      "par": 11,
+      "etiquetaA": "P-GKFR",
+      "etiquetaB": "P-VXBW",
+      "asignada": true,
+      "respuestas": {
+        "principal": {
+          "literal": "Igual",
+          "valido": "Igual",
+          "ausente": false,
+          "abierta": true
+        },
+        "variedad": {
+          "literal": "Igual",
+          "valido": "Igual",
+          "ausente": false,
+          "abierta": true
+        },
+        "coherencia": {
+          "literal": "Igual",
+          "valido": "Igual",
+          "ausente": false,
+          "abierta": true
+        },
+        "equilibrio": {
+          "literal": "Igual",
+          "valido": "Igual",
+          "ausente": false,
+          "abierta": true
+        }
+      },
+      "comentario": null
+    },
+    {
+      "par": 12,
+      "etiquetaA": "P-HUBS",
+      "etiquetaB": "P-8ZNP",
+      "asignada": true,
+      "respuestas": {
+        "principal": {
+          "literal": "Algo B",
+          "valido": "Algo B",
+          "ausente": false,
+          "abierta": true
+        },
+        "variedad": {
+          "literal": "Algo B",
+          "valido": "Algo B",
+          "ausente": false,
+          "abierta": true
+        },
+        "coherencia": {
+          "literal": "Igual",
+          "valido": "Igual",
+          "ausente": false,
+          "abierta": true
+        },
+        "equilibrio": {
+          "literal": "Igual",
+          "valido": "Igual",
+          "ausente": false,
+          "abierta": true
+        }
+      },
+      "comentario": "Nohay pescado"
+    },
+    {
+      "par": 13,
+      "etiquetaA": "P-SXPF",
+      "etiquetaB": "P-6KWA",
+      "asignada": true,
+      "respuestas": {
+        "principal": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "variedad": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "coherencia": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "equilibrio": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        }
+      },
+      "comentario": null
+    },
+    {
+      "par": 14,
+      "etiquetaA": "P-JZU6",
+      "etiquetaB": "P-UEHM",
+      "asignada": true,
+      "respuestas": {
+        "principal": {
+          "literal": "Algo A",
+          "valido": "Algo A",
+          "ausente": false,
+          "abierta": true
+        },
+        "variedad": {
+          "literal": "Algo B",
+          "valido": "Algo B",
+          "ausente": false,
+          "abierta": true
+        },
+        "coherencia": {
+          "literal": "Igual",
+          "valido": "Igual",
+          "ausente": false,
+          "abierta": true
+        },
+        "equilibrio": {
+          "literal": "Algo A",
+          "valido": "Algo A",
+          "ausente": false,
+          "abierta": true
+        }
+      },
+      "comentario": null
+    },
+    {
+      "par": 15,
+      "etiquetaA": "P-GXS5",
+      "etiquetaB": "P-P3SH",
+      "asignada": true,
+      "respuestas": {
+        "principal": {
+          "literal": "Algo A",
+          "valido": "Algo A",
+          "ausente": false,
+          "abierta": true
+        },
+        "variedad": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "coherencia": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "equilibrio": {
+          "literal": "Igual",
+          "valido": "Igual",
+          "ausente": false,
+          "abierta": true
+        }
+      },
+      "comentario": null
+    },
+    {
+      "par": 16,
+      "etiquetaA": "P-CHP7",
+      "etiquetaB": "P-3R5B",
+      "asignada": true,
+      "respuestas": {
+        "principal": {
+          "literal": "Algo B",
+          "valido": "Algo B",
+          "ausente": false,
+          "abierta": true
+        },
+        "variedad": {
+          "literal": "Claramente B",
+          "valido": "Claramente B",
+          "ausente": false,
+          "abierta": true
+        },
+        "coherencia": {
+          "literal": "Claramente B",
+          "valido": "Claramente B",
+          "ausente": false,
+          "abierta": true
+        },
+        "equilibrio": {
+          "literal": "Claramente B",
+          "valido": "Claramente B",
+          "ausente": false,
+          "abierta": true
+        }
+      },
+      "comentario": "Un poquito de variedad en platos, al final hay una buena dinamica de creacion de platos, pero son como siempre los mismos"
+    },
+    {
+      "par": 17,
+      "etiquetaA": "P-ZBMM",
+      "etiquetaB": "P-DRKJ",
+      "asignada": true,
+      "respuestas": {
+        "principal": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "variedad": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "coherencia": {
+          "literal": "Igual",
+          "valido": "Igual",
+          "ausente": false,
+          "abierta": true
+        },
+        "equilibrio": {
+          "literal": "Algo A",
+          "valido": "Algo A",
+          "ausente": false,
+          "abierta": true
+        }
+      },
+      "comentario": null
+    },
+    {
+      "par": 18,
+      "etiquetaA": "P-UVJX",
+      "etiquetaB": "P-UQ7D",
+      "asignada": true,
+      "respuestas": {
+        "principal": {
+          "literal": "Algo B",
+          "valido": "Algo B",
+          "ausente": false,
+          "abierta": true
+        },
+        "variedad": {
+          "literal": "Claramente B",
+          "valido": "Claramente B",
+          "ausente": false,
+          "abierta": true
+        },
+        "coherencia": {
+          "literal": "Algo B",
+          "valido": "Algo B",
+          "ausente": false,
+          "abierta": true
+        },
+        "equilibrio": {
+          "literal": "Igual",
+          "valido": "Igual",
+          "ausente": false,
+          "abierta": true
+        }
+      },
+      "comentario": null
+    },
+    {
+      "par": 19,
+      "etiquetaA": "P-C73B",
+      "etiquetaB": "P-X9EN",
+      "asignada": true,
+      "respuestas": {
+        "principal": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "variedad": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "coherencia": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "equilibrio": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        }
+      },
+      "comentario": null
+    },
+    {
+      "par": 20,
+      "etiquetaA": "P-5SZT",
+      "etiquetaB": "P-XH89",
+      "asignada": true,
+      "respuestas": {
+        "principal": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "variedad": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "coherencia": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        },
+        "equilibrio": {
+          "literal": "Claramente A",
+          "valido": "Claramente A",
+          "ausente": false,
+          "abierta": true
+        }
+      },
+      "comentario": null
+    }
+  ],
+  "incidencias": []
+}

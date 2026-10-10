@@ -1,0 +1,9 @@
+Comprobación de la hoja de reconocimiento
+sha256 de la hoja: 1717a61f6443b1cb7fa58d0166064a0c22a943d6ee9a15e8a75f2bfea422aa17
+Resultado técnico: superado (se abre y contiene la hoja «Respuestas»)
+Estructura: íntegra
+Pares esperados: 20; asignados: 20
+Preguntas con valor válido: 20
+Preguntas ausentes: 0 (de ellas, con un valor no válido: 0)
+Pares completos: 20 de 20
+Incidencias: 0

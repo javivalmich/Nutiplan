@@ -1,0 +1,288 @@
+{
+  "fase": "reconocimiento",
+  "hojaSha256": "1717a61f6443b1cb7fa58d0166064a0c22a943d6ee9a15e8a75f2bfea422aa17",
+  "estructuraAlterada": false,
+  "pares": [
+    {
+      "par": 1,
+      "etiquetaA": "P-UYFW",
+      "etiquetaB": "P-X7Z9",
+      "asignada": true,
+      "respuestas": {
+        "reconocimiento": {
+          "literal": "No",
+          "valido": "No",
+          "ausente": false,
+          "abierta": true
+        }
+      }
+    },
+    {
+      "par": 2,
+      "etiquetaA": "P-QDUZ",
+      "etiquetaB": "P-AWNZ",
+      "asignada": true,
+      "respuestas": {
+        "reconocimiento": {
+          "literal": "No",
+          "valido": "No",
+          "ausente": false,
+          "abierta": true
+        }
+      }
+    },
+    {
+      "par": 3,
+      "etiquetaA": "P-RDA4",
+      "etiquetaB": "P-YGVX",
+      "asignada": true,
+      "respuestas": {
+        "reconocimiento": {
+          "literal": "No lo sé",
+          "valido": "No lo sé",
+          "ausente": false,
+          "abierta": true
+        }
+      }
+    },
+    {
+      "par": 4,
+      "etiquetaA": "P-27W5",
+      "etiquetaB": "P-FENR",
+      "asignada": true,
+      "respuestas": {
+        "reconocimiento": {
+          "literal": "No lo sé",
+          "valido": "No lo sé",
+          "ausente": false,
+          "abierta": true
+        }
+      }
+    },
+    {
+      "par": 5,
+      "etiquetaA": "P-JT82",
+      "etiquetaB": "P-Q5NH",
+      "asignada": true,
+      "respuestas": {
+        "reconocimiento": {
+          "literal": "No",
+          "valido": "No",
+          "ausente": false,
+          "abierta": true
+        }
+      }
+    },
+    {
+      "par": 6,
+      "etiquetaA": "P-GSNX",
+      "etiquetaB": "P-5WZF",
+      "asignada": true,
+      "respuestas": {
+        "reconocimiento": {
+          "literal": "No",
+          "valido": "No",
+          "ausente": false,
+          "abierta": true
+        }
+      }
+    },
+    {
+      "par": 7,
+      "etiquetaA": "P-XRX7",
+      "etiquetaB": "P-MFA2",
+      "asignada": true,
+      "respuestas": {
+        "reconocimiento": {
+          "literal": "No lo sé",
+          "valido": "No lo sé",
+          "ausente": false,
+          "abierta": true
+        }
+      }
+    },
+    {
+      "par": 8,
+      "etiquetaA": "P-FP3M",
+      "etiquetaB": "P-G67Q",
+      "asignada": true,
+      "respuestas": {
+        "reconocimiento": {
+          "literal": "No",
+          "valido": "No",
+          "ausente": false,
+          "abierta": true
+        }
+      }
+    },
+    {
+      "par": 9,
+      "etiquetaA": "P-Y93N",
+      "etiquetaB": "P-4MMA",
+      "asignada": true,
+      "respuestas": {
+        "reconocimiento": {
+          "literal": "No",
+          "valido": "No",
+          "ausente": false,
+          "abierta": true
+        }
+      }
+    },
+    {
+      "par": 10,
+      "etiquetaA": "P-DA43",
+      "etiquetaB": "P-ZD6G",
+      "asignada": true,
+      "respuestas": {
+        "reconocimiento": {
+          "literal": "No lo sé",
+          "valido": "No lo sé",
+          "ausente": false,
+          "abierta": true
+        }
+      }
+    },
+    {
+      "par": 11,
+      "etiquetaA": "P-GKFR",
+      "etiquetaB": "P-VXBW",
+      "asignada": true,
+      "respuestas": {
+        "reconocimiento": {
+          "literal": "Sí",
+          "valido": "Sí",
+          "ausente": false,
+          "abierta": true
+        }
+      }
+    },
+    {
+      "par": 12,
+      "etiquetaA": "P-HUBS",
+      "etiquetaB": "P-8ZNP",
+      "asignada": true,
+      "respuestas": {
+        "reconocimiento": {
+          "literal": "Sí",
+          "valido": "Sí",
+          "ausente": false,
+          "abierta": true
+        }
+      }
+    },
+    {
+      "par": 13,
+      "etiquetaA": "P-SXPF",
+      "etiquetaB": "P-6KWA",
+      "asignada": true,
+      "respuestas": {
+        "reconocimiento": {
+          "literal": "No",
+          "valido": "No",
+          "ausente": false,
+          "abierta": true
+        }
+      }
+    },
+    {
+      "par": 14,
+      "etiquetaA": "P-JZU6",
+      "etiquetaB": "P-UEHM",
+      "asignada": true,
+      "respuestas": {
+        "reconocimiento": {
+          "literal": "Sí",
+          "valido": "Sí",
+          "ausente": false,
+          "abierta": true
+        }
+      }
+    },
+    {
+      "par": 15,
+      "etiquetaA": "P-GXS5",
+      "etiquetaB": "P-P3SH",
+      "asignada": true,
+      "respuestas": {
+        "reconocimiento": {
+          "literal": "No lo sé",
+          "valido": "No lo sé",
+          "ausente": false,
+          "abierta": true
+        }
+      }
+    },
+    {
+      "par": 16,
+      "etiquetaA": "P-CHP7",
+      "etiquetaB": "P-3R5B",
+      "asignada": true,
+      "respuestas": {
+        "reconocimiento": {
+          "literal": "No",
+          "valido": "No",
+          "ausente": false,
+          "abierta": true
+        }
+      }
+    },
+    {
+      "par": 17,
+      "etiquetaA": "P-ZBMM",
+      "etiquetaB": "P-DRKJ",
+      "asignada": true,
+      "respuestas": {
+        "reconocimiento": {
+          "literal": "No lo sé",
+          "valido": "No lo sé",
+          "ausente": false,
+          "abierta": true
+        }
+      }
+    },
+    {
+      "par": 18,
+      "etiquetaA": "P-UVJX",
+      "etiquetaB": "P-UQ7D",
+      "asignada": true,
+      "respuestas": {
+        "reconocimiento": {
+          "literal": "No lo sé",
+          "valido": "No lo sé",
+          "ausente": false,
+          "abierta": true
+        }
+      }
+    },
+    {
+      "par": 19,
+      "etiquetaA": "P-C73B",
+      "etiquetaB": "P-X9EN",
+      "asignada": true,
+      "respuestas": {
+        "reconocimiento": {
+          "literal": "No",
+          "valido": "No",
+          "ausente": false,
+          "abierta": true
+        }
+      }
+    },
+    {
+      "par": 20,
+      "etiquetaA": "P-5SZT",
+      "etiquetaB": "P-XH89",
+      "asignada": true,
+      "respuestas": {
+        "reconocimiento": {
+          "literal": "No",
+          "valido": "No",
+          "ausente": false,
+          "abierta": true
+        }
+      }
+    }
+  ],
+  "incidencias": []
+}

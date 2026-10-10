@@ -1,0 +1,8 @@
+# Primera Fase 7: sha256 de ficheros que no se versionan (D-098, puntos 3 y 5)
+4242f89de6a44a4c20584b3166b0a2eeae57da5e7a0341d43281a0cc0500ed59  pares-evaluador/vista-pares.json (vista; D-094)
+97cf01877e8d6587f17e2a5375095f6652a18b16de0b193a9bb54ce0631336b6  pares-clave/clave-pares.json (clave; D-094)
+390c8ad7f7e97de247d187c77f62175d96403d8a016fb3b342b8579cd68185be  entrega/valoraciones/enviado/pares.html (enviado)
+897fc8491f93487513a7609c35ae5d04c35726428f2c07e7813f9a31772a4449  entrega/valoraciones/enviado/respuestas-valoraciones.xlsx (enviado)
+2f99fa20f57e523c73ecf7f2998961d22ea5c9d8ae9c43e638edd7357b9e65f9  entrega/valoraciones/valida/respuestas-valoraciones.xlsx (recibido)
+0e32dfea4f31f32519f257aa4fe9d97a045295339bfd851b6900f45c8853d0fc  entrega/reconocimiento/enviado/respuestas-reconocimiento.xlsx (enviado)
+1717a61f6443b1cb7fa58d0166064a0c22a943d6ee9a15e8a75f2bfea422aa17  entrega/reconocimiento/valida/respuestas-reconocimiento.xlsx (recibido)

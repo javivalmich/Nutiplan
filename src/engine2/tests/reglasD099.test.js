@@ -22,11 +22,13 @@ const platos = (plan, { conLibre = false } = {}) => plan.days.flatMap((d, i) => 
   .map((m) => ({ ...m, dia: i })));
 const causas = (plan) => plan.decisionLog.filter((e) => e.causa && e.day);
 
+// Cada test genera 50-100 semanas: con la suite entera en paralelo puede pasar
+// de los 5 s por defecto, por eso los describe llevan timeout de 60 s.
 function* casos(extra) {
   for (const profile of PERFILES) for (const seed of SEMILLAS) yield { profile, seed, plan: semana(seed, profile, extra) };
 }
 
-describe('D-099 · cocinar en cantidad es una eleccion del usuario', () => {
+describe('D-099 · cocinar en cantidad es una eleccion del usuario', { timeout: 60000 }, () => {
   it('sin respuesta, o con «no», la semana no tiene ancla', () => {
     for (const { plan } of casos()) {
       expect(causas(plan).some((e) => e.causa.startsWith('ancla'))).toBe(false);
@@ -79,7 +81,7 @@ describe('D-099 · cocinar en cantidad es una eleccion del usuario', () => {
   });
 });
 
-describe('D-099 · repeticion', () => {
+describe('D-099 · repeticion', { timeout: 60000 }, () => {
   it('ningun plato sale dos veces en la misma semana (por nombre visible)', () => {
     for (const extra of [{}, { cocinarEnCantidad: { activo: true } }]) {
       for (const { plan } of casos(extra)) {
@@ -131,7 +133,7 @@ describe('D-099 · repeticion', () => {
   });
 });
 
-describe('D-099 · momentos y dias', () => {
+describe('D-099 · momentos y dias', { timeout: 60000 }, () => {
   it('dishes.json no se modifica: los ajustes se aplican sobre el catalogo cargado', () => {
     expect(catalog.find((d) => d.id === 'curry_garbanzos').momento).toEqual(['comida', 'cena']);
     expect(aplicarAjustesD099(catalog).find((d) => d.id === 'curry_garbanzos').momento).toEqual(['comida']);

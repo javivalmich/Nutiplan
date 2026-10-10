@@ -2,10 +2,20 @@
 
 import { describe, it, expect } from 'vitest';
 import { expandWeekArc } from '../expandWeekArc.js';
-import { buildWeekArc } from '../../skeleton/buildWeekArc.js';
+import { buildWeekArc as buildWeekArcBase } from '../../skeleton/buildWeekArc.js';
 import { DAYS_ORDER } from '../../skeleton/days.js';
 import { mulberry32, seedFromString } from '../../skeleton/rng.js';
 import { MOMENTOS } from '../../dishes/schema.js';
+
+// D-099: buildWeekArc solo pone ancla si el usuario elige cocinar en cantidad,
+// y el ancla es un ingrediente base. Estos tests cubren el camino de
+// colocacion de un ancla-PLATO de expandWeekArc (anchorId = id de plato),
+// que se conserva: se pide el ancla y se le quita la marca de base.
+function buildWeekArc(input) {
+  const r = buildWeekArcBase({ cocinarEnCantidad: { activo: true }, ...input });
+  r.weekArc.anchors = r.weekArc.anchors.map(({ anchorId, cookDay, leftoverDays }) => ({ anchorId, cookDay, leftoverDays }));
+  return r;
+}
 
 const DIAS = DAYS_ORDER;
 

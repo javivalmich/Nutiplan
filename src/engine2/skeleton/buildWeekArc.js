@@ -39,7 +39,7 @@ import { TEMPLATE_A } from './templateA.js';
 import { TEMPLATE_B } from './templateB.js';
 import { TEMPLATE_C } from './templateC.js';
 import { mulberry32, seedFromString } from './rng.js';
-import { ANCHORS } from '../dishes/anchors.js';
+import { BASES } from '../dishes/bases.js';
 import { filterSurvivors } from '../walk/vetoes.js';
 import { resolveDishComposition } from '../dishes/compositionResolver.js';
 
@@ -247,7 +247,7 @@ function resolveBatchDay(batchDayPreference, fixedRoles, decisionLog) {
  * sola entrada por dia. Proteger solo la cena de entreno requeriria esa
  * granularidad, que no existe en F3 -- deuda registrada para F4.)
  */
-export function computeLeftoverDays(cookDay, shelfLifeDays, fixedRoles, decisionLog) {
+export function computeLeftoverDays(cookDay, shelfLifeDays, fixedRoles, decisionLog, maxServicios = Infinity) {
   const cookIdx = DAYS_ORDER.indexOf(cookDay);
   const leftoverDays = [];
   const saltados = [];
@@ -255,6 +255,8 @@ export function computeLeftoverDays(cookDay, shelfLifeDays, fixedRoles, decision
     const day = DAYS_ORDER[cookIdx + offset];
     if (fixedRoles[day]) {
       saltados.push(`${day} (fixedRole="${fixedRoles[day]}")`);
+    } else if (leftoverDays.length >= maxServicios - 1) {
+      saltados.push(`${day} (tope de ${maxServicios} servicios del ancla)`);
     } else {
       leftoverDays.push(day);
     }
@@ -283,7 +285,7 @@ export function computeLeftoverDays(cookDay, shelfLifeDays, fixedRoles, decision
  * mismo caso limite que el batch). Distingue "desplazado" de "truncado"
  * en la causa -- no son lo mismo.
  */
-function chooseCapricho(caprichoPreference, fixedRoles, batchDay, leftoverDays, decisionLog) {
+export function chooseCapricho(caprichoPreference, fixedRoles, batchDay, leftoverDays, decisionLog) {
   // "Mismo invariante que las sobras": CUALQUIER fixedRole es
   // intransitable, incluido "familiar" -- a diferencia de batchDay (donde
   // familiar NUNCA bloquea, por ser la red de seguridad universal). El
@@ -331,10 +333,9 @@ function chooseCapricho(caprichoPreference, fixedRoles, batchDay, leftoverDays, 
  * @returns {{weekArc: object, decisionLog: object[]}}
  */
 export function buildWeekArc({
-  profile, seed, strategy, fuenteEditorial,
+  profile, seed, strategy, fuenteEditorial, cocinarEnCantidad,
 }) {
   const decisionLog = [];
-
   // 0. Esqueleto (plantilla A/B/C) por seed, sin filtros.
   const template = chooseSkeleton(seed, decisionLog);
 
@@ -343,33 +344,78 @@ export function buildWeekArc({
 
   // 2. Ancla por seed, filtrada por veto (D-023) antes del sorteo. Puede
   // no haber superviviente -- ver contrato de ausencia en chooseAnchor.
-  const intolerancias = profile?.intolerances ?? [];
-  const anchor = chooseAnchor(
-    ANCHORS,
-    seed,
-    intolerancias,
-    decisionLog,
-    (candidate) => anchorVista(candidate, fuenteEditorial),
-  );
+  // Prototipo (visor): cocinar en cantidad es una eleccion del usuario cada
+  // semana. Sin respuesta, o con «no», la semana no tiene ancla. Con «si», el
+  // ancla es un ingrediente base (dishes/bases.js) y el usuario puede elegir
+  // el dia de cocinar; «Domingo» significa el domingo ANTERIOR a la semana.
+  const cec = cocinarEnCantidad && cocinarEnCantidad.activo ? cocinarEnCantidad : null;
+  if (!cec) {
+    decisionLog.push({
+      decisionId: `cp3a-${decisionLog.length}`,
+      cause: 'sin_cocinar_en_cantidad',
+      evidence: 'el usuario no ha elegido cocinar en cantidad esta semana',
+      consequence: 'semana sin ancla',
+    });
+  }
+  const anchor = cec
+    // Las bases son ingredientes, no platos: el veto de intolerancias se aplica
+    // a los platos que las usan (expandWeekArc), no aqui.
+    ? chooseAnchor(BASES, seed, [], decisionLog, (candidate) => anchorVista(candidate, fuenteEditorial))
+    : null;
 
-  // batchDay/leftoverDays solo tienen sentido si hay algo que cocinar: sin
-  // ancla superviviente, ambos quedan vacios por construccion (D-023,
-  // contrato de ausencia), no por rama especial -- el resto de la cascada
-  // (capricho, beats) ya esta escrito para tolerar batchDay=undefined.
-  const batchDay = anchor
-    ? resolveBatchDay(template.batchDayPreference, fixedRoles, decisionLog)
-    : undefined;
+  let batchDay;
+  let leftoverDays = [];
+  let cocinadoAntes = false;
+  if (anchor && cec.dia === 'Domingo') {
+    // Se cocina el domingo anterior: los dos platos caen en los primeros dias
+    // de la semana dentro de lo que aguanta (lunes a miercoles), sin sabado ni
+    // domingo. Un dia de entreno vale: el plato va a la comida.
+    cocinadoAntes = true;
+    leftoverDays = ['Lunes', 'Martes', 'Miercoles']
+      .filter((d) => fixedRoles[d] !== 'libre' && fixedRoles[d] !== 'familiar')
+      .slice(0, anchor.maxServicios);
+    decisionLog.push({
+      decisionId: `cp3a-${decisionLog.length}`,
+      cause: 'dia_cocinar_elegido',
+      evidence: 'el usuario cocina el domingo anterior a la semana',
+      consequence: 'batchDay efectivo = Domingo (domingo anterior, elegido por el usuario)',
+    });
+    decisionLog.push({
+      decisionId: `cp3a-${decisionLog.length}`,
+      cause: 'aprovechamiento_sobras',
+      evidence: `cocinado el domingo anterior; aguanta ${anchor.shelfLifeDays} dias; maximo ${anchor.maxServicios} platos`,
+      consequence: `sobras servidas en: ${leftoverDays.join(', ')}`,
+    });
+  } else if (anchor) {
+    if (cec.dia && DAYS_ORDER.includes(cec.dia)) {
+      batchDay = cec.dia;
+      decisionLog.push({
+        decisionId: `cp3a-${decisionLog.length}`,
+        cause: 'dia_cocinar_elegido',
+        evidence: `el usuario elige cocinar el ${cec.dia}`,
+        consequence: `batchDay efectivo = ${cec.dia} (elegido por el usuario)`,
+      });
+    } else {
+      batchDay = resolveBatchDay(template.batchDayPreference, fixedRoles, decisionLog);
+    }
+    // El aprovechamiento puede caer en un dia de entreno (a la comida); no en sabado ni domingo.
+    const fijosSinEntreno = Object.fromEntries(Object.entries(fixedRoles).filter(([, r]) => r !== 'entreno'));
+    leftoverDays = computeLeftoverDays(batchDay, anchor.shelfLifeDays, fijosSinEntreno, decisionLog, anchor.maxServicios);
+  }
 
-  // 3. Sobras dentro de shelfLifeDays del ancla. Dias fijos (paso 1) son
-  // intransitables: la cita fija tiene precedencia sobre la sobra.
-  const leftoverDays = anchor
-    ? computeLeftoverDays(batchDay, anchor.shelfLifeDays, fixedRoles, decisionLog)
-    : [];
   const leftoverDaySet = new Set(leftoverDays);
 
   // 3.5. Capricho: recorre caprichoPreference; nunca pisa fixedRole ni el
   // arco del ancla (cookDay/leftoverDays) -- ver chooseCapricho.
-  const caprichoDay = chooseCapricho(template.caprichoPreference, fixedRoles, batchDay, leftoverDays, decisionLog);
+  // Prototipo (visor): sin dia de capricho. El capricho de la semana es la
+  // comida libre del sabado (decision de Javi, 2026-10-10).
+  const caprichoDay = undefined;
+  decisionLog.push({
+    decisionId: `cp3a-${decisionLog.length}`,
+    cause: 'capricho_retirado',
+    evidence: 'el capricho de la semana es la comida libre del sabado',
+    consequence: 'sin dia de capricho',
+  });
 
   // 4. beats[]: densidad de la plantilla elegida (nunca calculada en
   // runtime), fixedRole si aplica, slotRole segun relacion con el ancla
@@ -421,7 +467,7 @@ export function buildWeekArc({
     skeletonId: template.skeletonId,
     strategy, // metadato pasivo: no participa en ninguna decision de arriba
     ...(anchor ? { batchDay } : {}), // ausencia estructural (D-023), no valor centinela -- ver "sin batchDay"
-    anchors: anchor ? [{ anchorId: anchor.identityKey, cookDay: batchDay, leftoverDays }] : [],
+    anchors: anchor ? [{ anchorId: anchor.identityKey, base: anchor.base, tipo: anchor.tipo, cookDay: batchDay, cocinadoAntes, leftoverDays }] : [],
     beats,
   };
 
@@ -439,7 +485,9 @@ export function buildWeekArc({
  */
 export function assertNoFixedRoleSobraContradiction(weekArc) {
   const leftoverDaySet = new Set(weekArc.anchors.flatMap((a) => a.leftoverDays));
-  const conflictos = weekArc.beats.filter((b) => b.fixedRole && leftoverDaySet.has(b.day));
+  // Decision de Javi (2026-10-10, D-099): el aprovechamiento puede caer en un
+  // dia de entreno (a la comida); nunca en el dia libre ni en el familiar.
+  const conflictos = weekArc.beats.filter((b) => b.fixedRole && b.fixedRole !== 'entreno' && leftoverDaySet.has(b.day));
   if (conflictos.length) {
     throw new Error(
       `Contradiccion fixedRole/sobra en: ${conflictos.map((b) => `${b.day} (fixedRole="${b.fixedRole}")`).join(', ')}`

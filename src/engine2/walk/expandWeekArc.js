@@ -27,6 +27,8 @@
 // de recorrido usa MOMENTOS (schema.js) para que el resultado no dependa
 // del orden en que el catalogo escribio el array.
 
+import { llevaBase, encajaYaCocinada } from '../dishes/bases.js';
+import { evaluateVeto } from './vetoes.js';
 import { DAYS_ORDER } from '../skeleton/days.js';
 import { mulberry32, seedFromString } from '../skeleton/rng.js';
 import { MOMENTOS } from '../dishes/schema.js';
@@ -94,7 +96,7 @@ function huecosBase(beats) {
  * @param {{weekArc: object, catalog: ReadonlyArray<object>, seed: (number|string)}} input
  * @returns {{slots: object[], decisionLog: object[]}}
  */
-export function expandWeekArc({ weekArc, catalog, seed }) {
+export function expandWeekArc({ weekArc, catalog, seed, platosRecientes = [], intolerancias = [] }) {
   const decisionLog = [];
   const slots = huecosBase(weekArc.beats);
   const occupied = new Set();
@@ -150,7 +152,62 @@ export function expandWeekArc({ weekArc, catalog, seed }) {
     return null;
   }
 
+  // Prototipo (visor): ancla = ingrediente base. Dia de cocinar: un plato que
+  // lo lleva. Dia de sobra: OTRO plato que tambien lo lleva (para carne, uno
+  // donde entre ya cocinada). Ningun plato de la semana anterior.
+  const nombrePorId = new Map(catalog.map((d) => [d.id, d.nombre || d.id]));
+  const recientes = new Set(platosRecientes.map((id) => nombrePorId.get(id) ?? id));
+  const elegir = (lista) => lista[Math.floor(rng() * lista.length)];
+  function colocarBase(day, dish, causa, evidencia) {
+    const momentos = dish.momento.filter((m) => !occupied.has(slotKey(day, m))
+      && slots.get(slotKey(day, m)).fixedRole !== 'entreno');
+    if (!momentos.length) return null;
+    const momento = momentos.length === 1 ? momentos[0] : elegir(momentos);
+    place(day, momento, dish.id, causa, evidencia);
+    return momento;
+  }
   for (const anchor of weekArc.anchors) {
+    if (anchor.base) {
+      const disponibles = catalog.filter((d) => (d.rol === 'rotativo' || d.rol === 'ancla')
+        && !recientes.has(d.nombre || d.id) && llevaBase(d, anchor.base)
+        && evaluateVeto(d, intolerancias).length === 0);
+      if (!disponibles.length) {
+        decisionLog.push({ decisionId: `walk-${decisionLog.length}`, cause: 'ancla_base_sin_platos', evidence: `ningun plato con ${anchor.base} disponible`, consequence: 'semana sin ancla' });
+        continue;
+      }
+      // Dia de cocinar con carne: un plato que cocina la pieza (no picada ni preparados).
+      const paraCocinar = anchor.tipo === 'carne'
+        ? disponibles.filter((d) => !/hamburguesa|nuggets|carpaccio|gyozas|croquetas|picada|al pastor|pizza|quesadilla|bao|wrap/i.test(d.nombre))
+        : disponibles;
+      const cabe = (d, day) => d.momento.some((m) => !occupied.has(slotKey(day, m)) && slots.get(slotKey(day, m)).fixedRole !== 'entreno');
+      const diaPrimero = anchor.cocinadoAntes ? anchor.leftoverDays[0] : anchor.cookDay;
+      const paraPrimero = (paraCocinar.length ? paraCocinar : disponibles).filter((d) => cabe(d, diaPrimero));
+      if (!paraPrimero.length) {
+        decisionLog.push({ decisionId: `walk-${decisionLog.length}`, cause: 'ancla_base_sin_platos', evidence: `ningun plato con ${anchor.base} cabe el ${diaPrimero}`, consequence: 'semana sin ancla' });
+        continue;
+      }
+      const primero = elegir(paraPrimero);
+      colocarBase(diaPrimero, primero, 'ancla_base_cocinado',
+        anchor.cocinadoAntes
+          ? `ancla de la semana: ${anchor.base}; cocinado el domingo anterior; primer plato que lo usa`
+          : `ancla de la semana: ${anchor.base}; se cocina el ${anchor.cookDay}; ${disponibles.length} platos llevan ${anchor.base}`);
+      for (const day of anchor.cocinadoAntes ? anchor.leftoverDays.slice(1) : anchor.leftoverDays) {
+        let segundos = disponibles.filter((d) => d.nombre !== primero.nombre
+          && cabe(d, day)
+          && (anchor.tipo !== 'carne' || encajaYaCocinada(d)));
+        const otroTipo = segundos.filter((d) => d.plateType !== primero.plateType);
+        if (otroTipo.length) segundos = otroTipo;
+        if (!segundos.length) {
+          decisionLog.push({ decisionId: `walk-${decisionLog.length}`, cause: 'ancla_base_sin_segundo_plato', evidence: `ningun otro plato con ${anchor.base} encaja el ${day}`, consequence: `${day} sin aprovechamiento` });
+          continue;
+        }
+        const segundo = elegir(segundos);
+        colocarBase(day, segundo, 'ancla_base_aprovechado',
+          `aprovecha el ${anchor.base} cocinado el ${anchor.cocinadoAntes ? 'domingo anterior' : anchor.cookDay} en otro plato; ${segundos.length} candidatos`
+          + (anchor.tipo === 'carne' ? ' donde la carne entra ya cocinada' : ''));
+      }
+      continue;
+    }
     const dish = findDish(catalog, anchor.anchorId);
     const ambos = esAmbos(dish.momento);
 

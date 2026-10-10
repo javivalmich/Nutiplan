@@ -105,6 +105,7 @@ import { DAYS_ORDER } from '../skeleton/days.js';
 import { mulberry32, seedFromString } from '../skeleton/rng.js';
 import { MOMENTOS } from '../dishes/schema.js';
 import { computeVetoUniverse } from './vetoes.js';
+import { proteinaPrincipal, TOPE_PROTEINA_SEMANA } from '../dishes/bases.js';
 import {
   initFrequencyState, registerConsumption, chooseFrequencyLevel, chooseIdentityLevel,
 } from './frequencies.js';
@@ -182,16 +183,25 @@ export function runWalk(input) {
   // input.memoryStore se recibe por inyeccion y NUNCA se lee ni se invoca aqui (D-019, v13):
   // no se desestructura para que quede estructuralmente imposible tocarlo por accidente.
   const {
-    weekArc, catalog, seed, profile, fuenteEditorial,
+    weekArc, catalog, seed, profile, fuenteEditorial, platosRecientes = [],
   } = input;
-  const { slots: p1aSlots, decisionLog: p1aRawLog } = expandWeekArc({ weekArc, catalog, seed });
+  // Prototipo (visor): platos servidos la semana anterior quedan fuera de los pools.
+  // Se compara por nombre visible: dos ids con el mismo nombre son el mismo plato para el usuario.
+  // Sin nombre (catalogos sinteticos de test), la clave es el id.
+  const nombrePorId = new Map(catalog.map((d) => [d.id, d.nombre || d.id]));
+  const recientes = new Set(platosRecientes.map((id) => nombrePorId.get(id) ?? id));
+  const usedNames = new Set();
+  const protPorId = new Map(catalog.map((d) => [d.id, d]));
+  const protMemo = new Map();
+  const proteinaCache = (id) => { if (!protMemo.has(id)) protMemo.set(id, protPorId.has(id) ? proteinaPrincipal(protPorId.get(id)) : null); return protMemo.get(id); };
+  const { slots: p1aSlots, decisionLog: p1aRawLog } = expandWeekArc({ weekArc, catalog, seed, platosRecientes, intolerancias: profile?.intolerances ?? [] });
 
   const slots = new Map();
   for (const slot of p1aSlots) slots.set(slotKey(slot.day, slot.momento), { ...slot });
 
   const usedIds = new Set();
   for (const slot of slots.values()) {
-    if (!slot.abierto && slot.dishId) usedIds.add(slot.dishId);
+    if (!slot.abierto && slot.dishId) { usedIds.add(slot.dishId); usedNames.add(nombrePorId.get(slot.dishId)); }
   }
 
   const decisionLog = p1aRawLog.map(reshapeP1aEntry);
@@ -208,6 +218,7 @@ export function runWalk(input) {
     const key = slotKey(day, momento);
     slots.set(key, { ...slots.get(key), dishId, abierto: false });
     usedIds.add(dishId);
+    usedNames.add(nombrePorId.get(dishId));
     const dish = findDish(catalog, dishId);
     decisionLog.push({
       decisionId: `walk-select-${decisionLog.length}`,
@@ -260,7 +271,7 @@ export function runWalk(input) {
   const caprichoSlot = [...slots.values()].find((s) => s.slotRole === 'capricho');
   if (caprichoSlot) {
     const caprichoDay = caprichoSlot.day;
-    const caprichoPool = catalog.filter((d) => d.rol === 'capricho' && !usedIds.has(d.id) && !vetoedIds.has(d.id));
+    const caprichoPool = catalog.filter((d) => d.rol === 'capricho' && !usedIds.has(d.id) && !usedNames.has(d.nombre || d.id) && !vetoedIds.has(d.id) && !recientes.has(d.nombre || d.id));
 
     if (caprichoPool.length === 0) {
       pushEvent(
@@ -312,7 +323,7 @@ export function runWalk(input) {
       const slot = slots.get(key);
       if (!slot.abierto) continue; // Paso 1: ya colocado, la cadena no corre.
 
-      const pool = catalog.filter((d) => d.rol === 'rotativo' && d.momento.includes(momento) && !usedIds.has(d.id) && !vetoedIds.has(d.id));
+      const pool = catalog.filter((d) => d.rol === 'rotativo' && d.momento.includes(momento) && !usedIds.has(d.id) && !usedNames.has(d.nombre || d.id) && !vetoedIds.has(d.id) && !recientes.has(d.nombre || d.id));
       if (pool.length === 0) {
         throw new Error(
           `runWalk: pool rotativo vacio para ${day}/${momento} `
@@ -320,13 +331,47 @@ export function runWalk(input) {
         );
       }
 
+      // Prototipo (visor): tope de proteina principal por semana. Si dejaria el
+      // hueco sin candidatos, no se aplica y se dice en la evidencia.
+      const cuentaProteina = new Map();
+      for (const s2 of slots.values()) {
+        if (s2.abierto || !s2.dishId) continue;
+        const pr = proteinaCache(s2.dishId);
+        if (pr) cuentaProteina.set(pr, (cuentaProteina.get(pr) || 0) + 1);
+      }
+      const poolTope = pool.filter((d) => (cuentaProteina.get(proteinaCache(d.id)) || 0) < TOPE_PROTEINA_SEMANA);
+      const notaTope = poolTope.length === pool.length
+        ? ''
+        : poolTope.length
+          ? `tope de proteina (${TOPE_PROTEINA_SEMANA}/semana): descarta ${pool.length - poolTope.length} candidatos de ${[...cuentaProteina].filter(([, n]) => n >= TOPE_PROTEINA_SEMANA).map(([pr]) => pr).join(', ')}; `
+          : `tope de proteina sin aplicar: dejaria el hueco sin candidatos; `;
+
+      // Prototipo (visor): una proteina que ya sale ese dia, el anterior o el
+      // siguiente no se repite aqui (separar las dos veces de la semana). Si no
+      // queda ningun candidato, no se aplica y se dice en la evidencia.
+      const base0 = poolTope.length ? poolTope : pool;
+      const cercanas = new Set();
+      for (const s2 of slots.values()) {
+        if (s2.abierto || !s2.dishId) continue;
+        if (Math.abs(DAYS_ORDER.indexOf(s2.day) - i) <= 1) {
+          const pr = proteinaCache(s2.dishId);
+          if (pr) cercanas.add(pr);
+        }
+      }
+      const poolSeparado = base0.filter((d) => !cercanas.has(proteinaCache(d.id)));
+      const notaSeparada = poolSeparado.length === base0.length
+        ? ''
+        : poolSeparado.length
+          ? `proteina separada: descarta ${base0.length - poolSeparado.length} candidatos de ${[...cercanas].join(', ')} (ya salen ese dia o el de al lado); `
+          : 'proteina separada sin aplicar: dejaria el hueco sin candidatos; ';
+
       const ayer = i > 0 ? getDishAt(DAYS_ORDER[i - 1], momento) : null;
-      let candidatesA = pool;
+      let candidatesA = poolSeparado.length ? poolSeparado : base0;
       let notaA;
       if (!ayer) {
         notaA = `preferencia A no aplica: no hay dia anterior en la semana para ${day}/${momento}`;
       } else {
-        const afterA = pool.filter((d) => d.plateType !== ayer.plateType);
+        const afterA = candidatesA.filter((d) => d.plateType !== ayer.plateType);
         if (afterA.length > 0) {
           candidatesA = afterA;
           notaA = `preferencia A aplicada: descarta plateType="${ayer.plateType}" (igual que ayer en ${momento})`;
@@ -387,7 +432,7 @@ export function runWalk(input) {
         momento,
         chosen.id,
         causa,
-        `${notaA}; ${notaB}${notaFreq ? `; ${notaFreq}` : ''}${notaIdentidad ? `; ${notaIdentidad}` : ''}${notaRng}`,
+        `${notaTope}${notaSeparada}${notaA}; ${notaB}${notaFreq ? `; ${notaFreq}` : ''}${notaIdentidad ? `; ${notaIdentidad}` : ''}${notaRng}`,
         alternativas,
       );
       registerConsumption(freqState, chosen, day, undefined, fuenteEditorial);

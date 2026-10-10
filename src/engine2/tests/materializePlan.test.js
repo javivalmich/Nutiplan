@@ -9,6 +9,7 @@ import { materializePlan } from '../materializePlan.js';
 import { buildWeekArc } from '../skeleton/buildWeekArc.js';
 import { runWalk } from '../walk/runWalk.js';
 import { loadCatalog } from '../dishes/loadCatalog.js';
+import { aplicarAjustesD099 } from '../dishes/ajustesD099.js';
 import { DAYS_ORDER } from '../skeleton/days.js';
 import { MOMENTOS } from '../dishes/schema.js';
 
@@ -91,25 +92,18 @@ describe('materializePlan — §4.2.5 identidad de plato establecible por observ
     }
   });
 
-  it('dos ocurrencias del mismo dishId en el plan son identificables como la misma identidad por observacion (objeto plato byte-identico)', () => {
-    // seed=1 (mismo profile/strategy): buildWeekArc produce leftoverDays no
-    // vacio (ancla+sobra), condicion necesaria para tener una repeticion
-    // real que observar. FIXTURE_INPUT (seed=0) no la produce para este
-    // profile/catalogo -- ver reporte.
-    const planConRepeticion = materializePlan({ ...FIXTURE_INPUT, seed: 1, catalog });
-    const byId = new Map();
-    for (const d of planConRepeticion.days) {
-      for (const m of d.meals) {
-        if (!byId.has(m.dish.id)) byId.set(m.dish.id, []);
-        byId.get(m.dish.id).push(m.dish);
-      }
-    }
-    const repetidos = [...byId.values()].filter((occurrences) => occurrences.length > 1);
-    expect(repetidos.length).toBeGreaterThan(0);
-    for (const occurrences of repetidos) {
-      const serialized = occurrences.map((o) => JSON.stringify(o));
-      expect(new Set(serialized).size).toBe(1);
-    }
+  it('D-099: ningun dishId se repite en la semana, y el mismo dishId es el mismo objeto plato entre planes', () => {
+    // Desde D-099 ningun plato sale dos veces en una semana (el ancla es un
+    // ingrediente que se aprovecha en dos platos distintos). La identidad por
+    // observacion se comprueba entre dos planes: un mismo dishId lleva un
+    // objeto plato byte-identico.
+    const a = materializePlan({ ...FIXTURE_INPUT, seed: 1, catalog, cocinarEnCantidad: { activo: true } });
+    const b = materializePlan({ ...FIXTURE_INPUT, seed: 2, catalog, cocinarEnCantidad: { activo: true } });
+    const ids = a.days.flatMap((d) => d.meals.map((m) => m.dish.id));
+    expect(new Set(ids).size).toBe(ids.length);
+    const enB = new Map(b.days.flatMap((d) => d.meals.map((m) => [m.dish.id, m.dish])));
+    const comunes = a.days.flatMap((d) => d.meals).filter((m) => enB.has(m.dish.id));
+    for (const m of comunes) expect(JSON.stringify(m.dish)).toBe(JSON.stringify(enB.get(m.dish.id)));
   });
 });
 
@@ -150,7 +144,8 @@ describe('materializePlan — §4.6 decisionLog es UNA coleccion, cardinalidad =
   it('cardinalidad == arcLog.length + walkLog.length (arco primero, walk despues)', () => {
     const catalog = loadCatalog();
     const { weekArc, decisionLog: arcLog } = buildWeekArc(FIXTURE_INPUT);
-    const { decisionLog: walkLog } = runWalk({ weekArc, catalog, seed: FIXTURE_INPUT.seed, profile: FIXTURE_INPUT.profile });
+    // D-099: materializePlan aplica los ajustes de catalogo antes del walk.
+    const { decisionLog: walkLog } = runWalk({ weekArc, catalog: aplicarAjustesD099(catalog), seed: FIXTURE_INPUT.seed, profile: FIXTURE_INPUT.profile });
     const plan = materializePlan({ ...FIXTURE_INPUT, catalog });
 
     expect(plan.decisionLog).toHaveLength(arcLog.length + walkLog.length);

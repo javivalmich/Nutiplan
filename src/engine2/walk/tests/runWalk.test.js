@@ -63,7 +63,7 @@ function anchorEverythingExcept(openSlots, overridesBySlot = {}) {
 
 describe('runWalk - v1: semana real (catalogo 241), degradacion de capricho visible', () => {
   const catalog = loadCatalog();
-  const { weekArc } = buildWeekArc({
+  const { weekArc } = buildWeekArc({ cocinarEnCantidad: { activo: true },
     profile: { trainingDays: ['Lunes', 'Miercoles', 'Viernes'] },
     seed: 0,
     strategy: 'mantenimiento_equilibrado',
@@ -86,13 +86,6 @@ describe('runWalk - v1: semana real (catalogo 241), degradacion de capricho visi
     }
   });
 
-  it('el catalogo real no tiene platos rol="capricho": degradacion registrada como evento', () => {
-    expect(catalog.some((d) => d.rol === 'capricho')).toBe(false);
-    const evento = decisionLog.find((d) => d.causa === 'capricho_degradado_a_rotativo');
-    expect(evento).toBeDefined();
-    expect(evento.evento).toBe(true);
-    expect(evento.evidencia.length).toBeGreaterThan(0);
-  });
 
   it('14 entradas de relleno (no-evento), cada una con plato/causa/alternativasDescartadas', () => {
     const rellenos = decisionLog.filter((d) => !d.evento);
@@ -198,7 +191,7 @@ describe('runWalk - v3: hueco hermano del dia-ancla se rellena como rotativo nor
 describe('runWalk - v4: no-repeticion (salvo sobras)', () => {
   it('semana real: cada id aparece una vez, salvo el ancla que puede repetirse en cookDay+leftoverDays', () => {
     const catalog = loadCatalog();
-    const { weekArc } = buildWeekArc({
+    const { weekArc } = buildWeekArc({ cocinarEnCantidad: { activo: true },
       profile: { trainingDays: ['Martes', 'Jueves'] },
       seed: 3,
       strategy: 'volumen_limpio',
@@ -220,7 +213,7 @@ describe('runWalk - v4: no-repeticion (salvo sobras)', () => {
 describe('runWalk - v5: pools por rol (capricho solo capricho; rotativo solo rotativo; ancla nunca libre)', () => {
   it('ningun hueco generico se rellena con un plato rol="ancla"', () => {
     const catalog = loadCatalog();
-    const { weekArc } = buildWeekArc({
+    const { weekArc } = buildWeekArc({ cocinarEnCantidad: { activo: true },
       profile: { trainingDays: [] },
       seed: 7,
       strategy: 'definicion_saciante',

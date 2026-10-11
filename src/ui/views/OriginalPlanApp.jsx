@@ -676,14 +676,9 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
     }
   };
 
-  const handleRegenerate=()=>{
-    if (isNutriPlan) { alert("🔒 Tu plan fue creado por tu nutricionista y no se puede regenerar automáticamente."); setNavOpen(false); return; }
-    const wk=getWeekNumber();
-    const newPlan=__PERF.time("buildPlan:regenerate", () => generarPlan(profile,targetKcal, {month:new Date().getMonth(),pastProteins:getPastProteinFrequency(loadMealMemory(currentUser.id)),freeFormPool:FREEFORM_POOL,saveMealMemory:(wk,L,D)=>saveMealMemory(currentUser.id,wk,L,D),weekNumber:getWeekNumber(),userId:currentUser.id,perf:__PERF,platosRecientes:platosRecientesPara(plan,weekNum,getWeekNumber())}));  // PERF
-    setPlan(newPlan); setWeekNum(wk); setActiveDay(0); setActiveTab("plan");
-    saveData(currentUser.id,profile,newPlan,wk,{}); setExtras({}); setNavOpen(false);
-    saveToPDB(profile, newPlan, wk, {}, "system");
-  };
+  // «Regenerar plan» se quitó (D-102): la misma semana da siempre el mismo menú;
+  // se cambian comidas sueltas con «🔄 Alternativas», y el plan se rehace al
+  // cambiar el perfil, en el check-in o al empezar semana.
 
   const regenerateMeal=(dayIdx, mealSlot, semanticHint)=>{
     // Step 4+5: registrar acción del usuario y logs de diagnóstico
@@ -1400,11 +1395,6 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
                 {(plan.weekWarnings||[]).filter(function(w){ return !w.startsWith("[AJUSTE]"); }).map(function(w,i){return <div key={"w"+i} style={{fontSize:11,color:THEME.colorWarning,padding:"2px 0",lineHeight:1.4}}>{w}</div>;})}
               </div>
             )}
-            {!isNutriPlan&&(
-              <div style={{padding:"12px 16px",borderBottom:"1px solid #30363d"}}>
-                <button onClick={function(){handleRegenerate();setNavOpen(false);}} style={{width:"100%",padding:"10px",borderRadius:8,border:"none",background:THEME.accent,color:THEME.bgPage,fontFamily:sans,fontSize:13,fontWeight:700,cursor:"pointer"}}>🔄 Regenerar plan</button>
-              </div>
-            )}
             {[
               {icon:"📋",label:"Check-in semanal",action:function(){setShowCheckin(true);setNavOpen(false);}},
               {icon:"✏️",label:"Cambiar mi perfil",action:handleEditProfile},
@@ -1716,7 +1706,6 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
               <div style={{fontFamily:serif,fontSize:13,color:THEME.textDark2,marginBottom:12}}>Acciones</div>
               <div style={{display:"flex",flexDirection:"column",gap:8}}>
                 <button onClick={()=>setShowCheckin(true)} style={{padding:"11px",borderRadius:10,border:"none",background:THEME.gradPurple,color:THEME.bgWhite,fontFamily:sans,fontSize:13,fontWeight:700,cursor:"pointer",textAlign:"left",paddingLeft:14}}>📋 Check-in semanal {isNutriPlan?"(notifica a tu nutricionista)":""}</button>
-                {!isNutriPlan&&<button onClick={handleRegenerate} style={{padding:"11px",borderRadius:10,border:"none",background:"linear-gradient(135deg,"+gc.primary+","+gc.primary+"bb)",color:THEME.bgWhite,fontFamily:sans,fontSize:13,fontWeight:700,cursor:"pointer",textAlign:"left",paddingLeft:14}}>🔄 Regenerar plan semanal</button>}
                 <button onClick={handleEditProfile} style={{padding:"11px",borderRadius:10,border:"1px solid #e2e8f0",background:THEME.bgLightAlt,color:THEME.textDark2,fontFamily:sans,fontSize:13,fontWeight:600,cursor:"pointer",textAlign:"left",paddingLeft:14}}>✏️ Cambiar mi perfil</button>
                 <button onClick={handleReset} style={{padding:"11px",borderRadius:10,border:"1px solid #fecaca",background:THEME.bgErrorLight,color:THEME.colorErrorDark,fontFamily:sans,fontSize:13,fontWeight:600,cursor:"pointer",textAlign:"left",paddingLeft:14}}>🗑️ Empezar de cero</button>
                 <button onClick={onLogout} style={{padding:"11px",borderRadius:10,border:"1px solid #e2e8f0",background:THEME.bgLightAlt,color:THEME.textMuted,fontFamily:sans,fontSize:13,fontWeight:600,cursor:"pointer",textAlign:"left",paddingLeft:14}}>← Cerrar sesión</button>

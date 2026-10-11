@@ -4282,3 +4282,17 @@ Si se cambia el plato de un ancla por uno que no lleva su ingrediente, la nota d
 
 Estado resultante
 En los planes de engine2, comidas, cenas, raciones y alternativas los decide engine2. El motor viejo compone los textos y sigue con desayunos y tentempiés.
+
+## D-102 — [2026-10-12] Plan recargado desde la base de datos y fuera el botón «Regenerar plan»
+
+Decide: Javi. HEAD: `d190a0b`.
+
+Contexto
+La base de datos solo guarda los días del plan. Los datos de engine2 que iban fuera de los días (motor, raciones, ancla, platos de la semana y de la anterior) se perdían al recargar, y la app recarga el plan justo después de generarlo: el botón del batido y las alternativas volvían al motor viejo sin avisar. Además, «Regenerar plan» da siempre el mismo menú en la misma semana (regla 6 de `CLAUDE.md`), así que parecía no hacer nada.
+
+Decisión
+1. Los datos de engine2 viajan dentro de los días (`days[0]._engine2`, `day.raciones`, `meal._motor`, `meal._causa`, `meal._base`), y la app reconoce un plan de engine2 por sus días y comidas.
+2. Se quita el botón «Regenerar plan semanal» (menú y Acciones). Las comidas y cenas se cambian una a una con «🔄 Alternativas»; el plan se rehace al cambiar el perfil, en el check-in y al empezar semana. La regla 6 de `CLAUDE.md` no cambia.
+
+Estado resultante
+Botón del batido y alternativas funcionan también con el plan recargado.

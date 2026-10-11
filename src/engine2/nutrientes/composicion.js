@@ -1,4 +1,5 @@
-{
+// Generado por scripts/medidor/composicion.mjs a partir de BEDCA. No editar a mano.
+export const COMPOSICION_DATOS = {
  "fuente": "BEDCA — Base de Datos Española de Composición de Alimentos (AESAN), https://www.bedca.net",
  "bedcaDescargado": "2026-10-11T08:54:05.725Z",
  "bedcaSha256": "402956bec217e3438f79c98bb8ce78d9296d4beb1de13fbbccb77c535337f6bb",
@@ -1673,4 +1674,5 @@
    }
   }
  }
-}
+};
+export const COMPOSICION = COMPOSICION_DATOS.ingredientes;

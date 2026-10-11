@@ -192,7 +192,7 @@ function aceiteEnTexto(texto) {
 
 /**
  * Ingredientes con gramos de una comida.
- * @returns {{ items: {clave, gramos, como, texto}[], sinCantidad: string[], libre: boolean }}
+ * @returns {{ items: {clave, gramos, como, texto, nombre}[], sinCantidad: string[], libre: boolean }}
  */
 export function leerComida(meal) {
   const items = [];
@@ -221,7 +221,7 @@ export function leerComida(meal) {
       else g = { gramos: 10 * ing.gMl, como: 'estimado 10 ml' };
     }
     if (!g) { sinCantidad.push(linea); continue; }
-    items.push({ clave, gramos: Math.round(g.gramos * 10) / 10, como: g.como, texto: linea });
+    items.push({ clave, gramos: Math.round(g.gramos * 10) / 10, como: g.como, texto: linea, nombre });
   }
   return { items, sinCantidad, libre };
 }

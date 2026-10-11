@@ -1,4 +1,4 @@
-// composicion — genera src/engine2/nutrientes/composicion.json (kcal,
+// composicion — genera src/engine2/nutrientes/composicion.js (kcal,
 // proteína, hidratos, grasa, fibra y agua por 100 g de cada ingrediente) a
 // partir de la descarga de BEDCA (scripts/medidor/bajarBedca.mjs) y de las
 // fuentes elegidas en src/engine2/nutrientes/fuentesBedca.js.
@@ -8,7 +8,9 @@
 // no pasen de 100 g. Lo que no cuadra queda en «avisos», no se corrige.
 //
 // Uso:
-//   node scripts/medidor/composicion.mjs --bedca <bedca.json> [--salida src/engine2/nutrientes/composicion.json]
+//   node scripts/medidor/composicion.mjs --bedca <bedca.json> [--salida src/engine2/nutrientes/composicion.js]
+// Se escribe como módulo JS (no JSON) para que lo importen igual la app
+// (Vite), node y los tests.
 
 import fs from 'node:fs';
 import crypto from 'node:crypto';
@@ -18,8 +20,8 @@ import { INGREDIENTES } from '../../src/engine2/nutrientes/ingredientes.js';
 const args = process.argv.slice(2);
 const arg = (n, d) => { const i = args.indexOf(n); return i >= 0 && args[i + 1] ? args[i + 1] : d; };
 const rutaBedca = arg('--bedca');
-const salida = arg('--salida', 'src/engine2/nutrientes/composicion.json');
-if (!rutaBedca) { console.error('uso: composicion.mjs --bedca <bedca.json> [--salida <composicion.json>]'); process.exit(1); }
+const salida = arg('--salida', 'src/engine2/nutrientes/composicion.js');
+if (!rutaBedca) { console.error('uso: composicion.mjs --bedca <bedca.json> [--salida <composicion.js>]'); process.exit(1); }
 
 const crudo = fs.readFileSync(rutaBedca);
 const bedca = JSON.parse(crudo);
@@ -97,6 +99,6 @@ const datos = {
   avisos,
   ingredientes,
 };
-fs.writeFileSync(salida, `${JSON.stringify(datos, null, 1)}\n`);
+fs.writeFileSync(salida, `// Generado por scripts/medidor/composicion.mjs a partir de BEDCA. No editar a mano.\nexport const COMPOSICION_DATOS = ${JSON.stringify(datos, null, 1)};\nexport const COMPOSICION = COMPOSICION_DATOS.ingredientes;\n`);
 console.log(`${Object.keys(ingredientes).length} ingredientes → ${salida}`);
 if (avisos.length) { console.log('Avisos:'); for (const a of avisos) console.log(`  - ${a}`); }

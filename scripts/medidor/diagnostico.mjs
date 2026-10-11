@@ -10,7 +10,7 @@
 // (calcTDEE, calcTarget, calcMacros, computeStrategy).
 //
 // Uso:
-//   node --import ./scripts/medidor/resolverVite.mjs scripts/medidor/diagnostico.mjs --composicion <composicion.json> --salida <informe.json> [--semanas 8]
+//   node --import ./scripts/medidor/resolverVite.mjs scripts/medidor/diagnostico.mjs --salida <informe.json> [--composicion <composicion.json>] [--semanas 8]
 // No escribe en el repo.
 
 import fs from 'node:fs';
@@ -20,15 +20,16 @@ import { generarPlanEngine2 } from '../../src/plan/engine2App.js';
 import { loadCatalog } from '../../src/engine2/dishes/loadCatalog.js';
 import { FREEFORM_POOL } from '../../src/data/freeformPool.js';
 import { medirPlan } from '../../src/plan/medidor/medir.js';
+import { COMPOSICION_DATOS } from '../../src/engine2/nutrientes/composicion.js';
 
 const args = process.argv.slice(2);
 const arg = (n, d) => { const i = args.indexOf(n); return i >= 0 && args[i + 1] ? args[i + 1] : d; };
 const rutaComp = arg('--composicion');
 const salida = arg('--salida');
 const SEMANAS = Number(arg('--semanas', 8));
-if (!rutaComp || !salida) { console.error('uso: diagnostico.mjs --composicion <composicion.json> --salida <informe.json> [--semanas 8]'); process.exit(1); }
+if (!salida) { console.error('uso: diagnostico.mjs --salida <informe.json> [--composicion <composicion.json>] [--semanas 8]'); process.exit(1); }
 
-const comp = JSON.parse(fs.readFileSync(rutaComp, 'utf8'));
+const comp = rutaComp ? JSON.parse(fs.readFileSync(rutaComp, 'utf8')) : COMPOSICION_DATOS;
 const composicion = comp.ingredientes || comp;
 
 const BASE = { intolerances: [], eliminatedFoods: [], tiempoCocina: 'normal', experiencia: 'intermedio', simpleMode: false, hambre: 'media', kcalAdjust: 0, extras: {} };
@@ -61,9 +62,10 @@ for (const perfil0 of PERFILES) {
     const opts = { month: 9, freeFormPool: FREEFORM_POOL, weekNumber, userId: `diag-${perfil.id}` };
     const pastProteins = getPastProteinFrequency(memoria);
     const legacy = buildPlan(clon(perfil), obj.kcal, { ...opts, pastProteins, saveMealMemory: (wk, L, D) => { memoria.unshift({ week: wk, L, D }); memoria.length = Math.min(memoria.length, 4); } });
-    const e2 = generarPlanEngine2(clon(perfil), obj.kcal, { ...opts, pastProteins: {}, catalogo, platosRecientes: recientes });
+    const e2 = generarPlanEngine2(clon(perfil), obj.kcal, { ...opts, pastProteins: {}, catalogo, platosRecientes: recientes, raciones: false });
+    const e2r = generarPlanEngine2(clon(perfil), obj.kcal, { ...opts, pastProteins: {}, catalogo, platosRecientes: recientes });
     recientes = e2.platosSemana;
-    for (const [motor, plan] of [['legacy', legacy], ['engine2', e2]]) {
+    for (const [motor, plan] of [['legacy', legacy], ['engine2', e2], ['engine2+raciones', e2r]]) {
       const m = medirPlan(plan, { kcal: obj.kcal, proteina: obj.proteina, peso: obj.peso }, composicion);
       resultados.push({ perfil: perfil.id, motor, semana: weekNumber, objetivo: obj, ...m });
     }

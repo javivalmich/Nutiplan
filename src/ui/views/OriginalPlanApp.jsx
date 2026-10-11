@@ -5,7 +5,7 @@ import { GOAL_ADJ, computeTrend, getNutricionistaFeedback, adherenciaPct, calcTD
          getPastProteinFrequency, searchFoods, calcFoodKcal, getDefaultAlts, buildPlan }
   from "../../engine/index.js";
 import { SDB } from "../../data/sdb.js";
-import { generarPlan, platosRecientesPara } from "../../plan/generarPlan.js";
+import { generarPlan, platosRecientesPara, recalcularDia } from "../../plan/generarPlan.js";
 import { __PERF, __TRACE, getWeekNumber } from "../../data/runtime.js";
 import { trackUserAction, traceSetPlan, _checkPostActionOverwrite } from "../../data/echoGuard";
 import { PDB, loadData, saveData, clearData, loadMealMemory, saveMealMemory, loadProgress,
@@ -760,6 +760,8 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
       const newMeals=rebuilt.days[dayIdx].meals;
       const oldMeals=newPlan.days[dayIdx].meals;
       oldMeals.forEach(function(m,i){ if(!m) return; if(m.time===mealSlot||(mealSlot==="Comida"&&m.time==="Comida")||(mealSlot==="Cena"&&m.time==="Cena")||(mealSlot==="Desayuno"&&m.time==="Desayuno")){ if(newMeals[i]) newPlan.days[dayIdx].meals[i]=newMeals[i]; } });
+      // Plan de engine2: la comida nueva llega con cantidades del motor viejo; se recalcula el día.
+      newPlan.days[dayIdx]=recalcularDia(newPlan, newPlan.days[dayIdx], profile, targetKcal);
     }
     __TRACE.event("plan", "regenerateMeal", plan, newPlan);
     // source="user" → siempre aceptado
@@ -791,6 +793,11 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
     );
     // El contexto dayPortionsRegen le dice a buildPlan que recomponga SOLO este día
     // desde los _spec existentes — los otros días se generan pero se descartan.
+    // Plan de engine2 con raciones propias (D-100): el batido se descuenta de
+    // la comida a la que acompaña; no se recompone con el motor viejo.
+    if (plan && plan.raciones === "engine2") {
+      return recalcularDia(plan, Object.assign({}, plan.days[dayIdx], {meals, shakeEnabled: effectiveShake}), clonedProfile, targetKcal);
+    }
     clonedProfile._regenContext = {
       dayPortionsRegen: {
         dayIdx,

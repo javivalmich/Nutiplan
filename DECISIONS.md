@@ -4296,3 +4296,26 @@ Decisión
 
 Estado resultante
 Botón del batido y alternativas funcionan también con el plan recargado.
+
+## D-103 — [2026-10-12] Intolerancias por ingrediente
+
+Decide: Javi. HEAD: `a499f68`.
+
+Contexto
+La app ofrece 10 intolerancias (`src/ui/constants.js`): lactosa, gluten, huevo, frutos secos, mariscos, pescado, soja, cerdo, legumbres y picante. Auditoría sobre los 241 platos y los desayunos y tentempiés de 20 semanas por intolerancia:
+- Soja y picante no las filtraba nadie (ni engine2 ni el motor viejo): 13 platos con soja y 64 con guindilla u otro picante podían salir.
+- Se colaban además: salsa de soja y teriyaki con gluten; alioli, pan brioche y croquetas con huevo; caldo dashi con pescado.
+- Desayunos y tentempiés del motor viejo: con lactosa dejaban yogur o queso en la compra o el título (15 casos); con cerdo, tostadas con jamón; con frutos secos, cacahuete y crema de cacahuete.
+- En sentido contrario, engine2 vetaba gluten y lactosa en todo plato cuya ficha no lo aclarase: un celíaco tenía 29 platos posibles y con gluten y lactosa juntos la semana a veces no salía.
+
+Decisión
+1. `src/engine2/nutrientes/alergenos.js`: para cada intolerancia, qué ingredientes y palabras la llevan, con excepciones («sin gluten», «bebida vegetal», «fideos de arroz», «judías verdes», «pimentón dulce»…). Criterio conservador.
+2. El catálogo se filtra antes de engine2 por los ingredientes y todo el texto de cada plato compuesto (título, preparación, compra y receta), además de las reglas anteriores. Gluten y lactosa: se vetan si la ficha dice que lo lleva o si sus ingredientes lo llevan; una ficha sin dato ya no basta para vetar. Platos posibles: gluten 179, lactosa 208, picante 177, soja 228.
+3. Desayunos y tentempiés que lleven algo que el perfil no puede comer se cambian por otro del mismo momento que sí pueda (sacado de otras semanas del motor viejo, en orden fijo); si no hay ninguno, se quita. Queda anotado en el decision log.
+4. Test de seguridad: con cada intolerancia, ningún plato de tres semanas ni las alternativas lo llevan.
+
+Pendiente
+Cambiar un desayuno desde «Alternativas» sigue yendo al motor viejo sin este control. Gluten: el control es por ingredientes y texto, no por trazas.
+
+Estado resultante
+Las 10 intolerancias de la app se respetan en comidas, cenas, desayunos, tentempiés, acompañamientos y alternativas de engine2.

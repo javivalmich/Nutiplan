@@ -5,7 +5,7 @@ import { GOAL_ADJ, computeTrend, getNutricionistaFeedback, adherenciaPct, calcTD
          getPastProteinFrequency, searchFoods, calcFoodKcal, getDefaultAlts, buildPlan }
   from "../../engine/index.js";
 import { SDB } from "../../data/sdb.js";
-import { generarPlan, platosRecientesPara, recalcularDia, regenerarComida } from "../../plan/generarPlan.js";
+import { generarPlan, platosRecientesPara, recalcularDia, regenerarComida, usaRaciones } from "../../plan/generarPlan.js";
 import { __PERF, __TRACE, getWeekNumber } from "../../data/runtime.js";
 import { trackUserAction, traceSetPlan, _checkPostActionOverwrite } from "../../data/echoGuard";
 import { PDB, loadData, saveData, clearData, loadMealMemory, saveMealMemory, loadProgress,
@@ -804,7 +804,7 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
     // desde los _spec existentes — los otros días se generan pero se descartan.
     // Plan de engine2 con raciones propias (D-100): el batido se descuenta de
     // la comida a la que acompaña; no se recompone con el motor viejo.
-    if (plan && plan.raciones === "engine2") {
+    if (usaRaciones(plan, dayIdx)) {
       return recalcularDia(plan, Object.assign({}, plan.days[dayIdx], {meals, shakeEnabled: effectiveShake}), clonedProfile, targetKcal);
     }
     clonedProfile._regenContext = {
@@ -849,7 +849,7 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
     // En planes de engine2 se recalcula siempre (es determinista y deja el
     // resumen del día al corriente); la foto previa solo vale para el motor viejo.
     const hasSnapshot =
-      plan.raciones !== "engine2" && !!dayShakeSnapshotRef.current[dayIdx];
+      !usaRaciones(plan, dayIdx) && !!dayShakeSnapshotRef.current[dayIdx];
 
     console.log("[toggleShake] effectiveShake:", effectiveShake);
     console.log("[toggleShake] hasSnapshot:", hasSnapshot);

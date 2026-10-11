@@ -80,8 +80,21 @@ function anadir(meal, anadidos, momento) {
  * Ajusta las cantidades de un día de la app.
  * @returns {{ day: object, log: object[], sinCambiar: number }}
  */
+// Cada comida guarda su versión de partida (la que compuso el plato, antes
+// de ajustar raciones) en _base. Recalcular siempre parte de ahí: así activar
+// y quitar el batido, o recalcular un día varias veces, da siempre el mismo
+// resultado en vez de ir derivando a partir de lo ya ajustado.
+const CAMPOS_AJUSTADOS = ['nutricion', 'acompanamientos', '_base'];
+function baseDe(m) {
+  if (m._base) return m._base;
+  const b = { ...m };
+  for (const k of CAMPOS_AJUSTADOS) delete b[k];
+  return b;
+}
+
 export function ajustarDia(day, profile, targetKcal, { composicion = COMPOSICION } = {}) {
-  const meals = day.meals || [];
+  const actuales = day.meals || [];
+  const meals = actuales.map((m) => (m ? baseDe(m) : m));
   const lecturas = meals.map((m) => (m ? leerComida(m) : null));
   const comidas = [];
   meals.forEach((m, i) => {
@@ -101,13 +114,22 @@ export function ajustarDia(day, profile, targetKcal, { composicion = COMPOSICION
   let sinCambiar = 0;
   const nuevas = meals.map((m, i) => {
     const res = r.comidas[String(i)];
-    if (!m || !res) return m;
+    if (!m || !res) return actuales[i];
     const n = lecturas[i].items.length;
     const items = lecturas[i].items.map((it, k) => ({ ...it, despues: res.items[k].gramos }));
     const out = reescribirComida(m, items);
     sinCambiar += out.sinCambiar;
     const conAnadidos = anadir(out.meal, res.items.slice(n).filter((x) => x.anadido), MOMENTO[m.time] || 'tentempie');
-    return { ...conAnadidos, nutricion: { kcal: res.kcal, proteina: res.proteina, objetivoKcal: res.objetivo.kcal, objetivoProteina: res.objetivo.proteina } };
+    // Lo que no son cantidades (nota del ancla, marcas de la app) se conserva de la comida actual.
+    const actual = { ...actuales[i] };
+    delete actual.acompanamientos;
+    return {
+      ...actual,
+      p1: conAnadidos.p1, p2: conAnadidos.p2, shopping: conAnadidos.shopping, recipe: conAnadidos.recipe,
+      ...(conAnadidos.acompanamientos ? { acompanamientos: conAnadidos.acompanamientos } : {}),
+      _base: m,
+      nutricion: { kcal: res.kcal, proteina: res.proteina, objetivoKcal: res.objetivo.kcal, objetivoProteina: res.objetivo.proteina },
+    };
   });
   return {
     day: { ...day, meals: nuevas, raciones: { kcal: r.total.kcal, proteina: r.total.proteina, objetivoKcal: targetKcal, batido: batido ? true : false } },

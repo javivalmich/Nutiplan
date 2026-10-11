@@ -837,8 +837,10 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
       (globalEnabled && newOverride !== false) ||
       (!globalEnabled && newOverride === true);
 
+    // En planes de engine2 se recalcula siempre (es determinista y deja el
+    // resumen del día al corriente); la foto previa solo vale para el motor viejo.
     const hasSnapshot =
-      !!dayShakeSnapshotRef.current[dayIdx];
+      plan.raciones !== "engine2" && !!dayShakeSnapshotRef.current[dayIdx];
 
     console.log("[toggleShake] effectiveShake:", effectiveShake);
     console.log("[toggleShake] hasSnapshot:", hasSnapshot);

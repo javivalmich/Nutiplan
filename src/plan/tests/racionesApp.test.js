@@ -86,6 +86,28 @@ describe('raciones de engine2 en la app (D-100)', { timeout: 60000 }, () => {
     expect(cena(con)).toBeLessThan(cena(plan.days[1]));
   });
 
+  it('activar y quitar el batido muchas veces da siempre lo mismo (no deriva)', () => {
+    const [p, kcal] = PERFILES[0];
+    for (const timing of ['post_entreno', 'manana']) {
+      const prof = (on) => perfil(p, { extras: { proteinShake: { enabled: on, scoops: 1, kcalPerScoop: 120, proteinPerScoop: 24, timing } } });
+      let plan = generarPlanEngine2(prof(true), kcal, opts(45));
+      const inicial = JSON.stringify(plan.days[0].meals.map((m) => m && [m.p1, m.p2, m.shopping]));
+      // Misma secuencia que el botón de la app: cada clic recalcula el día desde sus comidas actuales.
+      const estados = [];
+      let on = true;
+      for (let clic = 0; clic < 6; clic++) {
+        on = !on;
+        const dia = recalcularDia(plan, { ...plan.days[0], shakeEnabled: on }, prof(on), kcal);
+        plan = { ...plan, days: plan.days.map((d, k) => (k === 0 ? { ...dia, shakeEnabled: on } : d)) };
+        estados.push(JSON.stringify(plan.days[0].meals.map((m) => m && [m.p1, m.p2, m.shopping])));
+      }
+      expect(new Set(estados.filter((_, i) => i % 2 === 0)).size).toBe(1); // todos los OFF iguales
+      expect(new Set(estados.filter((_, i) => i % 2 === 1)).size).toBe(1); // todos los ON iguales
+      expect(estados[1]).toBe(inicial); // volver a ON deja el día como se generó
+      expect(estados[0]).not.toBe(estados[1]);
+    }
+  });
+
   it('en un plan del motor viejo, recalcularDia no toca nada', () => {
     const [p, kcal] = PERFILES[0];
     const legacy = buildPlan(perfil(p), kcal, { ...opts(40), saveMealMemory: () => {} });

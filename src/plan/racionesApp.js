@@ -1,0 +1,130 @@
+// racionesApp — aplica a un día (o a un plan) de la app las raciones que
+// decide engine2 (src/engine2/nutrientes/raciones.js) y las escribe en los
+// textos de cada comida (src/plan/cantidades.js).
+//
+// El objetivo de cada usuario sale de las mismas funciones que la app ya usa
+// para mostrarlo (calcMacros y computeStrategy del motor viejo, que viven en
+// nutrition.js). Este módulo está fuera de src/engine2, así que engine2 sigue
+// sin importar nada de src/engine.
+
+import { calcMacros, computeStrategy } from '../engine/nutrition.js';
+import { racionesDia } from '../engine2/nutrientes/raciones.js';
+import { COMPOSICION } from '../engine2/nutrientes/composicion.js';
+import { leerComida } from './medidor/leerComida.js';
+import { reescribirComida } from './cantidades.js';
+
+const MOMENTO = Object.freeze({ Desayuno: 'desayuno', Comida: 'comida', Cena: 'cena' });
+
+export function objetivoDe(profile, targetKcal) {
+  const estrategia = computeStrategy(profile);
+  const { protein } = calcMacros(targetKcal, profile.weight, profile.goal, profile.activity, estrategia);
+  return { kcal: targetKcal, proteina: protein, pesoKg: Number(profile.weight) || 70 };
+}
+
+// A qué comida acompaña el batido según cuándo lo toma el usuario. El perfil
+// no guarda la hora del entreno: «post-entreno» se asocia a la cena (entreno
+// por la tarde, lo más habitual); revisable cuando la app pregunte la hora.
+const MOMENTO_BATIDO = Object.freeze({ manana: 'desayuno', post_entreno: 'cena', noche: 'cena' });
+
+/** ¿Toma el batido ese día? Misma regla que la tarjeta del batido en la app. */
+export function batidoDelDia(profile, day) {
+  const sk = profile && profile.extras && profile.extras.proteinShake;
+  const global = !!(sk && sk.enabled);
+  const override = day ? day.shakeEnabled : undefined;
+  const toma = (global && override !== false) || (!global && override === true);
+  if (!toma || !sk) return null;
+  const scoops = sk.scoops || 1;
+  return { nombre: 'batido de proteína', kcal: scoops * (sk.kcalPerScoop || 120), proteina: scoops * (sk.proteinPerScoop || 24), momento: MOMENTO_BATIDO[sk.timing] || 'cena' };
+}
+
+// Lo que engine2 puede añadir como acompañamiento, y si el perfil lo veta.
+const VETO_ANADIDO = Object.freeze({
+  pan_integral: { intolerancias: ['gluten'], palabras: ['pan', 'trigo', 'gluten'] },
+  fruta: { intolerancias: [], palabras: ['fruta'] },
+  nuez: { intolerancias: ['frutos_secos'], palabras: ['nuez', 'nueces', 'frutos secos'] },
+});
+export function vetadosDe(profile) {
+  const intol = new Set((profile && profile.intolerances) || []);
+  const elim = ((profile && profile.eliminatedFoods) || []).map((f) => String(f).toLowerCase().trim()).filter(Boolean);
+  const v = new Set();
+  for (const [clave, regla] of Object.entries(VETO_ANADIDO)) {
+    if (regla.intolerancias.some((i) => intol.has(i)) || elim.some((e) => regla.palabras.some((w) => e.includes(w) || w.includes(e)))) v.add(clave);
+  }
+  return v;
+}
+
+/** Escribe en la comida los acompañamientos que ha añadido engine2. */
+function anadir(meal, anadidos, momento) {
+  if (!anadidos.length) return meal;
+  let p2 = meal.p2 || '';
+  const shopping = [...(meal.shopping || [])];
+  for (const a of anadidos) {
+    const g = Math.round(a.gramos);
+    if (a.clave === 'pan_integral') {
+      p2 += momento === 'desayuno' ? ` · Pan integral tostado (${g}g)` : ` · Pan integral (${g}g) para acompañar`;
+      shopping.push(`Pan integral (${g}g)`);
+    } else if (a.clave === 'fruta') {
+      const ud = Math.max(1, Math.round(a.gramos / 150));
+      const txt = ud === 1 ? '1 pieza de fruta de temporada' : `${ud} piezas de fruta de temporada`;
+      p2 += momento === 'comida' || momento === 'cena' ? ` · De postre: ${txt}` : ` · ${txt.charAt(0).toUpperCase()}${txt.slice(1)}`;
+      shopping.push(`Fruta de temporada (${ud} ud)`);
+    } else if (a.clave === 'nuez') {
+      p2 += ` · Nueces (${g}g)`;
+      shopping.push(`Nueces (${g}g)`);
+    }
+  }
+  return { ...meal, p2: p2.replace(/^ · /, ''), shopping, acompanamientos: anadidos.map((a) => a.clave) };
+}
+
+/**
+ * Ajusta las cantidades de un día de la app.
+ * @returns {{ day: object, log: object[], sinCambiar: number }}
+ */
+export function ajustarDia(day, profile, targetKcal, { composicion = COMPOSICION } = {}) {
+  const meals = day.meals || [];
+  const lecturas = meals.map((m) => (m ? leerComida(m) : null));
+  const comidas = [];
+  meals.forEach((m, i) => {
+    if (!m) return;
+    const lectura = lecturas[i];
+    const libre = lectura.libre || !!(m._spec && m._spec.isFree);
+    comidas.push({
+      id: String(i),
+      momento: MOMENTO[m.time] || 'tentempie',
+      libre,
+      items: lectura.items.map((it) => ({ clave: it.clave, gramos: it.gramos, unidad: it.como === 'ud' ? 'ud' : 'g', fijo: /estimado/.test(it.como) })),
+    });
+  });
+  const batido = batidoDelDia(profile, day);
+  const r = racionesDia({ comidas, aparte: batido ? [batido] : [], objetivo: objetivoDe(profile, targetKcal), composicion, vetados: vetadosDe(profile) });
+
+  let sinCambiar = 0;
+  const nuevas = meals.map((m, i) => {
+    const res = r.comidas[String(i)];
+    if (!m || !res) return m;
+    const n = lecturas[i].items.length;
+    const items = lecturas[i].items.map((it, k) => ({ ...it, despues: res.items[k].gramos }));
+    const out = reescribirComida(m, items);
+    sinCambiar += out.sinCambiar;
+    const conAnadidos = anadir(out.meal, res.items.slice(n).filter((x) => x.anadido), MOMENTO[m.time] || 'tentempie');
+    return { ...conAnadidos, nutricion: { kcal: res.kcal, proteina: res.proteina, objetivoKcal: res.objetivo.kcal, objetivoProteina: res.objetivo.proteina } };
+  });
+  return {
+    day: { ...day, meals: nuevas, raciones: { kcal: r.total.kcal, proteina: r.total.proteina, objetivoKcal: targetKcal, batido: batido ? true : false } },
+    log: r.log.map((e) => ({ ...e, day: day.name })),
+    sinCambiar,
+  };
+}
+
+/** Ajusta todos los días de un plan. */
+export function ajustarPlan(plan, profile, targetKcal, opts = {}) {
+  const log = [];
+  let sinCambiar = 0;
+  const days = plan.days.map((d) => {
+    const r = ajustarDia(d, profile, targetKcal, opts);
+    log.push(...r.log);
+    sinCambiar += r.sinCambiar;
+    return r.day;
+  });
+  return { ...plan, days, decisionLog: [...(plan.decisionLog || []), ...log], racionesSinCambiarEnTexto: sinCambiar };
+}

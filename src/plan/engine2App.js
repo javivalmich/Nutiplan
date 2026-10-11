@@ -23,6 +23,7 @@ import { resolveDishComposition } from '../engine2/dishes/compositionResolver.js
 import { comboIdentityKey } from '../engine2/dishes/identity.js';
 import { LUNCH_COMBOS_RAW, DINNER_COMBOS_RAW, TRAINING_DINNERS_RAW } from '../engine2/dishes/legacyCombos.data.js';
 import { FREEFORM_COMBOS } from '../data/FREEFORM_COMBOS.js';
+import { ajustarPlan } from './racionesApp.js';
 
 export const DIA_ENGINE2 = Object.freeze({
   Lunes: 'Lunes', Martes: 'Martes', 'Miércoles': 'Miercoles', Jueves: 'Jueves',
@@ -177,6 +178,8 @@ function notaAncla(resumen, day, causa) {
  * @param {object} opts mismas opciones que buildPlan + platosRecientes (nombres de la semana anterior)
  */
 export function generarPlanEngine2(profile, targetKcal, opts = {}) {
+  // opts.raciones === false deja las cantidades del motor viejo (solo para comparar).
+  const conRaciones = opts.raciones !== false;
   const base = buildPlan(clonar(profile), targetKcal, opcionesLegacy(opts));
   const { catalogo, quitados } = filtrarCatalogo(opts.catalogo, profile, targetKcal, opts);
 
@@ -240,8 +243,10 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
 
     let meals;
     if (mealsPerDay === 2) {
-      // Igual que el motor viejo: una comida principal un 25 % más grande y sin cena.
-      const principal = comida2.libre ? nuevaComida : {
+      // Una comida principal y sin cena. Con raciones de engine2, su tamaño lo
+      // decide el reparto del día; sin ellas, como el motor viejo: un 25 % más
+      // grande (solo en el texto principal).
+      const principal = comida2.libre || conRaciones ? { ...nuevaComida, ...(comida2.libre ? {} : { title: `${nuevaComida.title} (comida principal)` }) } : {
         ...nuevaComida,
         title: `${nuevaComida.title} (comida principal)`,
         p1: String(nuevaComida.p1 || '').replace(/\((\d+)g\)/g, (full, g) => `(${Math.round(parseInt(g, 10) * 1.25)}g)`),
@@ -260,7 +265,7 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
 
   if (typeof opts.saveMealMemory === 'function') opts.saveMealMemory(opts.weekNumber ?? 0, memL, memD);
 
-  return {
+  const plan = {
     ...base,
     days,
     weekWarnings: [],
@@ -272,4 +277,6 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
     decisionLog: e2.decisionLog,
     ...(quitados.length ? { platosQuitadosPorPerfil: quitados.length } : {}),
   };
+  // Raciones de engine2: gramos según el objetivo del usuario (D-100).
+  return conRaciones ? { ...ajustarPlan(plan, profile, targetKcal), raciones: 'engine2' } : plan;
 }

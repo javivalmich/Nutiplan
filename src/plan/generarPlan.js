@@ -16,6 +16,7 @@
 import { buildPlan } from '../engine/buildPlan.js';
 import { generarPlanEngine2 } from './engine2App.js';
 import { catalogoApp } from './catalogo.js';
+import { ajustarDia } from './racionesApp.js';
 
 function motorPorDefecto() {
   let env;
@@ -59,4 +60,14 @@ export function platosRecientesPara(planGuardado, semanaGuardada, semanaNueva) {
     for (const m of d.meals || []) if (m && (m.time === 'Comida' || m.time === 'Cena') && m.title) titulos.push(m.title);
   }
   return titulos;
+}
+
+/**
+ * Vuelve a calcular las raciones de un día de un plan de engine2 después de
+ * que la app lo cambie (activar o quitar el batido, regenerar una comida con
+ * el motor viejo). En un plan del motor viejo devuelve el día tal cual.
+ */
+export function recalcularDia(plan, day, profile, targetKcal) {
+  if (!plan || plan.raciones !== 'engine2' || !day) return day;
+  return ajustarDia(day, profile, targetKcal).day;
 }

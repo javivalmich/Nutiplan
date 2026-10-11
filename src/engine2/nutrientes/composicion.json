@@ -1,0 +1,1676 @@
+{
+ "fuente": "BEDCA — Base de Datos Española de Composición de Alimentos (AESAN), https://www.bedca.net",
+ "bedcaDescargado": "2026-10-11T08:54:05.725Z",
+ "bedcaSha256": "402956bec217e3438f79c98bb8ce78d9296d4beb1de13fbbccb77c535337f6bb",
+ "unidades": "por 100 g de parte comestible, en el estado del ingrediente (crudo, seco, cocido…)",
+ "avisos": [
+  "alubias_cocidas: energía 92 kcal frente a 108 por sus macros (Alubia negra, seca, remojada, hervida)",
+  "queso_crema: energía 141 kcal frente a 191 por sus macros (Queso para untar, natural, bajo en calorías)",
+  "queso_crema: agua + macros = 105.5 g por 100 g (Queso para untar, natural, bajo en calorías)"
+ ],
+ "ingredientes": {
+  "pollo_pechuga": {
+   "kcal": 104,
+   "proteina": 23.1,
+   "hidratos": 0,
+   "grasa": 1.2,
+   "fibra": 0,
+   "agua": 75.7,
+   "fuente": {
+    "bedca": "994",
+    "nombre": "Pollo, pechuga, con piel, crudo",
+    "grupo": "Cárnicos y derivados",
+    "nota": "Pollo, pechuga, con piel, crudo (no hay pechuga sin piel cruda; 1,2 g de grasa, magra)"
+   }
+  },
+  "pollo_muslo": {
+   "kcal": 109,
+   "proteina": 19.5,
+   "hidratos": 0,
+   "grasa": 3.4,
+   "fibra": 0,
+   "agua": 77.1,
+   "fuente": {
+    "bedca": "993",
+    "nombre": "Pollo, muslo, con piel, crudo",
+    "grupo": "Cárnicos y derivados"
+   }
+  },
+  "pollo_picado": {
+   "kcal": 166,
+   "proteina": 19.9,
+   "hidratos": 0,
+   "grasa": 9.6,
+   "fibra": 0,
+   "agua": 70.5,
+   "fuente": {
+    "bedca": "2296",
+    "nombre": "Pollo, parte sin especificar",
+    "grupo": "Cárnicos y derivados",
+    "nota": "Pollo, parte sin especificar (no hay picado)"
+   }
+  },
+  "pollo_cocido": {
+   "kcal": 145,
+   "proteina": 22.2,
+   "hidratos": 0,
+   "grasa": 6.2,
+   "fibra": 0,
+   "agua": 71.6,
+   "fuente": {
+    "bedca": "2297",
+    "nombre": "Pollo, pechuga, plancha",
+    "grupo": "Cárnicos y derivados",
+    "nota": "Pollo, pechuga, plancha"
+   }
+  },
+  "pavo_pechuga": {
+   "kcal": 107,
+   "proteina": 24.1,
+   "hidratos": 0,
+   "grasa": 1,
+   "fibra": 0,
+   "agua": 74.9,
+   "fuente": {
+    "bedca": "2288",
+    "nombre": "Pavo, pechuga, con piel, crudo",
+    "grupo": "Cárnicos y derivados"
+   }
+  },
+  "pavo_picado": {
+   "kcal": 157,
+   "proteina": 20.2,
+   "hidratos": 0,
+   "grasa": 8.5,
+   "fibra": 0,
+   "agua": 71.3,
+   "fuente": {
+    "bedca": "2285",
+    "nombre": "Pavo, crudo",
+    "grupo": "Cárnicos y derivados",
+    "nota": "Pavo, crudo (no hay picado)"
+   }
+  },
+  "ternera_magra": {
+   "kcal": 111,
+   "proteina": 20.2,
+   "hidratos": 0,
+   "grasa": 3.3,
+   "fibra": 0,
+   "agua": 76.5,
+   "fuente": {
+    "bedca": "991",
+    "nombre": "Ternera, lomo, crudo, con grasa separable",
+    "grupo": "Cárnicos y derivados",
+    "nota": "Ternera, lomo, crudo"
+   }
+  },
+  "ternera_picada": {
+   "kcal": 111,
+   "proteina": 20.2,
+   "hidratos": 0,
+   "grasa": 3.3,
+   "fibra": 0,
+   "agua": 76.5,
+   "fuente": {
+    "bedca": "991",
+    "nombre": "Ternera, lomo, crudo, con grasa separable",
+    "grupo": "Cárnicos y derivados",
+    "nota": "Ternera, lomo, crudo: el plan pide picada MAGRA; «Carne picada» de BEDCA (20 % de grasa) no lo es"
+   }
+  },
+  "cerdo_lomo": {
+   "kcal": 152,
+   "proteina": 18,
+   "hidratos": 0,
+   "grasa": 8.9,
+   "fibra": 0,
+   "agua": 66,
+   "fuente": {
+    "bedca": "2259",
+    "nombre": "Cerdo, lomo, crudo",
+    "grupo": "Cárnicos y derivados"
+   }
+  },
+  "conejo": {
+   "kcal": 131,
+   "proteina": 20.7,
+   "hidratos": 0,
+   "grasa": 5.3,
+   "fibra": 0,
+   "agua": 74,
+   "fuente": {
+    "bedca": "1162",
+    "nombre": "Conejo de granja, carne, cruda",
+    "grupo": "Cárnicos y derivados"
+   }
+  },
+  "jamon_serrano": {
+   "kcal": 318,
+   "proteina": 28.8,
+   "hidratos": 0.2,
+   "grasa": 22.6,
+   "fibra": 0,
+   "agua": 39.9,
+   "fuente": {
+    "bedca": "2273",
+    "nombre": "Jamón serrano",
+    "grupo": "Cárnicos y derivados"
+   }
+  },
+  "jamon_cocido": {
+   "kcal": 100,
+   "proteina": 19.3,
+   "hidratos": 3.6,
+   "grasa": 0.8,
+   "fibra": 0,
+   "agua": 77.5,
+   "fuente": {
+    "bedca": "2287",
+    "nombre": "Pavo, fiambre, bajo en grasa",
+    "grupo": "Cárnicos y derivados",
+    "nota": "Pavo, fiambre, bajo en grasa (el plan dice «jamón serrano o pavo», en lonchas)"
+   }
+  },
+  "lacon": {
+   "kcal": 213,
+   "proteina": 19.1,
+   "hidratos": 9.9,
+   "grasa": 10.8,
+   "fibra": 0,
+   "agua": 57.4,
+   "fuente": {
+    "bedca": "2274",
+    "nombre": "Lacón",
+    "grupo": "Cárnicos y derivados"
+   }
+  },
+  "chorizo": {
+   "kcal": 322,
+   "proteina": 27,
+   "hidratos": 1.9,
+   "grasa": 23.1,
+   "fibra": 0,
+   "agua": 47,
+   "fuente": {
+    "bedca": "2264",
+    "nombre": "Chorizo",
+    "grupo": "Cárnicos y derivados"
+   }
+  },
+  "morcilla": {
+   "kcal": 323,
+   "proteina": 11,
+   "hidratos": 3.2,
+   "grasa": 30,
+   "fibra": 0,
+   "agua": 55,
+   "fuente": {
+    "bedca": "2280",
+    "nombre": "Morcilla",
+    "grupo": "Cárnicos y derivados"
+   }
+  },
+  "panceta": {
+   "kcal": 465,
+   "proteina": 12.5,
+   "hidratos": 0.5,
+   "grasa": 46.6,
+   "fibra": 0,
+   "agua": 40.4,
+   "fuente": {
+    "bedca": "2260",
+    "nombre": "Cerdo, panceta, cruda",
+    "grupo": "Cárnicos y derivados"
+   }
+  },
+  "huevo": {
+   "kcal": 149,
+   "proteina": 12.5,
+   "hidratos": 0,
+   "grasa": 11.1,
+   "fibra": 0,
+   "agua": 76.4,
+   "fuente": {
+    "bedca": "2127",
+    "nombre": "Huevo de gallina fresco",
+    "grupo": "Huevos y derivados"
+   }
+  },
+  "clara": {
+   "kcal": 45,
+   "proteina": 10.5,
+   "hidratos": 0.3,
+   "grasa": 0.1,
+   "fibra": 0,
+   "agua": 88,
+   "fuente": {
+    "bedca": "1173",
+    "nombre": "Huevo de gallina, clara, cruda",
+    "grupo": "Huevos y derivados"
+   }
+  },
+  "salmon": {
+   "kcal": 181,
+   "proteina": 18.4,
+   "hidratos": 0,
+   "grasa": 12,
+   "fibra": 0,
+   "agua": 69.6,
+   "fuente": {
+    "bedca": "2626",
+    "nombre": "Salmón",
+    "grupo": "Pescados, moluscos, reptiles, crustáceos y derivados"
+   }
+  },
+  "salmon_ahumado": {
+   "kcal": 180,
+   "proteina": 25.4,
+   "hidratos": 0,
+   "grasa": 8.7,
+   "fibra": 0,
+   "agua": 67.7,
+   "fuente": {
+    "bedca": "2627",
+    "nombre": "Salmón ahumado",
+    "grupo": "Pescados, moluscos, reptiles, crustáceos y derivados"
+   }
+  },
+  "merluza": {
+   "kcal": 84,
+   "proteina": 16.7,
+   "hidratos": 0,
+   "grasa": 1.9,
+   "fibra": 0,
+   "agua": 82,
+   "fuente": {
+    "bedca": "825",
+    "nombre": "Merluza, congelada, cruda",
+    "grupo": "Pescados, moluscos, reptiles, crustáceos y derivados",
+    "nota": "Merluza, congelada, cruda: «Merluza fresca» de BEDCA da 11,9 g de proteína, muy por debajo de lo habitual"
+   }
+  },
+  "bacalao": {
+   "kcal": 83,
+   "proteina": 18.2,
+   "hidratos": 0,
+   "grasa": 1,
+   "fibra": 0,
+   "agua": 79.9,
+   "fuente": {
+    "bedca": "2302",
+    "nombre": "Bacalao, crudo",
+    "grupo": "Pescados, moluscos, reptiles, crustáceos y derivados"
+   }
+  },
+  "dorada": {
+   "kcal": 93,
+   "proteina": 17,
+   "hidratos": 0,
+   "grasa": 2.7,
+   "fibra": 0,
+   "agua": 80.3,
+   "fuente": {
+    "bedca": "2333",
+    "nombre": "Dorada, plancha",
+    "grupo": "Pescados, moluscos, reptiles, crustáceos y derivados",
+    "nota": "Dorada, plancha: la «Dorada, cruda» de BEDCA no cuadra (78 kcal con 7,2 g de grasa y 106 g de agua + macros por 100 g)"
+   }
+  },
+  "corvina": {
+   "kcal": 85,
+   "proteina": 18,
+   "hidratos": 0,
+   "grasa": 1.3,
+   "fibra": 0,
+   "agua": 80.7,
+   "fuente": {
+    "bedca": "2344",
+    "nombre": "Lubina",
+    "grupo": "Pescados, moluscos, reptiles, crustáceos y derivados",
+    "nota": "Lubina (no hay corvina)"
+   }
+  },
+  "sardina": {
+   "kcal": 140,
+   "proteina": 18.1,
+   "hidratos": 0,
+   "grasa": 7.5,
+   "fibra": 0,
+   "agua": 74.4,
+   "fuente": {
+    "bedca": "2630",
+    "nombre": "Sardina",
+    "grupo": "Pescados, moluscos, reptiles, crustáceos y derivados"
+   }
+  },
+  "bonito": {
+   "kcal": 119,
+   "proteina": 22,
+   "hidratos": 0,
+   "grasa": 3.3,
+   "fibra": 0,
+   "agua": 67.3,
+   "fuente": {
+    "bedca": "2134",
+    "nombre": "Atún, crudo",
+    "grupo": "Pescados, moluscos, reptiles, crustáceos y derivados",
+    "nota": "Atún, crudo (no hay bonito fresco crudo)"
+   }
+  },
+  "atun_conserva": {
+   "kcal": 101,
+   "proteina": 23.5,
+   "hidratos": 0,
+   "grasa": 0.6,
+   "fibra": 0,
+   "agua": 75.9,
+   "fuente": {
+    "bedca": "2133",
+    "nombre": "Atún, al natural",
+    "grupo": "Pescados, moluscos, reptiles, crustáceos y derivados"
+   }
+  },
+  "gambas": {
+   "kcal": 89,
+   "proteina": 18,
+   "hidratos": 0,
+   "grasa": 1.8,
+   "fibra": 0,
+   "agua": 78.7,
+   "fuente": {
+    "bedca": "817",
+    "nombre": "Gamba roja, cruda",
+    "grupo": "Pescados, moluscos, reptiles, crustáceos y derivados"
+   }
+  },
+  "calamar": {
+   "kcal": 71,
+   "proteina": 14,
+   "hidratos": 1.1,
+   "grasa": 1.5,
+   "fibra": 0,
+   "agua": 79.8,
+   "fuente": {
+    "bedca": "807",
+    "nombre": "Calamar, crudo",
+    "grupo": "Pescados, moluscos, reptiles, crustáceos y derivados"
+   }
+  },
+  "mejillon": {
+   "kcal": 61,
+   "proteina": 10.8,
+   "hidratos": 0,
+   "grasa": 1.9,
+   "fibra": 0,
+   "agua": 87.3,
+   "fuente": {
+    "bedca": "2345",
+    "nombre": "Mejillon",
+    "grupo": "Pescados, moluscos, reptiles, crustáceos y derivados"
+   }
+  },
+  "berberecho": {
+   "kcal": 48,
+   "proteina": 10.7,
+   "hidratos": 0,
+   "grasa": 0.5,
+   "fibra": 0,
+   "agua": 88.8,
+   "fuente": {
+    "bedca": "2306",
+    "nombre": "Berberechos",
+    "grupo": "Pescados, moluscos, reptiles, crustáceos y derivados"
+   }
+  },
+  "tofu": {
+   "kcal": 119,
+   "proteina": 11.5,
+   "hidratos": 3.3,
+   "grasa": 6.6,
+   "fibra": 0.3,
+   "agua": 77,
+   "fuente": {
+    "bedca": "1121",
+    "nombre": "Tofu",
+    "grupo": "Legumbres, semillas, frutos secos y derivados"
+   }
+  },
+  "lentejas_seco": {
+   "kcal": 309,
+   "proteina": 24.8,
+   "hidratos": 48.7,
+   "grasa": 1.2,
+   "fibra": 9.7,
+   "agua": 8.8,
+   "fuente": {
+    "bedca": "1065",
+    "nombre": "Lenteja, seca, cruda",
+    "grupo": "Legumbres, semillas, frutos secos y derivados"
+   }
+  },
+  "lentejas_cocidas": {
+   "kcal": 74,
+   "proteina": 6.3,
+   "hidratos": 11.4,
+   "grasa": 0.2,
+   "fibra": 5.1,
+   "agua": 79.4,
+   "fuente": {
+    "bedca": "1126",
+    "nombre": "Lenteja, en conserva",
+    "grupo": "Legumbres, semillas, frutos secos y derivados",
+    "nota": "Lenteja, en conserva: «Lenteja, hervida» de BEDCA tiene valores de lenteja seca"
+   }
+  },
+  "garbanzos_seco": {
+   "kcal": 334,
+   "proteina": 19.3,
+   "hidratos": 49.2,
+   "grasa": 6.3,
+   "fibra": 15,
+   "agua": 7.3,
+   "fuente": {
+    "bedca": "1020",
+    "nombre": "Garbanzo, seco, crudo",
+    "grupo": "Legumbres, semillas, frutos secos y derivados"
+   }
+  },
+  "garbanzos_cocidos": {
+   "kcal": 133,
+   "proteina": 7.2,
+   "hidratos": 14.1,
+   "grasa": 2.9,
+   "fibra": 4.1,
+   "agua": 71.7,
+   "fuente": {
+    "bedca": "2191",
+    "nombre": "Garbanzo, en conserva",
+    "grupo": "Legumbres, semillas, frutos secos y derivados",
+    "nota": "Garbanzo, en conserva: «Garbanzo, hervido» de BEDCA no cuadra (359 kcal con 59 % de agua)"
+   }
+  },
+  "alubias_seco": {
+   "kcal": 271,
+   "proteina": 22.2,
+   "hidratos": 41.6,
+   "grasa": 1.3,
+   "fibra": 19.7,
+   "agua": 10.8,
+   "fuente": {
+    "bedca": "899",
+    "nombre": "Alubia blanca, seca, cruda",
+    "grupo": "Legumbres, semillas, frutos secos y derivados"
+   }
+  },
+  "alubias_cocidas": {
+   "kcal": 92,
+   "proteina": 8.4,
+   "hidratos": 13.7,
+   "grasa": 0.2,
+   "fibra": 8.7,
+   "agua": 68.9,
+   "fuente": {
+    "bedca": "900",
+    "nombre": "Alubia negra, seca, remojada, hervida",
+    "grupo": "Legumbres, semillas, frutos secos y derivados"
+   }
+  },
+  "edamame": {
+   "kcal": 158,
+   "proteina": 13,
+   "hidratos": 11.1,
+   "grasa": 6.8,
+   "fibra": 4.2,
+   "agua": 64.9,
+   "fuente": {
+    "bedca": "1124",
+    "nombre": "Soja, fresca",
+    "grupo": "Legumbres, semillas, frutos secos y derivados",
+    "nota": "Soja, fresca"
+   }
+  },
+  "guisantes": {
+   "kcal": 62,
+   "proteina": 5.4,
+   "hidratos": 8.8,
+   "grasa": 0.5,
+   "fibra": 4.7,
+   "agua": 79.9,
+   "fuente": {
+    "bedca": "1175",
+    "nombre": "Guisante, congelado, crudo",
+    "grupo": "Legumbres, semillas, frutos secos y derivados"
+   }
+  },
+  "hummus": {
+   "kcal": 254,
+   "proteina": 7.8,
+   "hidratos": 10.6,
+   "grasa": 18.7,
+   "fibra": 4.1,
+   "agua": null,
+   "fuente": {
+    "receta": [
+     [
+      "garbanzos_cocidos",
+      0.7
+     ],
+     [
+      "tahini",
+      0.15
+     ],
+     [
+      "aove",
+      0.08
+     ],
+     [
+      "limon",
+      0.07
+     ]
+    ],
+    "nota": "BEDCA no tiene hummus: receta casera típica"
+   }
+  },
+  "arroz_seco": {
+   "kcal": 386,
+   "proteina": 7,
+   "hidratos": 86,
+   "grasa": 0.9,
+   "fibra": 0.2,
+   "agua": 5.9,
+   "fuente": {
+    "bedca": "2660",
+    "nombre": "Arroz",
+    "grupo": "Cereales y derivados"
+   }
+  },
+  "arroz_integral_cocido": {
+   "kcal": 112,
+   "proteina": 2.6,
+   "hidratos": 22.9,
+   "grasa": 0.9,
+   "fibra": 1.8,
+   "agua": 71.8,
+   "fuente": {
+    "bedca": "1009",
+    "nombre": "Arroz integral, hervido",
+    "grupo": "Cereales y derivados"
+   }
+  },
+  "pasta_seco": {
+   "kcal": 352,
+   "proteina": 12.5,
+   "hidratos": 70.9,
+   "grasa": 1.4,
+   "fibra": 5,
+   "agua": 9.5,
+   "fuente": {
+    "bedca": "1117",
+    "nombre": "Pasta alimenticia, cruda",
+    "grupo": "Cereales y derivados"
+   }
+  },
+  "pasta_integral_seco": {
+   "kcal": 346,
+   "proteina": 13.4,
+   "hidratos": 66.2,
+   "grasa": 2.5,
+   "fibra": 11.5,
+   "agua": 0,
+   "fuente": {
+    "bedca": "1074",
+    "nombre": "Pasta alimenticia, integral, cruda",
+    "grupo": "Cereales y derivados"
+   }
+  },
+  "fideos_arroz_seco": {
+   "kcal": 386,
+   "proteina": 7,
+   "hidratos": 86,
+   "grasa": 0.9,
+   "fibra": 0.2,
+   "agua": 5.9,
+   "fuente": {
+    "bedca": "2660",
+    "nombre": "Arroz",
+    "grupo": "Cereales y derivados",
+    "nota": "Arroz (no hay fideos de arroz; misma harina)"
+   }
+  },
+  "gnocchi": {
+   "kcal": 126,
+   "proteina": 3.9,
+   "hidratos": 26.8,
+   "grasa": 0.2,
+   "fibra": 2.1,
+   "agua": null,
+   "fuente": {
+    "receta": [
+     [
+      "patata_cocida",
+      0.8
+     ],
+     [
+      "harina",
+      0.2
+     ]
+    ],
+    "nota": "BEDCA no tiene gnocchi: patata cocida y harina"
+   }
+  },
+  "quinoa_seco": {
+   "kcal": 305,
+   "proteina": 13.8,
+   "hidratos": 49.2,
+   "grasa": 5.6,
+   "fibra": 7.9,
+   "agua": 11.5,
+   "fuente": {
+    "bedca": "1083",
+    "nombre": "Quinoa, cruda",
+    "grupo": "Cereales y derivados"
+   }
+  },
+  "patata": {
+   "kcal": 72,
+   "proteina": 2.2,
+   "hidratos": 15.2,
+   "grasa": 0.2,
+   "fibra": 1.7,
+   "agua": 80.6,
+   "fuente": {
+    "bedca": "2403",
+    "nombre": "Patata, cruda",
+    "grupo": "Verduras, hortalizas y derivados"
+   }
+  },
+  "boniato": {
+   "kcal": 101,
+   "proteina": 1.2,
+   "hidratos": 23,
+   "grasa": 0.3,
+   "fibra": 2.9,
+   "agua": 71.5,
+   "fuente": {
+    "bedca": "731",
+    "nombre": "Boniato, crudo",
+    "grupo": "Verduras, hortalizas y derivados"
+   }
+  },
+  "pan_blanco": {
+   "kcal": 239,
+   "proteina": 8.3,
+   "hidratos": 47,
+   "grasa": 1.6,
+   "fibra": 3.5,
+   "agua": 34.6,
+   "fuente": {
+    "bedca": "2160",
+    "nombre": "Pan blanco, de barra",
+    "grupo": "Cereales y derivados"
+   }
+  },
+  "pan_integral": {
+   "kcal": 250,
+   "proteina": 10.9,
+   "hidratos": 44,
+   "grasa": 3,
+   "fibra": 6,
+   "agua": 36.1,
+   "fuente": {
+    "bedca": "2163",
+    "nombre": "Pan integral",
+    "grupo": "Cereales y derivados"
+   }
+  },
+  "pan_centeno": {
+   "kcal": 220,
+   "proteina": 6.2,
+   "hidratos": 45.8,
+   "grasa": 1,
+   "fibra": 6.5,
+   "agua": 40.5,
+   "fuente": {
+    "bedca": "2167",
+    "nombre": "Pan de centeno",
+    "grupo": "Cereales y derivados"
+   }
+  },
+  "pan_rallado": {
+   "kcal": 258,
+   "proteina": 8.5,
+   "hidratos": 51.5,
+   "grasa": 1.6,
+   "fibra": 3.5,
+   "agua": 34.9,
+   "fuente": {
+    "bedca": "2171",
+    "nombre": "Pan rallado",
+    "grupo": "Cereales y derivados"
+   }
+  },
+  "tortilla_trigo": {
+   "kcal": 239,
+   "proteina": 8.3,
+   "hidratos": 47,
+   "grasa": 1.6,
+   "fibra": 3.5,
+   "agua": 34.6,
+   "fuente": {
+    "bedca": "2160",
+    "nombre": "Pan blanco, de barra",
+    "grupo": "Cereales y derivados",
+    "nota": "Pan blanco, de barra (no hay tortilla de trigo ni pita)"
+   }
+  },
+  "tortilla_maiz": {
+   "kcal": 313,
+   "proteina": 7.2,
+   "hidratos": 48.1,
+   "grasa": 10,
+   "fibra": 2.4,
+   "agua": 32.3,
+   "fuente": {
+    "bedca": "1071",
+    "nombre": "Pan de maíz",
+    "grupo": "Cereales y derivados",
+    "nota": "Pan de maíz (no hay tortilla de maíz)"
+   }
+  },
+  "avena": {
+   "kcal": 399,
+   "proteina": 16.9,
+   "hidratos": 66.3,
+   "grasa": 6.9,
+   "fibra": 10.6,
+   "agua": 0,
+   "fuente": {
+    "bedca": "1010",
+    "nombre": "Avena, cruda",
+    "grupo": "Cereales y derivados"
+   }
+  },
+  "muesli": {
+   "kcal": 382,
+   "proteina": 9,
+   "hidratos": 61,
+   "grasa": 11,
+   "fibra": 8,
+   "agua": 11,
+   "fuente": {
+    "bedca": "2158",
+    "nombre": "Muesli",
+    "grupo": "Cereales y derivados"
+   }
+  },
+  "harina": {
+   "kcal": 331,
+   "proteina": 10,
+   "hidratos": 71.5,
+   "grasa": 0,
+   "fibra": 3.5,
+   "agua": 13,
+   "fuente": {
+    "bedca": "2677",
+    "nombre": "Harina de trigo",
+    "grupo": "Cereales y derivados"
+   }
+  },
+  "masa_empanada": {
+   "kcal": 408,
+   "proteina": 4.9,
+   "hidratos": 31.7,
+   "grasa": 29.4,
+   "fibra": 1.5,
+   "agua": 30.4,
+   "fuente": {
+    "bedca": "1060",
+    "nombre": "Masa de hojaldre, cruda",
+    "grupo": "Cereales y derivados",
+    "nota": "Masa de hojaldre, cruda"
+   }
+  },
+  "maiz": {
+   "kcal": 94,
+   "proteina": 3.2,
+   "hidratos": 18.3,
+   "grasa": 0.8,
+   "fibra": 3.8,
+   "agua": 73.2,
+   "fuente": {
+    "bedca": "879",
+    "nombre": "Maíz, en mazorca, congelado, crudo",
+    "grupo": "Verduras, hortalizas y derivados",
+    "nota": "Maíz, en mazorca, congelado (el de lata es parecido)"
+   }
+  },
+  "croquetas": {
+   "kcal": 154,
+   "proteina": 5.8,
+   "hidratos": 20.4,
+   "grasa": 5.3,
+   "fibra": 2.5,
+   "agua": 66,
+   "fuente": {
+    "bedca": "2268",
+    "nombre": "Croquetas de pollo",
+    "grupo": "Cárnicos y derivados",
+    "nota": "Croquetas de pollo (no hay de jamón)"
+   }
+  },
+  "acelga": {
+   "kcal": 21,
+   "proteina": 2.1,
+   "hidratos": 2.7,
+   "grasa": 0.2,
+   "fibra": 1,
+   "agua": 94.4,
+   "fuente": {
+    "bedca": "2212",
+    "nombre": "Acelga, cruda",
+    "grupo": "Verduras, hortalizas y derivados"
+   }
+  },
+  "alcachofa": {
+   "kcal": 23,
+   "proteina": 2.9,
+   "hidratos": 2.3,
+   "grasa": 0.2,
+   "fibra": 9.4,
+   "agua": 83.3,
+   "fuente": {
+    "bedca": "1176",
+    "nombre": "Alcachofa, cruda",
+    "grupo": "Verduras, hortalizas y derivados"
+   }
+  },
+  "berenjena": {
+   "kcal": 20,
+   "proteina": 0.7,
+   "hidratos": 3.8,
+   "grasa": 0.2,
+   "fibra": 2.4,
+   "agua": 92.2,
+   "fuente": {
+    "bedca": "2370",
+    "nombre": "Berenjena",
+    "grupo": "Verduras, hortalizas y derivados"
+   }
+  },
+  "brocoli": {
+   "kcal": 25,
+   "proteina": 3,
+   "hidratos": 2.4,
+   "grasa": 0.4,
+   "fibra": 3,
+   "agua": 90.7,
+   "fuente": {
+    "bedca": "1177",
+    "nombre": "Brécol, crudo",
+    "grupo": "Verduras, hortalizas y derivados"
+   }
+  },
+  "calabacin": {
+   "kcal": 17,
+   "proteina": 1.8,
+   "hidratos": 2,
+   "grasa": 0.2,
+   "fibra": 1,
+   "agua": 94.6,
+   "fuente": {
+    "bedca": "2376",
+    "nombre": "Calabacín",
+    "grupo": "Verduras, hortalizas y derivados"
+   }
+  },
+  "calabaza": {
+   "kcal": 32,
+   "proteina": 1.2,
+   "hidratos": 5.6,
+   "grasa": 0.5,
+   "fibra": 2.4,
+   "agua": 89.4,
+   "fuente": {
+    "bedca": "2378",
+    "nombre": "Calabaza, cruda",
+    "grupo": "Verduras, hortalizas y derivados"
+   }
+  },
+  "cebolla": {
+   "kcal": 26,
+   "proteina": 1.1,
+   "hidratos": 5.3,
+   "grasa": 0,
+   "fibra": 1.8,
+   "agua": 91.8,
+   "fuente": {
+    "bedca": "2381",
+    "nombre": "Cebolla",
+    "grupo": "Verduras, hortalizas y derivados"
+   }
+  },
+  "champinon": {
+   "kcal": 26,
+   "proteina": 1.8,
+   "hidratos": 4,
+   "grasa": 0.3,
+   "fibra": 2.5,
+   "agua": 91.4,
+   "fuente": {
+    "bedca": "2384",
+    "nombre": "Champiñon",
+    "grupo": "Verduras, hortalizas y derivados"
+   }
+  },
+  "coliflor": {
+   "kcal": 18,
+   "proteina": 2,
+   "hidratos": 2.1,
+   "grasa": 0.2,
+   "fibra": 2.3,
+   "agua": 92.5,
+   "fuente": {
+    "bedca": "859",
+    "nombre": "Coliflor, congelada, cruda",
+    "grupo": "Verduras, hortalizas y derivados",
+    "nota": "Coliflor, congelada, cruda"
+   }
+  },
+  "col": {
+   "kcal": 26,
+   "proteina": 1.8,
+   "hidratos": 3.7,
+   "grasa": 0.4,
+   "fibra": 3.1,
+   "agua": 89.3,
+   "fuente": {
+    "bedca": "2417",
+    "nombre": "Repollo",
+    "grupo": "Verduras, hortalizas y derivados",
+    "nota": "Repollo"
+   }
+  },
+  "coles_bruselas": {
+   "kcal": 35,
+   "proteina": 4,
+   "hidratos": 3.5,
+   "grasa": 0.5,
+   "fibra": 4.3,
+   "agua": 84.4,
+   "fuente": {
+    "bedca": "1180",
+    "nombre": "Col de bruselas, cruda",
+    "grupo": "Verduras, hortalizas y derivados"
+   }
+  },
+  "esparrago": {
+   "kcal": 25,
+   "proteina": 2.9,
+   "hidratos": 2,
+   "grasa": 0.6,
+   "fibra": 1.7,
+   "agua": 92.8,
+   "fuente": {
+    "bedca": "1179",
+    "nombre": "Espárrago, verde",
+    "grupo": "Verduras, hortalizas y derivados"
+   }
+  },
+  "espinaca": {
+   "kcal": 22,
+   "proteina": 2.7,
+   "hidratos": 1,
+   "grasa": 0.8,
+   "fibra": 2.9,
+   "agua": 90.7,
+   "fuente": {
+    "bedca": "861",
+    "nombre": "Espinaca, picada, congelada, cruda",
+    "grupo": "Verduras, hortalizas y derivados",
+    "nota": "Espinaca, congelada, cruda (no hay fresca cruda)"
+   }
+  },
+  "grelos": {
+   "kcal": 11,
+   "proteina": 2.7,
+   "hidratos": 0.1,
+   "grasa": 0.2,
+   "fibra": 3.9,
+   "agua": 93.1,
+   "fuente": {
+    "bedca": "2396",
+    "nombre": "Grelo",
+    "grupo": "Verduras, hortalizas y derivados"
+   }
+  },
+  "judia_verde": {
+   "kcal": 28,
+   "proteina": 2.2,
+   "hidratos": 3.7,
+   "grasa": 0.4,
+   "fibra": 2.8,
+   "agua": 90.1,
+   "fuente": {
+    "bedca": "2198",
+    "nombre": "Judía verde, cruda",
+    "grupo": "Legumbres, semillas, frutos secos y derivados"
+   }
+  },
+  "lechuga": {
+   "kcal": 16,
+   "proteina": 1.1,
+   "hidratos": 1.4,
+   "grasa": 0.6,
+   "fibra": 1.5,
+   "agua": 95.2,
+   "fuente": {
+    "bedca": "2399",
+    "nombre": "Lechuga",
+    "grupo": "Verduras, hortalizas y derivados"
+   }
+  },
+  "pepino": {
+   "kcal": 12,
+   "proteina": 0.7,
+   "hidratos": 2,
+   "grasa": 0.1,
+   "fibra": 0.8,
+   "agua": 95.7,
+   "fuente": {
+    "bedca": "2407",
+    "nombre": "Pepino",
+    "grupo": "Verduras, hortalizas y derivados"
+   }
+  },
+  "pimiento": {
+   "kcal": 29,
+   "proteina": 1.3,
+   "hidratos": 4.5,
+   "grasa": 0.6,
+   "fibra": 1.8,
+   "agua": 92.2,
+   "fuente": {
+    "bedca": "2409",
+    "nombre": "Pimiento rojo, crudo",
+    "grupo": "Verduras, hortalizas y derivados"
+   }
+  },
+  "puerro": {
+   "kcal": 24,
+   "proteina": 1.6,
+   "hidratos": 3.7,
+   "grasa": 0.3,
+   "fibra": 2.8,
+   "agua": 90.5,
+   "fuente": {
+    "bedca": "2411",
+    "nombre": "Puerro, crudo y congelado",
+    "grupo": "Verduras, hortalizas y derivados"
+   }
+  },
+  "tomate": {
+   "kcal": 19,
+   "proteina": 0.9,
+   "hidratos": 3.5,
+   "grasa": 0.1,
+   "fibra": 1.1,
+   "agua": 93.9,
+   "fuente": {
+    "bedca": "2421",
+    "nombre": "Tomate",
+    "grupo": "Verduras, hortalizas y derivados"
+   }
+  },
+  "tomate_cherry": {
+   "kcal": 19,
+   "proteina": 0.9,
+   "hidratos": 3.5,
+   "grasa": 0.1,
+   "fibra": 1.1,
+   "agua": 93.9,
+   "fuente": {
+    "bedca": "2421",
+    "nombre": "Tomate",
+    "grupo": "Verduras, hortalizas y derivados"
+   }
+  },
+  "tomate_triturado": {
+   "kcal": 36,
+   "proteina": 2.3,
+   "hidratos": 5.6,
+   "grasa": 0.5,
+   "fibra": 1.2,
+   "agua": 90.4,
+   "fuente": {
+    "bedca": "2423",
+    "nombre": "Tomate, maduro, pelado y triturado, enlatado",
+    "grupo": "Verduras, hortalizas y derivados"
+   }
+  },
+  "zanahoria": {
+   "kcal": 34,
+   "proteina": 0.8,
+   "hidratos": 7,
+   "grasa": 0.3,
+   "fibra": 2.6,
+   "agua": 87.8,
+   "fuente": {
+    "bedca": "2424",
+    "nombre": "Zanahoria, cruda",
+    "grupo": "Verduras, hortalizas y derivados"
+   }
+  },
+  "brotes_soja": {
+   "kcal": 13,
+   "proteina": 2,
+   "hidratos": 1,
+   "grasa": 0.1,
+   "fibra": 2.3,
+   "agua": 94.2,
+   "fuente": {
+    "bedca": "849",
+    "nombre": "Soja, germinada, en conserva",
+    "grupo": "Verduras, hortalizas y derivados"
+   }
+  },
+  "algas": {
+   "kcal": 248,
+   "proteina": 30,
+   "hidratos": 10,
+   "grasa": 2,
+   "fibra": 35,
+   "agua": null,
+   "fuente": {
+    "etiqueta": true,
+    "nota": "BEDCA no tiene algas: alga nori seca, etiqueta típica; se usan 1–3 g"
+   }
+  },
+  "aceituna": {
+   "kcal": 120,
+   "proteina": 1.3,
+   "hidratos": 1,
+   "grasa": 12.5,
+   "fibra": 4.8,
+   "agua": 78,
+   "fuente": {
+    "bedca": "2214",
+    "nombre": "Aceituna",
+    "grupo": "Frutas y derivados"
+   }
+  },
+  "pepinillo": {
+   "kcal": 16,
+   "proteina": 1,
+   "hidratos": 2.6,
+   "grasa": 0.1,
+   "fibra": 1.2,
+   "agua": 91.7,
+   "fuente": {
+    "bedca": "2406",
+    "nombre": "Pepinillos en vinagre",
+    "grupo": "Verduras, hortalizas y derivados"
+   }
+  },
+  "fruta": {
+   "kcal": 50,
+   "proteina": 0.3,
+   "hidratos": 12,
+   "grasa": 0,
+   "fibra": 2,
+   "agua": 85.7,
+   "fuente": {
+    "bedca": "2231",
+    "nombre": "Manzana",
+    "grupo": "Frutas y derivados",
+    "nota": "Manzana, como fruta de temporada media"
+   }
+  },
+  "platano": {
+   "kcal": 89,
+   "proteina": 1.2,
+   "hidratos": 20,
+   "grasa": 0.3,
+   "fibra": 3.4,
+   "agua": 75.1,
+   "fuente": {
+    "bedca": "2245",
+    "nombre": "Plátano",
+    "grupo": "Frutas y derivados"
+   }
+  },
+  "frutos_rojos": {
+   "kcal": 36,
+   "proteina": 0.7,
+   "hidratos": 7,
+   "grasa": 0.5,
+   "fibra": 2.2,
+   "agua": 89.6,
+   "fuente": {
+    "bedca": "2225",
+    "nombre": "Fresa",
+    "grupo": "Frutas y derivados",
+    "nota": "Fresa"
+   }
+  },
+  "pina": {
+   "kcal": 49,
+   "proteina": 0.5,
+   "hidratos": 11.5,
+   "grasa": 0,
+   "fibra": 1.2,
+   "agua": 86.8,
+   "fuente": {
+    "bedca": "2242",
+    "nombre": "Piña",
+    "grupo": "Frutas y derivados"
+   }
+  },
+  "limon": {
+   "kcal": 25,
+   "proteina": 0.4,
+   "hidratos": 8,
+   "grasa": 0.2,
+   "fibra": 0,
+   "agua": null,
+   "fuente": {
+    "etiqueta": true,
+    "nota": "Zumo de limón (no se mide: condimento)"
+   }
+  },
+  "aguacate": {
+   "kcal": 136,
+   "proteina": 1.5,
+   "hidratos": 0.4,
+   "grasa": 12,
+   "fibra": 6.3,
+   "agua": 78.8,
+   "fuente": {
+    "bedca": "2216",
+    "nombre": "Aguacate",
+    "grupo": "Frutas y derivados"
+   }
+  },
+  "coco_rallado": {
+   "kcal": 586,
+   "proteina": 6.2,
+   "hidratos": 11.8,
+   "grasa": 58,
+   "fibra": 17,
+   "agua": 7,
+   "fuente": {
+    "bedca": "908",
+    "nombre": "Coco, desecado",
+    "grupo": "Frutas y derivados"
+   }
+  },
+  "leche_semi": {
+   "kcal": 46,
+   "proteina": 3.2,
+   "hidratos": 4.6,
+   "grasa": 1.6,
+   "fibra": 0,
+   "agua": 89.6,
+   "fuente": {
+    "bedca": "916",
+    "nombre": "Leche, semidesnatada, pasteurizada",
+    "grupo": "Lácteos y derivados"
+   }
+  },
+  "leche_desnatada": {
+   "kcal": 34,
+   "proteina": 3.3,
+   "hidratos": 4.6,
+   "grasa": 0.2,
+   "fibra": 0,
+   "agua": 91.9,
+   "fuente": {
+    "bedca": "915",
+    "nombre": "Leche, desnatada, pasteurizada",
+    "grupo": "Lácteos y derivados"
+   }
+  },
+  "bebida_vegetal": {
+   "kcal": 53,
+   "proteina": 3.2,
+   "hidratos": 5.8,
+   "grasa": 1.8,
+   "fibra": 1.3,
+   "agua": 87.9,
+   "fuente": {
+    "bedca": "2491",
+    "nombre": "Bebida de soja",
+    "grupo": "Lácteos y derivados",
+    "nota": "Bebida de soja"
+   }
+  },
+  "leche_coco": {
+   "kcal": 208,
+   "proteina": 2,
+   "hidratos": 2.8,
+   "grasa": 21.3,
+   "fibra": 0,
+   "agua": 73.9,
+   "fuente": {
+    "bedca": "911",
+    "nombre": "Leche de coco",
+    "grupo": "Lácteos y derivados",
+    "nota": "Leche de coco normal: la «light» del plan tiene bastante menos grasa (sobrestima)"
+   }
+  },
+  "yogur_griego_0": {
+   "kcal": 57,
+   "proteina": 10,
+   "hidratos": 4,
+   "grasa": 0.2,
+   "fibra": 0,
+   "agua": null,
+   "fuente": {
+    "etiqueta": true,
+    "nota": "BEDCA solo tiene yogur griego entero (10 % de grasa): etiqueta típica de griego 0 %"
+   }
+  },
+  "yogur_natural": {
+   "kcal": 63,
+   "proteina": 3.2,
+   "hidratos": 3.9,
+   "grasa": 3.9,
+   "fibra": 0,
+   "agua": 89,
+   "fuente": {
+    "bedca": "1143",
+    "nombre": "Yogur, enriquecido, natural",
+    "grupo": "Lácteos y derivados"
+   }
+  },
+  "skyr": {
+   "kcal": 62,
+   "proteina": 11,
+   "hidratos": 4,
+   "grasa": 0.2,
+   "fibra": 0,
+   "agua": null,
+   "fuente": {
+    "etiqueta": true,
+    "nota": "BEDCA no tiene skyr ni queso batido 0 %: etiqueta típica"
+   }
+  },
+  "queso_fresco": {
+   "kcal": 197,
+   "proteina": 12.4,
+   "hidratos": 2.5,
+   "grasa": 15.4,
+   "fibra": 0,
+   "agua": 68.4,
+   "fuente": {
+    "bedca": "2507",
+    "nombre": "Queso fresco de burgos",
+    "grupo": "Lácteos y derivados",
+    "nota": "Queso fresco de Burgos (entero): los «light» del plan tienen menos grasa (sobrestima)"
+   }
+  },
+  "queso_crema": {
+   "kcal": 141,
+   "proteina": 14.2,
+   "hidratos": 4.2,
+   "grasa": 13,
+   "fibra": 0,
+   "agua": 74.1,
+   "fuente": {
+    "bedca": "948",
+    "nombre": "Queso para untar, natural, bajo en calorías",
+    "grupo": "Lácteos y derivados"
+   }
+  },
+  "mozzarella": {
+   "kcal": 222,
+   "proteina": 19.5,
+   "hidratos": 0,
+   "grasa": 16.1,
+   "fibra": 0,
+   "agua": 64.4,
+   "fuente": {
+    "bedca": "2510",
+    "nombre": "Queso mozzarella",
+    "grupo": "Lácteos y derivados"
+   }
+  },
+  "feta": {
+   "kcal": 297,
+   "proteina": 19.8,
+   "hidratos": 1.1,
+   "grasa": 23.9,
+   "fibra": 0,
+   "agua": 50.2,
+   "fuente": {
+    "bedca": "934",
+    "nombre": "Queso fresco, cabra",
+    "grupo": "Lácteos y derivados",
+    "nota": "Queso fresco de cabra (no hay feta)"
+   }
+  },
+  "queso_curado": {
+   "kcal": 366,
+   "proteina": 32.3,
+   "hidratos": 0,
+   "grasa": 26.5,
+   "fibra": 0,
+   "agua": 30.5,
+   "fuente": {
+    "bedca": "2512",
+    "nombre": "Queso parmesano",
+    "grupo": "Lácteos y derivados",
+    "nota": "Queso parmesano"
+   }
+  },
+  "mantequilla": {
+   "kcal": 730,
+   "proteina": 0.7,
+   "hidratos": 0.5,
+   "grasa": 82,
+   "fibra": 0,
+   "agua": 16.9,
+   "fuente": {
+    "bedca": "756",
+    "nombre": "Mantequilla salada",
+    "grupo": "Grasas y aceites"
+   }
+  },
+  "aove": {
+   "kcal": 884,
+   "proteina": 0,
+   "hidratos": 0,
+   "grasa": 100,
+   "fibra": 0,
+   "agua": null,
+   "fuente": {
+    "bedca": "2544",
+    "nombre": "Aceite de oliva virgen extra",
+    "grupo": "Grasas y aceites"
+   }
+  },
+  "aceite_semillas": {
+   "kcal": 883,
+   "proteina": 0,
+   "hidratos": 0,
+   "grasa": 99.9,
+   "fibra": 0,
+   "agua": null,
+   "fuente": {
+    "bedca": "2541",
+    "nombre": "Aceite de girasol",
+    "grupo": "Grasas y aceites"
+   }
+  },
+  "almendra": {
+   "kcal": 586,
+   "proteina": 19.1,
+   "hidratos": 6.2,
+   "grasa": 45.2,
+   "fibra": 8.3,
+   "agua": 5.9,
+   "fuente": {
+    "bedca": "896",
+    "nombre": "Almendra, cruda",
+    "grupo": "Legumbres, semillas, frutos secos y derivados"
+   }
+  },
+  "nuez": {
+   "kcal": 592,
+   "proteina": 14,
+   "hidratos": 3.3,
+   "grasa": 63.3,
+   "fibra": 5.2,
+   "agua": 18.5,
+   "fuente": {
+    "bedca": "2201",
+    "nombre": "Nuez",
+    "grupo": "Legumbres, semillas, frutos secos y derivados"
+   }
+  },
+  "pistacho": {
+   "kcal": 592,
+   "proteina": 17.6,
+   "hidratos": 15.7,
+   "grasa": 49.2,
+   "fibra": 6.5,
+   "agua": 8.6,
+   "fuente": {
+    "bedca": "2207",
+    "nombre": "Pistacho",
+    "grupo": "Legumbres, semillas, frutos secos y derivados"
+   }
+  },
+  "cacahuete": {
+   "kcal": 597,
+   "proteina": 24.5,
+   "hidratos": 7.1,
+   "grasa": 53,
+   "fibra": 6.9,
+   "agua": 8.5,
+   "fuente": {
+    "bedca": "2186",
+    "nombre": "Cacahuete, tostado, salado",
+    "grupo": "Legumbres, semillas, frutos secos y derivados"
+   }
+  },
+  "crema_cacahuete": {
+   "kcal": 600,
+   "proteina": 25.5,
+   "hidratos": 11.2,
+   "grasa": 50.9,
+   "fibra": 7,
+   "agua": 1.2,
+   "fuente": {
+    "bedca": "979",
+    "nombre": "Crema de cacahuete",
+    "grupo": "Legumbres, semillas, frutos secos y derivados"
+   }
+  },
+  "semillas": {
+   "kcal": 560,
+   "proteina": 19,
+   "hidratos": 10,
+   "grasa": 50,
+   "fibra": 11,
+   "agua": 5,
+   "fuente": {
+    "bedca": "1127",
+    "nombre": "Sésamo, semilla",
+    "grupo": "Legumbres, semillas, frutos secos y derivados",
+    "nota": "Sésamo (las más usadas)"
+   }
+  },
+  "tahini": {
+   "kcal": 591,
+   "proteina": 18.2,
+   "hidratos": 0.9,
+   "grasa": 58,
+   "fibra": 7.9,
+   "agua": 4.7,
+   "fuente": {
+    "bedca": "2567",
+    "nombre": "Pasta de sésamo",
+    "grupo": "Miscelánea"
+   }
+  },
+  "mayonesa_ligera": {
+   "kcal": 296,
+   "proteina": 1,
+   "hidratos": 10.8,
+   "grasa": 28.1,
+   "fibra": 0,
+   "agua": 60.1,
+   "fuente": {
+    "bedca": "2554",
+    "nombre": "Mayonesa, baja en calorías",
+    "grupo": "Grasas y aceites"
+   }
+  },
+  "alioli": {
+   "kcal": 782,
+   "proteina": 0.5,
+   "hidratos": 2.8,
+   "grasa": 86.9,
+   "fibra": 0.1,
+   "agua": 8.3,
+   "fuente": {
+    "bedca": "790",
+    "nombre": "Alioli",
+    "grupo": "Miscelánea"
+   }
+  },
+  "miel": {
+   "kcal": 314,
+   "proteina": 0.5,
+   "hidratos": 76.8,
+   "grasa": 0,
+   "fibra": 0,
+   "agua": 17,
+   "fuente": {
+    "bedca": "2643",
+    "nombre": "Miel",
+    "grupo": "Azúcar, chocolate y derivados"
+   }
+  },
+  "salsa_soja": {
+   "kcal": 63,
+   "proteina": 8.7,
+   "hidratos": 6.7,
+   "grasa": 0.1,
+   "fibra": 1.6,
+   "agua": 65.1,
+   "fuente": {
+    "bedca": "2575",
+    "nombre": "Salsa de soja",
+    "grupo": "Miscelánea"
+   }
+  },
+  "miso": {
+   "kcal": 208,
+   "proteina": 11.7,
+   "hidratos": 26.5,
+   "grasa": 6,
+   "fibra": 5.4,
+   "agua": 43,
+   "fuente": {
+    "bedca": "2157",
+    "nombre": "Miso",
+    "grupo": "Cereales y derivados"
+   }
+  },
+  "ketchup": {
+   "kcal": 104,
+   "proteina": 3.4,
+   "hidratos": 21.7,
+   "grasa": 0.2,
+   "fibra": 0.9,
+   "agua": 66.7,
+   "fuente": {
+    "bedca": "2605",
+    "nombre": "Ketchup",
+    "grupo": "Miscelánea"
+   }
+  }
+ }
+}

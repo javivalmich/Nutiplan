@@ -153,7 +153,8 @@ export const INGREDIENTES = Object.freeze({
   tahini: I('Tahini', 'frutoSeco', { estado: 'listo', gCda: 15 }),
 
   // ── Salsas y endulzantes con aporte ─────────────────────────────────────
-  mayonesa_ligera: I('Mayonesa ligera / alioli', 'salsa', { estado: 'listo', gCda: 15 }),
+  mayonesa_ligera: I('Mayonesa ligera', 'salsa', { estado: 'listo', gCda: 15 }),
+  alioli: I('Alioli', 'salsa', { estado: 'listo', gCda: 15 }),
   miel: I('Miel / azúcar', 'salsa', { estado: 'listo', gCda: 20, gCdita: 7 }),
   salsa_soja: I('Salsa de soja', 'salsa', { estado: 'listo', gMl: 1.1, gCda: 16, gCdita: 6 }),
   miso: I('Pasta de miso', 'salsa', { estado: 'listo', gCda: 15 }),

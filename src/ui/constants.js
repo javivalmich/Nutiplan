@@ -197,6 +197,7 @@ export const INTOLERANCES=[
   {key:"cerdo",        emoji:"🐷",label:"Cerdo"},
   {key:"legumbres",    emoji:"🫘",label:"Legumbres"},
   {key:"picante",      emoji:"🌶️",label:"Picante"},
+  {key:"sibo",         emoji:"🌿",label:"SIBO (bajo en FODMAP)"},
 ];
 export const DAYS_ES   =["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
 export const DAYS_SHORT=["L","M","X","J","V","S","D"];

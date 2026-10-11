@@ -27,6 +27,7 @@ import { ajustarPlan, ajustarDia } from './racionesApp.js';
 import { elegirAlternativa } from '../engine2/walk/alternativa.js';
 import { aplicarAjustesD099 } from '../engine2/dishes/ajustesD099.js';
 import { alergenosDeTexto } from '../engine2/nutrientes/alergenos.js';
+import { adaptarComidaFodmap, fodmapRestante, protagonistaFodmap } from '../engine2/nutrientes/fodmap.js';
 import { evaluateVeto } from '../engine2/walk/vetoes.js';
 
 export const DIA_ENGINE2 = Object.freeze({
@@ -120,11 +121,29 @@ function textoCompuesto(meal) {
   return [meal.title, meal.p1, meal.p2, ...(meal.shopping || []), ...((meal.recipe || []).filter((x) => typeof x === 'string'))].filter(Boolean).join(' · ');
 }
 
-/** Intolerancias del perfil que afectan a una comida compuesta (por sus ingredientes y su texto). */
+const conSibo = (profile) => ((profile && profile.intolerances) || []).includes('sibo');
+
+/** Una comida tal como la verá un usuario con SIBO (adaptada a bajo en FODMAP). */
+export function adaptarSiProcede(meal, profile) {
+  return meal && conSibo(profile) && !meal.adaptadoFodmap ? adaptarComidaFodmap(meal) : meal;
+}
+
+/**
+ * Intolerancias del perfil que afectan a una comida compuesta (por sus
+ * ingredientes y su texto). Con SIBO, la comida se mira ya adaptada: solo
+ * cuenta lo alto en FODMAP que no tiene sustituto, o un plato cuyo
+ * protagonista es el ajo o la cebolla.
+ */
 export function intoleranciasDe(meal, profile) {
   const intol = new Set((profile && profile.intolerances) || []);
   if (!intol.size || !meal) return [];
-  return [...alergenosDeTexto(textoCompuesto(meal))].filter((a) => intol.has(a));
+  const out = [...alergenosDeTexto(textoCompuesto(meal))].filter((a) => intol.has(a));
+  if (intol.has('sibo')) {
+    const adaptada = adaptarSiProcede(meal, profile);
+    if (protagonistaFodmap(textoCompuesto(meal)) || fodmapRestante(textoCompuesto(adaptada))) out.push('sibo');
+    // Con SIBO, trigo y lactosa se cambian por sin gluten y sin lactosa: no cuentan si ya están adaptados.
+  }
+  return out;
 }
 
 /**
@@ -299,7 +318,8 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
 
   if (typeof opts.saveMealMemory === 'function') opts.saveMealMemory(opts.weekNumber ?? 0, memL, memD);
 
-  const seguros = desayunosSeguros(days, profile, targetKcal, opts);
+  const adaptados = conSibo(profile) ? days.map((d) => ({ ...d, meals: d.meals.map((m) => adaptarSiProcede(m, profile)) })) : days;
+  const seguros = desayunosSeguros(adaptados, profile, targetKcal, opts);
 
   const plan = {
     ...base,
@@ -349,7 +369,8 @@ function desayunosSeguros(days, profile, targetKcal, opts) {
     while (!lista.length && semilla < 30) {
       semilla += 1;
       const alt = buildPlan(clonar(profile), targetKcal, opcionesLegacy({ ...opts, userId: `${opts.userId ?? 'anon'}#desayuno${semilla}` }));
-      for (const d of alt.days) for (const m of d.meals) {
+      for (const d of alt.days) for (const m0 of d.meals) {
+        const m = adaptarSiProcede(m0, profile);
         if (!m || m.time === 'Comida' || m.time === 'Cena' || intoleranciasDe(m, profile).length || usados.has(m.title)) continue;
         if (!candidatos.has(m.time)) candidatos.set(m.time, []);
         if (!candidatos.get(m.time).some((x) => x.title === m.title)) candidatos.get(m.time).push(m);
@@ -441,7 +462,7 @@ export function regenerarComidaEngine2(plan, dayIdx, time, deseo, profile, targe
 
   const [compuesta] = componerDia(profile, targetKcal, opts, dayIdx, [specPara(dish, momento)]);
   const principal = / \(comida principal\)$/.test(actual.title || '');
-  const nueva = { ...compuesta, title: `${dish.nombre}${principal ? ' (comida principal)' : ''}`, _motor: 'engine2', _dishId: dish.id, ...(esAncla && actual._causa ? { _causa: actual._causa } : {}) };
+  const nueva = adaptarSiProcede({ ...compuesta, title: `${dish.nombre}${principal ? ' (comida principal)' : ''}`, _motor: 'engine2', _dishId: dish.id, ...(esAncla && actual._causa ? { _causa: actual._causa } : {}) }, profile);
   const mantieneAncla = esAncla && decisionLog.some((e) => e.causa === 'alternativa_mantiene_ancla');
   if (mantieneAncla && actual.slotNote) nueva.slotNote = actual.slotNote;
 

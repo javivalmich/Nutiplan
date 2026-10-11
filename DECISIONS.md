@@ -4319,3 +4319,28 @@ Cambiar un desayuno desde «Alternativas» sigue yendo al motor viejo sin este c
 
 Estado resultante
 Las 10 intolerancias de la app se respetan en comidas, cenas, desayunos, tentempiés, acompañamientos y alternativas de engine2.
+
+## D-104 — [2026-10-12] SIBO: platos adaptados a bajo en FODMAP
+
+Decide: Javi. HEAD: `3128b52` (rama `intolerancias`, D-103).
+
+Contexto
+Javi pide la opción SIBO y que el motor adapte los platos en vez de quitarlos: «un plato que sea ternera con ajo y perejil que sea solo ternera con perejil». Si SIBO se tratara como una intolerancia más, saldrían fuera casi todos los platos (el ajo y la cebolla están en la mayoría).
+
+Decisión
+1. Nueva opción en el perfil: «SIBO (bajo en FODMAP)», con un aviso: es una guía orientativa, la dieta va por fases y conviene que la paute un médico o dietista.
+2. `src/engine2/nutrientes/fodmap.js` adapta el texto de cada comida (título, preparación, compra y receta):
+   - el ajo se quita; donde da el sabor del plato («al ajillo», «dora el ajo») se usa aceite aromatizado con ajo, que no tiene los fructanos del ajo;
+   - cebolla, cebolleta y puerro pasan a su parte verde;
+   - trigo → sin gluten (pan, pasta, harina de arroz, pita, tortilla de maíz, copos de avena sin gluten); leche, yogur, queso fresco y nata → sin lactosa; miel → sirope de arce. Los quesos curados se dejan;
+   - champiñones → champiñones en conserva (escurridos son bajos en FODMAP); espárragos de acompañamiento → judías verdes; los guisantes de adorno se quitan;
+   - la fruta de temporada se concreta en naranja, kiwi, fresas o uva.
+   Adaptar dos veces da lo mismo.
+3. No se ofrecen los platos en los que queda algo alto en FODMAP sin sustituto razonable (legumbres, coliflor, setas, alcachofa, aguacate, manzana, pera…) ni los que tienen como protagonista el ajo, la cebolla, el puerro o el espárrago (sopa de ajo, ajoblanco, sopa de cebolla, crema de puerro). De 241 platos quedan 200 adaptados y fuera 41, sobre todo de legumbre.
+4. La adaptación se aplica en el plan (comidas, cenas, desayunos y tentempiés), en los acompañamientos de las raciones y en las alternativas. Las raciones se calculan sobre el texto ya adaptado.
+
+Límites
+La adaptación es por ingrediente, no por cantidad: no aplica los umbrales por ración de Monash (p. ej. calabacín o judías verdes son bajos en FODMAP solo hasta cierta cantidad). Salsas preparadas como la harissa pueden llevar ajo y no se cambian. No hay fases (eliminación, reintroducción).
+
+Estado resultante
+Con SIBO la semana sale entera con engine2 y ninguna comida conserva ajo, cebolla, trigo, lactosa ni otros alimentos altos en FODMAP sin adaptar.

@@ -1215,6 +1215,7 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
             <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
               {INTOLERANCES.map(it=>{const sel=profile.intolerances.includes(it.key);return(<button key={it.key} onClick={()=>toggleIntol(it.key)} style={{padding:"6px 12px",borderRadius:99,border:"1.5px solid "+(sel?THEME.colorError2:Dk.border),background:sel?"#e05a5a22":Dk.card2,color:sel?THEME.colorError2:Dk.muted,cursor:"pointer",fontFamily:sans,fontSize:12,fontWeight:sel?600:400}}>{it.emoji} {it.label}</button>);})}
             </div>
+            {profile.intolerances.includes("sibo")&&(<div style={{fontSize:11,color:Dk.muted,marginTop:8,lineHeight:1.45}}>🌿 Los platos se adaptan a bajo en FODMAP: sin ajo (aceite aromatizado con ajo), parte verde de cebolla y puerro, sin gluten y sin lactosa. Es una guía orientativa: la dieta baja en FODMAP va por fases y conviene que la paute tu médico o dietista.</div>)}
           </div>
           <div>
             <div style={{fontSize:10,color:Dk.muted,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:8}}>Alimentos a eliminar</div>

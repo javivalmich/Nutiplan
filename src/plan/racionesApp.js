@@ -12,6 +12,7 @@ import { racionesDia } from '../engine2/nutrientes/raciones.js';
 import { COMPOSICION } from '../engine2/nutrientes/composicion.js';
 import { leerComida } from './medidor/leerComida.js';
 import { reescribirComida } from './cantidades.js';
+import { adaptarComidaFodmap } from '../engine2/nutrientes/fodmap.js';
 
 const MOMENTO = Object.freeze({ Desayuno: 'desayuno', Comida: 'comida', Cena: 'cena' });
 
@@ -39,7 +40,7 @@ export function batidoDelDia(profile, day) {
 
 // Lo que engine2 puede añadir como acompañamiento, y si el perfil lo veta.
 const VETO_ANADIDO = Object.freeze({
-  pan_integral: { intolerancias: ['gluten'], palabras: ['pan', 'trigo', 'gluten'] },
+  pan_integral: { intolerancias: ['gluten', 'sibo'], palabras: ['pan', 'trigo', 'gluten'] },
   fruta: { intolerancias: [], palabras: ['fruta'] },
   nuez: { intolerancias: ['frutos_secos'], palabras: ['nuez', 'nueces', 'frutos secos'] },
 });
@@ -119,7 +120,8 @@ export function ajustarDia(day, profile, targetKcal, { composicion = COMPOSICION
     const items = lecturas[i].items.map((it, k) => ({ ...it, despues: res.items[k].gramos }));
     const out = reescribirComida(m, items);
     sinCambiar += out.sinCambiar;
-    const conAnadidos = anadir(out.meal, res.items.slice(n).filter((x) => x.anadido), MOMENTO[m.time] || 'tentempie');
+    let conAnadidos = anadir(out.meal, res.items.slice(n).filter((x) => x.anadido), MOMENTO[m.time] || 'tentempie');
+    if (conAnadidos.acompanamientos && ((profile && profile.intolerances) || []).includes('sibo')) conAnadidos = { ...adaptarComidaFodmap(conAnadidos), title: conAnadidos.title };
     // Lo que no son cantidades (nota del ancla, marcas de la app) se conserva de la comida actual.
     const actual = { ...actuales[i] };
     delete actual.acompanamientos;

@@ -223,21 +223,24 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
     const comida2 = d2.meals.find((m) => m.momento === 'comida');
     const cena2 = d2.meals.find((m) => m.momento === 'cena');
     const [comida, cena] = componerDia(profile, targetKcal, opts, i, [specPara(comida2.dish, 'comida'), specPara(cena2.dish, 'cena')]);
-    const marca = (meal, dish) => ({ ...meal, title: dish.nombre, _motor: 'engine2', _dishId: dish.id });
+    const marca = (meal, dish, momento) => {
+      const c = causaDe.get(`${d2.day}|${momento}`);
+      return { ...meal, title: dish.nombre, _motor: 'engine2', _dishId: dish.id, ...(c && c.startsWith('ancla_base') ? { _causa: c } : {}) };
+    };
 
     let nuevaComida;
     if (comida2.libre) {
       const libre = day.meals.find((m) => m && m.time === 'Comida') || null;
-      nuevaComida = libre ? { ...libre, p2: `Si prefieres cocinar: ${comida2.dish.nombre}.`, sugerencia: marca(comida, comida2.dish) } : null;
+      nuevaComida = libre ? { ...libre, p2: `Si prefieres cocinar: ${comida2.dish.nombre}.`, sugerencia: marca(comida, comida2.dish, 'comida') } : null;
       memL.push('libre');
     } else {
-      nuevaComida = marca(comida, comida2.dish);
+      nuevaComida = marca(comida, comida2.dish, 'comida');
       const nota = notaAncla(resumenAncla, d2.day, causaDe.get(`${d2.day}|comida`));
       if (nota) nuevaComida.slotNote = nota;
       platosSemana.push(comida2.dish.nombre);
       memL.push(claveMemoria(proteinaDe(comida2.dish)));
     }
-    let nuevaCena = marca(cena, cena2.dish);
+    let nuevaCena = marca(cena, cena2.dish, 'cena');
     const notaCena = notaAncla(resumenAncla, d2.day, causaDe.get(`${d2.day}|cena`));
     if (notaCena) nuevaCena.slotNote = notaCena;
     platosSemana.push(cena2.dish.nombre);
@@ -280,8 +283,32 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
     decisionLog: e2.decisionLog,
     ...(quitados.length ? { platosQuitadosPorPerfil: quitados.length } : {}),
   };
+  // La base de datos solo guarda los días del plan (no los campos de arriba):
+  // lo que engine2 necesita para recalcular y para las alternativas va también
+  // dentro del primer día.
+  plan.days = guardarMeta(plan.days, { ancla: resumenAncla, platosSemana, platosSemanaAnterior: opts.platosRecientes || [] });
   // Raciones de engine2: gramos según el objetivo del usuario (D-100).
   return conRaciones ? { ...ajustarPlan(plan, profile, targetKcal), raciones: 'engine2' } : plan;
+}
+
+// ─── Datos de la semana que deben sobrevivir a la base de datos ─────────────
+
+function guardarMeta(days, meta) {
+  return days.map((d, i) => (i === 0 ? { ...d, _engine2: meta } : d));
+}
+
+/**
+ * Datos de engine2 de un plan (ancla, platos de la semana y de la anterior),
+ * tanto si el plan está entero como si viene de la base de datos, que solo
+ * guarda los días.
+ */
+export function metaEngine2(plan) {
+  const d0 = (plan && plan.days && plan.days[0] && plan.days[0]._engine2) || {};
+  return {
+    ancla: plan.ancla !== undefined ? plan.ancla : d0.ancla || null,
+    platosSemana: plan.platosSemana || d0.platosSemana || null,
+    platosSemanaAnterior: plan.platosSemanaAnterior || d0.platosSemanaAnterior || [],
+  };
 }
 
 // ─── Alternativa de una comida (botón «🔄 Alternativas») ─────────────────────
@@ -315,29 +342,31 @@ export function regenerarComidaEngine2(plan, dayIdx, time, deseo, profile, targe
     const m = d.meals.find((x) => x && x.time === t);
     return { day: diaE2(d), momento: MOMENTO_DE[t], dishId: m && m._dishId ? m._dishId : null };
   }));
-  const causa = (plan.decisionLog || []).filter((e) => e.day === diaE2(day) && e.momento === momento && typeof e.causa === 'string').map((e) => e.causa).pop();
-  const esAncla = !!(plan.ancla && causa && causa.startsWith('ancla_base'));
+  const meta = metaEngine2(plan);
+  const causa = actual._causa || (plan.decisionLog || []).filter((e) => e.day === diaE2(day) && e.momento === momento && typeof e.causa === 'string').map((e) => e.causa).pop();
+  const esAncla = !!(meta.ancla && causa && causa.startsWith('ancla_base'));
 
   const { dish, decisionLog } = elegirAlternativa({
     catalog, semana, day: diaE2(day), momento, actualId: actual._dishId, deseo,
-    platosRecientes: plan.platosSemanaAnterior || [],
+    platosRecientes: meta.platosSemanaAnterior,
     intolerancias: (profile.intolerances || []).filter((i) => VETO_PROPIO_ENGINE2.has(i)),
-    anclaBase: esAncla ? plan.ancla.base : null,
+    anclaBase: esAncla ? meta.ancla.base : null,
     seed: `${opts.userId ?? 'anon'}:${opts.weekNumber ?? 0}`,
   });
 
   const [compuesta] = componerDia(profile, targetKcal, opts, dayIdx, [specPara(dish, momento)]);
   const principal = / \(comida principal\)$/.test(actual.title || '');
-  const nueva = { ...compuesta, title: `${dish.nombre}${principal ? ' (comida principal)' : ''}`, _motor: 'engine2', _dishId: dish.id };
+  const nueva = { ...compuesta, title: `${dish.nombre}${principal ? ' (comida principal)' : ''}`, _motor: 'engine2', _dishId: dish.id, ...(esAncla && actual._causa ? { _causa: actual._causa } : {}) };
   const mantieneAncla = esAncla && decisionLog.some((e) => e.causa === 'alternativa_mantiene_ancla');
   if (mantieneAncla && actual.slotNote) nueva.slotNote = actual.slotNote;
 
   const meals = day.meals.slice();
   meals[mealIdx] = nueva;
-  const ajustado = plan.raciones === 'engine2' ? ajustarDia({ ...day, meals }, profile, targetKcal) : { day: { ...day, meals }, log: [] };
-  const days = plan.days.slice();
+  const ajustado = plan.raciones === 'engine2' || day.raciones ? ajustarDia({ ...day, meals }, profile, targetKcal) : { day: { ...day, meals }, log: [] };
+  let days = plan.days.slice();
   days[dayIdx] = ajustado.day;
-  const platosSemana = (plan.platosSemana || []).map((n) => (n === actual.title || n === (actual.title || '').replace(/ \(comida principal\)$/, '') ? dish.nombre : n));
+  const platosSemana = (meta.platosSemana || []).map((n) => (n === actual.title || n === (actual.title || '').replace(/ \(comida principal\)$/, '') ? dish.nombre : n));
+  days = guardarMeta(days, { ...((days[0] && days[0]._engine2) || {}), ancla: meta.ancla, platosSemanaAnterior: meta.platosSemanaAnterior, platosSemana });
   return {
     ...plan,
     days,

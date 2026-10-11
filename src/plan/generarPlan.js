@@ -14,7 +14,7 @@
 // El motor viejo no se borra ni se modifica.
 
 import { buildPlan } from '../engine/buildPlan.js';
-import { generarPlanEngine2, regenerarComidaEngine2 } from './engine2App.js';
+import { generarPlanEngine2, regenerarComidaEngine2, metaEngine2 } from './engine2App.js';
 import { catalogoApp } from './catalogo.js';
 import { ajustarDia } from './racionesApp.js';
 
@@ -53,8 +53,9 @@ export function generarPlan(profile, targetKcal, opts = {}) {
  */
 export function platosRecientesPara(planGuardado, semanaGuardada, semanaNueva) {
   if (!planGuardado || !Array.isArray(planGuardado.days)) return [];
-  if (semanaGuardada === semanaNueva) return planGuardado.platosSemanaAnterior || [];
-  if (Array.isArray(planGuardado.platosSemana)) return planGuardado.platosSemana;
+  const meta = metaEngine2(planGuardado);
+  if (semanaGuardada === semanaNueva) return meta.platosSemanaAnterior || [];
+  if (Array.isArray(meta.platosSemana)) return meta.platosSemana;
   const titulos = [];
   for (const d of planGuardado.days) {
     for (const m of d.meals || []) if (m && (m.time === 'Comida' || m.time === 'Cena') && m.title) titulos.push(m.title);
@@ -67,8 +68,13 @@ export function platosRecientesPara(planGuardado, semanaGuardada, semanaNueva) {
  * que la app lo cambie (activar o quitar el batido, regenerar una comida con
  * el motor viejo). En un plan del motor viejo devuelve el día tal cual.
  */
+export function usaRaciones(plan, dayIdx) {
+  // El plan que vuelve de la base de datos solo trae los días: se mira el día.
+  return !!(plan && (plan.raciones === 'engine2' || (plan.days && plan.days[dayIdx] && plan.days[dayIdx].raciones)));
+}
+
 export function recalcularDia(plan, day, profile, targetKcal) {
-  if (!plan || plan.raciones !== 'engine2' || !day) return day;
+  if (!plan || !day || !(plan.raciones === 'engine2' || day.raciones)) return day;
   return ajustarDia(day, profile, targetKcal).day;
 }
 
@@ -79,9 +85,10 @@ export function recalcularDia(plan, day, profile, targetKcal) {
  * caso la app sigue con el motor viejo como hasta ahora.
  */
 export function regenerarComida(plan, dayIdx, time, deseo, profile, targetKcal, opts = {}) {
-  if (!plan || plan.motor !== 'engine2' || (time !== 'Comida' && time !== 'Cena')) return null;
+  if (!plan || (time !== 'Comida' && time !== 'Cena')) return null;
   const meal = plan.days[dayIdx] && plan.days[dayIdx].meals.find((m) => m && m.time === time);
-  if (!meal || !meal._dishId) return null;
+  // Se mira la comida, no el plan: el que vuelve de la base de datos no trae plan.motor.
+  if (!meal || meal._motor !== 'engine2' || !meal._dishId) return null;
   try {
     return regenerarComidaEngine2(plan, dayIdx, time, deseo, profile, targetKcal, { ...opts, catalogo: opts.catalogo || catalogoApp() });
   } catch (err) {

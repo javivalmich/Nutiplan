@@ -23,7 +23,9 @@ import { resolveDishComposition } from '../engine2/dishes/compositionResolver.js
 import { comboIdentityKey } from '../engine2/dishes/identity.js';
 import { LUNCH_COMBOS_RAW, DINNER_COMBOS_RAW, TRAINING_DINNERS_RAW } from '../engine2/dishes/legacyCombos.data.js';
 import { FREEFORM_COMBOS } from '../data/FREEFORM_COMBOS.js';
-import { ajustarPlan } from './racionesApp.js';
+import { ajustarPlan, ajustarDia } from './racionesApp.js';
+import { elegirAlternativa } from '../engine2/walk/alternativa.js';
+import { aplicarAjustesD099 } from '../engine2/dishes/ajustesD099.js';
 
 export const DIA_ENGINE2 = Object.freeze({
   Lunes: 'Lunes', Martes: 'Martes', 'Miércoles': 'Miercoles', Jueves: 'Jueves',
@@ -274,9 +276,72 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
     motor: 'engine2',
     platosSemana,
     platosSemanaAnterior: opts.platosRecientes || [],
+    ancla: resumenAncla,
     decisionLog: e2.decisionLog,
     ...(quitados.length ? { platosQuitadosPorPerfil: quitados.length } : {}),
   };
   // Raciones de engine2: gramos según el objetivo del usuario (D-100).
   return conRaciones ? { ...ajustarPlan(plan, profile, targetKcal), raciones: 'engine2' } : plan;
+}
+
+// ─── Alternativa de una comida (botón «🔄 Alternativas») ─────────────────────
+
+const MOMENTO_DE = Object.freeze({ Comida: 'comida', Cena: 'cena' });
+
+/**
+ * Cambia la comida o la cena de un día de un plan de engine2 por otro plato
+ * del catálogo que respete las reglas del menú (src/engine2/walk/alternativa.js)
+ * y el deseo del usuario, y vuelve a calcular las raciones del día.
+ * @param {object} plan plan de engine2 (plan.motor === 'engine2')
+ * @param {number} dayIdx 0-6
+ * @param {'Comida'|'Cena'} time
+ * @param {string} deseo comfort | ligero | rapido | diferente
+ * @param {object} profile
+ * @param {number} targetKcal
+ * @param {object} opts mismas opciones que generarPlanEngine2 (catalogo, userId, weekNumber…)
+ * @returns {object} plan nuevo
+ */
+export function regenerarComidaEngine2(plan, dayIdx, time, deseo, profile, targetKcal, opts = {}) {
+  const momento = MOMENTO_DE[time];
+  const day = plan.days[dayIdx];
+  const mealIdx = day.meals.findIndex((m) => m && m.time === time);
+  const actual = day.meals[mealIdx];
+  if (!momento || !actual || !actual._dishId) throw new Error(`regenerarComidaEngine2: ${time} del día ${dayIdx} no es un plato de engine2`);
+
+  const { catalogo } = filtrarCatalogo(opts.catalogo, profile, targetKcal, opts);
+  const catalog = aplicarAjustesD099(catalogo);
+  const diaE2 = (d) => DIA_ENGINE2[d.name] || d.name;
+  const semana = plan.days.flatMap((d) => ['Comida', 'Cena'].map((t) => {
+    const m = d.meals.find((x) => x && x.time === t);
+    return { day: diaE2(d), momento: MOMENTO_DE[t], dishId: m && m._dishId ? m._dishId : null };
+  }));
+  const causa = (plan.decisionLog || []).filter((e) => e.day === diaE2(day) && e.momento === momento && typeof e.causa === 'string').map((e) => e.causa).pop();
+  const esAncla = !!(plan.ancla && causa && causa.startsWith('ancla_base'));
+
+  const { dish, decisionLog } = elegirAlternativa({
+    catalog, semana, day: diaE2(day), momento, actualId: actual._dishId, deseo,
+    platosRecientes: plan.platosSemanaAnterior || [],
+    intolerancias: (profile.intolerances || []).filter((i) => VETO_PROPIO_ENGINE2.has(i)),
+    anclaBase: esAncla ? plan.ancla.base : null,
+    seed: `${opts.userId ?? 'anon'}:${opts.weekNumber ?? 0}`,
+  });
+
+  const [compuesta] = componerDia(profile, targetKcal, opts, dayIdx, [specPara(dish, momento)]);
+  const principal = / \(comida principal\)$/.test(actual.title || '');
+  const nueva = { ...compuesta, title: `${dish.nombre}${principal ? ' (comida principal)' : ''}`, _motor: 'engine2', _dishId: dish.id };
+  const mantieneAncla = esAncla && decisionLog.some((e) => e.causa === 'alternativa_mantiene_ancla');
+  if (mantieneAncla && actual.slotNote) nueva.slotNote = actual.slotNote;
+
+  const meals = day.meals.slice();
+  meals[mealIdx] = nueva;
+  const ajustado = plan.raciones === 'engine2' ? ajustarDia({ ...day, meals }, profile, targetKcal) : { day: { ...day, meals }, log: [] };
+  const days = plan.days.slice();
+  days[dayIdx] = ajustado.day;
+  const platosSemana = (plan.platosSemana || []).map((n) => (n === actual.title || n === (actual.title || '').replace(/ \(comida principal\)$/, '') ? dish.nombre : n));
+  return {
+    ...plan,
+    days,
+    platosSemana,
+    decisionLog: [...(plan.decisionLog || []).filter((e) => !(e.day === day.name && e.causa && String(e.causa).startsWith('raciones'))), ...decisionLog.map((e) => ({ ...e, deseo })), ...ajustado.log],
+  };
 }

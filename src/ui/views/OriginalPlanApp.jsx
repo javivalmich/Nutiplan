@@ -5,7 +5,7 @@ import { GOAL_ADJ, computeTrend, getNutricionistaFeedback, adherenciaPct, calcTD
          getPastProteinFrequency, searchFoods, calcFoodKcal, getDefaultAlts, buildPlan }
   from "../../engine/index.js";
 import { SDB } from "../../data/sdb.js";
-import { generarPlan, platosRecientesPara, recalcularDia } from "../../plan/generarPlan.js";
+import { generarPlan, platosRecientesPara, recalcularDia, regenerarComida } from "../../plan/generarPlan.js";
 import { __PERF, __TRACE, getWeekNumber } from "../../data/runtime.js";
 import { trackUserAction, traceSetPlan, _checkPostActionOverwrite } from "../../data/echoGuard";
 import { PDB, loadData, saveData, clearData, loadMealMemory, saveMealMemory, loadProgress,
@@ -691,6 +691,15 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
     __TRACE.log("regenerateMeal:start", { dayIdx, mealSlot, semanticHint, planId: plan?.id });
     console.log("[regenerateMeal] click recibido", { dayIdx, mealSlot, semanticHint });
     if (isNutriPlan) { alert("🔒 Plan de nutricionista — usa las alternativas disponibles o contacta con tu nutricionista."); return; }
+    // Plan de engine2: la alternativa la elige engine2 con las reglas del menú (D-101).
+    const planE2=regenerarComida(plan, dayIdx, mealSlot, semanticHint||"diferente", profile, targetKcal, {month:new Date().getMonth(),pastProteins:getPastProteinFrequency(loadMealMemory(currentUser.id)),freeFormPool:FREEFORM_POOL,weekNumber:weekNum,userId:currentUser.id});
+    if(planE2){
+      traceSetPlan("user", plan, planE2);
+      setPlan(planE2); saveData(currentUser.id,profile,planE2,weekNum,extras); setSwapSemantic(null);
+      PDB.updateActivePlan(currentUser.id, { days: planE2.days });
+      __TRACE.log("regenerateMeal:end");
+      return;
+    }
     const newPlan=JSON.parse(JSON.stringify(plan));
     console.log("[regenerateMeal] before-state", {
       planId: plan?._planId,

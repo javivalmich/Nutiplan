@@ -4264,3 +4264,21 @@ Hora del entreno en el perfil (producto) para colocar bien el batido post-entren
 
 Estado resultante
 engine2 decide qué se come y cuánto. El motor viejo sigue componiendo el texto de cada plato y queda como reserva.
+
+## D-101 — [2026-10-11] Alternativas de comida elegidas por engine2
+
+Decide: Javi. HEAD: `64e63e8`.
+
+Contexto
+En los planes de engine2, el botón «🔄 Alternativas» seguía pidiendo el plato nuevo al motor viejo, que podía saltarse las reglas del menú de D-099 (legumbre a la cena, repetir un plato de la semana o de la anterior, pasarse del tope de proteína). Era lo único que aún podía romperlas en producción.
+
+Decisión
+1. En un plan de engine2, la alternativa de una comida o cena la elige engine2 (`src/engine2/walk/alternativa.js`) con, por este orden: el universo del menú (momento, intolerancias, sin repetir la semana ni la anterior, distinto del plato que se quita); el tope de proteína y la proteína separada; si el plato era del ancla, uno con el mismo ingrediente base; el deseo del usuario; que no sea el mismo plato con otra guarnición; desempate con RNG sembrado. Si un filtro dejaría sin candidatos se relaja con causa, y el deseo se relaja antes que las reglas del menú.
+2. Deseos: «Algo más reconfortante» = plato caliente de cuchara, guiso, crema o arroz (nunca frío); «Algo más ligero» = ensalada, plancha con verdura, pescado, bowl o crema; «Algo más rápido» = poca elaboración (energiaCocina bajo); «Sorpréndeme» = otra proteína principal. Aprobados por Javi el 2026-10-11.
+3. El plato nuevo se compone como el resto de la semana y las raciones del día se recalculan (D-100). Desayunos, tentempiés, la comida libre y los planes del motor viejo siguen como estaban; si engine2 falla, la app usa el motor viejo.
+
+Pendiente
+Si se cambia el plato de un ancla por uno que no lleva su ingrediente, la nota del otro día del ancla queda como estaba.
+
+Estado resultante
+En los planes de engine2, comidas, cenas, raciones y alternativas los decide engine2. El motor viejo compone los textos y sigue con desayunos y tentempiés.

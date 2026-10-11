@@ -14,7 +14,7 @@
 // El motor viejo no se borra ni se modifica.
 
 import { buildPlan } from '../engine/buildPlan.js';
-import { generarPlanEngine2 } from './engine2App.js';
+import { generarPlanEngine2, regenerarComidaEngine2 } from './engine2App.js';
 import { catalogoApp } from './catalogo.js';
 import { ajustarDia } from './racionesApp.js';
 
@@ -70,4 +70,22 @@ export function platosRecientesPara(planGuardado, semanaGuardada, semanaNueva) {
 export function recalcularDia(plan, day, profile, targetKcal) {
   if (!plan || plan.raciones !== 'engine2' || !day) return day;
   return ajustarDia(day, profile, targetKcal).day;
+}
+
+/**
+ * Alternativa de una comida o cena en un plan de engine2: la elige engine2 con
+ * las reglas del menú. Devuelve el plan nuevo, o null si no aplica (plan del
+ * motor viejo, desayuno o tentempié, comida libre) o si engine2 falla; en ese
+ * caso la app sigue con el motor viejo como hasta ahora.
+ */
+export function regenerarComida(plan, dayIdx, time, deseo, profile, targetKcal, opts = {}) {
+  if (!plan || plan.motor !== 'engine2' || (time !== 'Comida' && time !== 'Cena')) return null;
+  const meal = plan.days[dayIdx] && plan.days[dayIdx].meals.find((m) => m && m.time === time);
+  if (!meal || !meal._dishId) return null;
+  try {
+    return regenerarComidaEngine2(plan, dayIdx, time, deseo, profile, targetKcal, { ...opts, catalogo: opts.catalogo || catalogoApp() });
+  } catch (err) {
+    console.error('[regenerarComida] engine2 falló; se usa el motor viejo', err);
+    return null;
+  }
 }

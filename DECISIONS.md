@@ -4241,3 +4241,26 @@ Autorización y límites
 
 Estado resultante
 Primera Fase 7 superada por orden del titular; la evaluación ciega no acreditó no inferioridad. engine2 es el motor por defecto; legacy se conserva como reserva.
+
+## D-100 — [2026-10-11] Medidor nutricional con BEDCA y raciones calculadas por engine2
+
+Decide: Javi. HEAD: `c790c4a`.
+
+Contexto
+Javi pidió que las cantidades las calcule el motor nuevo, con una forma de medir que sea óptima, y que el batido de proteína se note de verdad en el plato. Se construyó un medidor (`src/plan/medidor/`) que lee cada comida del plan y suma su composición con datos oficiales de BEDCA (AESAN): 957 alimentos descargados por Javi el 2026-10-11 (`scripts/medidor/bajarBedca.mjs`), de los que salen 124 ingredientes (`src/engine2/nutrientes/composicion.js`, generado con `scripts/medidor/composicion.mjs`; fuentes y elecciones anotadas en `fuentesBedca.js`: 118 de BEDCA, 2 recetas, 4 de etiqueta típica). Medidos 5 perfiles tipo × 8 semanas: con objetivos por encima de unas 2000 kcal, los dos motores daban entre un 26 % y un 39 % menos de lo prometido (topes de ración, desayunos y platos libres con cantidades fijas). Se comprobó a mano un día completo.
+
+Decisión
+1. Criterios, como prioridades ordenadas (acordados con Javi el 2026-10-11): seguridad; proteína mínima de 0,3 g/kg en desayuno, comida y cena; calorías de la semana a ±5 % (cada día ±10 %); raciones humanas en medidas de casa. Reparto del día por rangos: desayuno 20–25 %, comida 35–40 %, cena 25–30 %, tentempiés 10–15 %.
+2. engine2 decide los gramos (`src/engine2/nutrientes/raciones.js`): proteína primero, energía después, verdura fija; rango humano por ingrediente; el máximo de los energéticos crece con el objetivo hasta un 40 % (nunca proteína ni aceite); si un plato se queda más de un 5 % corto, se añade pan, fruta de postre o frutos secos, según el perfil lo permita. Toda decisión deja causa en el decision log. Sin puntuaciones.
+3. Batido: se descuenta entero de la comida a la que acompaña (mañana → desayuno; post-entreno y noche → cena), sin bajar de la proteína mínima de esa comida. Activar o quitar el batido en un día, y regenerar una comida, recalculan ese día.
+4. La capa de la app (`src/plan/racionesApp.js`, `cantidades.js`) aplica las raciones a los planes de engine2 y reescribe las cantidades en el texto y la lista de la compra. Los planes del motor viejo no cambian.
+5. El medidor vive en `src/plan/`, no en `src/eval/`: eval no puede importar engine2 (tripwire inverso).
+
+Resultado medido
+Con raciones de engine2, los 5 perfiles quedan a ±5 % de su objetivo semanal (media de −0,8 % a −3,1 %); en 90 semanas de muestra, ninguna fuera de ±5 %. Proteína al 95–107 % del objetivo; menos del 1 % de las comidas principales bajo el mínimo.
+
+Pendiente
+Hora del entreno en el perfil (producto) para colocar bien el batido post-entreno; si el batido debe aparecer solo los días de entreno (producto); regenerar comida con engine2; recetas y textos propios de engine2; quitar el texto heredado «200g yogur (125g)» de algunos desayunos del motor viejo.
+
+Estado resultante
+engine2 decide qué se come y cuánto. El motor viejo sigue componiendo el texto de cada plato y queda como reserva.

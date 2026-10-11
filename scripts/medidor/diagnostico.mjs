@@ -1,6 +1,6 @@
 // diagnostico — mide lo que de verdad llevan los planes de los dos motores
 // (kcal, proteína, hidratos, grasa) frente al objetivo de cada usuario, con
-// los criterios de src/eval/medidor/medir.js.
+// los criterios de src/plan/medidor/medir.js.
 //
 // Genera, para varios perfiles tipo, semanas seguidas como en producción:
 //   - engine2 por la capa de la app (src/plan/engine2App.js), con
@@ -19,7 +19,7 @@ import { calcTDEE, calcTarget, calcMacros, computeStrategy, getPastProteinFreque
 import { generarPlanEngine2 } from '../../src/plan/engine2App.js';
 import { loadCatalog } from '../../src/engine2/dishes/loadCatalog.js';
 import { FREEFORM_POOL } from '../../src/data/freeformPool.js';
-import { medirPlan } from '../../src/eval/medidor/medir.js';
+import { medirPlan } from '../../src/plan/medidor/medir.js';
 
 const args = process.argv.slice(2);
 const arg = (n, d) => { const i = args.indexOf(n); return i >= 0 && args[i + 1] ? args[i + 1] : d; };

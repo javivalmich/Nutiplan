@@ -8,7 +8,8 @@
 // en el texto de la comida (p1/p2) y, si no la hay, lo deja anotado como
 // «sinCantidad» en vez de inventarla.
 //
-// Es un instrumento de medida (eval): nada de engine2 lo importa.
+// Vive en src/plan (capa de la app), no en src/eval: eval no puede importar
+// engine2 (tripwire inverso). Nada de engine2 lo importa.
 
 import { INGREDIENTES } from '../../engine2/nutrientes/ingredientes.js';
 

@@ -11,7 +11,8 @@
 // La comida libre del sábado no se mide (no hay plato fijo): ese día queda
 // fuera de los totales y se informa aparte.
 //
-// Es un instrumento de medida (eval): nada de engine2 lo importa.
+// Vive en src/plan (capa de la app), no en src/eval: eval no puede importar
+// engine2 (tripwire inverso). Nada de engine2 lo importa.
 
 import { leerComida } from './leerComida.js';
 

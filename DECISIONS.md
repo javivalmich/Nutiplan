@@ -4368,3 +4368,18 @@ Pendiente
 
 Estado resultante
 Menos ajo en los nombres y en la semana; el aliño no se repite en el mismo día.
+
+## D-106 — [2026-10-12] Días con la cena repetida y sin comida
+
+Decide: Javi. HEAD: `1e7b8cc`.
+
+Contexto
+Algunos días del plan salían con la misma cena dos veces y sin comida: 5 de 210 días en un perfil omnívoro y 27 de 210 con un catálogo vegetariano. Pasaba ya en main (`a499f68`). Causa: el motor viejo etiqueta a veces «Cena» la comida del día (platos de ficha libre) y engine2App buscaba la comida por esa etiqueta, así que ponía la cena de engine2 en los dos huecos.
+
+Decisión
+1. engine2App coloca la comida y la cena por su posición en el día (la primera y la última comida principal), no por la etiqueta, y les pone la etiqueta correcta. Con una sola comida principal (2 comidas al día), esa es la comida.
+2. Las alternativas también llevan la etiqueta del momento que sustituyen.
+3. Test: cada día lleva una comida y una cena, distintas, con 2, 3, 4 y 5 comidas al día.
+
+Estado resultante
+0 días con la cena repetida en 210 (omnívoro y vegetariano). Los planes ya guardados con el fallo se corrigen al generar la semana siguiente.

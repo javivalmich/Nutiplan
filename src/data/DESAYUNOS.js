@@ -88,15 +88,15 @@ export const DESAYUNOS = Object.freeze([
   des({
     id: 'des_huevos_revueltos_tostada', titulo: 'Huevos revueltos con tostada y fruta', tiempo: 6, base: 'huevo', proteina: 'huevo',
     p1: 'Huevos (2 ud) revueltos · pan integral (60g) tostado · AOVE (5ml)',
-    p2: 'Fruta de temporada (1 ud) · café o té',
-    compra: ['Huevos (2 ud)', 'Pan integral (60g)', 'AOVE (5ml)', 'Fruta de temporada (1 ud)'],
+    p2: 'Yogur griego 0% (125g) · fruta de temporada (1 ud) · café o té',
+    compra: ['Huevos (2 ud)', 'Pan integral (60g)', 'AOVE (5ml)', 'Yogur griego 0% (1 ud / 125g)', 'Fruta de temporada (1 ud)'],
     receta: ['Bate los huevos con sal y pimienta.', 'Cuájalos en la sartén con el aceite a fuego medio, removiendo despacio 2-3 min.', 'Sirve con el pan tostado y la fruta.'],
   }),
   des({
     id: 'des_tostada_aguacate_huevo', titulo: 'Tostada con aguacate y huevo poché', tiempo: 12, finde: true, base: 'huevo', proteina: 'huevo',
     p1: 'Pan integral (60g) tostado · aguacate (1/2) chafado con limón · huevos (2 ud) poché',
-    p2: 'Con sal y pimienta · café o té',
-    compra: ['Pan integral (60g)', 'Aguacate (1/2)', 'Huevos (2 ud)', 'Limón (1/2)'],
+    p2: 'Con sal y pimienta · yogur griego 0% (125g) · café o té',
+    compra: ['Pan integral (60g)', 'Aguacate (1/2)', 'Huevos (2 ud)', 'Limón (1/2)', 'Yogur griego 0% (1 ud / 125g)'],
     receta: ['Tuesta el pan y unta el aguacate chafado con limón y sal.', 'Hierve agua con un chorrito de vinagre, haz un remolino y cuece cada huevo 3 min.', 'Pon los huevos sobre la tostada.'],
   }),
   des({
@@ -109,8 +109,8 @@ export const DESAYUNOS = Object.freeze([
   des({
     id: 'des_revuelto_espinacas', titulo: 'Revuelto de espinacas y tomate con tostada', tiempo: 8, base: 'huevo', proteina: 'huevo',
     p1: 'Huevos (2 ud) · espinacas frescas (60g) · tomate cherry (60g) · pan integral (50g) tostado',
-    p2: 'Con orégano · café o té',
-    compra: ['Huevos (2 ud)', 'Espinacas frescas (60g)', 'Tomate cherry (60g)', 'Pan integral (50g)', 'AOVE (5ml)', 'Orégano'],
+    p2: 'Con orégano · yogur griego 0% (125g) · café o té',
+    compra: ['Huevos (2 ud)', 'Espinacas frescas (60g)', 'Tomate cherry (60g)', 'Pan integral (50g)', 'AOVE (5ml)', 'Orégano', 'Yogur griego 0% (1 ud / 125g)'],
     receta: ['Saltea las espinacas con el aceite 2 min y añade los tomates partidos.', 'Echa los huevos batidos y remueve a fuego medio hasta que cuajen.', 'Sirve con el pan tostado.'],
   }),
   des({
@@ -167,8 +167,8 @@ export const DESAYUNOS = Object.freeze([
   des({
     id: 'des_huevos_aguacate', titulo: 'Huevos revueltos con aguacate y tomate', tiempo: 7, base: 'huevo', proteina: 'huevo',
     p1: 'Huevos (2 ud) revueltos · aguacate (1/2) en láminas · tomate (1 / 150g)',
-    p2: 'Con sal y pimienta · café o té',
-    compra: ['Huevos (2 ud)', 'Aguacate (1/2)', 'Tomate (1 / 150g)', 'AOVE (5ml)'],
+    p2: 'Con sal y pimienta · yogur griego 0% (125g) · café o té',
+    compra: ['Huevos (2 ud)', 'Aguacate (1/2)', 'Tomate (1 / 150g)', 'AOVE (5ml)', 'Yogur griego 0% (1 ud / 125g)'],
     receta: ['Bate los huevos con sal y cuájalos a fuego lento removiendo.', 'Sirve con el aguacate en láminas y el tomate en rodajas.'],
   }),
   des({
@@ -246,15 +246,15 @@ export const DESAYUNOS = Object.freeze([
   des({
     id: 'des_tostada_tortilla_francesa', titulo: 'Tostada con tortilla francesa y tomate', tiempo: 7, base: 'huevo', proteina: 'huevo',
     p1: 'Huevos (2 ud) en tortilla francesa · pan integral (60g) tostado · tomate rallado',
-    p2: 'Café con leche semidesnatada (150ml)',
-    compra: ['Huevos (2 ud)', 'Pan integral (60g)', 'Tomate (1 / 150g)', 'AOVE (5ml)', 'Leche semidesnatada (150ml)'],
+    p2: 'Yogur griego 0% (125g) · café con leche semidesnatada (150ml)',
+    compra: ['Huevos (2 ud)', 'Pan integral (60g)', 'Tomate (1 / 150g)', 'AOVE (5ml)', 'Yogur griego 0% (1 ud / 125g)', 'Leche semidesnatada (150ml)'],
     receta: ['Tuesta el pan y ralla el tomate por encima.', 'Bate los huevos con sal y cuájalos en la sartén con el aceite, doblando la tortilla.', 'Pon la tortilla sobre el pan.'],
   }),
   des({
     id: 'des_huevos_al_plato', titulo: 'Huevos al plato con tomate y pan', tiempo: 18, finde: true, base: 'huevo', proteina: 'huevo',
     p1: 'Huevos (2 ud) cuajados sobre tomate triturado (150g) con pimiento · pan integral (50g)',
-    p2: 'Con pimentón dulce · café o té',
-    compra: ['Huevos (2 ud)', 'Tomate triturado (150g)', 'Pimiento rojo (60g)', 'Pan integral (50g)', 'AOVE (5ml)', 'Pimentón dulce (1 cdita)'],
+    p2: 'Con pimentón dulce · yogur griego 0% (125g) · café o té',
+    compra: ['Huevos (2 ud)', 'Tomate triturado (150g)', 'Pimiento rojo (60g)', 'Pan integral (50g)', 'AOVE (5ml)', 'Pimentón dulce (1 cdita)', 'Yogur griego 0% (1 ud / 125g)'],
     receta: ['Sofríe el pimiento picado con el aceite 5 min y añade el tomate y el pimentón; cocina 5 min.', 'Haz dos huecos, casca los huevos y tapa hasta que cuaje la clara, 5-6 min.', 'Sirve con el pan para mojar.'],
   }),
   des({

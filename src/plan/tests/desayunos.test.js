@@ -218,3 +218,26 @@ describe('alternativas de desayuno y tentempié', { timeout: 300000 }, () => {
     }
   });
 });
+
+describe('huevos (D-111)', { timeout: 600000 }, () => {
+  it('como mucho 3 huevos en una comida y 4 en el día, para todos los perfiles', () => {
+    const perfiles = [[MUJER, 1600], [HOMBRE, 2400], [{ ...HOMBRE, weight: 90, height: 185, activity: 'active', goal: 'muscleGain' }, 3400], [{ ...MUJER, goal: 'maintain', dieta: 'vegetariana' }, 2000]];
+    let comidasConHuevo = 0;
+    for (const [P, kcal] of perfiles) {
+      for (const plan of semanas(P, kcal, 6, `huevos-${P.weight}-${P.dieta || ''}`)) {
+        for (const d of plan.days) {
+          let dia = 0;
+          for (const m of d.meals) {
+            if (!m) continue;
+            const n = Math.round(leerComida(m).items.filter((i) => i.clave === 'huevo').reduce((a, i) => a + i.gramos, 0) / 53);
+            expect(n, `${d.name} ${m.time}: ${m.title}`).toBeLessThanOrEqual(3);
+            if (n) comidasConHuevo += 1;
+            dia += n;
+          }
+          expect(dia, `${kcal} ${d.name}`).toBeLessThanOrEqual(4);
+        }
+      }
+    }
+    expect(comidasConHuevo).toBeGreaterThan(50);
+  });
+});

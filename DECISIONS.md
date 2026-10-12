@@ -4511,3 +4511,24 @@ Pendiente
 
 Estado resultante
 Todos los perfiles tienen desayunos y tentempiés de engine2 con rutina semanal, que cambian cada semana, respetan intolerancias y dietas y llegan a la proteína del desayuno. El motor viejo queda solo para la estructura de la semana, el día libre y la estrategia.
+
+## D-111 — [2026-10-13] Como mucho 3 huevos por comida y 4 al día
+
+Decide: Javi («ninguna persona en el mundo va a tomarse 5 huevos en un día»). HEAD: `94ad3ef`.
+
+Contexto
+Las raciones subían el huevo hasta 5 unidades por comida para llegar a la proteína (rango de 1 a 5). Medido en 10 semanas, con huevos de cualquier comida: un hombre de 90 kg que gana masa tenía 33 comidas con 4 o 5 huevos y 10 días con 7 u 8 huevos. Un hombre de 74 kg que mantiene tenía 2 días con 8. A un vegetariano podían tocarle 3 huevos en el desayuno y 5 en la comida.
+
+Decisión
+1. Raciones (`racionesDia`): como mucho 3 huevos en una comida y 4 en el día. Si varias comidas del día llevan huevo, el tope se reparte: 2 y 2, o 1, 1 y 1. Las claras no cuentan como huevos.
+2. Los desayunos de huevo sin otra proteína vuelven a llevar un yogur griego al lado, como en el motor viejo, para llegar a la proteína del desayuno con 2 huevos. Son seis: huevos revueltos con tostada, revuelto de espinacas, tostada con huevo poché, huevos con aguacate, tostada con tortilla francesa y huevos al plato.
+3. Sigue la regla de D-110: el huevo puede salir dos veces el mismo día, pero sin pasar de 4 huevos.
+
+Medido
+- Ninguna comida pasa de 3 huevos ni ningún día de 4 en los perfiles de mujer de 1600 kcal, hombre de 2400, hombre de 3400 y vegetariana de 2000.
+- Los desayunos siguen llegando a la proteína mínima en los siete perfiles de D-110.
+- Las calorías de la semana siguen a ±5 %, salvo la vegana de 1400 kcal, que ya estaba en +8,2 %.
+- Test nuevo en `desayunos.test.js`.
+
+Estado resultante
+El huevo sale en cantidades de casa: 1 a 3 por comida y nunca más de 4 al día.

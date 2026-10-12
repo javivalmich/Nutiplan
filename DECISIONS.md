@@ -4434,3 +4434,26 @@ Cuando se cocina el domingo de la semana anterior, el plan de esa semana no dice
 
 Estado resultante
 Comidas y cenas con textos propios de engine2, verdura a la medida de cada persona y recetas coherentes con cocinar en cantidad.
+
+## D-109 — [2026-10-12] Vegana sin gluten y sin soja o legumbres: cenas sencillas antes que platos de comida a la cena
+
+Decide: Javi. HEAD: `14a3d89`.
+
+Contexto
+Con dieta vegana y algunas intolerancias juntas no queda ninguna cena con proteína. Medido: vegana + gluten + soja deja 12 comidas y 1 cena (un curry de garbanzos, que no puede ir a la cena); el último intento de D-107 dejaba entonces cenar platos de comida, y salían siete cenas de garbanzos, lentejas y alubias. Vegana + gluten + legumbres no deja ningún plato (el tofu y el tempeh cuentan como soja y como legumbre para la intolerancia), engine2 fallaba y el motor viejo servía pollo, ternera, atún, gambas y huevo.
+
+Decisión
+1. Javi: «Cenas más cortas aunque se repita, yo creo que es más real». El último intento ya no lleva platos de comida a la cena.
+2. Cuatro platos veganos de reserva (`reserva: true` en `PLATOS_DIETA.js`): quinoa salteada con calabacín y zanahoria; crema de calabacín y espinacas con quinoa; patata asada rellena de espinacas y tomate; bol de quinoa con berenjena y pimiento. Llevan semillas de calabaza y levadura nutricional. No llevan gluten, soja, legumbres, frutos secos, ajo ni cebolla, así que sirven con cualquier intolerancia de la app, SIBO incluido. Son de comida y de cena.
+3. Solo entran en el último intento de `generarPlan`, después de repetir platos de la semana anterior y dentro de la semana. Con platos de sobra no aparecen nunca. El plan lo dice en `motorAviso` («cenas más cortas y repetidas»).
+4. Tests: siete combinaciones de dieta e intolerancias, tres semanas cada una, siempre con engine2. Ninguna comida lleva algo que la persona no come y ninguna cena es un plato que solo es de comida. Los platos de reserva no salen cuando hay platos de sobra, y valen para las once intolerancias a la vez.
+
+Medido
+Vegana + gluten + soja, vegana + gluten + legumbres y vegana con gluten, soja, legumbres, frutos secos y SIBO: siempre engine2, sin nada que no come. Comidas y cenas de 22 a 46 g de proteína.
+
+Pendiente
+- Estas personas se quedan sin desayuno, y a veces sin tentempié: ningún desayuno vegano es a la vez sin gluten, sin soja y sin legumbres. Por eso la semana queda entre un 6 % y un 11 % por debajo de sus calorías. Se resuelve con el punto 2 del mapa (desayunos y tentempiés de engine2).
+- Las alternativas de esa semana no usan los platos de reserva: si no hay otro plato seguro, el plato no cambia y la app lo dice.
+
+Estado resultante
+A una persona vegana ya no le llega carne del motor viejo por tener muchas intolerancias. Cuando no le quedan cenas, cena platos sencillos de verdura y quinoa, que se repiten.

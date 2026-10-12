@@ -164,15 +164,39 @@ describe('planes vegetarianos y veganos', { timeout: 600000 }, () => {
   });
 
   it('con intolerancias que dejan pocos platos, se repite antes que servir algo que no come', () => {
-    for (const [dieta, intolerances] of [['vegana', ['soja']], ['vegana', ['legumbres']], ['vegana', ['gluten', 'soja']], ['vegetariana', ['huevo', 'lactosa']], ['vegana', ['sibo']]]) {
+    // Momentos de cada plato tal como están en el catálogo (sin estirar a la cena).
+    const momentos = new Map([...catalogoApp(), ...platosDeDieta('vegana', { reserva: true }), ...platosDeDieta('vegetariana')].map((d) => [d.id, d.momento]));
+    const casos = [['vegana', ['soja']], ['vegana', ['legumbres']], ['vegana', ['gluten', 'soja']], ['vegetariana', ['huevo', 'lactosa']], ['vegana', ['sibo']],
+      ['vegana', ['gluten', 'legumbres']], ['vegana', ['gluten', 'soja', 'legumbres', 'frutos_secos', 'sibo']]];
+    for (const [dieta, intolerances] of casos) {
       const P = { ...PERFILES[0][0], dieta, intolerances };
       let prev = [];
       for (let w = 41; w <= 43; w++) {
         const plan = generarPlan(P, 2000, O(w, `${dieta}${intolerances}`, prev));
         prev = plan.platosSemana || [];
         expect(plan.motor, `${dieta}+${intolerances}`).toBe('engine2');
-        for (const d of plan.days) for (const m of d.meals) if (m) expect(intoleranciasDe(m, P), `${dieta}+${intolerances} ${d.name} ${m.title}`).toEqual([]);
+        for (const d of plan.days) for (const m of d.meals) {
+          if (!m) continue;
+          expect(intoleranciasDe(m, P), `${dieta}+${intolerances} ${d.name} ${m.title}`).toEqual([]);
+          // D-109: nunca un plato de comida a la cena; si no hay cenas, las de reserva.
+          if (m.time === 'Cena' && m._dishId) expect(momentos.get(m._dishId), `${dieta}+${intolerances} ${d.name} ${m.title}`).toContain('cena');
+        }
       }
+    }
+  });
+
+  it('los platos de reserva solo salen cuando no queda otro plato (D-109)', () => {
+    const reserva = PLATOS_DIETA.filter((p) => p.reserva);
+    expect(reserva.length).toBeGreaterThanOrEqual(4);
+    expect(platosDeDieta('vegana').some((d) => d.id.startsWith('dieta_reserva_'))).toBe(false);
+    expect(platosDeDieta('vegana', { reserva: true }).filter((d) => d.id.startsWith('dieta_reserva_')).length).toBe(reserva.length);
+    // Sirven a cualquiera: sin gluten, soja, legumbres, frutos secos ni nada alto en FODMAP.
+    const todo = { ...PERFILES[0][0], dieta: 'vegana', intolerances: ['gluten', 'lactosa', 'huevo', 'frutos_secos', 'mariscos', 'pescado', 'soja', 'cerdo', 'legumbres', 'picante', 'sibo'] };
+    for (const p of reserva) expect(intoleranciasDe({ title: p.identity.title, ...p.content }, todo), p.identity.id).toEqual([]);
+    // Con platos de sobra no aparecen.
+    for (const dieta of ['vegetariana', 'vegana']) {
+      const plan = generarPlan({ ...PERFILES[0][0], dieta }, 2000, O(42, dieta));
+      expect(plan.days.some((d) => d.meals.some((m) => m && /^dieta_reserva_/.test(m._dishId || '')))).toBe(false);
     }
   });
 

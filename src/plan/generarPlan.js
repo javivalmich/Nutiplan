@@ -49,10 +49,11 @@ export function generarPlan(profile, targetKcal, opts = {}) {
         { platosRecientes: [], aviso: 'repite platos de la semana anterior' },
         { platosRecientes: [], maxRepeticiones: 2, aviso: 'repite platos en la semana (hasta 2 veces): hay pocos platos para esta dieta' },
         { platosRecientes: [], maxRepeticiones: 7, aviso: 'repite platos en la semana: hay muy pocos platos para esta dieta' },
-        // Último recurso (vegana, celíaca y sin soja, p. ej.: no queda ninguna
-        // cena con proteína): los platos de comida pueden ir también a la cena,
-        // legumbre incluida, aunque la regla general es no cenar legumbre.
-        { platosRecientes: [], maxRepeticiones: 7, cualquierMomento: true, aviso: 'platos de comida también en la cena: hay muy pocos platos para esta dieta' },
+        // Último recurso (vegana, celíaca y sin soja o sin legumbres, p. ej.:
+        // no queda ninguna cena, o ningún plato): los platos de reserva, sin
+        // gluten, soja ni legumbres. Son cenas más cortas y se repiten; antes
+        // eso que cenar platos de comida (D-109, decisión de Javi).
+        { platosRecientes: [], maxRepeticiones: 7, platosReserva: true, aviso: 'cenas más cortas y repetidas: hay muy pocos platos para esta dieta' },
       ];
       for (const { aviso, ...extra } of intentos) {
         try {

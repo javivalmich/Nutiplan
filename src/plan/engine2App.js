@@ -117,10 +117,9 @@ export function componerPlatos(catalog, profile, targetKcal) {
 }
 
 export function filtrarCatalogo(catalogBase, profile, targetKcal, opts) {
-  // D-107: con dieta vegetariana o vegana entran sus platos propios.
-  const conDietaPropia = conPlatosDieta(catalogBase, profile);
-  // Último recurso de generarPlan con dieta (D-107): cualquier plato en cualquier momento.
-  const catalog = opts && opts.cualquierMomento ? conDietaPropia.map((d) => ({ ...d, momento: ['comida', 'cena'] })) : conDietaPropia;
+  // D-107: con dieta vegetariana o vegana entran sus platos propios; en el
+  // último intento de generarPlan, también los de reserva (D-109).
+  const catalog = conPlatosDieta(catalogBase, profile, { reserva: !!(opts && opts.platosReserva) });
   const todas = profile.intolerances || [];
   const intol = todas.filter((i) => !VETO_PROPIO_ENGINE2.has(i));
   const eliminados = (profile.eliminatedFoods || []).map((f) => String(f).toLowerCase().trim()).filter(Boolean);

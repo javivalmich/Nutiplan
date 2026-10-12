@@ -21,6 +21,8 @@
 //   - alinoDe(dish): aliño del plato (campo S de la tupla) o null. Lo usan
 //     las reglas de aliño del menú (runWalk.js, alternativa.js).
 
+import { concordarNombre } from './concordanciaD108.js';
+
 export const ALINOS_CON_AJO = Object.freeze([
   'ajo, perejil y guindilla',
   'limón, orégano y ajo',
@@ -50,9 +52,10 @@ const ALINO_FREEFORM = Object.freeze({ pollo_ajillo_patatas: 'ajillo' });
 export function nombreVisible(nombre) {
   if (typeof nombre !== 'string') return nombre;
   if (AJILLO_CLASICO.test(nombre) && AJILLO_LARGO.test(nombre)) {
-    return nombre.replace(AJILLO_LARGO, ' al ajillo');
+    return concordarNombre(nombre.replace(AJILLO_LARGO, ' al ajillo'));
   }
-  return nombre.replace(CON_ALINO, '');
+  // D-108: además, el participio concierta con la proteína.
+  return concordarNombre(nombre.replace(CON_ALINO, ''));
 }
 
 /**

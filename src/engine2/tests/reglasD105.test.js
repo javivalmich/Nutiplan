@@ -30,7 +30,7 @@ describe('D-105 · nombre visible', () => {
     expect(nombreVisible('Huevos en tortilla con pimentón ahumado y ajo con zanahoria')).toBe('Huevos en tortilla con zanahoria');
     expect(nombreVisible('Ternera magra a la plancha con romero, limón y ajo con espinacas y patata')).toBe('Ternera magra a la plancha con espinacas y patata');
     expect(nombreVisible('Lomo de cerdo a la plancha con mostaza y miel con brócoli')).toBe('Lomo de cerdo a la plancha con mostaza y miel con brócoli');
-    expect(nombreVisible('Pechuga de pavo salteado con curry y cúrcuma con calabacín')).toBe('Pechuga de pavo salteado con curry y cúrcuma con calabacín');
+    expect(nombreVisible('Pechuga de pavo salteado con curry y cúrcuma con calabacín')).toBe('Pechuga de pavo salteada con curry y cúrcuma con calabacín'); // D-108: concordancia
   });
 
   it('en gambas y conejo queda «al ajillo»; las formas cortas no se tocan', () => {

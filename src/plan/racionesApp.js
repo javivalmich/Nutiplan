@@ -13,6 +13,8 @@ import { COMPOSICION } from '../engine2/nutrientes/composicion.js';
 import { leerComida } from './medidor/leerComida.js';
 import { reescribirComida } from './cantidades.js';
 import { adaptarComidaFodmap } from '../engine2/nutrientes/fodmap.js';
+import { recomponer, aplicarAnclaLibre } from './textos/componer.js';
+import { adaptarSiProcede } from './adaptar.js';
 
 const MOMENTO = Object.freeze({ Desayuno: 'desayuno', Comida: 'comida', Cena: 'cena' });
 
@@ -62,16 +64,16 @@ function anadir(meal, anadidos, momento) {
   for (const a of anadidos) {
     const g = Math.round(a.gramos);
     if (a.clave === 'pan_integral') {
-      p2 += momento === 'desayuno' ? ` · Pan integral tostado (${g}g)` : ` · Pan integral (${g}g) para acompañar`;
-      shopping.push(`Pan integral (${g}g)`);
+      p2 += momento === 'desayuno' ? ` · Pan integral tostado (${g} g)` : ` · Pan integral (${g} g) para acompañar`;
+      shopping.push(`Pan integral (${g} g)`);
     } else if (a.clave === 'fruta') {
       const ud = Math.max(1, Math.round(a.gramos / 150));
       const txt = ud === 1 ? '1 pieza de fruta de temporada' : `${ud} piezas de fruta de temporada`;
       p2 += momento === 'comida' || momento === 'cena' ? ` · De postre: ${txt}` : ` · ${txt.charAt(0).toUpperCase()}${txt.slice(1)}`;
       shopping.push(`Fruta de temporada (${ud} ud)`);
     } else if (a.clave === 'nuez') {
-      p2 += ` · Nueces (${g}g)`;
-      shopping.push(`Nueces (${g}g)`);
+      p2 += ` · Nueces (${g} g)`;
+      shopping.push(`Nueces (${g} g)`);
     }
   }
   return { ...meal, p2: p2.replace(/^ · /, ''), shopping, acompanamientos: anadidos.map((a) => a.clave) };
@@ -118,15 +120,30 @@ export function ajustarDia(day, profile, targetKcal, { composicion = COMPOSICION
     if (!m || !res) return actuales[i];
     const n = lecturas[i].items.length;
     const items = lecturas[i].items.map((it, k) => ({ ...it, despues: res.items[k].gramos }));
-    const out = reescribirComida(m, items);
-    sinCambiar += out.sinCambiar;
-    let conAnadidos = anadir(out.meal, res.items.slice(n).filter((x) => x.anadido), MOMENTO[m.time] || 'tentempie');
-    if (conAnadidos.acompanamientos && ((profile && profile.intolerances) || []).includes('sibo')) conAnadidos = { ...adaptarComidaFodmap(conAnadidos), title: conAnadidos.title };
+    let escrita;
+    if (m._componer) {
+      // D-108: un plato compuesto se vuelve a escribir entero con sus gramos
+      // nuevos (y se vuelve a adaptar a la dieta o a SIBO del perfil).
+      const porClave = new Map();
+      for (const it of items) if (!porClave.has(it.clave)) porClave.set(it.clave, it.despues);
+      const sinAdaptar = recomponer(m, porClave);
+      delete sinAdaptar.adaptadoDieta;
+      delete sinAdaptar.adaptadoFodmap;
+      escrita = { meal: sinAdaptar, sinCambiar: 0 };
+    } else {
+      escrita = reescribirComida(m, items);
+      if (m._ancla) escrita = { ...escrita, meal: aplicarAnclaLibre(escrita.meal) };
+    }
+    sinCambiar += escrita.sinCambiar;
+    let conAnadidos = anadir(escrita.meal, res.items.slice(n).filter((x) => x.anadido), MOMENTO[m.time] || 'tentempie');
+    if (m._componer) conAnadidos = adaptarSiProcede(conAnadidos, profile);
+    else if (conAnadidos.acompanamientos && ((profile && profile.intolerances) || []).includes('sibo')) conAnadidos = { ...adaptarComidaFodmap(conAnadidos), title: conAnadidos.title };
     // Lo que no son cantidades (nota del ancla, marcas de la app) se conserva de la comida actual.
     const actual = { ...actuales[i] };
     delete actual.acompanamientos;
     return {
       ...actual,
+      ...(m._ancla ? { _ancla: m._ancla } : {}),
       p1: conAnadidos.p1, p2: conAnadidos.p2, shopping: conAnadidos.shopping, recipe: conAnadidos.recipe,
       ...(conAnadidos.acompanamientos ? { acompanamientos: conAnadidos.acompanamientos } : {}),
       _base: m,

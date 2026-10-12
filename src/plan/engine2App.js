@@ -1,14 +1,10 @@
 // engine2App — plan completo de la app a partir de lo que elige engine2.
 //
-// engine2 solo decide QUÉ plato va en cada comida y cena. Todo lo demás
-// (cantidades ajustadas a kcal y estrategia, receta, compra por comida,
-// desayunos, tentempiés, día libre, batido) sale del motor viejo SIN copiar ni
-// tocar su código:
-//   1. buildPlan() normal → estructura de la semana, desayunos y tentempiés.
-//   2. buildPlan() con profile._regenContext.dayPortionsRegen (la vía que ya
-//      usa la app para el batido: «recompone un día desde sus _spec») →
-//      compone las comidas y cenas que eligió engine2, día a día, con el mismo
-//      ajuste por día que usaría el motor viejo.
+// engine2 decide qué plato va en cada comida y cena, lo escribe (D-108:
+// textos propios para los platos compuestos; los platos libres traen el suyo)
+// y decide sus cantidades (D-100). Del motor viejo quedan, sin copiar ni
+// tocar su código, la estructura de la semana, los desayunos y tentempiés,
+// el día libre y la estrategia (buildPlan() normal).
 // Este módulo está fuera de src/engine2, así que engine2 sigue sin importar
 // nada de src/engine (CLAUDE.md, reglas 2 y 7).
 //
@@ -20,17 +16,18 @@
 import { buildPlan } from '../engine/buildPlan.js';
 import { materializePlan } from '../engine2/materializePlan.js';
 import { resolveDishComposition } from '../engine2/dishes/compositionResolver.js';
-import { comboIdentityKey } from '../engine2/dishes/identity.js';
-import { LUNCH_COMBOS_RAW, DINNER_COMBOS_RAW, TRAINING_DINNERS_RAW } from '../engine2/dishes/legacyCombos.data.js';
-import { FREEFORM_COMBOS } from '../data/FREEFORM_COMBOS.js';
 import { ajustarPlan, ajustarDia } from './racionesApp.js';
 import { elegirAlternativa } from '../engine2/walk/alternativa.js';
 import { aplicarAjustesD099 } from '../engine2/dishes/ajustesD099.js';
 import { alergenosDeTexto } from '../engine2/nutrientes/alergenos.js';
-import { adaptarComidaFodmap, fodmapRestante, protagonistaFodmap } from '../engine2/nutrientes/fodmap.js';
-import { adaptarComidaDieta, animalDeTexto, dietaDe, VETADOS_POR_DIETA } from '../engine2/nutrientes/dietas.js';
-import { PLATOS_DIETA, DESAYUNOS_DIETA, TENTEMPIES_DIETA } from '../data/PLATOS_DIETA.js';
+import { fodmapRestante, protagonistaFodmap } from '../engine2/nutrientes/fodmap.js';
+import { animalDeTexto, dietaDe, VETADOS_POR_DIETA } from '../engine2/nutrientes/dietas.js';
+import { DESAYUNOS_DIETA, TENTEMPIES_DIETA } from '../data/PLATOS_DIETA.js';
 import { conPlatosDieta } from './platosDieta.js';
+import { componerPlato, gramosDeBase } from './textos/componer.js';
+import { nombreDeBase } from './textos/compuestos.js';
+import { limpiarComidaLegacy } from './textos/legacy.js';
+import { adaptarSiProcede, conSibo, conDieta } from './adaptar.js';
 import { evaluateVeto } from '../engine2/walk/vetoes.js';
 import { aplicarNombresD105, nombreVisible } from '../engine2/dishes/alinosD105.js';
 
@@ -43,50 +40,12 @@ const DIA_LEGIBLE = Object.freeze({
   Viernes: 'viernes', Sabado: 'sábado', Domingo: 'domingo',
 });
 
-// ─── Ficha del motor viejo para cada plato de engine2 ───────────────────────
-
-let fichas = null;
-function fichaDe(dishId) {
-  if (!fichas) {
-    fichas = new Map();
-    const raw = [
-      ...LUNCH_COMBOS_RAW.map((c) => ({ ...c, slot: 'Comida' })),
-      ...DINNER_COMBOS_RAW.map((c) => ({ ...c, slot: 'Cena' })),
-      ...TRAINING_DINNERS_RAW.map((c) => ({ ...c })),
-    ];
-    for (const c of raw) {
-      const k = comboIdentityKey(c);
-      if (!fichas.has(k)) fichas.set(k, c);
-    }
-    for (const f of [...FREEFORM_COMBOS, ...PLATOS_DIETA]) if (f && f.identity && !fichas.has(f.identity.id)) fichas.set(f.identity.id, f);
-  }
-  return fichas.get(dishId) || null;
-}
-
-/** _spec que entiende composeMeal: la ficha legacy, con momento y el nombre de engine2 como título. */
-export function specPara(dish, momento) {
-  const ficha = fichaDe(dish.id);
-  if (!ficha) throw new Error(`engine2App: sin ficha del motor viejo para ${dish.id}`);
-  const slot = momento === 'cena' ? 'Cena' : 'Comida';
-  if (ficha.freeForm === true) return { ...ficha, slot };
-  const spec = { ...ficha, slot, title: dish.nombre };
-  delete spec.emoji; // las cenas post-entreno traen 🏋️ propio; aquí manda el momento
-  return spec;
-}
-
-// ─── Componer con el motor viejo ────────────────────────────────────────────
+// ─── Motor viejo (desayunos, tentempiés y estructura de la semana) ──────────
 
 const clonar = (v) => JSON.parse(JSON.stringify(v));
 
 function opcionesLegacy(opts) {
   return { ...opts, saveMealMemory: () => {} };
-}
-
-/** Compone una lista de specs en el día dayIdx (0-6) con el ajuste del motor viejo para ese día. */
-function componerDia(profile, targetKcal, opts, dayIdx, specs) {
-  const p = clonar(profile);
-  p._regenContext = { dayPortionsRegen: { dayIdx, meals: specs.map((s) => ({ _spec: s })), shakeEnabledOverride: false } };
-  return buildPlan(p, targetKcal, opcionesLegacy(opts)).days[dayIdx].meals;
 }
 
 // ─── Filtro de seguridad del catálogo ───────────────────────────────────────
@@ -125,20 +84,7 @@ function textoCompuesto(meal) {
   return [meal.title, meal.p1, meal.p2, ...(meal.shopping || []), ...((meal.recipe || []).filter((x) => typeof x === 'string'))].filter(Boolean).join(' · ');
 }
 
-const conSibo = (profile) => ((profile && profile.intolerances) || []).includes('sibo');
-const conDieta = (profile) => dietaDe(profile) !== 'omnivora';
-
-/**
- * Una comida tal como la verá el usuario: adaptada a su dieta (D-107: caldo
- * de verduras, bebida de soja…) y, con SIBO, a bajo en FODMAP (D-104).
- */
-export function adaptarSiProcede(meal, profile) {
-  if (!meal) return meal;
-  let m = meal;
-  if (conDieta(profile) && m.adaptadoDieta !== dietaDe(profile)) m = adaptarComidaDieta(m, dietaDe(profile));
-  if (conSibo(profile) && !m.adaptadoFodmap) m = adaptarComidaFodmap(m);
-  return m;
-}
+export { adaptarSiProcede };
 
 /**
  * Intolerancias del perfil, y alimentos que su dieta no come, que afectan a
@@ -165,15 +111,9 @@ export function intoleranciasDe(meal, profile) {
  * (intolerancias que engine2 no veta y alimentos eliminados). Compone cada
  * plato una vez para leer su texto real.
  */
-/** Compone cada plato del catálogo una vez (en lotes de 20) con el perfil dado. */
-export function componerPlatos(catalog, profile, targetKcal, opts) {
-  const out = new Map();
-  for (let i = 0; i < catalog.length; i += 20) {
-    const lote = catalog.slice(i, i + 20);
-    const meals = componerDia(profile, targetKcal, opts, 0, lote.map((d) => specPara(d, d.momento.includes('comida') ? 'comida' : 'cena')));
-    lote.forEach((d, k) => out.set(d.id, meals[k] || null));
-  }
-  return out;
+/** Compone cada plato del catálogo una vez (D-108: textos de engine2). */
+export function componerPlatos(catalog, profile, targetKcal) {
+  return new Map(catalog.map((d) => [d.id, componerPlato(d, d.momento.includes('comida') ? 'comida' : 'cena', targetKcal)]));
 }
 
 export function filtrarCatalogo(catalogBase, profile, targetKcal, opts) {
@@ -226,15 +166,15 @@ function claveMemoria(prot) {
 
 function notaAncla(resumen, day, causa) {
   if (!resumen) return null;
-  const base = resumen.base;
+  const { el, verbo, lo, cocinar } = nombreDeBase(resumen.base);
   if (causa === 'ancla_base_cocinado') {
-    if (resumen.cocinadoAntes) return `🥘 Usa el ${base} que cocinaste el domingo; mañana lo aprovechas en otro plato.`;
+    if (resumen.cocinadoAntes) return `🥘 Usa ${el} que ${verbo} el domingo; mañana ${lo} aprovechas en otro plato.`;
     const otro = resumen.diasAprovechar.length ? ` y guarda para el ${resumen.diasAprovechar.map((d) => DIA_LEGIBLE[d] || d).join(' y el ')}` : '';
-    return `🥘 Hoy cocina ${base} de más${otro}.`;
+    return `🥘 Hoy ${cocinar} ${el.replace(/^(el|la|los|las) /, '')} de más${otro}.`;
   }
   if (causa === 'ancla_base_aprovechado') {
     const cuando = resumen.cocinadoAntes ? 'el domingo' : `el ${DIA_LEGIBLE[resumen.diaCocinar] || resumen.diaCocinar}`;
-    return `♻️ Aprovecha el ${base} que cocinaste ${cuando}.`;
+    return `♻️ Aprovecha ${el} que ${verbo} ${cuando}.`;
   }
   return null;
 }
@@ -303,7 +243,11 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
     const d2 = e2.days[i];
     const comida2 = d2.meals.find((m) => m.momento === 'comida');
     const cena2 = d2.meals.find((m) => m.momento === 'cena');
-    const [comida, cena] = componerDia(profile, targetKcal, opts, i, [specPara(comida2.dish, 'comida'), specPara(cena2.dish, 'cena')]);
+    // D-108: comida y cena las escribe engine2 (sin el motor viejo), con la
+    // receta del ancla si toca cocinar de una vez o aprovechar.
+    const anclaDe = (momento) => anclaDelHueco(resumenAncla, causaDe.get(`${d2.day}|${momento}`));
+    const comida = componerPlato(comida2.dish, 'comida', targetKcal, { ancla: anclaDe('comida') });
+    const cena = componerPlato(cena2.dish, 'cena', targetKcal, { ancla: anclaDe('cena') });
     const marca = (meal, dish, momento) => {
       const c = causaDe.get(`${d2.day}|${momento}`);
       return { ...meal, time: momento === 'cena' ? 'Cena' : 'Comida', title: dish.nombre, _motor: 'engine2', _dishId: dish.id, ...(c && c.startsWith('ancla_base') ? { _causa: c } : {}) };
@@ -342,13 +286,13 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
         p1: String(nuevaComida.p1 || '').replace(/\((\d+)g\)/g, (full, g) => `(${Math.round(parseInt(g, 10) * 1.25)}g)`),
       };
       const iPrincipal = iComida >= 0 ? iComida : iCena; // la única principal, se llame como se llame
-      meals = day.meals.map((m, k) => (k === iPrincipal ? { ...principal, time: 'Comida' } : m));
+      meals = day.meals.map((m, k) => (k === iPrincipal ? { ...principal, time: 'Comida' } : limpiarComidaLegacy(m)));
       nuevaCena = null;
     } else {
       meals = day.meals.map((m, k) => {
         if (k === iComida) return nuevaComida;
         if (k === iCena) return nuevaCena;
-        return m;
+        return limpiarComidaLegacy(m);
       });
     }
     return { ...day, meals };
@@ -377,7 +321,44 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
   // dentro del primer día.
   plan.days = guardarMeta(plan.days, { ancla: resumenAncla, platosSemana, platosSemanaAnterior: opts.platosRecientes || [] });
   // Raciones de engine2: gramos según el objetivo del usuario (D-100).
-  return conRaciones ? { ...ajustarPlan(plan, profile, targetKcal), raciones: 'engine2' } : plan;
+  if (!conRaciones) return plan;
+  return { ...cantidadesDelAncla(ajustarPlan(plan, profile, targetKcal), profile, targetKcal), raciones: 'engine2' };
+}
+
+/** Ancla del hueco (D-108): cocinar de una vez o aprovechar lo cocinado. */
+function anclaDelHueco(resumen, causa) {
+  if (!resumen || !causa || !causa.startsWith('ancla_base')) return null;
+  const aprovechar = causa === 'ancla_base_aprovechado' || resumen.cocinadoAntes;
+  return {
+    base: resumen.base,
+    rol: aprovechar ? 'aprovechar' : 'cocinar',
+    cuando: resumen.cocinadoAntes ? 'el domingo' : `el ${DIA_LEGIBLE[resumen.diaCocinar] || resumen.diaCocinar}`,
+  };
+}
+
+/**
+ * El día de cocinar de más, la receta dice cuánto guardar para cada día que
+ * se aprovecha (con los gramos ya ajustados de esos días) (D-108).
+ */
+function cantidadesDelAncla(plan, profile, targetKcal) {
+  const sitios = [];
+  plan.days.forEach((d, i) => d.meals.forEach((m, j) => { if (m && m._ancla) sitios.push({ i, j, m }); }));
+  const cocinar = sitios.find((s) => s.m._ancla.rol === 'cocinar');
+  if (!cocinar) return plan;
+  const base = cocinar.m._ancla.base;
+  const guardar = sitios
+    .filter((s) => s.m._ancla.rol === 'aprovechar' && s.m._ancla.base === base)
+    .map((s) => ({ dia: (DIA_LEGIBLE[DIA_ENGINE2[plan.days[s.i].name]] || plan.days[s.i].name).toLowerCase(), gramos: gramosDeBase(s.m, base) }))
+    .filter((x) => x.gramos > 0);
+  if (!guardar.length) return plan;
+  const days = plan.days.slice();
+  const dia = days[cocinar.i];
+  const meals = dia.meals.slice();
+  const m = meals[cocinar.j];
+  const ancla = { ...m._ancla, guardar };
+  meals[cocinar.j] = { ...m, _ancla: ancla, ...(m._base ? { _base: { ...m._base, _ancla: ancla } } : {}) };
+  days[cocinar.i] = ajustarDia({ ...dia, meals }, profile, targetKcal).day;
+  return { ...plan, days };
 }
 
 // ─── Desayunos y tentempiés que respetan las intolerancias ───────────────────
@@ -455,7 +436,7 @@ function desayunosSeguros(days, profile, targetKcal, opts) {
       const alt = buildPlan(clonar(profile), targetKcal, opcionesLegacy({ ...opts, userId: `${opts.userId ?? 'anon'}#desayuno${semilla}` }));
       for (const d of alt.days) for (const m0 of d.meals) {
         if (!m0 || m0.time === 'Comida' || m0.time === 'Cena') continue;
-        const m = adaptarSiProcede(m0, profile);
+        const m = adaptarSiProcede(limpiarComidaLegacy(m0), profile);
         if (apto(m)) meter(m);
       }
     }
@@ -547,7 +528,7 @@ export function regenerarComidaEngine2(plan, dayIdx, time, deseo, profile, targe
     seed: `${opts.userId ?? 'anon'}:${opts.weekNumber ?? 0}`,
   });
 
-  const [compuesta] = componerDia(profile, targetKcal, opts, dayIdx, [specPara(dish, momento)]);
+  const compuesta = componerPlato(dish, momento, targetKcal, { ancla: esAncla && actual._ancla && decisionLog.some((e) => e.causa === 'alternativa_mantiene_ancla') ? actual._ancla : null });
   const principal = / \(comida principal\)$/.test(actual.title || '');
   const nueva = adaptarSiProcede({ ...compuesta, time, title: `${dish.nombre}${principal ? ' (comida principal)' : ''}`, _motor: 'engine2', _dishId: dish.id, ...(esAncla && actual._causa ? { _causa: actual._causa } : {}) }, profile);
   const mantieneAncla = esAncla && decisionLog.some((e) => e.causa === 'alternativa_mantiene_ancla');
@@ -595,7 +576,7 @@ export function regenerarDesayunoEngine2(plan, dayIdx, time, profile, targetKcal
   if (!(dieta === 'vegana' && time === 'Desayuno')) {
     for (let s = 1; s <= 6; s += 1) {
       const alt = buildPlan(clonar(profile), targetKcal, opcionesLegacy({ ...opts, userId: `${opts.userId ?? 'anon'}#desayuno${s}` }));
-      for (const d of alt.days) for (const m of d.meals) if (m && m.time === time) meter(m);
+      for (const d of alt.days) for (const m of d.meals) if (m && m.time === time) meter(limpiarComidaLegacy(m));
     }
   }
   const enSemana = new Set(plan.days.flatMap((d) => d.meals.filter(Boolean).map((m) => m.title)));

@@ -92,6 +92,13 @@ export const ACOMPANAMIENTOS = Object.freeze({
   tentempie: [FRUTA, FRUTOS_SECOS],
 });
 
+/** Familia de un acompañamiento: el pan es pan, sea integral, blanco o de centeno. */
+function familiaDe(clave) {
+  if (clave.startsWith('pan_')) return 'pan';
+  const g = INGREDIENTES[clave] && INGREDIENTES[clave].grupo;
+  return g === 'fruta' || g === 'frutoSeco' ? g : clave;
+}
+
 function papelDe(clave, comp) {
   const ing = INGREDIENTES[clave];
   if (!ing || ing.despreciable || SIEMPRE_FIJO.has(clave)) return 'fijo';
@@ -141,6 +148,9 @@ export function ajustarComida(items, meta, composicion, amplitud = 1) {
     const comp = composicion[it.clave];
     const papel = comp && !it.fijo ? papelDe(it.clave, comp) : 'fijo';
     let rango = papel === 'fijo' ? null : rangoDe(it.clave, it.unidad);
+    // D-108: un acompañamiento que la comida ya tenía (pan, fruta, frutos
+    // secos) no se repite: se amplía el máximo de lo que ya había.
+    if (rango && it.ampliado) rango = [rango[0], rango[1] + it.ampliado, rango[2]];
     // Quien necesita mucha energía come raciones de hidrato más grandes: el
     // máximo de los energéticos crece con el objetivo (nunca el de la proteína
     // ni el del aceite).
@@ -277,10 +287,18 @@ export function racionesDia({ comidas, aparte = [], objetivo, composicion, vetad
       const r = resultado.get(c.id);
       if (r.kcal >= (1 - FALTA_PARA_ACOMPANAR) * r.meta.kcal) break;
       const items = itemsDe.get(c.id);
-      if (vetados.has(ac.clave) || items.some((i) => i.clave === ac.clave) || !composicion[ac.clave]) continue;
-      items.push({ clave: ac.clave, gramos: ac.gramos, unidad: ac.unidad, anadido: true });
+      if (vetados.has(ac.clave) || !composicion[ac.clave]) continue;
+      const k = items.findIndex((i) => familiaDe(i.clave) === familiaDe(ac.clave));
+      if (k >= 0) {
+        if (items[k].ampliado || items[k].anadido) continue;
+        items[k] = { ...items[k], ampliado: ac.gramos };
+      } else {
+        items.push({ clave: ac.clave, gramos: ac.gramos, unidad: ac.unidad, anadido: true });
+      }
       const nuevo = ajustarComida(items, r.meta, composicion, amplitud);
-      log.push({ causa: 'acompanamiento_anadido', momento: c.momento, id: c.id, detalle: `${ac.nombre}: el plato llegaba a ${r.kcal} de ${Math.round(r.meta.kcal)} kcal` });
+      log.push(k >= 0
+        ? { causa: 'acompanamiento_ampliado', momento: c.momento, id: c.id, detalle: `más ${items[k].clave} en vez de añadir ${ac.nombre}: el plato llegaba a ${r.kcal} de ${Math.round(r.meta.kcal)} kcal` }
+        : { causa: 'acompanamiento_anadido', momento: c.momento, id: c.id, detalle: `${ac.nombre}: el plato llegaba a ${r.kcal} de ${Math.round(r.meta.kcal)} kcal` });
       resultado.set(c.id, { meta: r.meta, ...nuevo });
     }
   }

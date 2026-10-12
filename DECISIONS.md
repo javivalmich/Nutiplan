@@ -4412,3 +4412,25 @@ Pendiente
 
 Estado resultante
 Un vegetariano o un vegano reciben una semana completa de engine2, variada y ajustada a sus calorías, sin nada de origen animal que su dieta no come.
+
+## D-108 — [2026-10-12] Textos propios de engine2, verdura decidida por engine2 y recetas del ancla
+
+Decide: Javi. HEAD: `96f286b`.
+
+Contexto
+Los platos compuestos (los 178 de proteína + hidrato + verdura + aliño) los escribía el motor viejo con plantillas y la app reescribía después sus números. Revisadas tres semanas: «Patata (260g g)» y «Quinoa (130g g seco)» en 16 platos, concordancias rotas («Ternera magra salteado», «Garbanzos estofadas», «Huevos revuelto», «el patata»), cenas sin hidrato que empezaban con «  · », textos sin sentido («Huevos en conserva encima», «Salmón: escurre y reserva»). En los días del ancla, la nota decía «Usa el pavo que cocinaste el domingo» y la receta lo horneaba otra vez en crudo, y no se decía cuánto cocinar. En los desayunos del motor viejo, cantidades dobles («200g yogur griego 0% (125g)») y acompañamientos repetidos («Nueces o almendras (15g) | Nueces (15g)», pan integral añadido a una tostada de centeno).
+La verdura era «fija» en las raciones (D-100) y su gramaje venía de la tabla del motor viejo: base × escala de la estrategia, con tope por verdura. Medido en 10 semanas por perfil: con un hombre de 74 kg que mantiene, el 83 % de las verduras salían en el tope (calabacín 300 g, brócoli 250 g); cada verdura salía siempre con el mismo gramaje; y nada se decía en medidas de casa.
+
+Decisión
+1. engine2 escribe los platos compuestos (`src/plan/textos/compuestos.js`): título (el nombre visible), preparación, compra y receta, con sus propias tablas de proteínas, hidratos, verduras y aliños, concordancia de género y número, y las cantidades que deciden las raciones (sin reescribir un texto viejo). Los platos libres y los de dietas conservan su texto redactado. Las comidas y cenas ya no pasan por el motor viejo; de él quedan la estructura de la semana, los desayunos, los tentempiés y el día libre.
+2. La verdura la decide engine2: cada una tiene un rango de ración en crudo (brócoli, judías y espinacas con poco margen, unos 150–200 g; calabacín y berenjena 150–300 g), se ajusta a la persona con la raíz de sus calorías frente a 2200 (crece despacio, sin ir siempre al tope) y se escribe en medidas de casa («1 calabacín mediano (220 g)», «4 puñados de espinacas (155 g)»). En una crema la verdura es el plato (×1,5); la segunda verdura, el 60 %. Medido: el tope pasa del 83 % al 14 % (hombre de 74 kg) y al 30 % en un hombre de 90 kg que gana masa; las mujeres de 60 y 68 kg nunca llegan al tope.
+3. Ancla: el día de cocinar de más, la receta dice cuánto hacer en total y cuánto guardar para cada día («Cocina de una vez 255 g de pavo: 130 g para hoy y 125 g para el jueves»), con los gramos de esos días. El día de aprovechar, la receta dice usar lo cocinado y calentarlo, sin cocinarlo en crudo, y la compra lo marca «del miércoles». Peso en crudo, como se compra. En los platos libres, un paso al principio de la receta dice lo mismo. Las notas del ancla conciertan («Aprovecha la quinoa que cociste…»).
+4. Nombres visibles: el participio concierta con la proteína («Ternera magra salteada», «Huevos revueltos», «Garbanzos guisados con pimientos»), en la misma capa que D-105; `dishes.json` no se toca.
+5. Desayunos y tentempiés del motor viejo: fuera las cantidades dobles. Un acompañamiento que la comida ya tiene (pan, fruta, frutos secos) no se repite: se amplía el que había.
+6. Tests: los 178 platos sin defectos y medibles; verdura dentro de su rango y creciendo con la persona; mismas cantidades en texto y compra; misma semilla, mismo texto; ancla con cuánto hacer y sin cocinar en crudo lo ya cocinado; desayunos sin dobles ni repetidos; nombres concordados e idempotentes. Siguen pasando intolerancias, SIBO, dietas, alternativas y raciones (±5 %).
+
+Pendiente
+Cuando se cocina el domingo de la semana anterior, el plan de esa semana no dice cuánto cocinar para la siguiente: lo resolverá el ciclo semanal (ver el plan de la semana siguiente desde el sábado). Los desayunos y tentempiés siguen siendo del motor viejo (punto 2 del mapa).
+
+Estado resultante
+Comidas y cenas con textos propios de engine2, verdura a la medida de cada persona y recetas coherentes con cocinar en cantidad.

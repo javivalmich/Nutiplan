@@ -4344,3 +4344,27 @@ La adaptación es por ingrediente, no por cantidad: no aplica los umbrales por r
 
 Estado resultante
 Con SIBO la semana sale entera con engine2 y ninguna comida conserva ajo, cebolla, trigo, lactosa ni otros alimentos altos en FODMAP sin adaptar.
+
+## D-105 — [2026-10-12] Aliños: nombres sin ajo y reglas de aliño del menú
+
+Decide: Javi. HEAD: `aded1ae`.
+
+Contexto
+Javi vio demasiados platos con ajo, perejil y guindilla. El catálogo heredado del motor viejo usa 10 aliños y 4 llevan ajo (`ajillo` = «ajo, perejil y guindilla», `limon_hierbas`, `pimenton_ajo`, `romero_limon`); 98 de los 241 platos llevaban ajo en el nombre. engine2 enseña el aliño completo en el nombre (el motor viejo lo escondía en el título) y no tenía ninguna regla de aliño. Medido en `aded1ae` (2 perfiles × 100 semillas, con y sin cocinar en cantidad, 400 semanas): el ajillo salía 3,15 veces por semana de media (más de 2 en 272 semanas, hasta 7), 245 días tenían el mismo aliño en la comida y en la cena, y el 39,6 % de las comidas llevaba ajo en el nombre.
+
+Decisión
+1. Nombre visible (`src/engine2/dishes/alinosD105.js`). Se quitan del nombre los 4 aliños con ajo. En gambas y conejo, «<método> con ajo, perejil y guindilla» pasa a «al ajillo». Los otros 6 aliños siguen en el nombre, y las formas cortas que ya existían («Pasta integral al ajillo…», «Lentejas con pimentón…») no cambian. Cambian 87 nombres; los platos con ajo en el nombre pasan de 98 a 18. Dos cenas que solo se distinguían por el aliño quedan con el mismo nombre y cuentan como el mismo plato (D-099, 3.d).
+2. Se aplica sobre el catálogo al materializar el plan y al pedir una alternativa, como los ajustes de D-099: `scripts/phaseB2/output/dishes.json` no se modifica y su sha256 de D-028 se mantiene. Los nombres guardados de la semana anterior pasan por la misma función, para que ningún plato se repita justo la semana del cambio. Los planes ya guardados conservan sus nombres hasta su próximo cambio de semana.
+3. Las intolerancias (D-103) y SIBO (D-104) no cambian: el filtro del catálogo (`filtrarCatalogo`) lee el nombre original y el plato compuesto antes de aplicar los nombres visibles, y la preparación, la receta y la compra siguen diciendo cómo se aliña cada plato. Con intolerancia al picante no sale ningún ajillo (`src/plan/tests/alinosApp.test.js`).
+4. Reglas de aliño, en el menú de la semana (`runWalk.js`) y en las alternativas (`alternativa.js`), después de la proteína separada: el mismo aliño no sale en la comida y la cena del mismo día, y el ajillo sale como mucho 2 veces por semana (`TOPE_AJILLO_SEMANA`), contando el ancla. Filtro con vuelta atrás: si dejara el hueco sin candidatos, no se aplica y la evidencia lo dice. El aliño es el campo S de la tupla; los platos libres no tienen, salvo el pollo al ajillo.
+5. Test de D-100 «las cantidades del texto coinciden con las de la compra». Solo miraba la semana 41 y pasaba por la selección de esa semana: en `aded1ae`, en las semanas 40 a 49, da un 95,4 %, por debajo de su 97 %. Los descuadres son ingredientes que el texto nombra sin gramos (hamburguesas, huevos rellenos, sopa de miso), no cantidades distintas. Pasa a medir las semanas 40 a 49 y solo donde el texto da la cantidad, con el mismo 97 % (100 % sin este cambio, 99,9 % con él).
+
+Resultado medido
+En las mismas 400 semanas: ajillo 1,82 veces por semana de media y nunca más de 2; ningún día con el mismo aliño en comida y cena; el 4,4 % de las comidas con ajo en el nombre; la regla no tuvo que relajarse en ningún hueco. Fijado por `src/engine2/tests/reglasD105.test.js`.
+
+Pendiente
+- Textos de platos libres que nombran ingredientes sin gramos (punto 5).
+- Si se quiere, cambiar el aliño de los platos donde el ajillo no pega (sardinas, huevos, pavo…): toca la tupla de identidad (`comboIdentityKey`) y las anotaciones del cuaderno, y necesita su propio asiento.
+
+Estado resultante
+Menos ajo en los nombres y en la semana; el aliño no se repite en el mismo día.

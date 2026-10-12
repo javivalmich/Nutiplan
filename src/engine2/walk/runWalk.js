@@ -106,6 +106,7 @@ import { mulberry32, seedFromString } from '../skeleton/rng.js';
 import { MOMENTOS } from '../dishes/schema.js';
 import { computeVetoUniverse } from './vetoes.js';
 import { proteinaPrincipal, TOPE_PROTEINA_SEMANA } from '../dishes/bases.js';
+import { alinoDe, TOPE_AJILLO_SEMANA } from '../dishes/alinosD105.js';
 import {
   initFrequencyState, registerConsumption, chooseFrequencyLevel, chooseIdentityLevel,
 } from './frequencies.js';
@@ -365,8 +366,34 @@ export function runWalk(input) {
           ? `proteina separada: descarta ${base0.length - poolSeparado.length} candidatos de ${[...cercanas].join(', ')} (ya salen ese dia o el de al lado); `
           : 'proteina separada sin aplicar: dejaria el hueco sin candidatos; ';
 
+      // D-105 (aliños): el mismo aliño no sale en la comida y la cena del mismo
+      // dia, y el ajillo sale como mucho TOPE_AJILLO_SEMANA veces por semana.
+      // Si dejaria el hueco sin candidatos, no se aplica y se dice.
+      const base1 = poolSeparado.length ? poolSeparado : base0;
+      const alinosHoy = new Set();
+      let ajillosSemana = 0;
+      for (const s2 of slots.values()) {
+        if (s2.abierto || !s2.dishId) continue;
+        const al = alinoDe(findDish(catalog, s2.dishId));
+        if (!al) continue;
+        if (s2.day === day) alinosHoy.add(al);
+        if (al === 'ajillo') ajillosSemana += 1;
+      }
+      const poolAlino = base1.filter((d) => {
+        const al = alinoDe(d);
+        return !al || (!alinosHoy.has(al) && !(al === 'ajillo' && ajillosSemana >= TOPE_AJILLO_SEMANA));
+      });
+      const notaAlino = poolAlino.length === base1.length
+        ? ''
+        : poolAlino.length
+          ? `alino: descarta ${base1.length - poolAlino.length} candidatos (${[
+            alinosHoy.size ? `alino ya servido hoy: ${[...alinosHoy].join(', ')}` : '',
+            ajillosSemana >= TOPE_AJILLO_SEMANA ? `ajillo ya sale ${ajillosSemana}/${TOPE_AJILLO_SEMANA} esta semana` : '',
+          ].filter(Boolean).join('; ')}); `
+          : 'alino sin aplicar: dejaria el hueco sin candidatos; ';
+
       const ayer = i > 0 ? getDishAt(DAYS_ORDER[i - 1], momento) : null;
-      let candidatesA = poolSeparado.length ? poolSeparado : base0;
+      let candidatesA = poolAlino.length ? poolAlino : base1;
       let notaA;
       if (!ayer) {
         notaA = `preferencia A no aplica: no hay dia anterior en la semana para ${day}/${momento}`;
@@ -432,7 +459,7 @@ export function runWalk(input) {
         momento,
         chosen.id,
         causa,
-        `${notaTope}${notaSeparada}${notaA}; ${notaB}${notaFreq ? `; ${notaFreq}` : ''}${notaIdentidad ? `; ${notaIdentidad}` : ''}${notaRng}`,
+        `${notaTope}${notaSeparada}${notaAlino}${notaA}; ${notaB}${notaFreq ? `; ${notaFreq}` : ''}${notaIdentidad ? `; ${notaIdentidad}` : ''}${notaRng}`,
         alternativas,
       );
       registerConsumption(freqState, chosen, day, undefined, fuenteEditorial);

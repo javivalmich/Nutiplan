@@ -12,6 +12,7 @@
 
 import { buildWeekArc } from './skeleton/buildWeekArc.js';
 import { aplicarAjustesD099 } from './dishes/ajustesD099.js';
+import { aplicarNombresD105, nombreVisible } from './dishes/alinosD105.js';
 import { runWalk } from './walk/runWalk.js';
 import { DAYS_ORDER } from './skeleton/days.js';
 import { MOMENTOS } from './dishes/schema.js';
@@ -33,11 +34,14 @@ function findDish(catalog, dishId) {
  */
 export function materializePlan(input) {
   const {
-    profile, seed, strategy, fuenteEditorial, platosRecientes = [], cocinarEnCantidad,
+    profile, seed, strategy, fuenteEditorial, cocinarEnCantidad,
   } = input;
   // D-099: ajustes de catalogo (legumbres solo de comida; huevo con tomate en
   // crudo, plato normal de cena) sin tocar dishes.json (hash de D-028).
-  const catalog = aplicarAjustesD099(input.catalog);
+  // D-105: nombres visibles sin los aliños con ajo. Los nombres guardados de
+  // la semana anterior pasan por la misma función para seguir coincidiendo.
+  const catalog = aplicarNombresD105(aplicarAjustesD099(input.catalog));
+  const platosRecientes = (input.platosRecientes || []).map(nombreVisible);
 
   const { weekArc, decisionLog: arcLog } = buildWeekArc({
     profile, seed, strategy, fuenteEditorial, cocinarEnCantidad,

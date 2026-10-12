@@ -9,6 +9,9 @@
 //   2. Tope de proteína principal por semana y proteína separada (no el mismo
 //      día ni el de al lado). Si dejarían sin candidatos, no se aplican y se
 //      dice.
+//   2b. Aliños (D-105): no el mismo aliño que el otro plato del día, y el
+//      ajillo como mucho 2 veces por semana. Si dejaría sin candidatos, no se
+//      aplica y se dice.
 //   3. Si el plato que se quita era parte del ancla (cocinar en cantidad), se
 //      prefieren los que llevan el mismo ingrediente base, para no romper el
 //      aprovechamiento.
@@ -24,6 +27,7 @@ import { DAYS_ORDER } from '../skeleton/days.js';
 import { mulberry32, seedFromString } from '../skeleton/rng.js';
 import { computeVetoUniverse } from './vetoes.js';
 import { proteinaPrincipal, TOPE_PROTEINA_SEMANA, llevaBase } from '../dishes/bases.js';
+import { alinoDe, TOPE_AJILLO_SEMANA } from '../dishes/alinosD105.js';
 
 const CUCHARA = new Set(['legumbre', 'guiso', 'sopa_crema', 'arroz_plato', 'gratinado']);
 const LIGERO = new Set(['ensalada', 'plancha_verdura', 'pescado_plancha', 'pescado_horno', 'bowl', 'crudo', 'sopa_crema']);
@@ -78,6 +82,12 @@ export function elegirAlternativa(input) {
   const cercanas = new Set(otros.filter((s) => Math.abs(DAYS_ORDER.indexOf(s.day) - i) <= 1).map((s) => proteinaPrincipal(porId.get(s.dishId) || {})).filter(Boolean));
   const separados = pool.filter((d) => !cercanas.has(proteinaPrincipal(d)));
   if (separados.length) { if (separados.length < pool.length) nota('alternativa_proteina_separada', `descarta ${pool.length - separados.length} platos de ${[...cercanas].join(', ')} (ya salen ese día o el de al lado)`); pool = separados; } else nota('alternativa_proteina_separada_sin_aplicar', 'dejaría sin candidatos');
+
+  // 2b. Aliños (D-105, como runWalk).
+  const alinosHoy = new Set(otros.filter((s) => s.day === day).map((s) => alinoDe(porId.get(s.dishId) || {})).filter(Boolean));
+  const ajillos = otros.filter((s) => alinoDe(porId.get(s.dishId) || {}) === 'ajillo').length;
+  const conAlino = pool.filter((d) => { const al = alinoDe(d); return !al || (!alinosHoy.has(al) && !(al === 'ajillo' && ajillos >= TOPE_AJILLO_SEMANA)); });
+  if (conAlino.length) { if (conAlino.length < pool.length) nota('alternativa_alino', `descarta ${pool.length - conAlino.length} platos por el aliño (${[alinosHoy.size ? `ya sale hoy: ${[...alinosHoy].join(', ')}` : '', ajillos >= TOPE_AJILLO_SEMANA ? `ajillo ya sale ${ajillos}/${TOPE_AJILLO_SEMANA} esta semana` : ''].filter(Boolean).join('; ')})`); pool = conAlino; } else nota('alternativa_alino_sin_aplicar', 'dejaría sin candidatos');
 
   // 3. Ancla.
   if (anclaBase) {

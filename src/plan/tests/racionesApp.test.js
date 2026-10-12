@@ -41,17 +41,23 @@ describe('raciones de engine2 en la app (D-100)', { timeout: 60000 }, () => {
     expect(plan.decisionLog.some((e) => e.causa === 'raciones_por_objetivo')).toBe(true);
   });
 
+  // D-105: se mide en 10 semanas (antes solo la 41) y solo donde el texto da
+  // la cantidad del ingrediente (en su tramo entre «·»). Algunos platos libres
+  // nombran ingredientes sin gramos en el texto (hamburguesas, huevos rellenos,
+  // sopa de miso): eso es texto incompleto, no una cantidad distinta, y queda
+  // como pendiente en D-105.
   it('las cantidades del texto coinciden con las de la compra', () => {
     let total = 0;
     let iguales = 0;
-    for (const [p, kcal] of PERFILES) {
-      const plan = generarPlanEngine2(perfil(p), kcal, opts(41));
+    for (const [p, kcal] of PERFILES) for (let w = 40; w <= 49; w++) {
+      const plan = generarPlanEngine2(perfil(p), kcal, opts(w));
       for (const d of plan.days) for (const m of d.meals.filter(Boolean)) {
         const texto = `${m.p1} ${m.p2}`;
         for (const it of leerComida(m).items) {
           const v = (it.texto.match(/^[^(]+\((\d+)\s*g\)/) || [])[1];
           const nombre = it.nombre.toLowerCase().split(' ')[0];
-          if (!v || !texto.toLowerCase().includes(nombre) || !/\d+\s*g/.test(texto)) continue;
+          const tramo = texto.toLowerCase().split('·').find((s) => s.includes(nombre));
+          if (!v || !tramo || !/\d+\s*g/.test(tramo)) continue;
           total++;
           if (new RegExp(`\\b${v}\\s*g`).test(texto)) iguales++;
         }

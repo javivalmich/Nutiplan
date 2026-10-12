@@ -66,9 +66,9 @@ const CAMBIOS = [
   [/\bleche (semidesnatada|desnatada|entera)\b/gi, 'leche sin lactosa'],
   [/\bleche o bebida vegetal\b/gi, 'leche sin lactosa'],
   [/\bleche\b(?! sin lactosa| de (coco|tigre|almendras?|arroz|avena|soja))/gi, 'leche sin lactosa'],
-  [/\byogur(?! sin lactosa)( griego)?( natural)?( 0\s?%)?/gi, 'yogur sin lactosa'],
+  [/\byogur(?! sin lactosa| de soja| vegetal| de coco)( griego)?( natural)?( 0\s?%)?/gi, 'yogur sin lactosa'],
   [/\bqueso (fresco|crema)( light)?( batido)?\b/gi, 'queso sin lactosa'],
-  [/(?<!sin )\bnata\b(?! sin lactosa)/gi, 'nata sin lactosa'],
+  [/(?<!sin )\bnata\b(?! sin lactosa| vegetal)/gi, 'nata sin lactosa'],
   [/\bmiel\b/gi, 'sirope de arce'],
   // Fruta genérica: las que convienen.
   [/\bfruta de temporada\b(?! \()/gi, 'fruta de temporada (naranja, kiwi, fresas o uva)'],

@@ -409,6 +409,7 @@ export const SDB = {
           goal:           prof.goal,
           kcalAdjust:     prof.kcalAdjust      ?? 0,
           intolerances:   prof.intolerances    ?? [],
+          dieta:          prof.dieta           ?? "omnivora",
           eliminatedFoods: prof.eliminatedFoods ?? [],
           trainingDays:   prof.trainingDays    ?? [],
         },

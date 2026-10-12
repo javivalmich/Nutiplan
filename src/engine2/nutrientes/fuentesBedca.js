@@ -45,6 +45,10 @@ export const FUENTES = Object.freeze({
   mejillon: { bedca: '2345' },
   berberecho: { bedca: '2306' },
   tofu: { bedca: '1121' },
+  tofu_sedoso: { etiqueta: { kcal: 55, proteina: 5.5, hidratos: 2, grasa: 2.7, fibra: 0.3 }, nota: 'BEDCA solo tiene tofu firme: etiqueta típica de tofu sedoso (silken) (D-107)' },
+  tempeh: { etiqueta: { kcal: 200, proteina: 20, hidratos: 4, grasa: 11, fibra: 4 }, nota: 'BEDCA no tiene tempeh: etiqueta típica de tempeh de soja (D-107)' },
+  seitan: { bedca: '2568' },
+  soja_texturizada: { etiqueta: { kcal: 330, proteina: 50, hidratos: 14, grasa: 1.5, fibra: 17 }, nota: 'BEDCA no tiene soja texturizada: etiqueta típica, en seco (D-107)' },
 
   lentejas_seco: { bedca: '1065' },
   lentejas_cocidas: { bedca: '1126', nota: 'Lenteja, en conserva: «Lenteja, hervida» de BEDCA tiene valores de lenteja seca' },
@@ -120,6 +124,9 @@ export const FUENTES = Object.freeze({
   leche_coco: { bedca: '911', nota: 'Leche de coco normal: la «light» del plan tiene bastante menos grasa (sobrestima)' },
   yogur_griego_0: { etiqueta: { kcal: 57, proteina: 10, hidratos: 4, grasa: 0.2, fibra: 0 }, nota: 'BEDCA solo tiene yogur griego entero (10 % de grasa): etiqueta típica de griego 0 %' },
   yogur_natural: { bedca: '1143' },
+  yogur_soja: { etiqueta: { kcal: 50, proteina: 4, hidratos: 2.5, grasa: 2.3, fibra: 0.5 }, nota: 'Yogur de soja natural sin azúcar: el «Batido fermentado de soja» de BEDCA es azucarado (17 g de hidratos) (D-107)' },
+  requeson: { bedca: '2517' },
+  queso_burgos_0: { etiqueta: { kcal: 70, proteina: 12, hidratos: 4, grasa: 0.5, fibra: 0 }, nota: 'BEDCA solo tiene Burgos entero (15 % de grasa): etiqueta típica de Burgos 0 % (D-107)' },
   skyr: { etiqueta: { kcal: 62, proteina: 11, hidratos: 4, grasa: 0.2, fibra: 0 }, nota: 'BEDCA no tiene skyr ni queso batido 0 %: etiqueta típica' },
   queso_fresco: { bedca: '2507', nota: 'Queso fresco de Burgos (entero): los «light» del plan tienen menos grasa (sobrestima)' },
   queso_crema: { bedca: '948' },
@@ -143,6 +150,7 @@ export const FUENTES = Object.freeze({
   miel: { bedca: '2643' },
   salsa_soja: { bedca: '2575' },
   miso: { bedca: '2157' },
+  levadura_nutricional: { etiqueta: { kcal: 380, proteina: 45, hidratos: 35, grasa: 5, fibra: 20 }, nota: 'BEDCA no tiene levadura nutricional: etiqueta típica en copos; se usan 5–10 g (D-107)' },
   ketchup: { bedca: '2605' },
 
   // Solo como componente de recetas.

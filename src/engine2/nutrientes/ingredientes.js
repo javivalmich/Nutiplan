@@ -53,6 +53,10 @@ export const INGREDIENTES = Object.freeze({
   mejillon: I('Mejillones', 'proteina', { gUd: 7 }),
   berberecho: I('Berberechos', 'proteina'),
   tofu: I('Tofu firme', 'proteina'),
+  tofu_sedoso: I('Tofu sedoso', 'proteina'),
+  tempeh: I('Tempeh', 'proteina'),
+  seitan: I('Seitán', 'proteina'),
+  soja_texturizada: I('Soja texturizada', 'proteina', { estado: 'seco' }),
 
   // ── Legumbres ────────────────────────────────────────────────────────────
   lentejas_seco: I('Lentejas', 'legumbre', { estado: 'seco' }),
@@ -134,6 +138,9 @@ export const INGREDIENTES = Object.freeze({
   yogur_griego_0: I('Yogur griego 0 %', 'lacteo', { estado: 'listo', gUd: 125 }),
   yogur_natural: I('Yogur natural', 'lacteo', { estado: 'listo', gUd: 125 }),
   skyr: I('Queso fresco batido / skyr', 'lacteo', { estado: 'listo' }),
+  yogur_soja: I('Yogur de soja natural', 'lacteo', { estado: 'listo', gUd: 125 }),
+  requeson: I('Requesón', 'lacteo', { estado: 'listo' }),
+  queso_burgos_0: I('Queso fresco tipo Burgos 0 %', 'lacteo', { estado: 'listo' }),
   queso_fresco: I('Queso fresco / queso light', 'lacteo', { estado: 'listo', gLoncha: 20 }),
   queso_crema: I('Queso crema light', 'lacteo', { estado: 'listo', gCda: 15 }),
   mozzarella: I('Mozzarella', 'lacteo', { estado: 'listo' }),
@@ -158,6 +165,7 @@ export const INGREDIENTES = Object.freeze({
   miel: I('Miel / azúcar', 'salsa', { estado: 'listo', gCda: 20, gCdita: 7 }),
   salsa_soja: I('Salsa de soja', 'salsa', { estado: 'listo', gMl: 1.1, gCda: 16, gCdita: 6 }),
   miso: I('Pasta de miso', 'salsa', { estado: 'listo', gCda: 15 }),
+  levadura_nutricional: I('Levadura nutricional', 'salsa', { estado: 'listo', gCda: 5, gCdita: 2 }),
   ketchup: I('Ketchup', 'salsa', { estado: 'listo', gCda: 15 }),
   caldo: I('Caldo / fumet', 'condimento', { estado: 'listo', gMl: 1.0, despreciable: true }),
   vino: I('Vino blanco (para cocinar)', 'condimento', { estado: 'listo', gMl: 1.0, despreciable: true }),

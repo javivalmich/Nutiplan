@@ -28,6 +28,7 @@ import { mulberry32, seedFromString } from '../skeleton/rng.js';
 import { computeVetoUniverse } from './vetoes.js';
 import { proteinaPrincipal, TOPE_PROTEINA_SEMANA, llevaBase } from '../dishes/bases.js';
 import { alinoDe, TOPE_AJILLO_SEMANA } from '../dishes/alinosD105.js';
+import { TOPE_CENAS_HUEVO } from './runWalk.js';
 
 const CUCHARA = new Set(['legumbre', 'guiso', 'sopa_crema', 'arroz_plato', 'gratinado']);
 const LIGERO = new Set(['ensalada', 'plancha_verdura', 'pescado_plancha', 'pescado_horno', 'bowl', 'crudo', 'sopa_crema']);
@@ -50,11 +51,12 @@ export const DESEOS = Object.freeze({
  * @param {string[]} [input.platosRecientes] platos de la semana anterior (ids o nombres)
  * @param {string[]} [input.intolerancias] las que engine2 sabe vetar (gluten, lactosa)
  * @param {string|null} [input.anclaBase] ingrediente base si el plato que se quita era del ancla
+ * @param {string} [input.dieta] omnivora | vegetariana | vegana (D-107: tope de huevo en vegetariana)
  * @param {string|number} input.seed
  * @returns {{ dish: object, decisionLog: object[] }}
  */
 export function elegirAlternativa(input) {
-  const { catalog, semana, day, momento, actualId, deseo, platosRecientes = [], intolerancias = [], anclaBase = null, seed } = input;
+  const { catalog, semana, day, momento, actualId, deseo, platosRecientes = [], intolerancias = [], anclaBase = null, seed, dieta = 'omnivora' } = input;
   const log = [];
   const nota = (causa, evidencia) => log.push({ decisionId: `alternativa-${log.length}`, day, momento, causa, evidencia });
   const porId = new Map(catalog.map((d) => [d.id, d]));
@@ -88,6 +90,17 @@ export function elegirAlternativa(input) {
   const ajillos = otros.filter((s) => alinoDe(porId.get(s.dishId) || {}) === 'ajillo').length;
   const conAlino = pool.filter((d) => { const al = alinoDe(d); return !al || (!alinosHoy.has(al) && !(al === 'ajillo' && ajillos >= TOPE_AJILLO_SEMANA)); });
   if (conAlino.length) { if (conAlino.length < pool.length) nota('alternativa_alino', `descarta ${pool.length - conAlino.length} platos por el aliño (${[alinosHoy.size ? `ya sale hoy: ${[...alinosHoy].join(', ')}` : '', ajillos >= TOPE_AJILLO_SEMANA ? `ajillo ya sale ${ajillos}/${TOPE_AJILLO_SEMANA} esta semana` : ''].filter(Boolean).join('; ')})`); pool = conAlino; } else nota('alternativa_alino_sin_aplicar', 'dejaría sin candidatos');
+
+  // 2c. Huevo con dieta vegetariana (D-107, como runWalk): una vez al día y
+  // como mucho TOPE_CENAS_HUEVO cenas por semana.
+  if (dieta === 'vegetariana') {
+    const huevoHoy = otros.some((s) => s.day === day && proteinaPrincipal(porId.get(s.dishId) || {}) === 'huevo');
+    const cenasHuevo = otros.filter((s) => s.momento === 'cena' && proteinaPrincipal(porId.get(s.dishId) || {}) === 'huevo').length;
+    if (huevoHoy || (momento === 'cena' && cenasHuevo >= TOPE_CENAS_HUEVO)) {
+      const sinHuevo = pool.filter((d) => proteinaPrincipal(d) !== 'huevo');
+      if (sinHuevo.length) { if (sinHuevo.length < pool.length) nota('alternativa_huevo', `descarta ${pool.length - sinHuevo.length} platos de huevo (${huevoHoy ? 'ya sale huevo ese día' : `ya hay ${cenasHuevo} cenas de huevo`})`); pool = sinHuevo; } else nota('alternativa_huevo_sin_aplicar', 'dejaría sin candidatos');
+    }
+  }
 
   // 3. Ancla.
   if (anclaBase) {

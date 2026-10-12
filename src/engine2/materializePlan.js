@@ -34,7 +34,7 @@ function findDish(catalog, dishId) {
  */
 export function materializePlan(input) {
   const {
-    profile, seed, strategy, fuenteEditorial, cocinarEnCantidad,
+    profile, seed, strategy, fuenteEditorial, cocinarEnCantidad, maxRepeticiones,
   } = input;
   // D-099: ajustes de catalogo (legumbres solo de comida; huevo con tomate en
   // crudo, plato normal de cena) sin tocar dishes.json (hash de D-028).
@@ -47,7 +47,7 @@ export function materializePlan(input) {
     profile, seed, strategy, fuenteEditorial, cocinarEnCantidad,
   });
   const { slots, decisionLog: walkLog } = runWalk({
-    weekArc, catalog, seed, profile, fuenteEditorial, platosRecientes,
+    weekArc, catalog, seed, profile, fuenteEditorial, platosRecientes, maxRepeticiones,
   });
 
   const slotsByKey = new Map(slots.map((s) => [`${s.day}::${s.momento}`, s]));

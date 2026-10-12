@@ -4383,3 +4383,32 @@ Decisión
 
 Estado resultante
 0 días con la cena repetida en 210 (omnívoro y vegetariano). Los planes ya guardados con el fallo se corrigen al generar la semana siguiente.
+
+## D-107 — [2026-10-12] Dieta vegetariana y vegana
+
+Decide: Javi. HEAD: `65ef49a`.
+
+Contexto
+Con el catálogo de 241 platos, un vegetariano tenía 38 posibles y cenaba huevo las siete noches; un vegano tenía 15, todos legumbre de comida, y ninguna cena (la regla es no cenar legumbre). Javi decidió: platos nuevos solo para vegetarianos y veganos por ahora; tofu, tempeh y seitán no cuentan como legumbre; huevo como mucho una vez al día y en tres cenas por semana para vegetarianos; y hacerlo todo de una vez (cenas, comidas, desayunos y tentempiés).
+
+Decisión
+1. Perfil: «Tipo de dieta» (omnívora, vegetariana o vegana), guardado con las preferencias. Con dieta vegana, aviso de vitamina B12 y de batido de proteína vegetal; con vegana y sin soja o sin legumbres, aviso de que habrá platos repetidos.
+2. `src/engine2/nutrientes/dietas.js`: qué es de origen animal (carne, pescado, marisco, huevo, lácteo, miel) y qué se adapta, solo lo secundario: caldo de pollo → caldo de verduras, dashi → caldo de kombu, salsa de pescado → salsa de soja; en vegana, además, leche → bebida de soja, yogur → yogur de soja, miel → sirope de arce, mayonesa y alioli veganos, nata y bechamel vegetales, «queso rallado al gusto» → levadura nutricional. La proteína principal no se cambia nunca. Lo que sigue llevando algo que la dieta no come no se ofrece, en comidas, cenas, desayunos, tentempiés y alternativas.
+3. 43 platos nuevos redactados por Claude (`src/data/PLATOS_DIETA.js`, con la forma de los freeform; `dishes.json` no se toca): 32 veganos (tofu, tempeh, seitán, soja texturizada y una hamburguesa de lentejas solo de comida), de ellos 26 de cena; y 11 vegetarianos con requesón, queso fresco, mozzarella o feta. Más 8 desayunos y 4 tentempiés veganos. Solo entran en el catálogo de perfiles vegetarianos o veganos: los menús de los omnívoros no cambian. Cada plato declara su verdura (para las reglas de variedad de engine2).
+4. Desayunos: con dieta vegana se usan siempre los propios (los del motor viejo, aunque se adapten, se quedan cortos de proteína); con vegetariana, primero los del motor viejo y los propios si faltan.
+5. Huevo en vegetariana: como mucho una vez al día (comida, cena y desayuno o tentempié) y en tres cenas por semana, en el menú (`runWalk`), en las alternativas y en los desayunos.
+6. Medidor y raciones: tofu sedoso, tempeh, seitán, soja texturizada, requesón, queso fresco tipo Burgos 0 %, yogur de soja y levadura nutricional, de BEDCA cuando lo tiene y de etiqueta típica cuando no (marcado).
+7. Si engine2 se queda sin platos con dieta, no se usa el motor viejo (no conoce las dietas y serviría carne): se reintenta dejando que vuelva algún plato de la semana anterior; después, repitiendo platos en la semana (hasta 2 veces, nunca el mismo día); y, como último recurso (vegana, celíaca y sin soja), dejando platos de comida en la cena, legumbre incluida. El plan lo anota en `motorAviso`. Si una alternativa no encuentra plato seguro, el plato no cambia y la app lo dice.
+8. Alternativas de desayuno y tentempié con dieta o intolerancias: las elige la app con el mismo control (era lo pendiente de D-103).
+9. La comprobación de intolerancias se hace sobre la comida ya adaptada (como la ve el usuario); con SIBO y gluten o lactosa ya no se quitan platos cuya versión adaptada es sin gluten o sin lactosa.
+10. Visor: `scripts/visor/visorDietas.mjs` genera diez semanas de cada dieta y la hoja de platos nuevos.
+
+Resultado medido (20 semanas seguidas, 3 perfiles por dieta)
+Siempre engine2; ninguna comida con algo que la dieta no come; ningún plato repetido en la semana; calorías de la semana a ±4,3 % como mucho; comidas y cenas siempre por encima de la proteína mínima (0,3 g/kg); huevo nunca dos veces el mismo día y como mucho 2 cenas de huevo por semana.
+
+Pendiente
+- Con muy pocas calorías (unas 1.400 kcal), 4 de los 8 desayunos veganos quedan en 11–17 g de proteína frente a 18 g; los de tofu sí llegan. Tomar el batido por la mañana lo cubre.
+- Revisión de Javi de los platos nuevos en el visor.
+
+Estado resultante
+Un vegetariano o un vegano reciben una semana completa de engine2, variada y ajustada a sus calorías, sin nada de origen animal que su dieta no come.

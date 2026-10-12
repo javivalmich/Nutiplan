@@ -21,11 +21,11 @@ export const ALERGENOS = Object.freeze({
   },
   lactosa: {
     si: R('leche|yogur|queso|mozzarella|parmesano|feta|reques[oó]n|ricotta|burrata|mantequilla|nata\\b|bechamel|k[eé]fir|skyr|batido de|cuajada|natillas|helado|crema de leche|ghee'),
-    no: R('leche de tigre|leche de coco|bebida vegetal|leche vegetal|(\\S+ )?sin lactosa|leche de (almendra|avena|soja|arroz)|mantequilla de cacahuete'),
+    no: R('leche de tigre|leche de coco|bebida vegetal|leche vegetal|(\\S+ )?sin lactosa|leche de (almendra|avena|soja|arroz)|mantequilla de cacahuete|yogur(es)? (de soja|vegetal|de coco)|nata vegetal|bechamel vegetal|queso vegano'),
   },
   huevo: {
-    si: R('huevo|clara|yema|tortilla(?! (integral|de trigo|de ma[ií]z|grande))|revuelto|mayonesa|alioli|carbonara|shakshuka|rebozad|brioche|merengue|flan|pasta fresca|croqueta'),
-    no: R('sin huevo|tortillas? de ma[ií]z'),
+    si: R('huevo|clara|yema|tortilla(?!s? (integral|de trigo|de ma[ií]z|grande))|revuelto|mayonesa|alioli|carbonara|shakshuka|rebozad|brioche|merengue|flan|pasta fresca|croqueta'),
+    no: R('sin huevo|tortillas? de ma[ií]z|revuelto de tofu|mayonesa vegana|alioli vegano'),
   },
   frutos_secos: {
     si: R('almendra|nuez|nueces|avellana|pistacho|anacardo|cacahuete|man[ií]\\b|pi[ñn]ones?|macadamia|pecana|frutos secos|pesto|praline|turr[oó]n|mazap[aá]n|romesco|mantequilla de cacahuete|crema de cacahuete'),

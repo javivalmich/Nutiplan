@@ -11,7 +11,7 @@ import { trackUserAction, traceSetPlan, _checkPostActionOverwrite } from "../../
 import { PDB, loadData, saveData, clearData, loadMealMemory, saveMealMemory, loadProgress,
          addWeekProgress, _isObj, _validateProfile } from "../../data/db.js";
 import { InvitationStore } from "../../data/invitations.js";
-import { THEME, STRATEGIES, COPY, ACTIVITIES, GOALS, INTOLERANCES, DAYS_SHORT, GOAL_LABELS,
+import { THEME, STRATEGIES, COPY, ACTIVITIES, GOALS, INTOLERANCES, DIETAS, DAYS_SHORT, GOAL_LABELS,
          GOAL_COLORS, NUTIPLAN_LOGO, SANS_EMOJI, SERIF_EMOJI, AD_SLOTS } from "../constants";
 import { AdminPanel } from "./AdminPanel.jsx";
 import { Stepper } from "../common/Stepper";
@@ -59,7 +59,7 @@ function __validateProfileForGenerate(pr) {
 // (FASE 1: SIDES_COMPLEMENTARIOS y getSideForDay eliminados — el toggle
 //  per-día ahora recalcula porciones reales en lugar de mostrar tarjetas extra.)
 
-const DEFAULT_PROFILE={gender:"female",age:30,date_of_birth:"",weight:65,height:165,activity:"moderate",goal:"fatLossGeneral",mealsPerDay:3,trainingDays:[],intolerances:[],eliminatedFoods:[],hambre:"media",experiencia:"intermedio",tiempoCocina:"normal",kcalAdjust:0,extras:{proteinShake:{enabled:false,scoops:1,kcalPerScoop:120,proteinPerScoop:24,timing:"post_entreno"}}};
+const DEFAULT_PROFILE={gender:"female",age:30,date_of_birth:"",weight:65,height:165,activity:"moderate",goal:"fatLossGeneral",mealsPerDay:3,trainingDays:[],intolerances:[],eliminatedFoods:[],dieta:"omnivora",hambre:"media",experiencia:"intermedio",tiempoCocina:"normal",kcalAdjust:0,extras:{proteinShake:{enabled:false,scoops:1,kcalPerScoop:120,proteinPerScoop:24,timing:"post_entreno"}}};
 
 const getCurrentWeekdayIndex = () => {
   const day = new Date().getDay(); // 0=domingo
@@ -688,6 +688,7 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
     if (isNutriPlan) { alert("🔒 Plan de nutricionista — usa las alternativas disponibles o contacta con tu nutricionista."); return; }
     // Plan de engine2: la alternativa la elige engine2 con las reglas del menú (D-101).
     const planE2=regenerarComida(plan, dayIdx, mealSlot, semanticHint||"diferente", profile, targetKcal, {month:new Date().getMonth(),pastProteins:getPastProteinFrequency(loadMealMemory(currentUser.id)),freeFormPool:FREEFORM_POOL,weekNumber:weekNum,userId:currentUser.id});
+    if(planE2&&planE2.alternativaSinCambio){ alert("No hay otra opción que encaje con tu dieta para esta comida."); return; }
     if(planE2){
       traceSetPlan("user", plan, planE2);
       setPlan(planE2); saveData(currentUser.id,profile,planE2,weekNum,extras); setSwapSemantic(null);
@@ -1211,6 +1212,14 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
       if(step===5) return (
         <div style={{display:"flex",flexDirection:"column",gap:16}}>
           <div>
+            <div style={{fontSize:10,color:Dk.muted,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:10}}>Tipo de dieta</div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+              {DIETAS.map(it=>{const sel=(profile.dieta||"omnivora")===it.key;return(<button key={it.key} onClick={()=>setProfile(p=>({...p,dieta:it.key}))} style={{padding:"6px 12px",borderRadius:99,border:"1.5px solid "+(sel?Dk.accent:Dk.border),background:sel?THEME.accentBg22:Dk.card2,color:sel?Dk.accent:Dk.muted,cursor:"pointer",fontFamily:sans,fontSize:12,fontWeight:sel?600:400}}>{it.emoji} {it.label}</button>);})}
+            </div>
+            {profile.dieta==="vegana"&&(<div style={{fontSize:11,color:Dk.muted,marginTop:8,lineHeight:1.45}}>🌱 En una dieta vegana hace falta tomar vitamina B12 como suplemento: no se obtiene de los alimentos vegetales. Consulta la dosis con tu médico o farmacéutico. Si tomas batido de proteína, que sea vegetal (guisante, soja o arroz).</div>)}
+            {profile.dieta==="vegana"&&profile.intolerances.some(k=>k==="soja"||k==="legumbres")&&(<div style={{fontSize:11,color:Dk.muted,marginTop:6,lineHeight:1.45}}>Con dieta vegana y sin {profile.intolerances.includes("soja")?"soja":"legumbres"} hay pocos platos: algunos se repetirán en la semana.</div>)}
+          </div>
+          <div>
             <div style={{fontSize:10,color:Dk.muted,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:10}}>Intolerancias y alergias</div>
             <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
               {INTOLERANCES.map(it=>{const sel=profile.intolerances.includes(it.key);return(<button key={it.key} onClick={()=>toggleIntol(it.key)} style={{padding:"6px 12px",borderRadius:99,border:"1.5px solid "+(sel?THEME.colorError2:Dk.border),background:sel?"#e05a5a22":Dk.card2,color:sel?THEME.colorError2:Dk.muted,cursor:"pointer",fontFamily:sans,fontSize:12,fontWeight:sel?600:400}}>{it.emoji} {it.label}</button>);})}
@@ -1227,7 +1236,7 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
           </div>
           <div style={{background:Dk.card2,borderRadius:10,padding:12,border:"1px solid "+goalObj.color+"55"}}>
             <div style={{fontSize:10,color:Dk.muted,marginBottom:8,letterSpacing:"0.1em",textTransform:"uppercase"}}>Resumen final</div>
-            {[["🎯 Objetivo",GOAL_LABELS[profile.goal]],["🔥 Calorías",targetKcal+" kcal/día"],["💪 Macros",macros.protein+"g prot · "+macros.carbs+"g HC · "+macros.fat+"g grasa"],["🍽️ Comidas",profile.mealsPerDay+" comidas al día"],["🧠 Estrategia",(STRATEGIES[computeStrategy(profile)]||STRATEGIES.mantenimiento_equilibrado).label],["🚫 Eliminar",[...profile.intolerances.map(k=>(INTOLERANCES.find(x=>x.key===k)||{label:k}).label||k),...profile.eliminatedFoods].join(", ")||"Nada"]].map(([k,v])=>(
+            {[["🎯 Objetivo",GOAL_LABELS[profile.goal]],["🔥 Calorías",targetKcal+" kcal/día"],["💪 Macros",macros.protein+"g prot · "+macros.carbs+"g HC · "+macros.fat+"g grasa"],["🍽️ Comidas",profile.mealsPerDay+" comidas al día"],["🧠 Estrategia",(STRATEGIES[computeStrategy(profile)]||STRATEGIES.mantenimiento_equilibrado).label],["🥗 Dieta",(DIETAS.find(x=>x.key===(profile.dieta||"omnivora"))||DIETAS[0]).label],["🚫 Eliminar",[...profile.intolerances.map(k=>(INTOLERANCES.find(x=>x.key===k)||{label:k}).label||k),...profile.eliminatedFoods].join(", ")||"Nada"]].map(([k,v])=>(
               <div key={k} style={{display:"flex",justifyContent:"space-between",fontSize:12,padding:"4px 0",borderBottom:"1px solid #30363d22",gap:8}}><span style={{color:Dk.muted,flexShrink:0}}>{k}</span><span style={{color:Dk.text,fontWeight:500,textAlign:"right",wordBreak:"break-word"}}>{v}</span></div>
             ))}
           </div>

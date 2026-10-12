@@ -14,7 +14,7 @@
 // El motor viejo no se borra ni se modifica.
 
 import { buildPlan } from '../engine/buildPlan.js';
-import { generarPlanEngine2, regenerarComidaEngine2, metaEngine2 } from './engine2App.js';
+import { generarPlanEngine2, regenerarComidaEngine2, regenerarDesayunoEngine2, metaEngine2 } from './engine2App.js';
 import { catalogoApp } from './catalogo.js';
 import { ajustarDia } from './racionesApp.js';
 
@@ -39,9 +39,45 @@ export function generarPlan(profile, targetKcal, opts = {}) {
   try {
     return generarPlanEngine2(profile, targetKcal, { ...opts, catalogo: opts.catalogo || catalogoApp() });
   } catch (err) {
+    // D-107: con dieta vegetariana o vegana el catálogo es más corto. Antes que
+    // el motor viejo (que no conoce las dietas), se reintenta dejando que
+    // vuelva algún plato de la semana anterior.
+    // Si aun así no llega (vegana y sin soja, p. ej.), se deja repetir platos
+    // dentro de la semana: el motor viejo no conoce las dietas y serviría carne.
+    if (profile && (profile.dieta === 'vegetariana' || profile.dieta === 'vegana')) {
+      const intentos = [
+        { platosRecientes: [], aviso: 'repite platos de la semana anterior' },
+        { platosRecientes: [], maxRepeticiones: 2, aviso: 'repite platos en la semana (hasta 2 veces): hay pocos platos para esta dieta' },
+        { platosRecientes: [], maxRepeticiones: 7, aviso: 'repite platos en la semana: hay muy pocos platos para esta dieta' },
+        // Último recurso (vegana, celíaca y sin soja, p. ej.: no queda ninguna
+        // cena con proteína): los platos de comida pueden ir también a la cena,
+        // legumbre incluida, aunque la regla general es no cenar legumbre.
+        { platosRecientes: [], maxRepeticiones: 7, cualquierMomento: true, aviso: 'platos de comida también en la cena: hay muy pocos platos para esta dieta' },
+      ];
+      for (const { aviso, ...extra } of intentos) {
+        try {
+          const plan = generarPlanEngine2(profile, targetKcal, { ...opts, ...extra, catalogo: opts.catalogo || catalogoApp() });
+          return { ...plan, motorAviso: `${aviso} (${String(err && err.message ? err.message : err)})` };
+        } catch (err2) {
+          console.error('[generarPlan] engine2 falló también:', aviso, err2);
+        }
+      }
+    }
     console.error('[generarPlan] engine2 falló; se usa el motor viejo', err);
-    return { ...buildPlan(profile, targetKcal, opts), motor: 'legacy', motorFallo: String(err && err.message ? err.message : err) };
+    return { ...buildPlan(perfilParaMotorViejo(profile), targetKcal, opts), motor: 'legacy', motorFallo: String(err && err.message ? err.message : err) };
   }
+}
+
+// El motor viejo no conoce las dietas (D-107). Si hay que usarlo de reserva,
+// se le pasan como intolerancias y alimentos eliminados (sus proteínas de
+// carne, pescado y marisco); no garantiza todo (salsas, caldos), por eso la
+// reserva es solo para que el usuario no se quede sin plan.
+const PROTEINAS_ANIMALES = ['pollo', 'pavo', 'ternera', 'cerdo', 'conejo', 'lacon', 'jamon', 'guanciale', 'salmon', 'merluza', 'bacalao', 'dorada', 'sardinas', 'atun', 'bonito', 'corvina', 'gambas', 'calamares', 'mejillones', 'berberechos'];
+function perfilParaMotorViejo(profile) {
+  const dieta = profile && profile.dieta;
+  if (dieta !== 'vegetariana' && dieta !== 'vegana') return profile;
+  const intol = new Set([...(profile.intolerances || []), 'pescado', 'mariscos', 'cerdo', ...(dieta === 'vegana' ? ['huevo', 'lactosa'] : [])]);
+  return { ...profile, intolerances: [...intol], eliminatedFoods: [...new Set([...(profile.eliminatedFoods || []), ...PROTEINAS_ANIMALES])] };
 }
 
 /**
@@ -85,14 +121,29 @@ export function recalcularDia(plan, day, profile, targetKcal) {
  * caso la app sigue con el motor viejo como hasta ahora.
  */
 export function regenerarComida(plan, dayIdx, time, deseo, profile, targetKcal, opts = {}) {
-  if (!plan || (time !== 'Comida' && time !== 'Cena')) return null;
-  const meal = plan.days[dayIdx] && plan.days[dayIdx].meals.find((m) => m && m.time === time);
+  if (!plan || !plan.days || !plan.days[dayIdx]) return null;
+  const conDieta = profile && (profile.dieta === 'vegetariana' || profile.dieta === 'vegana');
+  const delicado = conDieta || ((profile && profile.intolerances) || []).length > 0;
+  const deEngine2 = plan.days.some((d) => (d.meals || []).some((m) => m && m._motor === 'engine2'));
+  // Desayunos y tentempiés: con dieta o intolerancias, el motor viejo no los
+  // controla (D-103, D-107); en un plan de engine2 los cambia engine2App.
+  if (time !== 'Comida' && time !== 'Cena') {
+    if (!delicado || !deEngine2) return null;
+    try {
+      return regenerarDesayunoEngine2(plan, dayIdx, time, profile, targetKcal, opts);
+    } catch (err) {
+      console.error('[regenerarComida] sin alternativa segura para', time, err);
+      return conDieta ? { ...plan, alternativaSinCambio: true } : null;
+    }
+  }
+  const meal = plan.days[dayIdx].meals.find((m) => m && m.time === time);
   // Se mira la comida, no el plan: el que vuelve de la base de datos no trae plan.motor.
   if (!meal || meal._motor !== 'engine2' || !meal._dishId) return null;
   try {
     return regenerarComidaEngine2(plan, dayIdx, time, deseo, profile, targetKcal, { ...opts, catalogo: opts.catalogo || catalogoApp() });
   } catch (err) {
-    console.error('[regenerarComida] engine2 falló; se usa el motor viejo', err);
-    return null;
+    // Con dieta, el motor viejo serviría carne: mejor no cambiar el plato.
+    console.error('[regenerarComida] engine2 falló', err);
+    return conDieta ? { ...plan, alternativaSinCambio: true } : null;
   }
 }

@@ -111,6 +111,9 @@ import {
   initFrequencyState, registerConsumption, chooseFrequencyLevel, chooseIdentityLevel,
 } from './frequencies.js';
 
+/** D-107: cenas de huevo por semana como mucho, con dieta vegetariana (decisión de Javi). */
+export const TOPE_CENAS_HUEVO = 3;
+
 function selectRng(seed) {
   return mulberry32(seedFromString(`${seed}::walk::select`));
 }
@@ -184,7 +187,7 @@ export function runWalk(input) {
   // input.memoryStore se recibe por inyeccion y NUNCA se lee ni se invoca aqui (D-019, v13):
   // no se desestructura para que quede estructuralmente imposible tocarlo por accidente.
   const {
-    weekArc, catalog, seed, profile, fuenteEditorial, platosRecientes = [],
+    weekArc, catalog, seed, profile, fuenteEditorial, platosRecientes = [], maxRepeticiones = 1,
   } = input;
   // Prototipo (visor): platos servidos la semana anterior quedan fuera de los pools.
   // Se compara por nombre visible: dos ids con el mismo nombre son el mismo plato para el usuario.
@@ -324,7 +327,23 @@ export function runWalk(input) {
       const slot = slots.get(key);
       if (!slot.abierto) continue; // Paso 1: ya colocado, la cadena no corre.
 
-      const pool = catalog.filter((d) => d.rol === 'rotativo' && d.momento.includes(momento) && !usedIds.has(d.id) && !usedNames.has(d.nombre || d.id) && !vetoedIds.has(d.id) && !recientes.has(d.nombre || d.id));
+      let pool = catalog.filter((d) => d.rol === 'rotativo' && d.momento.includes(momento) && !usedIds.has(d.id) && !usedNames.has(d.nombre || d.id) && !vetoedIds.has(d.id) && !recientes.has(d.nombre || d.id));
+      // D-107: con un catálogo muy corto (dieta vegana y sin soja, p. ej.) la
+      // app puede pedir que un plato se repita en la semana, hasta
+      // maxRepeticiones veces y nunca dos veces el mismo día. Solo si no
+      // queda ningún plato sin repetir; se dice en el log.
+      if (pool.length === 0 && maxRepeticiones > 1) {
+        const veces = new Map();
+        const hoy = new Set();
+        for (const s2 of slots.values()) {
+          if (s2.abierto || !s2.dishId) continue;
+          veces.set(s2.dishId, (veces.get(s2.dishId) || 0) + 1);
+          if (s2.day === day) hoy.add(s2.dishId);
+        }
+        pool = catalog.filter((d) => d.rol === 'rotativo' && d.momento.includes(momento) && !vetoedIds.has(d.id)
+          && !hoy.has(d.id) && (veces.get(d.id) || 0) < maxRepeticiones);
+        if (pool.length) pushEvent(day, 'repeticion_por_catalogo_corto', `${day}/${momento}: no queda ningún plato sin repetir; se admite repetir (hasta ${maxRepeticiones} veces por semana): ${pool.length} candidatos`);
+      }
       if (pool.length === 0) {
         throw new Error(
           `runWalk: pool rotativo vacio para ${day}/${momento} `
@@ -366,10 +385,33 @@ export function runWalk(input) {
           ? `proteina separada: descarta ${base0.length - poolSeparado.length} candidatos de ${[...cercanas].join(', ')} (ya salen ese dia o el de al lado); `
           : 'proteina separada sin aplicar: dejaria el hueco sin candidatos; ';
 
+      // D-107 (dieta vegetariana): huevo como mucho una vez al dia y en como
+      // mucho TOPE_CENAS_HUEVO cenas por semana. Si dejaria el hueco sin
+      // candidatos, no se aplica y se dice.
+      const baseH = poolSeparado.length ? poolSeparado : base0;
+      let poolHuevo = baseH;
+      let notaHuevo = '';
+      if (profile?.dieta === 'vegetariana') {
+        let huevoHoy = false;
+        let cenasHuevo = 0;
+        for (const s2 of slots.values()) {
+          if (s2.abierto || !s2.dishId || proteinaCache(s2.dishId) !== 'huevo') continue;
+          if (s2.day === day) huevoHoy = true;
+          if (s2.momento === 'cena') cenasHuevo += 1;
+        }
+        const sinHuevo = huevoHoy || (momento === 'cena' && cenasHuevo >= TOPE_CENAS_HUEVO);
+        if (sinHuevo) {
+          const f = baseH.filter((d) => proteinaCache(d.id) !== 'huevo');
+          const motivo = huevoHoy ? 'ya sale huevo hoy' : `ya hay ${cenasHuevo} cenas de huevo esta semana`;
+          if (f.length === baseH.length) notaHuevo = '';
+          else if (f.length) { poolHuevo = f; notaHuevo = `huevo: descarta ${baseH.length - f.length} candidatos (${motivo}); `; } else notaHuevo = `huevo sin aplicar (${motivo}): dejaria el hueco sin candidatos; `;
+        }
+      }
+
       // D-105 (aliños): el mismo aliño no sale en la comida y la cena del mismo
       // dia, y el ajillo sale como mucho TOPE_AJILLO_SEMANA veces por semana.
       // Si dejaria el hueco sin candidatos, no se aplica y se dice.
-      const base1 = poolSeparado.length ? poolSeparado : base0;
+      const base1 = poolHuevo;
       const alinosHoy = new Set();
       let ajillosSemana = 0;
       for (const s2 of slots.values()) {
@@ -459,7 +501,7 @@ export function runWalk(input) {
         momento,
         chosen.id,
         causa,
-        `${notaTope}${notaSeparada}${notaAlino}${notaA}; ${notaB}${notaFreq ? `; ${notaFreq}` : ''}${notaIdentidad ? `; ${notaIdentidad}` : ''}${notaRng}`,
+        `${notaTope}${notaSeparada}${notaHuevo}${notaAlino}${notaA}; ${notaB}${notaFreq ? `; ${notaFreq}` : ''}${notaIdentidad ? `; ${notaIdentidad}` : ''}${notaRng}`,
         alternativas,
       );
       registerConsumption(freqState, chosen, day, undefined, fuenteEditorial);

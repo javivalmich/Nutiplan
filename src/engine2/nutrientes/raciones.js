@@ -80,6 +80,8 @@ const SIEMPRE_FIJO = new Set(['levadura_nutricional', 'harina', 'pan_rallado', '
 const r1 = (x) => Math.round(x * 10) / 10;
 
 export const FALTA_PARA_ACOMPANAR = 0.05;
+export const TOPE_HUEVOS_COMIDA = 3;
+export const TOPE_HUEVOS_DIA = 4;
 export const KCAL_RACION_NORMAL = 2200;
 export const AMPLITUD_MAX = 1.4;
 const PAN = { clave: 'pan_integral', gramos: 60, unidad: 'g', nombre: 'pan para acompañar' };
@@ -147,11 +149,16 @@ function suma(items, composicion, gramosDe) {
  * @param {{kcal:number, proteina:number, proteinaMin:number}} meta
  * @param {number} [amplitud] factor (≥ 1) para el máximo de los energéticos
  */
-export function ajustarComida(items, meta, composicion, amplitud = 1) {
+export function ajustarComida(items, meta, composicion, amplitud = 1, { topeHuevos = null } = {}) {
   const estado = items.map((it) => {
     const comp = composicion[it.clave];
     const papel = comp && !it.fijo ? papelDe(it.clave, comp) : 'fijo';
     let rango = papel === 'fijo' ? null : rangoDe(it.clave, it.unidad);
+    // D-111: huevos por comida con tope (lo decide racionesDia según el día).
+    if (rango && it.clave === 'huevo' && topeHuevos) {
+      const tope = topeHuevos * INGREDIENTES.huevo.gUd;
+      rango = [Math.min(rango[0], tope), Math.min(rango[1], tope), rango[2]];
+    }
     // D-108: un acompañamiento que la comida ya tenía (pan, fruta, frutos
     // secos) no se repite: se amplía el máximo de lo que ya había.
     if (rango && it.ampliado) rango = [rango[0], rango[1] + it.ampliado, rango[2]];
@@ -222,6 +229,12 @@ export function ajustarComida(items, meta, composicion, amplitud = 1) {
  */
 export function racionesDia({ comidas, aparte = [], objetivo, composicion, vetados = new Set() }) {
   const log = [];
+  // D-111 (Javi: «ninguna persona va a tomarse 5 huevos en un día»): como
+  // mucho 3 huevos en una comida y 4 en el día. Si varias comidas del día
+  // llevan huevo, el tope se reparte entre ellas (2 y 2; 1, 1 y 1…).
+  const conHuevo = comidas.filter((c) => !c.libre && c.items.some((i) => i.clave === 'huevo')).length;
+  const topeHuevos = conHuevo <= 1 ? TOPE_HUEVOS_COMIDA : Math.max(1, Math.floor(TOPE_HUEVOS_DIA / conHuevo));
+  const opc = { topeHuevos };
   const aparteKcal = aparte.reduce((a, x) => a + x.kcal, 0);
   const aparteProt = aparte.reduce((a, x) => a + x.proteina, 0);
   const nTentempies = comidas.filter((c) => c.momento === 'tentempie').length || 1;
@@ -272,13 +285,13 @@ export function racionesDia({ comidas, aparte = [], objetivo, composicion, vetad
   for (const c of comidas) {
     if (c.libre || c.momento !== 'tentempie') continue;
     const meta = { ...metaDe(c), proteina: 0, proteinaMin: 0 };
-    resultado.set(c.id, { meta, ...ajustarComida(itemsDe.get(c.id), meta, composicion, amplitud) });
+    resultado.set(c.id, { meta, ...ajustarComida(itemsDe.get(c.id), meta, composicion, amplitud, opc) });
   }
   protRestante = Math.max(0, protDia - [...resultado.values()].reduce((a, r) => a + r.proteina, 0));
   partesPrincipales = comidas.filter((c) => PRINCIPALES.has(c.momento)).reduce((a, c) => a + parte(c), 0) || 1;
   for (const c of comidas) {
     if (c.libre || c.momento === 'tentempie') continue;
-    resultado.set(c.id, { meta: metaDe(c), ...ajustarComida(itemsDe.get(c.id), metaDe(c), composicion, amplitud) });
+    resultado.set(c.id, { meta: metaDe(c), ...ajustarComida(itemsDe.get(c.id), metaDe(c), composicion, amplitud, opc) });
   }
 
   // Acompañamientos: si un plato, con todos sus ingredientes en el máximo, se
@@ -299,7 +312,7 @@ export function racionesDia({ comidas, aparte = [], objetivo, composicion, vetad
       } else {
         items.push({ clave: ac.clave, gramos: ac.gramos, unidad: ac.unidad, anadido: true });
       }
-      const nuevo = ajustarComida(items, r.meta, composicion, amplitud);
+      const nuevo = ajustarComida(items, r.meta, composicion, amplitud, opc);
       log.push(k >= 0
         ? { causa: 'acompanamiento_ampliado', momento: c.momento, id: c.id, detalle: `más ${items[k].clave} en vez de añadir ${ac.nombre}: el plato llegaba a ${r.kcal} de ${Math.round(r.meta.kcal)} kcal` }
         : { causa: 'acompanamiento_anadido', momento: c.momento, id: c.id, detalle: `${ac.nombre}: el plato llegaba a ${r.kcal} de ${Math.round(r.meta.kcal)} kcal` });
@@ -322,7 +335,7 @@ export function racionesDia({ comidas, aparte = [], objetivo, composicion, vetad
       const meta0 = metaDe(c);
       const extra = Math.min(resto * (parte(c) / partesMargen), Math.max(0, tope - meta0.kcal));
       const meta = metaDe(c, extra);
-      resultado.set(c.id, { meta, ...ajustarComida(itemsDe.get(c.id), meta, composicion, amplitud) });
+      resultado.set(c.id, { meta, ...ajustarComida(itemsDe.get(c.id), meta, composicion, amplitud, opc) });
     }
     if (conMargen.length) log.push({ causa: 'reparto_del_resto', detalle: `${Math.round(resto)} kcal que no cabían en algunas comidas se reparten entre ${conMargen.map((c) => c.momento).join(', ')}` });
   }

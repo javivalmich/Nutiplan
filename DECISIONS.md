@@ -4296,3 +4296,51 @@ Decisión
 
 Estado resultante
 Botón del batido y alternativas funcionan también con el plan recargado.
+
+## D-103 — [2026-10-12] Intolerancias por ingrediente
+
+Decide: Javi. HEAD: `a499f68`.
+
+Contexto
+La app ofrece 10 intolerancias (`src/ui/constants.js`): lactosa, gluten, huevo, frutos secos, mariscos, pescado, soja, cerdo, legumbres y picante. Auditoría sobre los 241 platos y los desayunos y tentempiés de 20 semanas por intolerancia:
+- Soja y picante no las filtraba nadie (ni engine2 ni el motor viejo): 13 platos con soja y 64 con guindilla u otro picante podían salir.
+- Se colaban además: salsa de soja y teriyaki con gluten; alioli, pan brioche y croquetas con huevo; caldo dashi con pescado.
+- Desayunos y tentempiés del motor viejo: con lactosa dejaban yogur o queso en la compra o el título (15 casos); con cerdo, tostadas con jamón; con frutos secos, cacahuete y crema de cacahuete.
+- En sentido contrario, engine2 vetaba gluten y lactosa en todo plato cuya ficha no lo aclarase: un celíaco tenía 29 platos posibles y con gluten y lactosa juntos la semana a veces no salía.
+
+Decisión
+1. `src/engine2/nutrientes/alergenos.js`: para cada intolerancia, qué ingredientes y palabras la llevan, con excepciones («sin gluten», «bebida vegetal», «fideos de arroz», «judías verdes», «pimentón dulce»…). Criterio conservador.
+2. El catálogo se filtra antes de engine2 por los ingredientes y todo el texto de cada plato compuesto (título, preparación, compra y receta), además de las reglas anteriores. Gluten y lactosa: se vetan si la ficha dice que lo lleva o si sus ingredientes lo llevan; una ficha sin dato ya no basta para vetar. Platos posibles: gluten 179, lactosa 208, picante 177, soja 228.
+3. Desayunos y tentempiés que lleven algo que el perfil no puede comer se cambian por otro del mismo momento que sí pueda (sacado de otras semanas del motor viejo, en orden fijo); si no hay ninguno, se quita. Queda anotado en el decision log.
+4. Test de seguridad: con cada intolerancia, ningún plato de tres semanas ni las alternativas lo llevan.
+
+Pendiente
+Cambiar un desayuno desde «Alternativas» sigue yendo al motor viejo sin este control. Gluten: el control es por ingredientes y texto, no por trazas.
+
+Estado resultante
+Las 10 intolerancias de la app se respetan en comidas, cenas, desayunos, tentempiés, acompañamientos y alternativas de engine2.
+
+## D-104 — [2026-10-12] SIBO: platos adaptados a bajo en FODMAP
+
+Decide: Javi. HEAD: `3128b52` (rama `intolerancias`, D-103).
+
+Contexto
+Javi pide la opción SIBO y que el motor adapte los platos en vez de quitarlos: «un plato que sea ternera con ajo y perejil que sea solo ternera con perejil». Si SIBO se tratara como una intolerancia más, saldrían fuera casi todos los platos (el ajo y la cebolla están en la mayoría).
+
+Decisión
+1. Nueva opción en el perfil: «SIBO (bajo en FODMAP)», con un aviso: es una guía orientativa, la dieta va por fases y conviene que la paute un médico o dietista.
+2. `src/engine2/nutrientes/fodmap.js` adapta el texto de cada comida (título, preparación, compra y receta):
+   - el ajo se quita; donde da el sabor del plato («al ajillo», «dora el ajo») se usa aceite aromatizado con ajo, que no tiene los fructanos del ajo;
+   - cebolla, cebolleta y puerro pasan a su parte verde;
+   - trigo → sin gluten (pan, pasta, harina de arroz, pita, tortilla de maíz, copos de avena sin gluten); leche, yogur, queso fresco y nata → sin lactosa; miel → sirope de arce. Los quesos curados se dejan;
+   - champiñones → champiñones en conserva (escurridos son bajos en FODMAP); espárragos de acompañamiento → judías verdes; los guisantes de adorno se quitan;
+   - la fruta de temporada se concreta en naranja, kiwi, fresas o uva.
+   Adaptar dos veces da lo mismo.
+3. No se ofrecen los platos en los que queda algo alto en FODMAP sin sustituto razonable (legumbres, coliflor, setas, alcachofa, aguacate, manzana, pera…) ni los que tienen como protagonista el ajo, la cebolla, el puerro o el espárrago (sopa de ajo, ajoblanco, sopa de cebolla, crema de puerro). De 241 platos quedan 200 adaptados y fuera 41, sobre todo de legumbre.
+4. La adaptación se aplica en el plan (comidas, cenas, desayunos y tentempiés), en los acompañamientos de las raciones y en las alternativas. Las raciones se calculan sobre el texto ya adaptado.
+
+Límites
+La adaptación es por ingrediente, no por cantidad: no aplica los umbrales por ración de Monash (p. ej. calabacín o judías verdes son bajos en FODMAP solo hasta cierta cantidad). Salsas preparadas como la harissa pueden llevar ajo y no se cambian. No hay fases (eliminación, reintroducción).
+
+Estado resultante
+Con SIBO la semana sale entera con engine2 y ninguna comida conserva ajo, cebolla, trigo, lactosa ni otros alimentos altos en FODMAP sin adaptar.

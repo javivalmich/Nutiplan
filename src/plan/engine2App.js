@@ -26,6 +26,9 @@ import { FREEFORM_COMBOS } from '../data/FREEFORM_COMBOS.js';
 import { ajustarPlan, ajustarDia } from './racionesApp.js';
 import { elegirAlternativa } from '../engine2/walk/alternativa.js';
 import { aplicarAjustesD099 } from '../engine2/dishes/ajustesD099.js';
+import { alergenosDeTexto } from '../engine2/nutrientes/alergenos.js';
+import { adaptarComidaFodmap, fodmapRestante, protagonistaFodmap } from '../engine2/nutrientes/fodmap.js';
+import { evaluateVeto } from '../engine2/walk/vetoes.js';
 
 export const DIA_ENGINE2 = Object.freeze({
   Lunes: 'Lunes', Martes: 'Martes', 'Miércoles': 'Miercoles', Jueves: 'Jueves',
@@ -99,7 +102,10 @@ const PROTEINA_INTOLERANCIA = Object.freeze({
   huevo: new Set(['huevo']),
   legumbres: new Set(['lentejas', 'garbanzos', 'alubias', 'alubias_negras', 'tofu']),
 });
-// engine2 veta estas dos por su cuenta (vetoes.js).
+// Gluten y lactosa: engine2 sabe vetarlas por su ficha editorial (vetoes.js),
+// pero trata como vetado todo plato cuya ficha no lo dice («desconocida»), y
+// así deja a un celíaco con ~30 platos. Desde D-103 se vetan aquí: si la ficha
+// dice que lo lleva, o si sus ingredientes o su texto lo llevan (alergenos.js).
 const VETO_PROPIO_ENGINE2 = new Set(['gluten', 'lactosa']);
 
 function proteinaDe(dish) {
@@ -112,7 +118,32 @@ function proteinaDe(dish) {
 }
 
 function textoCompuesto(meal) {
-  return [meal.title, meal.p1, meal.p2, ...(meal.shopping || [])].filter(Boolean).join(' · ');
+  return [meal.title, meal.p1, meal.p2, ...(meal.shopping || []), ...((meal.recipe || []).filter((x) => typeof x === 'string'))].filter(Boolean).join(' · ');
+}
+
+const conSibo = (profile) => ((profile && profile.intolerances) || []).includes('sibo');
+
+/** Una comida tal como la verá un usuario con SIBO (adaptada a bajo en FODMAP). */
+export function adaptarSiProcede(meal, profile) {
+  return meal && conSibo(profile) && !meal.adaptadoFodmap ? adaptarComidaFodmap(meal) : meal;
+}
+
+/**
+ * Intolerancias del perfil que afectan a una comida compuesta (por sus
+ * ingredientes y su texto). Con SIBO, la comida se mira ya adaptada: solo
+ * cuenta lo alto en FODMAP que no tiene sustituto, o un plato cuyo
+ * protagonista es el ajo o la cebolla.
+ */
+export function intoleranciasDe(meal, profile) {
+  const intol = new Set((profile && profile.intolerances) || []);
+  if (!intol.size || !meal) return [];
+  const out = [...alergenosDeTexto(textoCompuesto(meal))].filter((a) => intol.has(a));
+  if (intol.has('sibo')) {
+    const adaptada = adaptarSiProcede(meal, profile);
+    if (protagonistaFodmap(textoCompuesto(meal)) || fodmapRestante(textoCompuesto(adaptada))) out.push('sibo');
+    // Con SIBO, trigo y lactosa se cambian por sin gluten y sin lactosa: no cuentan si ya están adaptados.
+  }
+  return out;
 }
 
 /**
@@ -120,22 +151,38 @@ function textoCompuesto(meal) {
  * (intolerancias que engine2 no veta y alimentos eliminados). Compone cada
  * plato una vez para leer su texto real.
  */
-export function filtrarCatalogo(catalog, profile, targetKcal, opts) {
-  const intol = (profile.intolerances || []).filter((i) => !VETO_PROPIO_ENGINE2.has(i));
-  const eliminados = (profile.eliminatedFoods || []).map((f) => String(f).toLowerCase().trim()).filter(Boolean);
-  if (!intol.length && !eliminados.length) return { catalogo: catalog, quitados: [] };
-
-  const textos = new Map();
+/** Compone cada plato del catálogo una vez (en lotes de 20) con el perfil dado. */
+export function componerPlatos(catalog, profile, targetKcal, opts) {
+  const out = new Map();
   for (let i = 0; i < catalog.length; i += 20) {
     const lote = catalog.slice(i, i + 20);
     const meals = componerDia(profile, targetKcal, opts, 0, lote.map((d) => specPara(d, d.momento.includes('comida') ? 'comida' : 'cena')));
-    lote.forEach((d, k) => textos.set(d.id, `${d.nombre} · ${textoCompuesto(meals[k] || {})}`.toLowerCase()));
+    lote.forEach((d, k) => out.set(d.id, meals[k] || null));
   }
+  return out;
+}
+
+export function filtrarCatalogo(catalog, profile, targetKcal, opts) {
+  const todas = profile.intolerances || [];
+  const intol = todas.filter((i) => !VETO_PROPIO_ENGINE2.has(i));
+  const eliminados = (profile.eliminatedFoods || []).map((f) => String(f).toLowerCase().trim()).filter(Boolean);
+  if (!todas.length && !eliminados.length) return { catalogo: catalog, quitados: [] };
+
+  const compuestos = componerPlatos(catalog, profile, targetKcal, opts);
+  const textos = new Map();
+  for (const d of catalog) textos.set(d.id, `${d.nombre} · ${textoCompuesto(compuestos.get(d.id) || {})}`.toLowerCase());
   const quitados = [];
   const catalogo = catalog.filter((d) => {
     const prot = proteinaDe(d);
     const texto = textos.get(d.id) || d.nombre.toLowerCase();
-    const motivo = intol.find((i) => (PROTEINA_INTOLERANCIA[i] && PROTEINA_INTOLERANCIA[i].has(prot))
+    // Por ingredientes y texto (alergenos.js, las 10 intolerancias de la app,
+    // también gluten y lactosa además del veto propio de engine2) y, por si
+    // acaso, las reglas anteriores por proteína y por texto.
+    const m = compuestos.get(d.id);
+    const porIngrediente = intoleranciasDe(m ? { ...m, title: `${d.nombre} · ${m.title || ''}` } : { title: d.nombre }, profile)[0];
+    const porFicha = todas.filter((i) => VETO_PROPIO_ENGINE2.has(i)).find((i) => evaluateVeto(d, [i]).some((v) => v.motivo === 'valor'));
+    const motivo = porIngrediente || porFicha
+      || intol.find((i) => (PROTEINA_INTOLERANCIA[i] && PROTEINA_INTOLERANCIA[i].has(prot))
       || (TEXTO_INTOLERANCIA[i] && TEXTO_INTOLERANCIA[i].test(texto)))
       || eliminados.find((e) => texto.includes(e) || (prot && prot.includes(e)));
     if (motivo) quitados.push({ id: d.id, nombre: d.nombre, motivo });
@@ -185,7 +232,8 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
   const base = buildPlan(clonar(profile), targetKcal, opcionesLegacy(opts));
   const { catalogo, quitados } = filtrarCatalogo(opts.catalogo, profile, targetKcal, opts);
 
-  const intolEngine2 = (profile.intolerances || []).filter((i) => VETO_PROPIO_ENGINE2.has(i));
+  // El catálogo ya llega filtrado por todas las intolerancias (filtrarCatalogo).
+  const intolEngine2 = [];
   const e2 = materializePlan({
     profile: {
       trainingDays: (profile.trainingDays || []).map((d) => DIA_ENGINE2[d] || d),
@@ -270,9 +318,12 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
 
   if (typeof opts.saveMealMemory === 'function') opts.saveMealMemory(opts.weekNumber ?? 0, memL, memD);
 
+  const adaptados = conSibo(profile) ? days.map((d) => ({ ...d, meals: d.meals.map((m) => adaptarSiProcede(m, profile)) })) : days;
+  const seguros = desayunosSeguros(adaptados, profile, targetKcal, opts);
+
   const plan = {
     ...base,
-    days,
+    days: seguros.days,
     weekWarnings: [],
     weekProblems: [],
     weekScore: null,
@@ -280,7 +331,7 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
     platosSemana,
     platosSemanaAnterior: opts.platosRecientes || [],
     ancla: resumenAncla,
-    decisionLog: e2.decisionLog,
+    decisionLog: [...e2.decisionLog, ...seguros.log],
     ...(quitados.length ? { platosQuitadosPorPerfil: quitados.length } : {}),
   };
   // La base de datos solo guarda los días del plan (no los campos de arriba):
@@ -289,6 +340,61 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
   plan.days = guardarMeta(plan.days, { ancla: resumenAncla, platosSemana, platosSemanaAnterior: opts.platosRecientes || [] });
   // Raciones de engine2: gramos según el objetivo del usuario (D-100).
   return conRaciones ? { ...ajustarPlan(plan, profile, targetKcal), raciones: 'engine2' } : plan;
+}
+
+// ─── Desayunos y tentempiés que respetan las intolerancias ───────────────────
+
+/**
+ * Los desayunos y tentempiés aún los pone el motor viejo, que no conoce todas
+ * las intolerancias de la app (soja, picante) y a veces deja el alimento en la
+ * compra o en el título (yogur o queso con lactosa, jamón con cerdo,
+ * cacahuete con frutos secos). Cada uno que lleve algo que el perfil no puede
+ * comer se cambia por otro del mismo momento que sí pueda, sacado de otras
+ * semanas del motor viejo (en orden fijo, así que es determinista). Si no
+ * hay ninguno, se quita y se anota.
+ */
+function desayunosSeguros(days, profile, targetKcal, opts) {
+  const log = [];
+  const afectados = [];
+  days.forEach((d, i) => d.meals.forEach((m, j) => {
+    if (m && m.time !== 'Comida' && m.time !== 'Cena' && intoleranciasDe(m, profile).length) afectados.push([i, j]);
+  }));
+  if (!afectados.length) return { days, log };
+
+  const usados = new Set(days.flatMap((d) => d.meals.filter(Boolean).map((m) => m.title)));
+  const candidatos = new Map(); // time -> comidas limpias en orden
+  let semilla = 0;
+  const siguiente = (time) => {
+    const lista = candidatos.get(time) || [];
+    while (!lista.length && semilla < 30) {
+      semilla += 1;
+      const alt = buildPlan(clonar(profile), targetKcal, opcionesLegacy({ ...opts, userId: `${opts.userId ?? 'anon'}#desayuno${semilla}` }));
+      for (const d of alt.days) for (const m0 of d.meals) {
+        const m = adaptarSiProcede(m0, profile);
+        if (!m || m.time === 'Comida' || m.time === 'Cena' || intoleranciasDe(m, profile).length || usados.has(m.title)) continue;
+        if (!candidatos.has(m.time)) candidatos.set(m.time, []);
+        if (!candidatos.get(m.time).some((x) => x.title === m.title)) candidatos.get(m.time).push(m);
+      }
+      candidatos.set(time, candidatos.get(time) || []);
+      if ((candidatos.get(time) || []).length) break;
+    }
+    const l = candidatos.get(time) || [];
+    // Se reutilizan si hace falta (un desayuno puede repetirse en la semana); el primero, el más antiguo.
+    if (!l.length) return null;
+    const m = l.shift();
+    l.push(m);
+    return m;
+  };
+
+  const nuevos = days.map((d) => ({ ...d, meals: d.meals.slice() }));
+  for (const [i, j] of afectados) {
+    const viejo = nuevos[i].meals[j];
+    const motivo = intoleranciasDe(viejo, profile).join(', ');
+    const nuevo = siguiente(viejo.time);
+    nuevos[i].meals[j] = nuevo ? clonar(nuevo) : null;
+    log.push({ causa: 'desayuno_cambiado_por_intolerancia', day: nuevos[i].name, momento: viejo.time, detalle: `«${viejo.title}» lleva ${motivo} → ${nuevo ? `«${nuevo.title}»` : 'sin sustituto: se quita'}` });
+  }
+  return { days: nuevos, log };
 }
 
 // ─── Datos de la semana que deben sobrevivir a la base de datos ─────────────
@@ -349,14 +455,14 @@ export function regenerarComidaEngine2(plan, dayIdx, time, deseo, profile, targe
   const { dish, decisionLog } = elegirAlternativa({
     catalog, semana, day: diaE2(day), momento, actualId: actual._dishId, deseo,
     platosRecientes: meta.platosSemanaAnterior,
-    intolerancias: (profile.intolerances || []).filter((i) => VETO_PROPIO_ENGINE2.has(i)),
+    intolerancias: [], // el catálogo ya llega filtrado (filtrarCatalogo)
     anclaBase: esAncla ? meta.ancla.base : null,
     seed: `${opts.userId ?? 'anon'}:${opts.weekNumber ?? 0}`,
   });
 
   const [compuesta] = componerDia(profile, targetKcal, opts, dayIdx, [specPara(dish, momento)]);
   const principal = / \(comida principal\)$/.test(actual.title || '');
-  const nueva = { ...compuesta, title: `${dish.nombre}${principal ? ' (comida principal)' : ''}`, _motor: 'engine2', _dishId: dish.id, ...(esAncla && actual._causa ? { _causa: actual._causa } : {}) };
+  const nueva = adaptarSiProcede({ ...compuesta, title: `${dish.nombre}${principal ? ' (comida principal)' : ''}`, _motor: 'engine2', _dishId: dish.id, ...(esAncla && actual._causa ? { _causa: actual._causa } : {}) }, profile);
   const mantieneAncla = esAncla && decisionLog.some((e) => e.causa === 'alternativa_mantiene_ancla');
   if (mantieneAncla && actual.slotNote) nueva.slotNote = actual.slotNote;
 

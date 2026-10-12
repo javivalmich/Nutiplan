@@ -20,6 +20,13 @@
  *
  * Regla de Javi: legumbre nunca a la cena. Tofu, tempeh y seitán no cuentan
  * como legumbre (D-107); hummus y edamame sí.
+ *
+ * Platos de reserva (reserva: true, D-109): solo entran cuando a una persona
+ * vegana no le queda ningún otro plato (vegana, celíaca y sin soja o sin
+ * legumbres, p. ej.). Sin gluten, soja, legumbres, frutos secos, ajo ni
+ * cebolla; la proteína es de quinoa, semillas y levadura nutricional, así que
+ * son cenas más cortas. Decisión de Javi: antes eso, repetido, que cenar
+ * platos de comida.
  * ──────────────────────────────────────────────────────────────── */
 
 function plato(p) {
@@ -27,6 +34,7 @@ function plato(p) {
   return Object.freeze({
     freeForm: true,
     dieta: p.dieta,
+    ...(p.reserva ? { reserva: true } : {}),
     identity: {
       id: p.id,
       title: p.titulo,
@@ -649,6 +657,76 @@ export const PLATOS_DIETA = Object.freeze([
     ],
   }),
 
+  // ═══ VEGANOS · de reserva (D-109) ══════════════════════════════════════
+  plato({
+    id: 'dieta_reserva_quinoa_calabacin', dieta: 'vegana', reserva: true,
+    titulo: 'Quinoa salteada con calabacín, zanahoria y semillas', emoji: '🥒',
+    proteina: 'quinoa', tipo: 'vegetal', plato: 'salteado_wok', momento: ['comida', 'cena'],
+    temp: 'caliente', energia: 'bajo', batch: true, sobras: 'media', dias: 2,
+    gluten: false, lactosa: false, verdura: ['calabacin', 'zanahoria'],
+    kcal: 600, P: 26, F: 26, C: 66, densidad: 'medium', saciedad: 3, digestion: 'low', tiempo: 25,
+    p1: 'Quinoa (80g en seco) · calabacín y zanahoria salteados · semillas de calabaza (25g)',
+    p2: 'Con levadura nutricional (10g), limón y perejil',
+    compra: ['Quinoa (80g)', 'Calabacín (200g)', 'Zanahoria (80g)', 'Semillas de calabaza (25g)', 'Levadura nutricional (10g)', 'Limón (1/2)', 'Perejil fresco', 'AOVE (10ml)'],
+    receta: [
+      'Lava la quinoa y cuécela en el doble de agua con sal 15 min; deja reposar tapada 5 min.',
+      'Tuesta las semillas en la sartén sin aceite 2 min y reserva.',
+      'Saltea el calabacín y la zanahoria en dados con el aceite 6 min, a fuego vivo.',
+      'Mezcla con la quinoa, la levadura nutricional, el zumo de limón y el perejil, y termina con las semillas.',
+    ],
+  }),
+  plato({
+    id: 'dieta_reserva_crema_calabacin_quinoa', dieta: 'vegana', reserva: true,
+    titulo: 'Crema de calabacín y espinacas con quinoa y semillas', emoji: '🥣',
+    proteina: 'quinoa', tipo: 'vegetal', plato: 'sopa_crema', momento: ['comida', 'cena'],
+    temp: 'muy_caliente', energia: 'bajo', batch: true, sobras: 'alta', dias: 3,
+    gluten: false, lactosa: false, verdura: ['calabacin', 'espinacas'],
+    kcal: 560, P: 26, F: 24, C: 58, densidad: 'low', saciedad: 3, digestion: 'low', tiempo: 30,
+    p1: 'Crema de calabacín (300g), espinacas y patata (100g) · quinoa (50g en seco) · semillas de calabaza (20g)',
+    p2: 'Con levadura nutricional (10g) y un hilo de AOVE',
+    compra: ['Calabacín (300g)', 'Espinacas frescas (100g)', 'Patata (100g)', 'Quinoa (50g)', 'Semillas de calabaza (20g)', 'Levadura nutricional (10g)', 'AOVE (10ml)'],
+    receta: [
+      'Cuece el calabacín y la patata en trozos en agua justa con sal 15 min; añade las espinacas los 2 últimos minutos.',
+      'Mientras, cuece la quinoa en el doble de agua 15 min.',
+      'Tritura las verduras con parte del agua de cocción y la levadura nutricional hasta que quede cremosa.',
+      'Sirve con la quinoa encima, las semillas tostadas y el aceite.',
+    ],
+  }),
+  plato({
+    id: 'dieta_reserva_patata_rellena', dieta: 'vegana', reserva: true,
+    titulo: 'Patata asada rellena de espinacas y tomate con semillas', emoji: '🥔',
+    proteina: 'patata', tipo: 'vegetal', plato: 'relleno', momento: ['comida', 'cena'],
+    temp: 'caliente', energia: 'medio', batch: false, sobras: 'baja', dias: 1,
+    gluten: false, lactosa: false, verdura: ['espinacas', 'tomate'],
+    kcal: 520, P: 22, F: 24, C: 58, densidad: 'medium', saciedad: 4, digestion: 'low', tiempo: 45,
+    p1: 'Patata asada (300g) rellena de espinacas salteadas y tomate · semillas de calabaza (20g)',
+    p2: 'Con levadura nutricional (10g) gratinada por encima',
+    compra: ['Patata (300g)', 'Espinacas frescas (150g)', 'Tomate (100g)', 'Semillas de calabaza (20g)', 'Levadura nutricional (10g)', 'AOVE (10ml)'],
+    receta: [
+      'Asa la patata entera pinchada 40 min en el horno a 200 °C (o 8-10 min en el microondas y 10 min en la airfryer).',
+      'Saltea las espinacas con el tomate picado y la mitad del aceite 4 min.',
+      'Abre la patata, vacíala un poco, mezcla la pulpa con las espinacas y vuelve a rellenarla.',
+      'Cubre con la levadura nutricional y las semillas, riega con el resto del aceite y gratina 5 min.',
+    ],
+  }),
+  plato({
+    id: 'dieta_reserva_bol_quinoa_berenjena', dieta: 'vegana', reserva: true,
+    titulo: 'Bol de quinoa con berenjena asada, pimiento y semillas', emoji: '🍆',
+    proteina: 'quinoa', tipo: 'vegetal', plato: 'bowl', momento: ['comida', 'cena'],
+    temp: 'frio', energia: 'medio', batch: true, sobras: 'alta', dias: 3,
+    gluten: false, lactosa: false, verdura: ['berenjena', 'pimientos'],
+    kcal: 600, P: 25, F: 26, C: 64, densidad: 'medium', saciedad: 3, digestion: 'low', tiempo: 35,
+    p1: 'Quinoa (70g en seco) · berenjena (200g) y pimiento rojo (120g) asados · semillas de calabaza (25g)',
+    p2: 'Aliñado con limón, comino y levadura nutricional (10g)',
+    compra: ['Quinoa (70g)', 'Berenjena (200g)', 'Pimiento rojo (120g)', 'Semillas de calabaza (25g)', 'Levadura nutricional (10g)', 'Limón (1/2)', 'Comino', 'AOVE (10ml)'],
+    receta: [
+      'Asa la berenjena y el pimiento en dados con la mitad del aceite 25 min a 200 °C (o 15 min en la airfryer).',
+      'Cuece la quinoa en el doble de agua con sal 15 min y déjala reposar 5 min.',
+      'Tuesta las semillas en la sartén sin aceite 2 min.',
+      'Monta el bol con la quinoa y las verduras y aliña con el limón, el comino, la levadura nutricional y el resto del aceite.',
+    ],
+  }),
+
   // ═══ VEGETARIANOS (con lácteos) ════════════════════════════════════════
   plato({
     id: 'dieta_berenjenas_rellenas_requeson', dieta: 'vegetariana',
@@ -865,7 +943,7 @@ export const DESAYUNOS_DIETA = Object.freeze([
   comida('Desayuno', {
     id: 'des_tostada_tofu_aguacate', emoji: '🥑', titulo: 'Tostada integral con tofu a la plancha, tomate y aguacate',
     p1: 'Pan integral (60g) · tofu firme (130g) a la plancha · tomate · aguacate', p2: 'Con un poco de salsa de soja o pimentón',
-    compra: ['Pan integral (60g)', 'Tofu firme (130g)', 'Tomate (1 / 150g)', 'Aguacate (1/4)', 'Pimentón dulce (1 cdita)', 'AOVE (5ml)'],
+    compra: ['Pan integral (60g)', 'Tofu firme (130g)', 'Tomate (1 / 150g)', 'Aguacate (35g)', 'Pimentón dulce (1 cdita)', 'AOVE (5ml)'],
     receta: ['Corta el tofu en lonchas finas y hazlo a la plancha con el aceite y el pimentón 2 min por lado.', 'Tuesta el pan y monta con el tomate en rodajas, el aguacate y el tofu.'],
   }),
   comida('Desayuno', {

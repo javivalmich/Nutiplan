@@ -36,7 +36,7 @@ describe('plan de engine2 recargado desde la base de datos', { timeout: 60000 },
   it('la semana siguiente sabe qué platos no repetir', () => {
     const completo = generarPlan(PERFIL(true), 2149, OPTS);
     const plan = recargar(completo);
-    expect(platosRecientesPara(plan, 42, 43)).toEqual(completo.platosSemana);
+    expect(platosRecientesPara(plan, 42, 43)).toEqual([...completo.platosSemana, ...completo.desayunosSemana]);
     expect(platosRecientesPara(plan, 42, 42)).toEqual(OPTS.platosRecientes);
   });
 });

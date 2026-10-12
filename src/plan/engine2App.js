@@ -2,8 +2,9 @@
 //
 // engine2 decide qué plato va en cada comida y cena, lo escribe (D-108:
 // textos propios para los platos compuestos; los platos libres traen el suyo)
-// y decide sus cantidades (D-100). Del motor viejo quedan, sin copiar ni
-// tocar su código, la estructura de la semana, los desayunos y tentempiés,
+// y decide sus cantidades (D-100). Desde D-110 también elige los desayunos
+// y tentempiés (desayunosApp.js). Del motor viejo quedan, sin copiar ni
+// tocar su código, la estructura de la semana (qué huecos tiene cada día),
 // el día libre y la estrategia (buildPlan() normal).
 // Este módulo está fuera de src/engine2, así que engine2 sigue sin importar
 // nada de src/engine (CLAUDE.md, reglas 2 y 7).
@@ -22,7 +23,7 @@ import { aplicarAjustesD099 } from '../engine2/dishes/ajustesD099.js';
 import { alergenosDeTexto } from '../engine2/nutrientes/alergenos.js';
 import { fodmapRestante, protagonistaFodmap } from '../engine2/nutrientes/fodmap.js';
 import { animalDeTexto, dietaDe, VETADOS_POR_DIETA } from '../engine2/nutrientes/dietas.js';
-import { DESAYUNOS_DIETA, TENTEMPIES_DIETA } from '../data/PLATOS_DIETA.js';
+import { ponerDesayunos, alternativaDesayuno } from './desayunosApp.js';
 import { conPlatosDieta } from './platosDieta.js';
 import { componerPlato, gramosDeBase } from './textos/componer.js';
 import { nombreDeBase } from './textos/compuestos.js';
@@ -117,10 +118,9 @@ export function componerPlatos(catalog, profile, targetKcal) {
 }
 
 export function filtrarCatalogo(catalogBase, profile, targetKcal, opts) {
-  // D-107: con dieta vegetariana o vegana entran sus platos propios.
-  const conDietaPropia = conPlatosDieta(catalogBase, profile);
-  // Último recurso de generarPlan con dieta (D-107): cualquier plato en cualquier momento.
-  const catalog = opts && opts.cualquierMomento ? conDietaPropia.map((d) => ({ ...d, momento: ['comida', 'cena'] })) : conDietaPropia;
+  // D-107: con dieta vegetariana o vegana entran sus platos propios; en el
+  // último intento de generarPlan, también los de reserva (D-109).
+  const catalog = conPlatosDieta(catalogBase, profile, { reserva: !!(opts && opts.platosReserva) });
   const todas = profile.intolerances || [];
   const intol = todas.filter((i) => !VETO_PROPIO_ENGINE2.has(i));
   const eliminados = (profile.eliminatedFoods || []).map((f) => String(f).toLowerCase().trim()).filter(Boolean);
@@ -301,7 +301,8 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
   if (typeof opts.saveMealMemory === 'function') opts.saveMealMemory(opts.weekNumber ?? 0, memL, memD);
 
   const adaptados = conSibo(profile) || conDieta(profile) ? days.map((d) => ({ ...d, meals: d.meals.map((m) => adaptarSiProcede(m, profile)) })) : days;
-  const seguros = desayunosSeguros(adaptados, profile, targetKcal, opts);
+  // D-110: desayunos y tentempiés de engine2 (rutina semanal), para todos.
+  const seguros = ponerDesayunos(adaptados, profile, { seed: `${opts.userId ?? 'anon'}:${opts.weekNumber ?? 0}`, platosRecientes: opts.platosRecientes || [] });
 
   const plan = {
     ...base,
@@ -312,6 +313,7 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
     motor: 'engine2',
     platosSemana,
     platosSemanaAnterior: opts.platosRecientes || [],
+    desayunosSemana: seguros.desayunosSemana,
     ancla: resumenAncla,
     decisionLog: [...e2.decisionLog, ...seguros.log],
     ...(quitados.length ? { platosQuitadosPorPerfil: quitados.length } : {}),
@@ -319,7 +321,7 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
   // La base de datos solo guarda los días del plan (no los campos de arriba):
   // lo que engine2 necesita para recalcular y para las alternativas va también
   // dentro del primer día.
-  plan.days = guardarMeta(plan.days, { ancla: resumenAncla, platosSemana, platosSemanaAnterior: opts.platosRecientes || [] });
+  plan.days = guardarMeta(plan.days, { ancla: resumenAncla, platosSemana, platosSemanaAnterior: opts.platosRecientes || [], desayunosSemana: seguros.desayunosSemana });
   // Raciones de engine2: gramos según el objetivo del usuario (D-100).
   if (!conRaciones) return plan;
   return { ...cantidadesDelAncla(ajustarPlan(plan, profile, targetKcal), profile, targetKcal), raciones: 'engine2' };
@@ -361,109 +363,6 @@ function cantidadesDelAncla(plan, profile, targetKcal) {
   return { ...plan, days };
 }
 
-// ─── Desayunos y tentempiés que respetan las intolerancias ───────────────────
-
-/**
- * Los desayunos y tentempiés aún los pone el motor viejo, que no conoce todas
- * las intolerancias de la app (soja, picante) ni las dietas, y a veces deja
- * el alimento en la compra o en el título (yogur o queso con lactosa, jamón
- * con cerdo, cacahuete con frutos secos). Cada uno que lleve algo que el
- * perfil no puede comer se cambia por otro del mismo momento que sí pueda.
- * Candidatos, en orden fijo (determinista): con dieta vegetariana o vegana,
- * primero los desayunos y tentempiés veganos propios (D-107); después, los
- * de otras semanas del motor viejo, ya adaptados. Si no hay ninguno, se
- * quita y se anota.
- *
- * Vegetariana (D-107, decisión de Javi): huevo como mucho una vez al día. Si
- * la comida o la cena del día ya lo llevan, el desayuno o tentempié con
- * huevo se cambia; si no, se queda el primero y se cambian los demás.
- */
-const tieneHuevo = (m) => !!m && animalDeTexto(textoCompuesto(m)).has('huevo');
-
-function desayunosSeguros(days, profile, targetKcal, opts) {
-  const log = [];
-  const afectados = [];
-  const topeHuevo = dietaDe(profile) === 'vegetariana';
-  const veganaPropios = dietaDe(profile) === 'vegana';
-  const propios = new Set(DESAYUNOS_DIETA.map((m) => m.title));
-  days.forEach((d, i) => {
-    let huevoHoy = topeHuevo && d.meals.some((m) => m && (m.time === 'Comida' || m.time === 'Cena') && tieneHuevo(m));
-    d.meals.forEach((m, j) => {
-      if (!m || m.time === 'Comida' || m.time === 'Cena') return;
-      const porPerfil = intoleranciasDe(m, profile);
-      const porHuevo = topeHuevo && tieneHuevo(m) && huevoHoy;
-      // Vegana: los desayunos del motor viejo, aun adaptados, se quedan cortos
-      // de proteína; se usan los veganos propios (con tofu los primeros).
-      const porVegano = veganaPropios && m.time === 'Desayuno' && !propios.has(m.title);
-      if (porPerfil.length || porHuevo || porVegano) afectados.push([i, j, porPerfil.length ? porPerfil.join(', ') : porHuevo ? 'huevo por segunda vez en el día' : 'desayuno vegano propio']);
-      else if (topeHuevo && tieneHuevo(m)) huevoHoy = true;
-    });
-  });
-  if (!afectados.length) return { days, log };
-
-  const usados = new Set(days.flatMap((d) => d.meals.filter(Boolean).map((m) => m.title)));
-  const apto = (m) => m && !intoleranciasDe(m, profile).length && !usados.has(m.title);
-  const candidatos = new Map(); // momento (Desayuno, Almuerzo, Merienda…) -> comidas limpias en orden
-  const grupo = (time) => time;
-  const meter = (m, g = grupo(m.time)) => {
-    if (!candidatos.has(g)) candidatos.set(g, []);
-    if (!candidatos.get(g).some((x) => x.title === m.title)) candidatos.get(g).push({ ...m, time: g });
-  };
-  // Los propios: con dieta vegana, antes que los del motor viejo; con
-  // vegetariana, solo si los del motor viejo se acaban.
-  let propiosMetidos = false;
-  const meterPropios = () => {
-    if (propiosMetidos || dietaDe(profile) === 'omnivora') return;
-    propiosMetidos = true;
-    const tentempies = [...new Set(afectados.map(([i, j]) => days[i].meals[j].time))].filter((t) => t !== 'Desayuno');
-    for (const m0 of DESAYUNOS_DIETA) {
-      const m = adaptarSiProcede(m0, profile);
-      if (apto(m)) meter(m, 'Desayuno');
-    }
-    for (const m0 of TENTEMPIES_DIETA) {
-      const m = adaptarSiProcede(m0, profile);
-      if (apto(m)) for (const t of tentempies) meter(m, t);
-    }
-  };
-  if (veganaPropios) meterPropios();
-  let semilla = 0;
-  const siguiente = (time, sinHuevo) => {
-    const g = grupo(time);
-    const valida = (m) => !sinHuevo || !tieneHuevo(m);
-    // Vegana: solo desayunos propios.
-    while (!(candidatos.get(g) || []).some(valida) && semilla < 30 && !(veganaPropios && g === 'Desayuno')) {
-      semilla += 1;
-      const alt = buildPlan(clonar(profile), targetKcal, opcionesLegacy({ ...opts, userId: `${opts.userId ?? 'anon'}#desayuno${semilla}` }));
-      for (const d of alt.days) for (const m0 of d.meals) {
-        if (!m0 || m0.time === 'Comida' || m0.time === 'Cena') continue;
-        const m = adaptarSiProcede(limpiarComidaLegacy(m0), profile);
-        if (apto(m)) meter(m);
-      }
-    }
-    if (!(candidatos.get(g) || []).some(valida)) meterPropios();
-    const l = candidatos.get(g) || [];
-    // Se reutilizan si hace falta (un desayuno puede repetirse en la semana); el primero, el más antiguo.
-    const k = l.findIndex(valida);
-    if (k < 0) return null;
-    const [m] = l.splice(k, 1);
-    l.push(m);
-    return { ...m, time };
-  };
-
-  const nuevos = days.map((d) => ({ ...d, meals: d.meals.slice() }));
-  for (const [i, j, motivo] of afectados) {
-    const viejo = nuevos[i].meals[j];
-    const sinHuevo = topeHuevo && motivo === 'huevo por segunda vez en el día';
-    const nuevo = siguiente(viejo.time, sinHuevo || (topeHuevo && nuevos[i].meals.some((m, k) => k !== j && m && tieneHuevo(m))));
-    // Un desayuno vegano propio que no encuentra sustituto deja el que había (ya es vegano).
-    nuevos[i].meals[j] = nuevo ? clonar(nuevo) : (motivo === 'desayuno vegano propio' ? viejo : null);
-    log.push(motivo === 'desayuno vegano propio'
-      ? { causa: 'desayuno_vegano_propio', day: nuevos[i].name, momento: viejo.time, detalle: `«${viejo.title}» → ${nuevo ? `«${nuevo.title}»` : 'sin sustituto: se queda'}` }
-      : { causa: 'desayuno_cambiado_por_intolerancia', day: nuevos[i].name, momento: viejo.time, detalle: `«${viejo.title}» lleva ${motivo} → ${nuevo ? `«${nuevo.title}»` : 'sin sustituto: se quita'}` });
-  }
-  return { days: nuevos, log };
-}
-
 // ─── Datos de la semana que deben sobrevivir a la base de datos ─────────────
 
 function guardarMeta(days, meta) {
@@ -481,6 +380,7 @@ export function metaEngine2(plan) {
     ancla: plan.ancla !== undefined ? plan.ancla : d0.ancla || null,
     platosSemana: plan.platosSemana || d0.platosSemana || null,
     platosSemanaAnterior: plan.platosSemanaAnterior || d0.platosSemanaAnterior || [],
+    desayunosSemana: plan.desayunosSemana || d0.desayunosSemana || [],
   };
 }
 
@@ -550,42 +450,21 @@ export function regenerarComidaEngine2(plan, dayIdx, time, deseo, profile, targe
 }
 
 /**
- * Alternativa de un desayuno o tentempié con las mismas garantías que el plan
- * (D-107; era lo pendiente de D-103): nada que el perfil no pueda comer por
- * sus intolerancias o su dieta y, en vegetariana, huevo una vez al día.
- * Candidatos en orden fijo: con dieta, los propios (D-107); después los del
- * motor viejo de otras semanas, adaptados. Se prefieren los que no salen ya
- * en la semana y se toma el siguiente al actual en ese orden, así cada clic da
- * uno distinto.
+ * Alternativa de un desayuno o tentempié (D-110): la da el catálogo de
+ * desayunos de engine2 (desayunosApp.js), para todos los perfiles, con lo que
+ * el perfil puede comer. Se toma el siguiente al actual en su orden fijo,
+ * prefiriendo los que no salen ya en la semana: cada clic da uno distinto.
  * @returns {object} plan nuevo
  */
-export function regenerarDesayunoEngine2(plan, dayIdx, time, profile, targetKcal, opts = {}) {
+export function regenerarDesayunoEngine2(plan, dayIdx, time, profile, targetKcal) {
   const day = plan.days[dayIdx];
   const mealIdx = day.meals.findIndex((m) => m && m.time === time);
   const actual = day.meals[mealIdx];
   if (!actual || time === 'Comida' || time === 'Cena') throw new Error(`regenerarDesayunoEngine2: no hay ${time} el día ${dayIdx}`);
-  const dieta = dietaDe(profile);
-  const otrosConHuevo = dieta === 'vegetariana' && day.meals.some((m, k) => k !== mealIdx && tieneHuevo(m));
-  const lista = [];
-  const meter = (m0) => {
-    const m = adaptarSiProcede({ ...m0, time }, profile);
-    if (!m || intoleranciasDe(m, profile).length || (otrosConHuevo && tieneHuevo(m))) return;
-    if (!lista.some((x) => x.title === m.title)) lista.push(m);
-  };
-  if (dieta !== 'omnivora') for (const m of (time === 'Desayuno' ? DESAYUNOS_DIETA : TENTEMPIES_DIETA)) meter(m);
-  if (!(dieta === 'vegana' && time === 'Desayuno')) {
-    for (let s = 1; s <= 6; s += 1) {
-      const alt = buildPlan(clonar(profile), targetKcal, opcionesLegacy({ ...opts, userId: `${opts.userId ?? 'anon'}#desayuno${s}` }));
-      for (const d of alt.days) for (const m of d.meals) if (m && m.time === time) meter(limpiarComidaLegacy(m));
-    }
-  }
-  const enSemana = new Set(plan.days.flatMap((d) => d.meals.filter(Boolean).map((m) => m.title)));
-  const desde = lista.findIndex((m) => m.title === actual.title);
-  const orden = [...lista.slice(desde + 1), ...lista.slice(0, Math.max(desde, 0))].filter((m) => m.title !== actual.title);
-  const nueva = orden.find((m) => !enSemana.has(m.title)) || orden[0];
+  const nueva = alternativaDesayuno(plan, dayIdx, time, profile);
   if (!nueva) throw new Error(`regenerarDesayunoEngine2: sin alternativa para ${time}`);
   const meals = day.meals.slice();
-  meals[mealIdx] = clonar(nueva);
+  meals[mealIdx] = nueva;
   const ajustado = plan.raciones === 'engine2' || day.raciones ? ajustarDia({ ...day, meals }, profile, targetKcal) : { day: { ...day, meals }, log: [] };
   const days = plan.days.slice();
   days[dayIdx] = ajustado.day;

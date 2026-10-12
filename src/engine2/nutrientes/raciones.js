@@ -57,12 +57,12 @@ const RANGO = Object.freeze({
   lentejas_cocidas: [120, 400, 10], garbanzos_cocidos: [120, 400, 10], alubias_cocidas: [120, 400, 10],
   hummus: [30, 120, 5], edamame: [50, 200, 10], guisantes: [50, 200, 10],
   avena: [30, 90, 5], muesli: [30, 90, 5], patata: [100, 350, 10], boniato: [100, 350, 10],
-  pan_blanco: [30, 100, 10], pan_integral: [30, 100, 10], pan_centeno: [30, 100, 10],
+  pan_blanco: [30, 100, 10], pan_integral: [30, 100, 10], pan_centeno: [30, 100, 10], pan_sin_gluten: [30, 100, 10],
   yogur_griego_0: [125, 300, 25], yogur_natural: [125, 300, 25],
   arroz_integral_cocido: [100, 450, 10], gnocchi: [150, 400, 10], masa_empanada: [80, 250, 10], maiz: [40, 150, 10],
   frutos_rojos: [80, 250, 10], pina: [80, 250, 10],
   leche_semi: [150, 400, 10], leche_desnatada: [150, 400, 10], bebida_vegetal: [150, 400, 10],
-  skyr: [100, 400, 25], queso_fresco: [30, 150, 10], requeson: [60, 250, 10], queso_burgos_0: [60, 250, 10],
+  skyr: [100, 400, 25], kefir: [150, 400, 10], bebida_arroz: [150, 400, 10], queso_fresco: [30, 150, 10], requeson: [60, 250, 10], queso_burgos_0: [60, 250, 10],
   yogur_soja: [125, 300, 25], queso_crema: [15, 60, 5], mozzarella: [30, 150, 10],
   feta: [20, 100, 10], queso_curado: [10, 40, 5],
   semillas: [5, 20, 5], crema_cacahuete: [10, 40, 5],
@@ -72,7 +72,7 @@ const RANGO = Object.freeze({
 const RANGO_UD = Object.freeze({
   huevo: [1, 5, 1], clara: [2, 8, 1], fruta: [1, 2, 1], platano: [1, 2, 1], aguacate: [0.5, 1.5, 0.5],
   tortilla_trigo: [1, 4, 1], tortilla_maiz: [1, 5, 1], croquetas: [4, 14, 1], yogur_griego_0: [1, 3, 1],
-  yogur_natural: [1, 3, 1], yogur_soja: [1, 3, 1],
+  yogur_natural: [1, 3, 1], yogur_soja: [1, 3, 1], tortitas_arroz: [2, 6, 1],
 });
 // Siempre fijos aunque su grupo se ajuste.
 const SIEMPRE_FIJO = new Set(['levadura_nutricional', 'harina', 'pan_rallado', 'tahini', 'leche_coco', 'coco_rallado', 'algas', 'aceituna', 'pepinillo']);
@@ -83,12 +83,15 @@ export const FALTA_PARA_ACOMPANAR = 0.05;
 export const KCAL_RACION_NORMAL = 2200;
 export const AMPLITUD_MAX = 1.4;
 const PAN = { clave: 'pan_integral', gramos: 60, unidad: 'g', nombre: 'pan para acompañar' };
+// D-110: con celiaquía o SIBO no se añade pan integral; en su lugar, pan sin
+// gluten (la app lo veta para el resto de perfiles).
+const PAN_SG = { clave: 'pan_sin_gluten', gramos: 60, unidad: 'g', nombre: 'pan sin gluten para acompañar' };
 const FRUTA = { clave: 'fruta', gramos: 150, unidad: 'ud', nombre: 'fruta de postre' };
 const FRUTOS_SECOS = { clave: 'nuez', gramos: 20, unidad: 'g', nombre: 'un puñado de nueces' };
 export const ACOMPANAMIENTOS = Object.freeze({
-  comida: [PAN, FRUTA],
-  cena: [PAN, FRUTA],
-  desayuno: [FRUTA, { ...PAN, nombre: 'una tostada' }],
+  comida: [PAN, PAN_SG, FRUTA],
+  cena: [PAN, PAN_SG, FRUTA],
+  desayuno: [FRUTA, { ...PAN, nombre: 'una tostada' }, { ...PAN_SG, nombre: 'una tostada de pan sin gluten' }],
   tentempie: [FRUTA, FRUTOS_SECOS],
 });
 
@@ -99,7 +102,8 @@ function familiaDe(clave) {
   return g === 'fruta' || g === 'frutoSeco' ? g : clave;
 }
 
-function papelDe(clave, comp) {
+/** Papel de un ingrediente en las raciones: proteico, energético o fijo. */
+export function papelDe(clave, comp) {
   const ing = INGREDIENTES[clave];
   if (!ing || ing.despreciable || SIEMPRE_FIJO.has(clave)) return 'fijo';
   if (ing.grupo === 'proteina') return 'proteico';

@@ -34,9 +34,13 @@ describe('Alternativas con engine2 (D-101)', { timeout: 60000 }, () => {
     expect(t(b)).not.toBe(t(a));
   });
 
-  it('no aplica a desayunos, a la comida libre ni a planes del motor viejo', () => {
+  it('no aplica a la comida libre ni a planes del motor viejo; los desayunos los cambia engine2 (D-110)', () => {
     const p = plan();
-    expect(regenerarComida(p, 0, 'Desayuno', 'ligero', perfil(), 2600, OPTS)).toBeNull();
+    const n = regenerarComida(p, 0, 'Desayuno', 'ligero', perfil(), 2600, OPTS);
+    const antes = p.days[0].meals.find((m) => m && m.time === 'Desayuno');
+    const despues = n.days[0].meals.find((m) => m && m.time === 'Desayuno');
+    expect(despues.title).not.toBe(antes.title);
+    expect(despues._motor).toBe('engine2');
     const sab = p.days.findIndex((d) => d.name === 'Sábado');
     expect(regenerarComida(p, sab, 'Comida', 'ligero', perfil(), 2600, OPTS)).toBeNull();
     const legacy = buildPlan(perfil(), 2600, { ...OPTS, saveMealMemory: () => {} });

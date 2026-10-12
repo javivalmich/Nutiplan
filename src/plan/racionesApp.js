@@ -43,6 +43,7 @@ export function batidoDelDia(profile, day) {
 // Lo que engine2 puede añadir como acompañamiento, y si el perfil lo veta.
 const VETO_ANADIDO = Object.freeze({
   pan_integral: { intolerancias: ['gluten', 'sibo'], palabras: ['pan', 'trigo', 'gluten'] },
+  pan_sin_gluten: { intolerancias: [], palabras: ['pan'] },
   fruta: { intolerancias: [], palabras: ['fruta'] },
   nuez: { intolerancias: ['frutos_secos'], palabras: ['nuez', 'nueces', 'frutos secos'] },
 });
@@ -53,6 +54,8 @@ export function vetadosDe(profile) {
   for (const [clave, regla] of Object.entries(VETO_ANADIDO)) {
     if (regla.intolerancias.some((i) => intol.has(i)) || elim.some((e) => regla.palabras.some((w) => e.includes(w) || w.includes(e)))) v.add(clave);
   }
+  // D-110: el pan sin gluten solo se añade a quien no puede tomar el integral por gluten o SIBO.
+  if (!intol.has('gluten') && !intol.has('sibo')) v.add('pan_sin_gluten');
   return v;
 }
 
@@ -66,6 +69,9 @@ function anadir(meal, anadidos, momento) {
     if (a.clave === 'pan_integral') {
       p2 += momento === 'desayuno' ? ` · Pan integral tostado (${g} g)` : ` · Pan integral (${g} g) para acompañar`;
       shopping.push(`Pan integral (${g} g)`);
+    } else if (a.clave === 'pan_sin_gluten') {
+      p2 += momento === 'desayuno' ? ` · Pan sin gluten tostado (${g} g)` : ` · Pan sin gluten (${g} g) para acompañar`;
+      shopping.push(`Pan sin gluten (${g} g)`);
     } else if (a.clave === 'fruta') {
       const ud = Math.max(1, Math.round(a.gramos / 150));
       const txt = ud === 1 ? '1 pieza de fruta de temporada' : `${ud} piezas de fruta de temporada`;

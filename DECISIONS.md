@@ -4457,3 +4457,57 @@ Pendiente
 
 Estado resultante
 A una persona vegana ya no le llega carne del motor viejo por tener muchas intolerancias. Cuando no le quedan cenas, cena platos sencillos de verdura y quinoa, que se repiten.
+
+## D-110 — [2026-10-12] Desayunos y tentempiés hechos por engine2, para todos
+
+Decide: Javi. HEAD: `3d4a450` (D-109).
+
+Contexto
+Desayunos y tentempiés los ponía el motor viejo: 20 desayunos elegidos con su puntuación y 4 tentempiés que se alternaban siempre igual. Medido en 10 semanas (hombre de 74 kg, 5 comidas): «Fruta con frutos secos» y «Merienda proteica» 40 veces cada uno, «Yogur con fruta» y «Fruta con proteína» 30. La tostada de salmón salía en 11 o 12 de 70 desayunos, y entre 28 y 35 desayunos por perfil se repetían de una semana a la siguiente. Con intolerancia a la lactosa, el yogur pasaba a ser un vaso de bebida vegetal y 80 huecos de 10 semanas se quedaban vacíos. Con dieta vegana a 1400 kcal, 30 de 70 desayunos no llegaban a la proteína mínima.
+
+Decisión
+1. Javi: rutina, no variedad diaria. Entre semana hay dos desayunos de diario que se alternan (lunes, miércoles y viernes el primero; martes y jueves el segundo) y uno distinto el fin de semana. Hay dos tentempiés de media mañana y dos de merienda, que se alternan todos los días. Todo cambia de una semana a la siguiente.
+2. Catálogo propio (`src/data/DESAYUNOS.js`):
+   - 19 de los 20 desayunos del motor viejo, con texto fijo. Queda fuera «Yogur con semillas y fruta», casi igual que la macedonia y el bol de chía.
+   - 15 desayunos nuevos: 9 para todos y 6 solo para vegetarianos y veganos, entre ellos 3 sin gluten, soja ni legumbres para D-109 y 3 de tofu.
+   - Los 8 desayunos veganos de D-107.
+   - Los 4 tentempiés del motor viejo, 10 nuevos y los 4 veganos de D-107.
+   - Cada uno lleva una ficha: si es rápido (10 minutos o menos), si es de fin de semana, si se puede llevar fuera de casa y su base (yogur, tostada, huevo…).
+   - Lo redactó Claude y queda pendiente de la revisión de Javi en el visor.
+3. engine2 elige (`src/engine2/desayunos/elegirDesayunos.js`) sin puntuar, con una escalera de filtros por hueco. Gana el primer escalón con candidatos y, dentro de él, desempata el RNG sembrado (`::desayunos`). Cada elección anota su causa y su escalón. Los filtros son:
+   - Entre semana, solo desayunos rápidos.
+   - El fin de semana, un desayuno de fin de semana; con «poco tiempo para cocinar», también rápido.
+   - Primero los desayunos con proteína que las raciones pueden subir: huevo, tofu, embutido, pescado, yogur griego, queso fresco.
+   - Bases distintas entre los dos desayunos de diario, y entre los tentempiés y el desayuno.
+   - A media mañana, algo que se pueda llevar.
+   - Nada de la semana anterior. Es lo primero que se relaja: antes que la proteína.
+4. La app prepara el catálogo para cada perfil (`src/plan/desayunosApp.js`): lo adapta a su dieta, a SIBO y a la lactosa, y quita lo que no puede comer (intolerancias, dieta, alimentos eliminados). Las alternativas de desayuno y tentempié salen del mismo catálogo para todos los perfiles; ya no se usa el motor viejo.
+5. Lactosa: la leche, el yogur, el kéfir y el queso fresco pasan a su versión sin lactosa (`src/engine2/nutrientes/lactosa.js`). Solo afecta a desayunos y tentempiés.
+6. Huevo (Javi): sin regla para omnívoros. Para vegetarianos sigue el tope de una vez entre comida y cena (y 3 cenas de huevo a la semana). El desayuno o el tentempié pueden llevar huevo además, así que hay días con huevo dos veces, pero ninguna regla obliga a ello.
+7. Pan sin gluten: con celiaquía o SIBO, cuando a una comida le falta energía y el pan integral está vetado, las raciones añaden pan sin gluten. Antes no se añadía nada y la semana de un celíaco quedaba hasta un 6–10 % por debajo de sus calorías.
+8. Medidor: kéfir (BEDCA), bebida de arroz, tortitas de arroz y pan sin gluten (etiqueta típica). El pavo en lonchas y el jamón cocido se leen como fiambre. «Yogur griego sin lactosa» se mide como yogur griego.
+9. La semana guarda sus desayunos (`desayunosSemana`) y `platosRecientesPara` los devuelve con los platos, para que la semana siguiente los cambie.
+10. Visor: `scripts/visor/visorDesayunos.mjs` (seis perfiles, cuatro semanas y el catálogo con su ficha).
+
+Medido (10 semanas por perfil; antes → después)
+
+| Perfil | Desayunos bajos de proteína | Desayunos distintos | Repetidos de la semana anterior | Calorías de la semana |
+|---|---|---|---|---|
+| Mujer 1600 kcal | 0 → 0 | 14 → 17 | 29 → 0 | −2,7…+0,9 → −2,4…+3,6 % |
+| Hombre 2400 kcal | 0 → 0 | 14 → 19 | 29 → 0 | −2,9…−0,2 → −2,6…−0,4 % |
+| Hombre 3400 kcal | 0 → 0 | 12 → 18 | 35 → 0 | −2,2…−1,1 → −3,0…−0,8 % |
+| Vegana 1400 kcal | 30 → 0 | 7 → 6 | 63 → 0 | +1,7…+6,9 → +1,4…+8,2 % |
+| Vegetariana 2000 kcal | 0 → 0 | 12 → 17 | 28 → 0 | −1,7…+0,8 → −2,5…+0,9 % |
+| Sin lactosa 2000 kcal | 0 → 0 (80 huecos vacíos → 0) | 2 → 20 | 18 → 0 | −3,2…−1,2 → −2,3…+0,1 % |
+| Celíaco 2400 kcal | 0 → 0 | 9 → 10 | 28 → 0 | −6,4…−2,5 → −2,8…−0,6 % |
+
+Tests: `src/plan/tests/desayunos.test.js` (catálogo medible; lactosa idempotente; rutina; cambio semanal; poco tiempo; misma semilla y causas; once intolerancias y alimentos eliminados sin huecos vacíos; proteína del desayuno en seis perfiles; pan sin gluten; huevo en vegetarianos; alternativas para todos). Se actualizaron los tests que esperaban lo anterior: los desayunos no tenían alternativa de engine2 sin dieta, los platos recientes no incluían desayunos y el huevo en vegetarianos era una vez al día contando el desayuno.
+
+Pendiente
+- Revisión de Javi del catálogo en el visor.
+- Vegana a 1400 kcal: la semana sale hasta un 8 % por encima. Los desayunos de tofu no bajan de unas 360 kcal porque las raciones suben la proteína primero. Antes ya llegaba al 6,9 %.
+- Con la rutina, un vegetariano puede tener el mismo día un desayuno de huevo y una comida de huevo (3 + 5 huevos). Lo permite la decisión de Javi; si se quiere, se puede limitar el total de huevos del día.
+- Vegana: con la proteína por delante de la variedad salen 6 desayunos distintos en 10 semanas (los de tofu).
+
+Estado resultante
+Todos los perfiles tienen desayunos y tentempiés de engine2 con rutina semanal, que cambian cada semana, respetan intolerancias y dietas y llegan a la proteína del desayuno. El motor viejo queda solo para la estructura de la semana, el día libre y la estrategia.

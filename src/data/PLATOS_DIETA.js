@@ -943,7 +943,7 @@ export const DESAYUNOS_DIETA = Object.freeze([
   comida('Desayuno', {
     id: 'des_tostada_tofu_aguacate', emoji: '🥑', titulo: 'Tostada integral con tofu a la plancha, tomate y aguacate',
     p1: 'Pan integral (60g) · tofu firme (130g) a la plancha · tomate · aguacate', p2: 'Con un poco de salsa de soja o pimentón',
-    compra: ['Pan integral (60g)', 'Tofu firme (130g)', 'Tomate (1 / 150g)', 'Aguacate (1/4)', 'Pimentón dulce (1 cdita)', 'AOVE (5ml)'],
+    compra: ['Pan integral (60g)', 'Tofu firme (130g)', 'Tomate (1 / 150g)', 'Aguacate (35g)', 'Pimentón dulce (1 cdita)', 'AOVE (5ml)'],
     receta: ['Corta el tofu en lonchas finas y hazlo a la plancha con el aceite y el pimentón 2 min por lado.', 'Tuesta el pan y monta con el tomate en rodajas, el aguacate y el tofu.'],
   }),
   comida('Desayuno', {

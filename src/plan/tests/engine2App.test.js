@@ -151,7 +151,9 @@ describe('generarPlan — selector de motor y red de seguridad', () => {
 
   it('platosRecientesPara: otra semana → sus platos; misma semana → la anterior que ya usó', () => {
     const p = generarPlan(perfil(), 2000, { ...OPTS, platosRecientes: ['X'] });
-    expect(platosRecientesPara(p, 41, 42)).toEqual(p.platosSemana);
+    // D-110: también los desayunos y tentempiés de la semana, para que cambien.
+    expect(platosRecientesPara(p, 41, 42)).toEqual([...p.platosSemana, ...p.desayunosSemana]);
+    expect(p.desayunosSemana.length).toBeGreaterThanOrEqual(2);
     expect(platosRecientesPara(p, 42, 42)).toEqual(['X']);
     const viejo = buildPlan(perfil(), 2000, OPTS);
     expect(platosRecientesPara(viejo, 40, 41).length).toBeGreaterThan(10);

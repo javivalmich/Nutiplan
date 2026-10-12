@@ -91,8 +91,10 @@ function perfilParaMotorViejo(profile) {
 export function platosRecientesPara(planGuardado, semanaGuardada, semanaNueva) {
   if (!planGuardado || !Array.isArray(planGuardado.days)) return [];
   const meta = metaEngine2(planGuardado);
+  // Con la misma semana se reutiliza la anterior (sus desayunos ya van dentro).
   if (semanaGuardada === semanaNueva) return meta.platosSemanaAnterior || [];
-  if (Array.isArray(meta.platosSemana)) return meta.platosSemana;
+  // D-110: también los desayunos y tentempiés, para que cambien cada semana.
+  if (Array.isArray(meta.platosSemana)) return [...meta.platosSemana, ...(meta.desayunosSemana || [])];
   const titulos = [];
   for (const d of planGuardado.days) {
     for (const m of d.meals || []) if (m && (m.time === 'Comida' || m.time === 'Cena') && m.title) titulos.push(m.title);
@@ -124,17 +126,16 @@ export function recalcularDia(plan, day, profile, targetKcal) {
 export function regenerarComida(plan, dayIdx, time, deseo, profile, targetKcal, opts = {}) {
   if (!plan || !plan.days || !plan.days[dayIdx]) return null;
   const conDieta = profile && (profile.dieta === 'vegetariana' || profile.dieta === 'vegana');
-  const delicado = conDieta || ((profile && profile.intolerances) || []).length > 0;
   const deEngine2 = plan.days.some((d) => (d.meals || []).some((m) => m && m._motor === 'engine2'));
-  // Desayunos y tentempiés: con dieta o intolerancias, el motor viejo no los
-  // controla (D-103, D-107); en un plan de engine2 los cambia engine2App.
+  // Desayunos y tentempiés: en un plan de engine2 los cambia engine2 con su
+  // catálogo, para todos (D-110; antes, solo con dieta o intolerancias).
   if (time !== 'Comida' && time !== 'Cena') {
-    if (!delicado || !deEngine2) return null;
+    if (!deEngine2) return null;
     try {
       return regenerarDesayunoEngine2(plan, dayIdx, time, profile, targetKcal, opts);
     } catch (err) {
       console.error('[regenerarComida] sin alternativa segura para', time, err);
-      return conDieta ? { ...plan, alternativaSinCambio: true } : null;
+      return { ...plan, alternativaSinCambio: true };
     }
   }
   const meal = plan.days[dayIdx].meals.find((m) => m && m.time === time);

@@ -748,6 +748,18 @@ export const COMPOSICION_DATOS = {
     "grupo": "Verduras, hortalizas y derivados"
    }
   },
+  "tortitas_arroz": {
+   "kcal": 385,
+   "proteina": 8,
+   "hidratos": 80,
+   "grasa": 3,
+   "fibra": 3,
+   "agua": null,
+   "fuente": {
+    "etiqueta": true,
+    "nota": "BEDCA no tiene tortitas de arroz inflado: etiqueta típica (D-110)"
+   }
+  },
   "pan_blanco": {
    "kcal": 239,
    "proteina": 8.3,
@@ -785,6 +797,18 @@ export const COMPOSICION_DATOS = {
     "bedca": "2167",
     "nombre": "Pan de centeno",
     "grupo": "Cereales y derivados"
+   }
+  },
+  "pan_sin_gluten": {
+   "kcal": 250,
+   "proteina": 4,
+   "hidratos": 45,
+   "grasa": 5,
+   "fibra": 6,
+   "agua": null,
+   "fuente": {
+    "etiqueta": true,
+    "nota": "BEDCA no tiene pan sin gluten: etiqueta típica de pan de molde sin gluten (D-110)"
    }
   },
   "pan_rallado": {
@@ -1443,6 +1467,31 @@ export const COMPOSICION_DATOS = {
    "fuente": {
     "etiqueta": true,
     "nota": "BEDCA no tiene skyr ni queso batido 0 %: etiqueta típica"
+   }
+  },
+  "kefir": {
+   "kcal": 64,
+   "proteina": 3.3,
+   "hidratos": 4.8,
+   "grasa": 3.5,
+   "fibra": 0,
+   "agua": 88.4,
+   "fuente": {
+    "bedca": "1168",
+    "nombre": "Kefir",
+    "grupo": "Lácteos y derivados"
+   }
+  },
+  "bebida_arroz": {
+   "kcal": 50,
+   "proteina": 0.3,
+   "hidratos": 10,
+   "grasa": 1,
+   "fibra": 0,
+   "agua": null,
+   "fuente": {
+    "etiqueta": true,
+    "nota": "BEDCA no tiene bebida de arroz: etiqueta típica sin azúcar añadido (D-110)"
    }
   },
   "yogur_soja": {

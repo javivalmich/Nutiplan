@@ -21,7 +21,7 @@ export const ALERGENOS = Object.freeze({
   },
   lactosa: {
     si: R('leche|yogur|queso|mozzarella|parmesano|feta|reques[oó]n|ricotta|burrata|mantequilla|nata\\b|bechamel|k[eé]fir|skyr|batido de|cuajada|natillas|helado|crema de leche|ghee'),
-    no: R('leche de tigre|leche de coco|bebida vegetal|leche vegetal|(\\S+ )?sin lactosa|leche de (almendra|avena|soja|arroz)|mantequilla de cacahuete|yogur(es)? (de soja|vegetal|de coco)|nata vegetal|bechamel vegetal|queso vegano'),
+    no: R('yogur griego sin lactosa|queso fresco batido sin lactosa|leche de tigre|leche de coco|bebida vegetal|leche vegetal|(\\S+ )?sin lactosa|leche de (almendra|avena|soja|arroz)|mantequilla de cacahuete|yogur(es)? (de soja|vegetal|de coco)|nata vegetal|bechamel vegetal|queso vegano'),
   },
   huevo: {
     si: R('huevo|clara|yema|tortilla(?!s? (integral|de trigo|de ma[ií]z|grande))|revuelto|mayonesa|alioli|carbonara|shakshuka|rebozad|brioche|merengue|flan|pasta fresca|croqueta'),

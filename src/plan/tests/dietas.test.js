@@ -117,14 +117,17 @@ describe('planes vegetarianos y veganos', { timeout: 600000 }, () => {
           const titulos = [];
           let cenasHuevo = 0;
           for (const d of plan.days) {
+            // D-110 (Javi): huevo como mucho una vez entre comida y cena; el
+            // desayuno o el tentempié pueden llevarlo también.
             let huevos = 0;
             for (const m of d.meals) {
               if (!m) continue;
               expect(intoleranciasDe(m, P), `${d.name} ${m.time}: ${m.title}`).toEqual([]);
-              if (animalDeTexto(texto(m)).has('huevo')) { huevos += 1; if (m.time === 'Cena') cenasHuevo += 1; }
-              if ((m.time === 'Comida' || m.time === 'Cena') && !/libre/i.test(m.title)) titulos.push(m.title);
+              const principal = m.time === 'Comida' || m.time === 'Cena';
+              if (principal && animalDeTexto(texto(m)).has('huevo')) { huevos += 1; if (m.time === 'Cena') cenasHuevo += 1; }
+              if (principal && !/libre/i.test(m.title)) titulos.push(m.title);
             }
-            expect(huevos, `${d.name}: huevo una vez al día`).toBeLessThanOrEqual(1);
+            expect(huevos, `${d.name}: huevo una vez entre comida y cena`).toBeLessThanOrEqual(1);
           }
           expect(cenasHuevo).toBeLessThanOrEqual(3);
           expect(new Set(titulos).size).toBe(titulos.length);
@@ -212,7 +215,7 @@ describe('planes vegetarianos y veganos', { timeout: 600000 }, () => {
           expect(n, `${dieta} ${time}`).toBeTruthy();
           const m = n.days[dia].meals.find((x) => x && x.time === time);
           expect(intoleranciasDe(m, P), `${dieta} ${time} ${m.title}`).toEqual([]);
-          if (dieta === 'vegetariana') expect(n.days[dia].meals.filter((x) => x && animalDeTexto(texto(x)).has('huevo')).length).toBeLessThanOrEqual(1);
+          if (dieta === 'vegetariana') expect(n.days[dia].meals.filter((x) => x && (x.time === 'Comida' || x.time === 'Cena') && animalDeTexto(texto(x)).has('huevo')).length).toBeLessThanOrEqual(1);
           vistos.add(m.title);
           p = n;
         }

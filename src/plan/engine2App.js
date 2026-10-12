@@ -223,6 +223,19 @@ function notaAncla(resumen, day, causa) {
 }
 
 /**
+ * Posiciones de la comida y la cena en un día del motor viejo. Son las
+ * comidas principales (etiquetadas «Comida» o «Cena»): la primera es la
+ * comida y la última la cena. Con una sola, decide su etiqueta.
+ */
+export function huecosPrincipales(meals) {
+  const idx = [];
+  (meals || []).forEach((m, k) => { if (m && (m.time === 'Comida' || m.time === 'Cena')) idx.push(k); });
+  if (idx.length >= 2) return [idx[0], idx[idx.length - 1]];
+  if (idx.length === 1) return meals[idx[0]].time === 'Cena' ? [-1, idx[0]] : [idx[0], -1];
+  return [-1, -1];
+}
+
+/**
  * @param {object} profile perfil de la app (mismo que recibe buildPlan)
  * @param {number} targetKcal
  * @param {object} opts mismas opciones que buildPlan + platosRecientes (nombres de la semana anterior)
@@ -274,13 +287,17 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
     const [comida, cena] = componerDia(profile, targetKcal, opts, i, [specPara(comida2.dish, 'comida'), specPara(cena2.dish, 'cena')]);
     const marca = (meal, dish, momento) => {
       const c = causaDe.get(`${d2.day}|${momento}`);
-      return { ...meal, title: dish.nombre, _motor: 'engine2', _dishId: dish.id, ...(c && c.startsWith('ancla_base') ? { _causa: c } : {}) };
+      return { ...meal, time: momento === 'cena' ? 'Cena' : 'Comida', title: dish.nombre, _motor: 'engine2', _dishId: dish.id, ...(c && c.startsWith('ancla_base') ? { _causa: c } : {}) };
     };
+    // Comida y cena por su posición en el día, no por la etiqueta: el motor
+    // viejo a veces etiqueta «Cena» una comida de ficha libre (D-106).
+    const [iComida, iCena] = huecosPrincipales(day.meals);
 
     let nuevaComida;
     if (comida2.libre) {
-      const libre = day.meals.find((m) => m && m.time === 'Comida') || null;
-      nuevaComida = libre ? { ...libre, p2: `Si prefieres cocinar: ${comida2.dish.nombre}.`, sugerencia: marca(comida, comida2.dish, 'comida') } : null;
+      const iLibre = iComida >= 0 ? iComida : (mealsPerDay === 2 ? iCena : -1);
+      const libre = iLibre >= 0 ? day.meals[iLibre] : null;
+      nuevaComida = libre ? { ...libre, time: 'Comida', p2: `Si prefieres cocinar: ${comida2.dish.nombre}.`, sugerencia: marca(comida, comida2.dish, 'comida') } : null;
       memL.push('libre');
     } else {
       nuevaComida = marca(comida, comida2.dish, 'comida');
@@ -305,12 +322,13 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
         title: `${nuevaComida.title} (comida principal)`,
         p1: String(nuevaComida.p1 || '').replace(/\((\d+)g\)/g, (full, g) => `(${Math.round(parseInt(g, 10) * 1.25)}g)`),
       };
-      meals = day.meals.map((m) => (m && m.time === 'Comida' ? principal : m));
+      const iPrincipal = iComida >= 0 ? iComida : iCena; // la única principal, se llame como se llame
+      meals = day.meals.map((m, k) => (k === iPrincipal ? { ...principal, time: 'Comida' } : m));
       nuevaCena = null;
     } else {
-      meals = day.meals.map((m) => {
-        if (m && m.time === 'Comida') return nuevaComida;
-        if (m && m.time === 'Cena') return nuevaCena;
+      meals = day.meals.map((m, k) => {
+        if (k === iComida) return nuevaComida;
+        if (k === iCena) return nuevaCena;
         return m;
       });
     }
@@ -463,7 +481,7 @@ export function regenerarComidaEngine2(plan, dayIdx, time, deseo, profile, targe
 
   const [compuesta] = componerDia(profile, targetKcal, opts, dayIdx, [specPara(dish, momento)]);
   const principal = / \(comida principal\)$/.test(actual.title || '');
-  const nueva = adaptarSiProcede({ ...compuesta, title: `${dish.nombre}${principal ? ' (comida principal)' : ''}`, _motor: 'engine2', _dishId: dish.id, ...(esAncla && actual._causa ? { _causa: actual._causa } : {}) }, profile);
+  const nueva = adaptarSiProcede({ ...compuesta, time, title: `${dish.nombre}${principal ? ' (comida principal)' : ''}`, _motor: 'engine2', _dishId: dish.id, ...(esAncla && actual._causa ? { _causa: actual._causa } : {}) }, profile);
   const mantieneAncla = esAncla && decisionLog.some((e) => e.causa === 'alternativa_mantiene_ancla');
   if (mantieneAncla && actual.slotNote) nueva.slotNote = actual.slotNote;
 

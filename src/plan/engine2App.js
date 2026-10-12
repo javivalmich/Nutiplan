@@ -29,6 +29,7 @@ import { aplicarAjustesD099 } from '../engine2/dishes/ajustesD099.js';
 import { alergenosDeTexto } from '../engine2/nutrientes/alergenos.js';
 import { adaptarComidaFodmap, fodmapRestante, protagonistaFodmap } from '../engine2/nutrientes/fodmap.js';
 import { evaluateVeto } from '../engine2/walk/vetoes.js';
+import { aplicarNombresD105, nombreVisible } from '../engine2/dishes/alinosD105.js';
 
 export const DIA_ENGINE2 = Object.freeze({
   Lunes: 'Lunes', Martes: 'Martes', 'Miércoles': 'Miercoles', Jueves: 'Jueves',
@@ -442,7 +443,7 @@ export function regenerarComidaEngine2(plan, dayIdx, time, deseo, profile, targe
   if (!momento || !actual || !actual._dishId) throw new Error(`regenerarComidaEngine2: ${time} del día ${dayIdx} no es un plato de engine2`);
 
   const { catalogo } = filtrarCatalogo(opts.catalogo, profile, targetKcal, opts);
-  const catalog = aplicarAjustesD099(catalogo);
+  const catalog = aplicarNombresD105(aplicarAjustesD099(catalogo));
   const diaE2 = (d) => DIA_ENGINE2[d.name] || d.name;
   const semana = plan.days.flatMap((d) => ['Comida', 'Cena'].map((t) => {
     const m = d.meals.find((x) => x && x.time === t);
@@ -454,7 +455,7 @@ export function regenerarComidaEngine2(plan, dayIdx, time, deseo, profile, targe
 
   const { dish, decisionLog } = elegirAlternativa({
     catalog, semana, day: diaE2(day), momento, actualId: actual._dishId, deseo,
-    platosRecientes: meta.platosSemanaAnterior,
+    platosRecientes: (meta.platosSemanaAnterior || []).map(nombreVisible),
     intolerancias: [], // el catálogo ya llega filtrado (filtrarCatalogo)
     anclaBase: esAncla ? meta.ancla.base : null,
     seed: `${opts.userId ?? 'anon'}:${opts.weekNumber ?? 0}`,

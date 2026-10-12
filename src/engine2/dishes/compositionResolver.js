@@ -57,6 +57,7 @@
 // caso a distinguir por un consumidor tolerante.
 
 import { FREEFORM_COMBOS } from '../../data/FREEFORM_COMBOS.js';
+import { PLATOS_DIETA } from '../../data/PLATOS_DIETA.js';
 import { LUNCH_COMBOS_RAW, DINNER_COMBOS_RAW, TRAINING_DINNERS_RAW } from './legacyCombos.data.js';
 import { groupCombosByIdentity } from './identity.js';
 
@@ -98,7 +99,10 @@ const ENERGY_DENSITY_LEXICAL = Object.freeze({ low: 'baja', medium: 'media', hig
 /** Ver banner del modulo (D-024): unico lanzado cuando dish.id no es tupla scaffold ni tiene entrada freeform. */
 export class UnresolvableOriginError extends Error {}
 
-const freeformById = new Map(FREEFORM_COMBOS.map((combo) => [combo.identity.id, combo]));
+// D-107: los platos vegetarianos y veganos (PLATOS_DIETA.js) tienen la misma
+// forma que los freeform y se resuelven igual. Sus ids empiezan por «dieta_»
+// y no chocan con los de FREEFORM_COMBOS.
+const freeformById = new Map([...FREEFORM_COMBOS, ...PLATOS_DIETA].map((combo) => [combo.identity.id, combo]));
 
 // Mismo mecanismo de join que CP2 (anchors.js): agrupar por
 // comboIdentityKey y usar esa clave como indice. dish.id de un plato
@@ -253,7 +257,9 @@ export function resolveFreeformComposition(combo, dishId, fuenteEditorial) {
     containsGluten: buildCampoComposicion(combo.identity.containsGluten, confirmadoPlato?.gluten),
     containsLactosa: buildCampoComposicion(combo.identity.containsLactosa, confirmadoPlato?.lactosa),
     density: resolveFreeformDensity(combo, dishId),
-    verdura: buildCampoComposicion(undefined, confirmadoPlato?.verdura),
+    // D-107: un freeform que declara sus ejes de verdura (identity.verdura,
+    // solo los platos de PLATOS_DIETA.js) los deriva; el resto, como antes.
+    verdura: buildCampoComposicion(Array.isArray(combo.identity.verdura) ? [...combo.identity.verdura] : undefined, confirmadoPlato?.verdura),
   };
   return deepFreeze(vista);
 }

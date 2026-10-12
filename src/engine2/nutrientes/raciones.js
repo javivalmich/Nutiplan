@@ -52,7 +52,8 @@ const RANGO_GRUPO = Object.freeze({
 const RANGO = Object.freeze({
   jamon_serrano: [20, 100, 5], jamon_cocido: [20, 100, 5], lacon: [40, 150, 10], chorizo: [20, 80, 5],
   morcilla: [30, 100, 10], panceta: [20, 80, 5], salmon_ahumado: [30, 120, 5],
-  atun_conserva: [50, 200, 5], mejillon: [100, 400, 10], berberecho: [80, 300, 10], tofu: [80, 250, 5],
+  atun_conserva: [50, 200, 5], mejillon: [100, 400, 10], berberecho: [80, 300, 10], tofu: [80, 250, 5], tofu_sedoso: [80, 250, 10],
+  tempeh: [80, 200, 5], seitan: [80, 250, 5], soja_texturizada: [30, 90, 5],
   lentejas_cocidas: [120, 400, 10], garbanzos_cocidos: [120, 400, 10], alubias_cocidas: [120, 400, 10],
   hummus: [30, 120, 5], edamame: [50, 200, 10], guisantes: [50, 200, 10],
   avena: [30, 90, 5], muesli: [30, 90, 5], patata: [100, 350, 10], boniato: [100, 350, 10],
@@ -61,7 +62,8 @@ const RANGO = Object.freeze({
   arroz_integral_cocido: [100, 450, 10], gnocchi: [150, 400, 10], masa_empanada: [80, 250, 10], maiz: [40, 150, 10],
   frutos_rojos: [80, 250, 10], pina: [80, 250, 10],
   leche_semi: [150, 400, 10], leche_desnatada: [150, 400, 10], bebida_vegetal: [150, 400, 10],
-  skyr: [100, 400, 25], queso_fresco: [30, 150, 10], queso_crema: [15, 60, 5], mozzarella: [30, 150, 10],
+  skyr: [100, 400, 25], queso_fresco: [30, 150, 10], requeson: [60, 250, 10], queso_burgos_0: [60, 250, 10],
+  yogur_soja: [125, 300, 25], queso_crema: [15, 60, 5], mozzarella: [30, 150, 10],
   feta: [20, 100, 10], queso_curado: [10, 40, 5],
   semillas: [5, 20, 5], crema_cacahuete: [10, 40, 5],
   aove: [5, 20, 5], aceite_semillas: [5, 20, 5],
@@ -70,10 +72,10 @@ const RANGO = Object.freeze({
 const RANGO_UD = Object.freeze({
   huevo: [1, 5, 1], clara: [2, 8, 1], fruta: [1, 2, 1], platano: [1, 2, 1], aguacate: [0.5, 1.5, 0.5],
   tortilla_trigo: [1, 4, 1], tortilla_maiz: [1, 5, 1], croquetas: [4, 14, 1], yogur_griego_0: [1, 3, 1],
-  yogur_natural: [1, 3, 1],
+  yogur_natural: [1, 3, 1], yogur_soja: [1, 3, 1],
 });
 // Siempre fijos aunque su grupo se ajuste.
-const SIEMPRE_FIJO = new Set(['harina', 'pan_rallado', 'tahini', 'leche_coco', 'coco_rallado', 'algas', 'aceituna', 'pepinillo']);
+const SIEMPRE_FIJO = new Set(['levadura_nutricional', 'harina', 'pan_rallado', 'tahini', 'leche_coco', 'coco_rallado', 'algas', 'aceituna', 'pepinillo']);
 
 const r1 = (x) => Math.round(x * 10) / 10;
 

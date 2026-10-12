@@ -199,6 +199,12 @@ export const INTOLERANCES=[
   {key:"picante",      emoji:"🌶️",label:"Picante"},
   {key:"sibo",         emoji:"🌿",label:"SIBO (bajo en FODMAP)"},
 ];
+// D-107: tipo de dieta del perfil.
+export const DIETAS=[
+  {key:"omnivora",    emoji:"🍽️",label:"Omnívora"},
+  {key:"vegetariana", emoji:"🥚",label:"Vegetariana"},
+  {key:"vegana",      emoji:"🌱",label:"Vegana"},
+];
 export const DAYS_ES   =["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
 export const DAYS_SHORT=["L","M","X","J","V","S","D"];
 export const ACT_LABELS ={sedentary:"Sedentario",light:"Ligero",moderate:"Moderado",active:"Activo",veryActive:"Muy activo"};

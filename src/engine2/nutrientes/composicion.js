@@ -437,6 +437,55 @@ export const COMPOSICION_DATOS = {
     "grupo": "Legumbres, semillas, frutos secos y derivados"
    }
   },
+  "tofu_sedoso": {
+   "kcal": 55,
+   "proteina": 5.5,
+   "hidratos": 2,
+   "grasa": 2.7,
+   "fibra": 0.3,
+   "agua": null,
+   "fuente": {
+    "etiqueta": true,
+    "nota": "BEDCA solo tiene tofu firme: etiqueta típica de tofu sedoso (silken) (D-107)"
+   }
+  },
+  "tempeh": {
+   "kcal": 200,
+   "proteina": 20,
+   "hidratos": 4,
+   "grasa": 11,
+   "fibra": 4,
+   "agua": null,
+   "fuente": {
+    "etiqueta": true,
+    "nota": "BEDCA no tiene tempeh: etiqueta típica de tempeh de soja (D-107)"
+   }
+  },
+  "seitan": {
+   "kcal": 123,
+   "proteina": 24,
+   "hidratos": 2,
+   "grasa": 2,
+   "fibra": 0,
+   "agua": 72,
+   "fuente": {
+    "bedca": "2568",
+    "nombre": "Seitán",
+    "grupo": "Miscelánea"
+   }
+  },
+  "soja_texturizada": {
+   "kcal": 330,
+   "proteina": 50,
+   "hidratos": 14,
+   "grasa": 1.5,
+   "fibra": 17,
+   "agua": null,
+   "fuente": {
+    "etiqueta": true,
+    "nota": "BEDCA no tiene soja texturizada: etiqueta típica, en seco (D-107)"
+   }
+  },
   "lentejas_seco": {
    "kcal": 309,
    "proteina": 24.8,
@@ -1396,6 +1445,43 @@ export const COMPOSICION_DATOS = {
     "nota": "BEDCA no tiene skyr ni queso batido 0 %: etiqueta típica"
    }
   },
+  "yogur_soja": {
+   "kcal": 50,
+   "proteina": 4,
+   "hidratos": 2.5,
+   "grasa": 2.3,
+   "fibra": 0.5,
+   "agua": null,
+   "fuente": {
+    "etiqueta": true,
+    "nota": "Yogur de soja natural sin azúcar: el «Batido fermentado de soja» de BEDCA es azucarado (17 g de hidratos) (D-107)"
+   }
+  },
+  "requeson": {
+   "kcal": 101,
+   "proteina": 12.3,
+   "hidratos": 3.3,
+   "grasa": 4.3,
+   "fibra": 0,
+   "agua": 80.1,
+   "fuente": {
+    "bedca": "2517",
+    "nombre": "Requesón",
+    "grupo": "Lácteos y derivados"
+   }
+  },
+  "queso_burgos_0": {
+   "kcal": 70,
+   "proteina": 12,
+   "hidratos": 4,
+   "grasa": 0.5,
+   "fibra": 0,
+   "agua": null,
+   "fuente": {
+    "etiqueta": true,
+    "nota": "BEDCA solo tiene Burgos entero (15 % de grasa): etiqueta típica de Burgos 0 % (D-107)"
+   }
+  },
   "queso_fresco": {
    "kcal": 197,
    "proteina": 12.4,
@@ -1658,6 +1744,18 @@ export const COMPOSICION_DATOS = {
     "bedca": "2157",
     "nombre": "Miso",
     "grupo": "Cereales y derivados"
+   }
+  },
+  "levadura_nutricional": {
+   "kcal": 380,
+   "proteina": 45,
+   "hidratos": 35,
+   "grasa": 5,
+   "fibra": 20,
+   "agua": null,
+   "fuente": {
+    "etiqueta": true,
+    "nota": "BEDCA no tiene levadura nutricional: etiqueta típica en copos; se usan 5–10 g (D-107)"
    }
   },
   "ketchup": {

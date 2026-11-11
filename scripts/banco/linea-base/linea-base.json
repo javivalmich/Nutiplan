@@ -1,8 +1,9 @@
 {
  "banco": "I-0",
- "version": 1,
+ "version": 2,
  "semanas": 8,
  "semanaInicial": 60,
+ "toleranciaG": 5,
  "catalogo": {
   "filtradoPorPerfil": {
    "celiaco-2400": {
@@ -280,19 +281,35 @@
    }
   },
   "idaYVuelta": {
-   "distintas": 1061,
+   "dentroDeTolerancia": 1485,
+   "dentroPorClaveYForma": {
+    "aceite_semillas|ml": 30,
+    "aove|ml": 1340,
+    "bebida_vegetal|ml": 41,
+    "leche_desnatada|ml": 41,
+    "mejillon|ud": 33
+   },
    "ejemplos": [
-    "aove|ml «Pechuga de pollo a la plancha con limón, orégano y ajo con brócoli y arroz blanco»: decidido 15 g → «AOVE (15 ml)» → releído 13.8 g",
     "pan_blanco|g «Gazpacho con huevo duro, atún y pan»: decidido 30 g → «Pan duro (30g) + 15g para tostar» → releído 45 g",
     "patata|ud «Cocido madrileño express»: decidido 100 g → «(sin línea legible)» → releído ilegible",
-    "mejillon|ud «Fideuá de marisco»: decidido 100 g → «Mejillones (14½ unidades)» → releído 98 g",
-    "leche_desnatada|ml «Moussaka ligera con berenjena y bechamel reducida»: decidido 210 g → «Leche desnatada (205ml)» → releído 211.2 g",
-    "aceite_semillas|ml «Pad thai con gambas»: decidido 15 g → «Aceite de sésamo o girasol (15ml)» → releído 13.8 g",
+    "mejillon|ud «Fideuá de marisco»: decidido 110 g → «Mejillones (15½ unidades)» → releído 105 g",
     "aguacate|ud «Quesadilla fitness de pollo y queso bajo en grasa»: decidido 210 g → «Aguacate (1½)» → releído 140 g",
-    "queso_fresco|loncha «Hamburguesa de ternera con pan brioche y patatas gajo»: decidido 30 g → «Queso light en lonchas (2 loncha)» → releído 40 g",
-    "bebida_vegetal|ml «Lasaña de verduras y soja con bechamel vegetal»: decidido 150 g → «Bebida de soja sin azúcar (145ml)» → releído 147.9 g"
+    "queso_fresco|loncha «Hamburguesa de ternera con pan brioche y patatas gajo»: decidido 30 g → «Queso light en lonchas (2 loncha)» → releído 40 g"
    ],
+   "fueraDeTolerancia": 176,
+   "fueraPorClaveYForma": {
+    "aguacate|ud": 8,
+    "mejillon|ud": 7,
+    "pan_blanco|g": 11,
+    "patata|ud": 140,
+    "queso_fresco|loncha": 10
+   },
+   "iguales": 23235,
    "ilegibles": 8,
+   "ilegiblesPorClaveYForma": {
+    "aguacate|ud": 3,
+    "patata|ud": 5
+   },
    "ingredientes": 836,
    "mayorDiferenciaG": {
     "aceite_semillas|ml": 2,
@@ -306,18 +323,7 @@
     "queso_fresco|loncha": 10
    },
    "platos": 288,
-   "platosAfectados": 278,
-   "porClaveYForma": {
-    "aceite_semillas|ml": 18,
-    "aguacate|ud": 11,
-    "aove|ml": 804,
-    "bebida_vegetal|ml": 21,
-    "leche_desnatada|ml": 22,
-    "mejillon|ud": 27,
-    "pan_blanco|g": 11,
-    "patata|ud": 145,
-    "queso_fresco|loncha": 10
-   },
+   "platosFueraDeTolerancia": 15,
    "pruebas": 24904
   },
   "platos": 241
@@ -326,17 +332,17 @@
   {
    "cantidades": {
     "calculadoAusenteEnCompra": 0,
-    "calculadoDistintoDeCompra": 46,
     "comidasAjustadas": 216,
+    "decididoIgualQueCompra": 514,
+    "dentroDeTolerancia": 130,
+    "dentroPorClave": {
+     "aceite_semillas": 2,
+     "aove": 115,
+     "leche_semi": 13
+    },
     "ejemplos": [
-     "s60 Lunes Comida «Pasta integral al ajillo con atún en conserva»: aove decidido 15 g → compra «AOVE (15 ml)» = 13.8 g",
-     "s60 Martes Comida «Garbanzos al curry con brócoli»: aove decidido 15 g → compra «AOVE (15 ml)» = 13.8 g",
-     "s60 Martes Cena «Sardinas a la plancha con tomate cherry»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Miércoles Comida «Pechuga de pollo al horno con hierbas provenzales con judías verdes y patata»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Miércoles Cena «Atún en conserva en ensalada»: aove decidido 15 g → compra «AOVE (15 ml)» = 13.8 g",
-     "s60 Jueves Comida «Garbanzos con pimentón con zanahoria»: aove decidido 15 g → compra «AOVE (15 ml)» = 13.8 g",
-     "s61 Jueves Comida «Crema de brócoli con pechuga de pollo encima»: aove decidido 15 g → compra «AOVE (15 ml)» = 13.8 g",
-     "s61 Viernes Comida «Bowl proteico de pechuga de pavo con boniato»: aove decidido 15 g → compra «AOVE (15 ml)» = 13.8 g"
+     "s61 Sábado Cena «Hamburguesa de ternera con pan brioche y patatas gajo»: queso_fresco decidido 30 g → compra «Queso light en lonchas (2 loncha)» = 40 g",
+     "s66 Martes Cena «Hamburguesa de ternera con pan brioche y patatas gajo»: queso_fresco decidido 30 g → compra «Queso light en lonchas (2 loncha)» = 40 g"
     ],
     "enTechoBase": 6,
     "enTechoPorClave": {
@@ -345,6 +351,10 @@
      "semillas": 4
     },
     "frutaAnadida": 2,
+    "fueraDeTolerancia": 2,
+    "fueraPorClave": {
+     "queso_fresco": 2
+    },
     "huevosMaxComida": 3,
     "huevosMaxDia": 3,
     "ingredientes": 646,
@@ -364,10 +374,6 @@
     "mayorDiferenciaG": 10,
     "mayorDiferenciaKcal": 17,
     "panAnadido": 24,
-    "porClave": {
-     "aove": 44,
-     "queso_fresco": 2
-    },
     "principales": 112,
     "replicaDistinta": 0,
     "sobreTechoBase": 5,
@@ -696,17 +702,20 @@
   {
    "cantidades": {
     "calculadoAusenteEnCompra": 0,
-    "calculadoDistintoDeCompra": 96,
     "comidasAjustadas": 216,
+    "decididoIgualQueCompra": 557,
+    "dentroDeTolerancia": 133,
+    "dentroPorClave": {
+     "aceite_semillas": 3,
+     "aove": 112,
+     "kefir": 7,
+     "leche_semi": 11
+    },
     "ejemplos": [
-     "s60 Lunes Desayuno «Claras a la plancha con espinacas, tomate y fruta»: aove decidido 20 g → compra «AOVE (20ml)» = 18.4 g",
-     "s60 Lunes Comida «Alubias blancas al ajillo con pimientos»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Lunes Cena «Merluza al horno con judías verdes y patata»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Martes Comida «Bowl proteico de atún en conserva con quinoa»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Martes Cena «Pechuga de pavo a la plancha con mostaza y miel con calabacín»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Miércoles Desayuno «Claras a la plancha con espinacas, tomate y fruta»: aove decidido 20 g → compra «AOVE (20ml)» = 18.4 g",
-     "s61 Lunes Comida «Atún en conserva en crudo con tomate cherry y arroz blanco»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s61 Lunes Cena «Verduras crujientes al airfryer con pollo»: aove decidido 15 g → compra «AOVE (15ml)» = 13.8 g"
+     "s61 Domingo Cena «Hamburguesa de ternera con pan brioche y patatas gajo»: queso_fresco decidido 30 g → compra «Queso light en lonchas (2 loncha)» = 40 g",
+     "s63 Domingo Cena «Hamburguesa de ternera con pan brioche y patatas gajo»: queso_fresco decidido 30 g → compra «Queso light en lonchas (2 loncha)» = 40 g",
+     "s64 Sábado Cena «Caldo gallego de grelos (ligero)»: patata decidido 350 g → compra «Patata (2 grande)» = 400 g",
+     "s66 Domingo Cena «Hamburguesa de ternera con pan brioche y patatas gajo»: queso_fresco decidido 30 g → compra «Queso light en lonchas (2 loncha)» = 40 g"
     ],
     "enTechoBase": 66,
     "enTechoPorClave": {
@@ -720,6 +729,11 @@
      "platano": 6
     },
     "frutaAnadida": 6,
+    "fueraDeTolerancia": 4,
+    "fueraPorClave": {
+     "patata": 1,
+     "queso_fresco": 3
+    },
     "huevosMaxComida": 3,
     "huevosMaxDia": 4,
     "ingredientes": 694,
@@ -740,12 +754,6 @@
     "mayorDiferenciaG": 50,
     "mayorDiferenciaKcal": 22,
     "panAnadido": 44,
-    "porClave": {
-     "aceite_semillas": 1,
-     "aove": 91,
-     "patata": 1,
-     "queso_fresco": 3
-    },
     "principales": 112,
     "replicaDistinta": 0,
     "sobreTechoBase": 2,
@@ -1077,17 +1085,21 @@
   {
    "cantidades": {
     "calculadoAusenteEnCompra": 0,
-    "calculadoDistintoDeCompra": 116,
     "comidasAjustadas": 160,
+    "decididoIgualQueCompra": 509,
+    "dentroDeTolerancia": 125,
+    "dentroPorClave": {
+     "aceite_semillas": 2,
+     "aove": 116,
+     "leche_semi": 7
+    },
     "ejemplos": [
-     "s60 Lunes Comida «Pasta integral al pomodoro con ternera magra»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Lunes Cena «Bacalao fresco al horno con espinacas y arroz blanco»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Martes Desayuno «Avena caliente con fresas y nueces»: leche_semi decidido 260 g → compra «Leche semidesnatada (250ml)» = 257.5 g",
-     "s60 Martes Comida «Huevos revueltos con champiñones y patata»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Martes Cena «Atún en conserva en ensalada»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Miércoles Comida «Lentejas con pimentón con pimientos»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
      "s61 Lunes Desayuno «Huevos revueltos con aguacate y tomate»: aguacate decidido 210 g → compra «Aguacate (1½)» = 140 g",
-     "s61 Lunes Comida «Bowl mediterráneo de pechuga de pavo con quinoa»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g"
+     "s61 Miércoles Desayuno «Huevos revueltos con aguacate y tomate»: aguacate decidido 210 g → compra «Aguacate (1½)» = 140 g",
+     "s61 Viernes Desayuno «Huevos revueltos con aguacate y tomate»: aguacate decidido 210 g → compra «Aguacate (1½)» = 140 g",
+     "s62 Miércoles Cena «Caldo gallego de grelos (ligero)»: patata decidido 410 g → compra «Patata (2 grande)» = 400 g",
+     "s63 Domingo Cena «Hamburguesa de ternera con pan brioche y patatas gajo»: queso_fresco decidido 30 g → compra «Queso light en lonchas (2 loncha)» = 40 g",
+     "s65 Miércoles Cena «Hamburguesa de ternera con pan brioche y patatas gajo»: queso_fresco decidido 30 g → compra «Queso light en lonchas (2 loncha)» = 40 g"
     ],
     "enTechoBase": 103,
     "enTechoPorClave": {
@@ -1114,6 +1126,12 @@
      "yogur_griego_0": 2
     },
     "frutaAnadida": 50,
+    "fueraDeTolerancia": 6,
+    "fueraPorClave": {
+     "aguacate": 3,
+     "patata": 1,
+     "queso_fresco": 2
+    },
     "huevosMaxComida": 3,
     "huevosMaxDia": 4,
     "ingredientes": 640,
@@ -1133,14 +1151,6 @@
     "mayorDiferenciaG": 70,
     "mayorDiferenciaKcal": 110,
     "panAnadido": 66,
-    "porClave": {
-     "aceite_semillas": 2,
-     "aguacate": 3,
-     "aove": 102,
-     "leche_semi": 6,
-     "patata": 1,
-     "queso_fresco": 2
-    },
     "principales": 112,
     "replicaDistinta": 0,
     "sobreTechoBase": 111,
@@ -1471,17 +1481,18 @@
   {
    "cantidades": {
     "calculadoAusenteEnCompra": 0,
-    "calculadoDistintoDeCompra": 134,
     "comidasAjustadas": 272,
+    "decididoIgualQueCompra": 736,
+    "dentroDeTolerancia": 152,
+    "dentroPorClave": {
+     "aceite_semillas": 2,
+     "aove": 117,
+     "kefir": 7,
+     "leche_semi": 26
+    },
     "ejemplos": [
-     "s60 Lunes Desayuno «Tostada con tortilla francesa y tomate»: leche_semi decidido 280 g → compra «Leche semidesnatada (270ml)» = 278.1 g",
-     "s60 Lunes Comida «Bowl mediterráneo de merluza con quinoa»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Lunes Cena «Lomo de cerdo al horno con pimientos y arroz blanco»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Martes Comida «Alubias blancas al ajillo con acelgas»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Martes Cena «Huevo con tomate en crudo»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Miércoles Desayuno «Tostada con tortilla francesa y tomate»: leche_semi decidido 280 g → compra «Leche semidesnatada (270ml)» = 278.1 g",
-     "s61 Lunes Comida «Lomo de cerdo guisado con alcachofas y arroz blanco»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s61 Lunes Cena «Atún en conserva en crudo con lechuga mixta y pepino»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g"
+     "s60 Sábado Cena «Hamburguesa de ternera con pan brioche y patatas gajo»: queso_fresco decidido 30 g → compra «Queso light en lonchas (2 loncha)» = 40 g",
+     "s67 Domingo Cena «Hamburguesa de ternera con pan brioche y patatas gajo»: queso_fresco decidido 30 g → compra «Queso light en lonchas (2 loncha)» = 40 g"
     ],
     "enTechoBase": 176,
     "enTechoPorClave": {
@@ -1527,6 +1538,10 @@
      "yogur_griego_0": 16
     },
     "frutaAnadida": 46,
+    "fueraDeTolerancia": 2,
+    "fueraPorClave": {
+     "queso_fresco": 2
+    },
     "huevosMaxComida": 3,
     "huevosMaxDia": 4,
     "ingredientes": 890,
@@ -1547,12 +1562,6 @@
     "mayorDiferenciaG": 10,
     "mayorDiferenciaKcal": 15,
     "panAnadido": 66,
-    "porClave": {
-     "aove": 107,
-     "kefir": 7,
-     "leche_semi": 18,
-     "queso_fresco": 2
-    },
     "principales": 112,
     "replicaDistinta": 0,
     "sobreTechoBase": 173,
@@ -1883,18 +1892,15 @@
   {
    "cantidades": {
     "calculadoAusenteEnCompra": 0,
-    "calculadoDistintoDeCompra": 109,
     "comidasAjustadas": 216,
-    "ejemplos": [
-     "s60 Lunes Comida «Crema de calabacín con gambas encima»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Lunes Cena «Atún en conserva en crudo con lechuga mixta y pepino»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Martes Comida «Huevos revueltos con espinacas y arroz blanco»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Martes Cena «Pechuga de pollo salteada con hierbas provenzales con champiñones»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Miércoles Comida «Conejo al horno con alcachofas y patata»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Miércoles Cena «Atún en conserva en crudo con vinagre de Módena y mostaza con tomate cherry»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s61 Lunes Comida «Crema de tomate cherry con atún en conserva encima»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s61 Lunes Cena «Ternera magra al horno con brócoli y boniato»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g"
-    ],
+    "decididoIgualQueCompra": 567,
+    "dentroDeTolerancia": 124,
+    "dentroPorClave": {
+     "aove": 117,
+     "kefir": 3,
+     "leche_semi": 4
+    },
+    "ejemplos": [],
     "enTechoBase": 123,
     "enTechoPorClave": {
      "alubias_seco": 1,
@@ -1911,6 +1917,8 @@
      "semillas": 4
     },
     "frutaAnadida": 22,
+    "fueraDeTolerancia": 0,
+    "fueraPorClave": {},
     "huevosMaxComida": 3,
     "huevosMaxDia": 4,
     "ingredientes": 691,
@@ -1928,10 +1936,6 @@
     "mayorDiferenciaG": 2.4,
     "mayorDiferenciaKcal": 15,
     "panAnadido": 64,
-    "porClave": {
-     "aove": 105,
-     "leche_semi": 4
-    },
     "principales": 112,
     "replicaDistinta": 0,
     "sobreTechoBase": 35,
@@ -2250,17 +2254,17 @@
   {
    "cantidades": {
     "calculadoAusenteEnCompra": 0,
-    "calculadoDistintoDeCompra": 99,
     "comidasAjustadas": 216,
+    "decididoIgualQueCompra": 549,
+    "dentroDeTolerancia": 139,
+    "dentroPorClave": {
+     "aceite_semillas": 2,
+     "aove": 118,
+     "kefir": 10,
+     "leche_semi": 9
+    },
     "ejemplos": [
-     "s60 Lunes Comida «Pechuga de pollo al horno con espinacas y arroz blanco»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Lunes Cena «Merluza al horno con judías verdes»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Martes Comida «Dorada al horno con brócoli y patata»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Martes Cena «Sopa castellana con jamón serrano y huevo pochado»: aove decidido 15 g → compra «AOVE (15ml)» = 13.8 g",
-     "s60 Miércoles Comida «Crema de calabacín con gambas encima»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Miércoles Cena «Crema de calabaza con pechuga de pollo encima»: aove decidido 15 g → compra «AOVE (15 ml)» = 13.8 g",
-     "s61 Lunes Comida «Garbanzos estofados con alcachofas»: aove decidido 15 g → compra «AOVE (15 ml)» = 13.8 g",
-     "s61 Lunes Cena «Bacalao fresco al horno con espinacas»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g"
+     "s61 Sábado Cena «Caldo gallego de grelos (ligero)»: patata decidido 350 g → compra «Patata (2 grande)» = 400 g"
     ],
     "enTechoBase": 24,
     "enTechoPorClave": {
@@ -2273,6 +2277,10 @@
      "tortitas_arroz": 6
     },
     "frutaAnadida": 8,
+    "fueraDeTolerancia": 1,
+    "fueraPorClave": {
+     "patata": 1
+    },
     "huevosMaxComida": 3,
     "huevosMaxDia": 4,
     "ingredientes": 689,
@@ -2293,11 +2301,6 @@
     "mayorDiferenciaG": 50,
     "mayorDiferenciaKcal": 22,
     "panAnadido": 56,
-    "porClave": {
-     "aove": 96,
-     "leche_semi": 2,
-     "patata": 1
-    },
     "principales": 112,
     "replicaDistinta": 0,
     "sobreTechoBase": 9,
@@ -2624,17 +2627,17 @@
   {
    "cantidades": {
     "calculadoAusenteEnCompra": 0,
-    "calculadoDistintoDeCompra": 98,
     "comidasAjustadas": 216,
+    "decididoIgualQueCompra": 554,
+    "dentroDeTolerancia": 134,
+    "dentroPorClave": {
+     "aceite_semillas": 1,
+     "aove": 118,
+     "kefir": 4,
+     "leche_semi": 11
+    },
     "ejemplos": [
-     "s60 Lunes Comida «Pechuga de pollo salteada con tomate cherry y pasta integral»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Lunes Cena «Huevos revueltos con champiñones»: aove decidido 15 g → compra «AOVE (15 ml)» = 13.8 g",
-     "s60 Martes Comida «Lentejas con pimentón con pimientos»: aove decidido 15 g → compra «AOVE (15 ml)» = 13.8 g",
-     "s60 Martes Cena «Ternera magra a la plancha con espinacas»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Miércoles Comida «Lomo de cerdo a la plancha con mostaza y miel con zanahoria y patata»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Jueves Comida «Pechuga de pollo a la plancha con brócoli y arroz blanco»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s61 Lunes Comida «Pechuga de pavo a la plancha con pimientos y arroz blanco»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s61 Martes Comida «Ternera magra a la plancha con espinacas y patata»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g"
+     "s61 Miércoles Cena «Caldo gallego de grelos (ligero)»: patata decidido 350 g → compra «Patata (2 grande)» = 400 g"
     ],
     "enTechoBase": 20,
     "enTechoPorClave": {
@@ -2644,6 +2647,10 @@
      "semillas": 4
     },
     "frutaAnadida": 11,
+    "fueraDeTolerancia": 1,
+    "fueraPorClave": {
+     "patata": 1
+    },
     "huevosMaxComida": 3,
     "huevosMaxDia": 4,
     "ingredientes": 689,
@@ -2663,11 +2670,6 @@
     "mayorDiferenciaG": 50,
     "mayorDiferenciaKcal": 21,
     "panAnadido": 48,
-    "porClave": {
-     "aove": 94,
-     "leche_semi": 3,
-     "patata": 1
-    },
     "principales": 112,
     "replicaDistinta": 0,
     "sobreTechoBase": 11,
@@ -2977,17 +2979,24 @@
   {
    "cantidades": {
     "calculadoAusenteEnCompra": 0,
-    "calculadoDistintoDeCompra": 127,
     "comidasAjustadas": 216,
+    "decididoIgualQueCompra": 517,
+    "dentroDeTolerancia": 188,
+    "dentroPorClave": {
+     "aceite_semillas": 47,
+     "aove": 127,
+     "kefir": 4,
+     "leche_semi": 10
+    },
     "ejemplos": [
-     "s60 Lunes Comida «Bowl mediterráneo de merluza con quinoa»: aove decidido 15 g → compra «AOVE (15 ml)» = 13.8 g",
-     "s60 Lunes Comida «Bowl mediterráneo de merluza con quinoa»: aceite_semillas decidido 15 g → compra «Aceite aromatizado con ajo (opcional)» = 13.8 g",
-     "s60 Lunes Cena «Ternera magra a la plancha con pimientos y patata»: aove decidido 15 g → compra «AOVE (15 ml)» = 13.8 g",
-     "s60 Lunes Cena «Ternera magra a la plancha con pimientos y patata»: aceite_semillas decidido 15 g → compra «Aceite aromatizado con ajo (opcional)» = 13.8 g",
-     "s60 Martes Comida «Crema de zanahoria con bacalao fresco encima»: aove decidido 15 g → compra «AOVE (15 ml)» = 13.8 g",
-     "s60 Martes Comida «Crema de zanahoria con bacalao fresco encima»: aceite_semillas decidido 15 g → compra «Aceite aromatizado con ajo (opcional)» = 13.8 g",
-     "s61 Lunes Comida «Pechuga de pavo en ensalada»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s61 Lunes Cena «Merluza al horno con judías verdes y patata»: aove decidido 15 g → compra «AOVE (15 ml)» = 13.8 g"
+     "s61 Viernes Cena «Hamburguesa de ternera con pan sin gluten y patatas gajo»: queso_fresco decidido 30 g → compra «Queso light en lonchas (2 loncha)» = 40 g",
+     "s61 Domingo Comida «Pasta sin gluten al aceite de ajo con atún en conserva»: pasta_seco decidido 90 g → compra «Pasta sin gluten (80 g)» = 80 g",
+     "s63 Jueves Comida «Pasta sin gluten al aceite de ajo con pechuga de pollo»: pasta_seco decidido 90 g → compra «Pasta sin gluten (80 g)» = 80 g",
+     "s63 Domingo Comida «Pasta sin gluten con proteína con pechuga de pollo»: pasta_seco decidido 100 g → compra «Pasta sin gluten (80 g)» = 80 g",
+     "s64 Domingo Comida «Pasta sin gluten al pomodoro con ternera magra»: pasta_seco decidido 100 g → compra «Pasta sin gluten (80 g)» = 80 g",
+     "s65 Martes Comida «Pasta sin gluten al aceite de ajo con atún en conserva»: pasta_seco decidido 90 g → compra «Pasta sin gluten (80 g)» = 80 g",
+     "s65 Martes Cena «Hamburguesa de ternera con pan sin gluten y patatas gajo»: queso_fresco decidido 30 g → compra «Queso light en lonchas (2 loncha)» = 40 g",
+     "s66 Lunes Comida «Pasta sin gluten al pomodoro con pechuga de pollo»: pasta_seco decidido 105 g → compra «Pasta sin gluten (80 g)» = 80 g"
     ],
     "enTechoBase": 27,
     "enTechoPorClave": {
@@ -2998,6 +3007,12 @@
      "tortitas_arroz": 6
     },
     "frutaAnadida": 11,
+    "fueraDeTolerancia": 10,
+    "fueraPorClave": {
+     "pasta_seco": 7,
+     "patata": 1,
+     "queso_fresco": 2
+    },
     "huevosMaxComida": 3,
     "huevosMaxDia": 4,
     "ingredientes": 715,
@@ -3013,14 +3028,6 @@
     "mayorDiferenciaG": 50,
     "mayorDiferenciaKcal": 102,
     "panAnadido": 32,
-    "porClave": {
-     "aceite_semillas": 36,
-     "aove": 79,
-     "leche_semi": 2,
-     "pasta_seco": 7,
-     "patata": 1,
-     "queso_fresco": 2
-    },
     "principales": 112,
     "replicaDistinta": 0,
     "sobreTechoBase": 1,
@@ -3342,18 +3349,16 @@
   {
    "cantidades": {
     "calculadoAusenteEnCompra": 3,
-    "calculadoDistintoDeCompra": 62,
     "comidasAjustadas": 216,
-    "ejemplos": [
-     "s60 Martes Cena «Huevos a la plancha con espárragos»: aove decidido 15 g → compra «AOVE (15 ml)» = 13.8 g",
-     "s60 Miércoles Comida «Garbanzos al curry con brócoli»: aove decidido 15 g → compra «AOVE (15 ml)» = 13.8 g",
-     "s60 Jueves Comida «Crema de espinacas con huevos encima»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Viernes Comida «Lentejas al ajillo con calabacín»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Viernes Cena «Ensalada de calabaza asada con queso fresco, rúcula y nueces»: aove decidido 15 g → compra «AOVE (15ml)» = 13.8 g",
-     "s60 Domingo Comida «Garbanzos estofados con alcachofas»: aove decidido 15 g → compra «AOVE (15 ml)» = 13.8 g",
-     "s61 Martes Desayuno «Tostada con tomate y tofu ahumado»: bebida_vegetal decidido 190 g → compra «Bebida de soja (185ml)» = 188.7 g",
-     "s61 Martes Comida «Tempeh marinado con boniato asado y ensalada»: aove decidido 15 g → compra «AOVE (15ml)» = 13.8 g"
-    ],
+    "decididoIgualQueCompra": 506,
+    "dentroDeTolerancia": 144,
+    "dentroPorClave": {
+     "aceite_semillas": 5,
+     "aove": 122,
+     "bebida_vegetal": 11,
+     "leche_semi": 6
+    },
+    "ejemplos": [],
     "enTechoBase": 34,
     "enTechoPorClave": {
      "fruta": 18,
@@ -3364,6 +3369,8 @@
      "tofu_sedoso": 3
     },
     "frutaAnadida": 2,
+    "fueraDeTolerancia": 0,
+    "fueraPorClave": {},
     "huevosMaxComida": 3,
     "huevosMaxDia": 3,
     "ingredientes": 653,
@@ -3383,11 +3390,6 @@
     "mayorDiferenciaG": 1.6,
     "mayorDiferenciaKcal": 102,
     "panAnadido": 35,
-    "porClave": {
-     "aceite_semillas": 3,
-     "aove": 54,
-     "bebida_vegetal": 5
-    },
     "principales": 112,
     "replicaDistinta": 0,
     "sobreTechoBase": 8,
@@ -3706,24 +3708,23 @@
   {
    "cantidades": {
     "calculadoAusenteEnCompra": 3,
-    "calculadoDistintoDeCompra": 54,
     "comidasAjustadas": 216,
-    "ejemplos": [
-     "s60 Lunes Desayuno «Batido de tofu sedoso, frutos rojos y avena»: bebida_vegetal decidido 150 g → compra «Bebida de soja (145ml)» = 147.9 g",
-     "s60 Martes Comida «Garbanzos con pimentón con zanahoria»: aove decidido 15 g → compra «AOVE (15 ml)» = 13.8 g",
-     "s60 Miércoles Desayuno «Batido de tofu sedoso, frutos rojos y avena»: bebida_vegetal decidido 150 g → compra «Bebida de soja (145ml)» = 147.9 g",
-     "s60 Jueves Comida «Garbanzos al curry con brócoli»: aove decidido 15 g → compra «AOVE (15 ml)» = 13.8 g",
-     "s60 Viernes Desayuno «Batido de tofu sedoso, frutos rojos y avena»: bebida_vegetal decidido 150 g → compra «Bebida de soja (145ml)» = 147.9 g",
-     "s61 Lunes Desayuno «Tostada con tomate y tofu ahumado»: bebida_vegetal decidido 150 g → compra «Bebida de soja (145ml)» = 147.9 g",
-     "s61 Martes Desayuno «Batido de bebida de soja, tofu sedoso, plátano y avena»: bebida_vegetal decidido 150 g → compra «Bebida de soja (145ml)» = 147.9 g",
-     "s61 Martes Comida «Alubias blancas al ajillo con pimientos»: aove decidido 15 g → compra «AOVE (15 ml)» = 13.8 g"
-    ],
+    "decididoIgualQueCompra": 462,
+    "dentroDeTolerancia": 171,
+    "dentroPorClave": {
+     "aceite_semillas": 6,
+     "aove": 133,
+     "bebida_vegetal": 32
+    },
+    "ejemplos": [],
     "enTechoBase": 11,
     "enTechoPorClave": {
      "tofu": 5,
      "tofu_sedoso": 6
     },
     "frutaAnadida": 1,
+    "fueraDeTolerancia": 0,
+    "fueraPorClave": {},
     "huevosMaxComida": 0,
     "huevosMaxDia": 0,
     "ingredientes": 636,
@@ -3743,10 +3744,6 @@
     "mayorDiferenciaG": 2.1,
     "mayorDiferenciaKcal": 99,
     "panAnadido": 1,
-    "porClave": {
-     "aove": 22,
-     "bebida_vegetal": 32
-    },
     "principales": 112,
     "replicaDistinta": 0,
     "sobreTechoBase": 0,
@@ -4054,17 +4051,17 @@
   {
    "cantidades": {
     "calculadoAusenteEnCompra": 1,
-    "calculadoDistintoDeCompra": 96,
     "comidasAjustadas": 216,
+    "decididoIgualQueCompra": 567,
+    "dentroDeTolerancia": 141,
+    "dentroPorClave": {
+     "aceite_semillas": 3,
+     "aove": 115,
+     "kefir": 4,
+     "leche_semi": 19
+    },
     "ejemplos": [
-     "s60 Lunes Comida «Alubias blancas al ajillo con pimientos»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Lunes Cena «Dorada al horno con espinacas»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Martes Cena «Crema de zanahoria con pechuga de pollo encima»: aove decidido 15 g → compra «AOVE (15 ml)» = 13.8 g",
-     "s60 Miércoles Comida «Pechuga de pavo en ensalada»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Miércoles Cena «Merluza al horno con judías verdes y patata»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Jueves Comida «Pasta integral al pomodoro con ternera magra»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s61 Lunes Comida «Bowl mediterráneo de pechuga de pavo con quinoa»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s61 Lunes Cena «Bacalao fresco al horno con espinacas»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g"
+     "s63 Domingo Cena «Hamburguesa de ternera con pan brioche y patatas gajo»: queso_fresco decidido 30 g → compra «Queso light en lonchas (2 loncha)» = 40 g"
     ],
     "enTechoBase": 60,
     "enTechoPorClave": {
@@ -4078,6 +4075,10 @@
      "tofu": 1
     },
     "frutaAnadida": 13,
+    "fueraDeTolerancia": 1,
+    "fueraPorClave": {
+     "queso_fresco": 1
+    },
     "huevosMaxComida": 3,
     "huevosMaxDia": 4,
     "ingredientes": 710,
@@ -4098,12 +4099,6 @@
     "mayorDiferenciaG": 10,
     "mayorDiferenciaKcal": 97,
     "panAnadido": 48,
-    "porClave": {
-     "aceite_semillas": 1,
-     "aove": 91,
-     "leche_semi": 3,
-     "queso_fresco": 1
-    },
     "principales": 112,
     "replicaDistinta": 0,
     "sobreTechoBase": 7,
@@ -4436,17 +4431,16 @@
   {
    "cantidades": {
     "calculadoAusenteEnCompra": 0,
-    "calculadoDistintoDeCompra": 99,
     "comidasAjustadas": 216,
+    "decididoIgualQueCompra": 533,
+    "dentroDeTolerancia": 140,
+    "dentroPorClave": {
+     "aceite_semillas": 4,
+     "aove": 120,
+     "leche_semi": 16
+    },
     "ejemplos": [
-     "s60 Lunes Comida «Lentejas con pimentón con zanahoria»: aove decidido 15 g → compra «AOVE (15 ml)» = 13.8 g",
-     "s60 Martes Comida «Pechuga de pollo al horno con espinacas y arroz blanco»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Martes Cena «Pechuga de pavo al horno con tomate casero con berenjena»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Miércoles Comida «Lomo de cerdo al horno con calabacín y boniato»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Miércoles Cena «Ternera magra en ensalada»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s60 Jueves Comida «Bowl asiático de pechuga de pollo con arroz blanco»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g",
-     "s61 Lunes Desayuno «Tostada con pavo, queso fresco y tomate»: leche_semi decidido 300 g → compra «Leche semidesnatada (290ml)» = 298.7 g",
-     "s61 Lunes Comida «Pechuga de pollo salteada con tomate cherry y pasta integral»: aove decidido 20 g → compra «AOVE (20 ml)» = 18.4 g"
+     "s66 Domingo Cena «Hamburguesa de ternera con pan brioche y patatas gajo»: queso_fresco decidido 30 g → compra «Queso light en lonchas (2 loncha)» = 40 g"
     ],
     "enTechoBase": 22,
     "enTechoPorClave": {
@@ -4455,6 +4449,10 @@
      "semillas": 6
     },
     "frutaAnadida": 7,
+    "fueraDeTolerancia": 1,
+    "fueraPorClave": {
+     "queso_fresco": 1
+    },
     "huevosMaxComida": 3,
     "huevosMaxDia": 4,
     "ingredientes": 674,
@@ -4475,12 +4473,6 @@
     "mayorDiferenciaG": 10,
     "mayorDiferenciaKcal": 16,
     "panAnadido": 41,
-    "porClave": {
-     "aceite_semillas": 2,
-     "aove": 90,
-     "leche_semi": 6,
-     "queso_fresco": 1
-    },
     "principales": 112,
     "replicaDistinta": 0,
     "sobreTechoBase": 12,

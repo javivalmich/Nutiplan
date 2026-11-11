@@ -25,7 +25,7 @@ import { medirPlan } from '../../src/plan/medidor/medir.js';
 import { COMPOSICION } from '../../src/engine2/nutrientes/composicion.js';
 import { FREEFORM_POOL } from '../../src/data/freeformPool.js';
 import { PERFILES, SEMANA_INICIAL, SEMANAS_POR_DEFECTO, MES, clonar } from './perfiles.mjs';
-import { composicionSemana, restriccionesSemana, cantidadesSemana, huellaPlan, huecosSemana, catalogoFiltrado, idaYVueltaCatalogo } from './metricas.mjs';
+import { composicionSemana, restriccionesSemana, cantidadesSemana, huellaPlan, huecosSemana, catalogoFiltrado, idaYVueltaCatalogo, TOLERANCIA_G } from './metricas.mjs';
 
 const AQUI = path.dirname(fileURLToPath(import.meta.url));
 const LINEA_BASE = path.join(AQUI, 'linea-base', 'linea-base.json');
@@ -139,7 +139,7 @@ export function medirCatalogo(perfiles) {
 
 export function medirTodo({ semanas = SEMANAS_POR_DEFECTO, perfiles = PERFILES } = {}) {
   return {
-    banco: 'I-0', version: 1, semanas, semanaInicial: SEMANA_INICIAL,
+    banco: 'I-0', version: 2, semanas, semanaInicial: SEMANA_INICIAL, toleranciaG: TOLERANCIA_G,
     // Medidas de CATÁLOGO (sin generar planes) y de MENÚS GENERADOS, separadas.
     catalogo: medirCatalogo(perfiles),
     menus: perfiles.map((p) => medirPerfil(p, semanas)),
@@ -177,7 +177,8 @@ function resumen(m) {
     'legumbre med/máx': `${p.composicion.mediaSemanal.legumbre}/${p.composicion.maximoSemanal.legumbre}`,
     'racha pescado': p.composicion.maximoSemanal.rachaPescado,
     'familia días seguidos': p.composicion.familiaDiasSeguidos,
-    'calc≠compra': `${p.cantidades.calculadoDistintoDeCompra}/${p.cantidades.ingredientes}`,
+    'decidido≠compra <5 g': p.cantidades.dentroDeTolerancia,
+    'decidido≠compra ≥5 g': `${p.cantidades.fueraDeTolerancia}/${p.cantidades.ingredientes}`,
     'texto≠compra': p.cantidades.textoDistinto,
     'en techo': p.cantidades.enTechoBase + p.cantidades.sobreTechoBase,
     'pan añadido': `${p.cantidades.panAnadido}/${p.cantidades.principales}`,
@@ -185,8 +186,9 @@ function resumen(m) {
     'kcal % mín/máx': `${p.nutricion.desvioSemanaMin}/${p.nutricion.desvioSemanaMax}`,
   })));
   const iv = m.catalogo.idaYVuelta;
-  console.log(`CATÁLOGO — ida y vuelta de cantidades: ${iv.platos} platos, ${iv.ingredientes} ingredientes ajustables, ${iv.pruebas} pruebas; ${iv.distintas} releídas distintas, ${iv.ilegibles} ilegibles, ${iv.platosAfectados} platos afectados`);
-  console.log('  por ingrediente y forma:', JSON.stringify(iv.porClaveYForma));
+  console.log(`CATÁLOGO — ida y vuelta de cantidades: ${iv.platos} platos, ${iv.ingredientes} ingredientes ajustables, ${iv.pruebas} pruebas; ${iv.dentroDeTolerancia} dentro de tolerancia (< ${TOLERANCIA_G} g), ${iv.fueraDeTolerancia} fuera, ${iv.ilegibles} ilegibles, ${iv.platosFueraDeTolerancia} platos con algo fuera o ilegible`);
+  console.log('  fuera de tolerancia, por ingrediente y forma:', JSON.stringify(iv.fueraPorClaveYForma));
+  console.log('  ilegibles:', JSON.stringify(iv.ilegiblesPorClaveYForma));
 }
 
 const esCli = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);

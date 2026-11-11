@@ -24,6 +24,14 @@ const MOMENTO = { Desayuno: 'desayuno', Comida: 'comida', Cena: 'cena' };
 const normal = (s) => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 const inc = (o, k, n = 1) => { o[k] = (o[k] || 0) + n; };
 
+// Tolerancia DECLARADA de «decidido ≠ compra» (y de la ida y vuelta de
+// catálogo): una diferencia de menos de 5 g entre lo que decide el cálculo y
+// lo que se relee de la compra se cuenta aparte, como redondeo de escritura
+// (p. ej. gramos ↔ ml). De 5 g en adelante es un descuadre. Lo que no llega a
+// 0,05 g no es diferencia. Cambiar este valor exige regenerar la línea base.
+export const TOLERANCIA_G = 5;
+const IGUAL_G = 0.05;
+
 // ─── Familia y especie de un plato ───────────────────────────────────────────
 
 /** Familia proteica (proteinType del resolvedor) y especie (clave P) de un plato. */
@@ -203,7 +211,8 @@ const VIGILADOS = ['arroz_seco', 'pasta_seco', 'pasta_integral_seco', 'quinoa_se
 export function cantidadesSemana(plan, perfil, kcal) {
   const r = {
     comidasAjustadas: 0, replicaDistinta: 0,
-    ingredientes: 0, calculadoDistintoDeCompra: 0, calculadoAusenteEnCompra: 0, porClave: {}, mayorDiferenciaG: 0,
+    ingredientes: 0, decididoIgualQueCompra: 0, dentroDeTolerancia: 0, fueraDeTolerancia: 0, calculadoAusenteEnCompra: 0,
+    dentroPorClave: {}, fueraPorClave: {}, mayorDiferenciaG: 0,
     kcalDeclaradaDistintaDeReleida: 0, mayorDiferenciaKcal: 0,
     textoIgual: 0, textoDistinto: 0, textoSinCantidad: 0, textoDistintoPorClave: {},
     enTechoBase: 0, sobreTechoBase: 0, enTechoPorClave: {}, maximoG: {},
@@ -253,10 +262,11 @@ export function cantidadesSemana(plan, perfil, kcal) {
         r.ingredientes += 1;
         if (!compra.has(clave)) { r.calculadoAusenteEnCompra += 1; continue; }
         const dif = Math.round((compra.get(clave) - g) * 10) / 10;
-        if (Math.abs(dif) <= 1) continue;
-        r.calculadoDistintoDeCompra += 1;
-        inc(r.porClave, clave);
+        if (Math.abs(dif) <= IGUAL_G) { r.decididoIgualQueCompra += 1; continue; }
         r.mayorDiferenciaG = Math.max(r.mayorDiferenciaG, Math.abs(dif));
+        if (Math.abs(dif) < TOLERANCIA_G) { r.dentroDeTolerancia += 1; inc(r.dentroPorClave, clave); continue; }
+        r.fueraDeTolerancia += 1;
+        inc(r.fueraPorClave, clave);
         if (r.ejemplos.length < 6) {
           const linea = final.items.find((x) => x.clave === clave);
           r.ejemplos.push(`${day.name} ${m.time} «${m.title}»: ${clave} decidido ${g} g → compra «${linea ? linea.texto : '?'}» = ${compra.get(clave)} g`);
@@ -297,7 +307,7 @@ export function catalogoFiltrado(catalogoBase, perfil, kcal) {
  * vuelve a leer. Cuenta dónde lo releído no es lo decidido.
  */
 export function idaYVueltaCatalogo(catalogo, kcal = 2000) {
-  const r = { platos: 0, ingredientes: 0, pruebas: 0, distintas: 0, ilegibles: 0, platosAfectados: 0, porClaveYForma: {}, mayorDiferenciaG: {}, ejemplos: [] };
+  const r = { platos: 0, ingredientes: 0, pruebas: 0, iguales: 0, dentroDeTolerancia: 0, fueraDeTolerancia: 0, ilegibles: 0, platosFueraDeTolerancia: 0, dentroPorClaveYForma: {}, fueraPorClaveYForma: {}, ilegiblesPorClaveYForma: {}, mayorDiferenciaG: {}, ejemplos: [] };
   for (const d of catalogo) {
     let meal;
     try { meal = componerPlato(d, d.momento.includes('comida') ? 'comida' : 'cena', kcal); } catch { continue; }
@@ -323,18 +333,18 @@ export function idaYVueltaCatalogo(catalogo, kcal = 2000) {
         const hay = leerComida(escrita).items.some((x) => x.clave === it.clave);
         r.pruebas += 1;
         const dif = Math.round((releido - decidido) * 10) / 10;
-        if (hay && Math.abs(dif) <= 1) continue;
-        if (!hay) r.ilegibles += 1; else r.distintas += 1;
-        afectado = true;
-        inc(r.porClaveYForma, k);
+        if (hay && Math.abs(dif) <= IGUAL_G) { r.iguales += 1; continue; }
         if (hay) r.mayorDiferenciaG[k] = Math.max(r.mayorDiferenciaG[k] || 0, Math.abs(dif));
+        if (hay && Math.abs(dif) < TOLERANCIA_G) { r.dentroDeTolerancia += 1; inc(r.dentroPorClaveYForma, k); continue; }
+        if (!hay) { r.ilegibles += 1; inc(r.ilegiblesPorClaveYForma, k); } else { r.fueraDeTolerancia += 1; inc(r.fueraPorClaveYForma, k); }
+        afectado = true;
         if (r.ejemplos.length < 12 && !r.ejemplos.some((e) => e.startsWith(`${k} `))) {
           const linea = (escrita.shopping || []).find((s) => leerComida({ shopping: [s] }).items.some((x) => x.clave === it.clave)) || '(sin línea legible)';
           r.ejemplos.push(`${k} «${d.nombre}»: decidido ${decidido} g → «${linea}» → releído ${hay ? `${releido} g` : 'ilegible'}`);
         }
       }
     }
-    if (afectado) r.platosAfectados += 1;
+    if (afectado) r.platosFueraDeTolerancia += 1;
   }
   return r;
 }

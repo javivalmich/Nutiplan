@@ -281,49 +281,41 @@
    }
   },
   "idaYVuelta": {
-   "dentroDeTolerancia": 1485,
+   "dentroDeTolerancia": 1492,
    "dentroPorClaveYForma": {
     "aceite_semillas|ml": 30,
     "aove|ml": 1340,
     "bebida_vegetal|ml": 41,
     "leche_desnatada|ml": 41,
-    "mejillon|ud": 33
+    "mejillon|ud": 40
    },
    "ejemplos": [
     "pan_blanco|g «Gazpacho con huevo duro, atún y pan»: decidido 30 g → «Pan duro (30g) + 15g para tostar» → releído 45 g",
-    "patata|ud «Cocido madrileño express»: decidido 100 g → «(sin línea legible)» → releído ilegible",
-    "mejillon|ud «Fideuá de marisco»: decidido 110 g → «Mejillones (15½ unidades)» → releído 105 g",
-    "aguacate|ud «Quesadilla fitness de pollo y queso bajo en grasa»: decidido 210 g → «Aguacate (1½)» → releído 140 g",
+    "patata|ud «Cocido madrileño express»: decidido 110 g → «Patata (½)» → releído 100 g",
     "queso_fresco|loncha «Hamburguesa de ternera con pan brioche y patatas gajo»: decidido 30 g → «Queso light en lonchas (2 loncha)» → releído 40 g"
    ],
-   "fueraDeTolerancia": 176,
+   "fueraDeTolerancia": 161,
    "fueraPorClaveYForma": {
-    "aguacate|ud": 8,
-    "mejillon|ud": 7,
     "pan_blanco|g": 11,
     "patata|ud": 140,
     "queso_fresco|loncha": 10
    },
-   "iguales": 23235,
-   "ilegibles": 8,
-   "ilegiblesPorClaveYForma": {
-    "aguacate|ud": 3,
-    "patata|ud": 5
-   },
+   "iguales": 23251,
+   "ilegibles": 0,
+   "ilegiblesPorClaveYForma": {},
    "ingredientes": 836,
    "mayorDiferenciaG": {
     "aceite_semillas|ml": 2,
-    "aguacate|ud": 70,
     "aove|ml": 2,
     "bebida_vegetal|ml": 2.5,
     "leche_desnatada|ml": 2.5,
-    "mejillon|ud": 5,
+    "mejillon|ud": 1.5,
     "pan_blanco|g": 60,
-    "patata|ud": 140,
+    "patata|ud": 50,
     "queso_fresco|loncha": 10
    },
    "platos": 288,
-   "platosFueraDeTolerancia": 15,
+   "platosFueraDeTolerancia": 6,
    "pruebas": 24904
   },
   "platos": 241
@@ -1086,7 +1078,7 @@
    "cantidades": {
     "calculadoAusenteEnCompra": 0,
     "comidasAjustadas": 160,
-    "decididoIgualQueCompra": 509,
+    "decididoIgualQueCompra": 512,
     "dentroDeTolerancia": 125,
     "dentroPorClave": {
      "aceite_semillas": 2,
@@ -1094,15 +1086,13 @@
      "leche_semi": 7
     },
     "ejemplos": [
-     "s61 Lunes Desayuno «Huevos revueltos con aguacate y tomate»: aguacate decidido 210 g → compra «Aguacate (1½)» = 140 g",
-     "s61 Miércoles Desayuno «Huevos revueltos con aguacate y tomate»: aguacate decidido 210 g → compra «Aguacate (1½)» = 140 g",
-     "s61 Viernes Desayuno «Huevos revueltos con aguacate y tomate»: aguacate decidido 210 g → compra «Aguacate (1½)» = 140 g",
      "s62 Miércoles Cena «Caldo gallego de grelos (ligero)»: patata decidido 410 g → compra «Patata (2 grande)» = 400 g",
      "s63 Domingo Cena «Hamburguesa de ternera con pan brioche y patatas gajo»: queso_fresco decidido 30 g → compra «Queso light en lonchas (2 loncha)» = 40 g",
      "s65 Miércoles Cena «Hamburguesa de ternera con pan brioche y patatas gajo»: queso_fresco decidido 30 g → compra «Queso light en lonchas (2 loncha)» = 40 g"
     ],
-    "enTechoBase": 103,
+    "enTechoBase": 106,
     "enTechoPorClave": {
+     "aguacate": 3,
      "alubias_seco": 1,
      "arroz_seco": 5,
      "berberecho": 1,
@@ -1126,16 +1116,15 @@
      "yogur_griego_0": 2
     },
     "frutaAnadida": 50,
-    "fueraDeTolerancia": 6,
+    "fueraDeTolerancia": 3,
     "fueraPorClave": {
-     "aguacate": 3,
      "patata": 1,
      "queso_fresco": 2
     },
     "huevosMaxComida": 3,
     "huevosMaxDia": 4,
     "ingredientes": 640,
-    "kcalDeclaradaDistintaDeReleida": 3,
+    "kcalDeclaradaDistintaDeReleida": 0,
     "maximoG": {
      "alubias_seco": 150,
      "arroz_seco": 175,
@@ -1148,8 +1137,8 @@
      "patata": 410,
      "quinoa_seco": 160
     },
-    "mayorDiferenciaG": 70,
-    "mayorDiferenciaKcal": 110,
+    "mayorDiferenciaG": 10,
+    "mayorDiferenciaKcal": 18,
     "panAnadido": 66,
     "principales": 112,
     "replicaDistinta": 0,
@@ -1262,9 +1251,9 @@
     "comidasPrincipales": 144,
     "comidasPrincipalesCortas": 0,
     "desvioSemanaMax": -1.1,
-    "desvioSemanaMedio": -2.9,
-    "desvioSemanaMin": -4.9,
-    "diasFueraKcal": 3,
+    "desvioSemanaMedio": -2.7,
+    "desvioSemanaMin": -4.6,
+    "diasFueraKcal": 2,
     "diasSinProteina": 11,
     "semanasFueraDe5": 0
    },
@@ -1299,7 +1288,7 @@
      "huella": "b87e4f508ada4440",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -4.9,
+     "desvioKcal": -3.1,
      "pescado": 4,
      "legumbre": 2,
      "platos": [
@@ -3348,9 +3337,9 @@
   },
   {
    "cantidades": {
-    "calculadoAusenteEnCompra": 3,
+    "calculadoAusenteEnCompra": 0,
     "comidasAjustadas": 216,
-    "decididoIgualQueCompra": 506,
+    "decididoIgualQueCompra": 509,
     "dentroDeTolerancia": 144,
     "dentroPorClave": {
      "aceite_semillas": 5,
@@ -3374,7 +3363,7 @@
     "huevosMaxComida": 3,
     "huevosMaxDia": 3,
     "ingredientes": 653,
-    "kcalDeclaradaDistintaDeReleida": 3,
+    "kcalDeclaradaDistintaDeReleida": 0,
     "maximoG": {
      "alubias_seco": 120,
      "arroz_seco": 100,
@@ -3388,7 +3377,7 @@
      "quinoa_seco": 60
     },
     "mayorDiferenciaG": 1.6,
-    "mayorDiferenciaKcal": 102,
+    "mayorDiferenciaKcal": 15,
     "panAnadido": 35,
     "principales": 112,
     "replicaDistinta": 0,
@@ -3413,7 +3402,7 @@
      "zanahoria": 1
     },
     "textoIgual": 535,
-    "textoSinCantidad": 399
+    "textoSinCantidad": 402
    },
    "composicion": {
     "especieDiasSeguidos": 0,
@@ -3489,10 +3478,10 @@
     "comidasPrincipales": 144,
     "comidasPrincipalesCortas": 0,
     "desvioSemanaMax": 0.3,
-    "desvioSemanaMedio": -1.6,
-    "desvioSemanaMin": -3.2,
+    "desvioSemanaMedio": -1.3,
+    "desvioSemanaMin": -2.4,
     "diasFueraKcal": 0,
-    "diasSinProteina": 31,
+    "diasSinProteina": 30,
     "semanasFueraDe5": 0
    },
    "planes": [
@@ -3501,7 +3490,7 @@
      "huella": "485f316605e91acb",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -3.2,
+     "desvioKcal": -2.4,
      "pescado": 0,
      "legumbre": 3,
      "platos": [
@@ -3576,7 +3565,7 @@
      "huella": "5813bed736d629c2",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -1.5,
+     "desvioKcal": -0.7,
      "pescado": 0,
      "legumbre": 1,
      "platos": [
@@ -3651,7 +3640,7 @@
      "huella": "a6da1b3bac65bdfe",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -3,
+     "desvioKcal": -2.2,
      "pescado": 0,
      "legumbre": 3,
      "platos": [
@@ -3707,9 +3696,9 @@
   },
   {
    "cantidades": {
-    "calculadoAusenteEnCompra": 3,
+    "calculadoAusenteEnCompra": 0,
     "comidasAjustadas": 216,
-    "decididoIgualQueCompra": 462,
+    "decididoIgualQueCompra": 465,
     "dentroDeTolerancia": 171,
     "dentroPorClave": {
      "aceite_semillas": 6,
@@ -3728,7 +3717,7 @@
     "huevosMaxComida": 0,
     "huevosMaxDia": 0,
     "ingredientes": 636,
-    "kcalDeclaradaDistintaDeReleida": 3,
+    "kcalDeclaradaDistintaDeReleida": 0,
     "maximoG": {
      "alubias_seco": 110,
      "arroz_seco": 55,
@@ -3742,7 +3731,7 @@
      "quinoa_seco": 40
     },
     "mayorDiferenciaG": 2.1,
-    "mayorDiferenciaKcal": 99,
+    "mayorDiferenciaKcal": 11,
     "panAnadido": 1,
     "principales": 112,
     "replicaDistinta": 0,
@@ -3764,7 +3753,7 @@
      "zanahoria": 2
     },
     "textoIgual": 475,
-    "textoSinCantidad": 473
+    "textoSinCantidad": 476
    },
    "composicion": {
     "especieDiasSeguidos": 1,
@@ -3832,11 +3821,11 @@
     "comidasPrincipales": 144,
     "comidasPrincipalesCortas": 0,
     "desvioSemanaMax": 6.5,
-    "desvioSemanaMedio": 4.2,
-    "desvioSemanaMin": 2.4,
-    "diasFueraKcal": 6,
+    "desvioSemanaMedio": 4.6,
+    "desvioSemanaMin": 3.4,
+    "diasFueraKcal": 7,
     "diasSinProteina": 41,
-    "semanasFueraDe5": 2
+    "semanasFueraDe5": 3
    },
    "planes": [
     {
@@ -3869,7 +3858,7 @@
      "huella": "5cc5a2ba17c70f7f",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": 3.9,
+     "desvioKcal": 5.1,
      "pescado": 0,
      "legumbre": 3,
      "platos": [
@@ -3944,7 +3933,7 @@
      "huella": "00b57e4abd24a6e9",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": 3.3,
+     "desvioKcal": 4.4,
      "pescado": 0,
      "legumbre": 3,
      "platos": [
@@ -3969,7 +3958,7 @@
      "huella": "bf315614eda18657",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": 2.4,
+     "desvioKcal": 3.5,
      "pescado": 0,
      "legumbre": 3,
      "platos": [
@@ -4050,7 +4039,7 @@
   },
   {
    "cantidades": {
-    "calculadoAusenteEnCompra": 1,
+    "calculadoAusenteEnCompra": 0,
     "comidasAjustadas": 216,
     "decididoIgualQueCompra": 567,
     "dentroDeTolerancia": 141,
@@ -4061,6 +4050,7 @@
      "leche_semi": 19
     },
     "ejemplos": [
+     "s61 Martes Comida «Cocido madrileño express»: patata decidido 130 g → compra «Patata (½)» = 100 g",
      "s63 Domingo Cena «Hamburguesa de ternera con pan brioche y patatas gajo»: queso_fresco decidido 30 g → compra «Queso light en lonchas (2 loncha)» = 40 g"
     ],
     "enTechoBase": 60,
@@ -4075,8 +4065,9 @@
      "tofu": 1
     },
     "frutaAnadida": 13,
-    "fueraDeTolerancia": 1,
+    "fueraDeTolerancia": 2,
     "fueraPorClave": {
+     "patata": 1,
      "queso_fresco": 1
     },
     "huevosMaxComida": 3,
@@ -4096,8 +4087,8 @@
      "patata": 340,
      "quinoa_seco": 140
     },
-    "mayorDiferenciaG": 10,
-    "mayorDiferenciaKcal": 97,
+    "mayorDiferenciaG": 30,
+    "mayorDiferenciaKcal": 25,
     "panAnadido": 48,
     "principales": 112,
     "replicaDistinta": 0,
@@ -4115,7 +4106,7 @@
      "tomate_triturado": 2
     },
     "textoIgual": 661,
-    "textoSinCantidad": 266
+    "textoSinCantidad": 267
    },
    "composicion": {
     "especieDiasSeguidos": 6,
@@ -4212,7 +4203,7 @@
     "comidasPrincipales": 144,
     "comidasPrincipalesCortas": 2,
     "desvioSemanaMax": 0,
-    "desvioSemanaMedio": -0.9,
+    "desvioSemanaMedio": -0.8,
     "desvioSemanaMin": -1.7,
     "diasFueraKcal": 0,
     "diasSinProteina": 19,
@@ -4249,7 +4240,7 @@
      "huella": "dc4e878a75fc5e1b",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -1.7,
+     "desvioKcal": -1.2,
      "pescado": 6,
      "legumbre": 1,
      "platos": [

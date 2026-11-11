@@ -169,6 +169,8 @@ export function reconocer(nombre) {
 
 const num = (s) => {
   if (s === '½') return 0.5;
+  // «1½», «14½»: así escribe cantidades.js las medias piezas.
+  if (/^\d+½$/.test(s)) return Number(s.slice(0, -1)) + 0.5;
   if (/^\d+\/\d+$/.test(s)) { const [a, b] = s.split('/').map(Number); return a / b; }
   return Number(String(s).replace(',', '.'));
 };
@@ -190,7 +192,9 @@ export function gramosDe(clave, cantidad) {
   if ((m = q.match(/(\d+)\s*hojas?\b/)) && ing.gHoja) return { gramos: num(m[1]) * ing.gHoja, como: 'hoja' };
   if ((m = q.match(/(\d+)\s*lonchas?\b/)) && ing.gLoncha) return { gramos: num(m[1]) * ing.gLoncha, como: 'loncha' };
   if ((m = q.match(/^(\d+)\s*-\s*(\d+)/)) && ing.gUd) return { gramos: ((num(m[1]) + num(m[2])) / 2) * ing.gUd, como: 'ud' };
-  if ((m = q.match(/^(\d+\/\d+|½|\d+(?:[.,]\d+)?)\s*(ud|unidad|unidades|grandes?|medianas?|pieza)?\b/)) && ing.gUd) {
+  // El final se comprueba con (?![\w½]) y no con \b: «½» no es letra, y con \b
+  // «1½» se leía como 1 y «½» a solas no se leía.
+  if ((m = q.match(/^(\d+\/\d+|\d*½|\d+(?:[.,]\d+)?)\s*(ud|unidad|unidades|grandes?|medianas?|pieza)?(?![\w½])/)) && ing.gUd) {
     return { gramos: num(m[1]) * ing.gUd, como: 'ud' };
   }
   return null;

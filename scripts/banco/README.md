@@ -186,9 +186,17 @@ Preexistente y ya registrado: `vegana-1400` queda fuera de ±5 % en 3 de 8 seman
   vista no coincide», `:625`; «no admite la clave como argumento ni la ejecución sin
   confirmación», `:639`), con este mensaje: `Error: Test timed out in 5000ms.` Son tests que
   lanzan un proceso de Node y tienen el tiempo límite por defecto. Aislado, el archivo pasa (36
-  de 36, tres veces seguidas). Visto en 3 de las últimas 6 ejecuciones completas de esta rama.
-  No importa nada de `src/plan`. Es plausible, no demostrado, que `scripts/banco/banco.test.js`
-  (el test más pesado añadido en esta rama) lo haga más frecuente al cargar la máquina.
+  de 36, tres veces seguidas). No importa nada de `src/plan`.
+  **El banco no es la causa** (comprobado el 2026-11-12, en `aeb1639`, alternando ejecuciones
+  completas): con `banco.test.js`, fallos en 3 de 5; sin él (`--exclude
+  scripts/banco/banco.test.js`), en 5 de 5 (una de las cinco se repitió porque coincidió con
+  una edición del árbol de trabajo). En todas las tandas el mensaje es el mismo
+  (`Test timed out in 5000ms`, 13 veces), en los tests de `:625`, `:639` y el de «aborta sin
+  escribir si el sha256 del manifiesto no es MANIFIESTO_SHA256», y dos veces también en
+  `scripts/fase7/escanearSemillas.test.js` («es determinista salvo la fecha»). Las ejecuciones
+  con fallos son las más lentas (49 a 58 s frente a 40 s): apunta a carga de la máquina y al
+  límite de 5 s de esos tests, que lanzan procesos. Por eso el banco sigue en la suite por
+  defecto. `scripts/fase7` no se ha tocado.
 
 ## Pendientes anotados (sin tocar)
 
@@ -213,11 +221,22 @@ Hallados al medir; ninguno se ha corregido ni decidido aquí.
   «2 loncha» (40 g). El cambio de escritura se descartó (decisión de Javi del 2026-11-12): son
   las 10 pruebas que quedan fuera de tolerancia en la ida y vuelta de catálogo. Depende del
   punto siguiente.
-- **Raciones (D): mínimos por encima de la ficha.** El mínimo del rango puede superar lo que el
-  plato pide: «Aguacate (1/4)» sube siempre a ½ (mínimo de media pieza) y «Queso light en
-  lonchas (1 loncha)» sube siempre a 30 g (mínimo del queso fresco), aunque la ficha de la
-  hamburguesa marca el queso como «no escalar».
-- **Pasta sin gluten con SIBO.** Se decide más de 80 g y la compra muestra siempre 80 g. Causa
-  confirmada y fijada en `src/plan/tests/siboPasta.test.js` (`it.fails`). Sin corregir.
+- **Raciones (D): mínimos por encima de la ficha. Propuesta medida, sin implementar.** El mínimo
+  del rango (`RANGO`, `RANGO_UD`, `RANGO_GRUPO` en `raciones.js`) se aplica aunque la ficha pida
+  menos: `ajustarComida` fija en el mínimo todo lo que queda por debajo y el redondeo final
+  vuelve a recortar a `[mín, máx]`. 14 ingredientes de 31 platos y desayunos piden menos que su
+  mínimo; los más visibles: yogur como salsa de las hamburguesas (20–40 g → 125 g), yogur
+  griego (60–80 g → 125 g), leche de las crepes (100 → 145 ml), aguacate (¼ o ⅓ → ½), clara
+  (1 → 2), queso en lonchas (20 → 30 g), garbanzos cocidos del buddha bowl (60 → 120 g).
+  Variante medida en el banco, solo en una copia fuera del repo: «si la ficha pide menos que el
+  mínimo, el mínimo (y el paso, si es mayor) pasan a ser lo que pide la ficha», sin tocar el
+  aceite. Cambian 128 de 2688 comidas (53 de 96 semanas de texto); ningún perfil sale de ±5 %
+  que no lo estuviera (vegana-1400 baja de 3 a 2 semanas fuera); la proteína media del día
+  cambia como mucho 0,4 g; comidas principales cortas de proteína, sin cambios; 0 vetados.
+  Pendiente de decisión.
+- **Pasta sin gluten con SIBO: corregido en `9ae4a5e`.** Test en `src/plan/tests/siboPasta.test.js`.
+- **SIBO: kcal declaradas distintas de las releídas (23 comidas en 8 semanas), sin investigar.**
+  Tras la corrección de la pasta queda ese recuento en `sibo-2000` (en los demás perfiles, 0 a
+  3). Puede ser otra adaptación que cambia el texto después de calcular; no comprobado.
 - **Mejillones por unidades** (fideuá de marisco): se escriben medias unidades («15½ unidades»).
   Dentro de tolerancia (1,5 g como mucho).

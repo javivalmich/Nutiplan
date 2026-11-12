@@ -198,6 +198,31 @@ Preexistente y ya registrado: `vegana-1400` queda fuera de ±5 % en 3 de 8 seman
   límite de 5 s de esos tests, que lanzan procesos. Por eso el banco sigue en la suite por
   defecto. `scripts/fase7` no se ha tocado.
 
+## Mediciones versionadas (`medicion/`)
+
+Scripts de diagnóstico que respaldan las cifras de este README y del borrador D-112. Igual que
+el banco: sin red, sin Supabase, sin variables de entorno, sin datos reales; solo escriben el
+archivo de salida que se les pasa. No forman parte de `npm test`. Las variantes **no modifican
+`src/`**: `variantesMinimos.mjs` transforma `raciones.js` en memoria al cargarlo.
+
+| Script | Mide |
+|---|---|
+| `fichasBajoMinimo.mjs` | Ingredientes que alguna ficha pide por debajo del mínimo de su rango |
+| `volcarItems.mjs <salida.json>` | Cada comida del banco con sus gramos releídos por ingrediente |
+| `compararItems.mjs <base.json> <otro.json>` | Comidas que cambian, adónde va la energía, ±5 % y proteína por perfil |
+| `ladoAlto.mjs` | Máximo a 3714 kcal de cada ingrediente bajo el mínimo |
+| `proporcionMasas.mjs` | Proporción de los ingredientes de masa (crepes, batido, hamburguesa de tofu, pizza) |
+| `diagSibo.mjs [perfil]` | Comidas con kcal declaradas ≠ releídas y líneas de aceite aromatizado |
+| `variantesMinimos.mjs` | Hook: `--variante=B` (por defecto), `A`, `B-escala`, `B-fija` |
+
+Reproducir la cifra de la variante B (142 de 2688 comidas):
+
+```bash
+node --import ./scripts/banco/resolver.mjs scripts/banco/medicion/volcarItems.mjs base.json
+node --import ./scripts/banco/resolver.mjs --import ./scripts/banco/medicion/variantesMinimos.mjs scripts/banco/medicion/volcarItems.mjs b.json --variante=B
+node scripts/banco/medicion/compararItems.mjs base.json b.json
+```
+
 ## Pendientes anotados (sin tocar)
 
 Hallados al medir; ninguno se ha corregido ni decidido aquí.
@@ -224,16 +249,21 @@ Hallados al medir; ninguno se ha corregido ni decidido aquí.
 - **Raciones (D): mínimos por encima de la ficha. Propuesta medida, sin implementar.** El mínimo
   del rango (`RANGO`, `RANGO_UD`, `RANGO_GRUPO` en `raciones.js`) se aplica aunque la ficha pida
   menos: `ajustarComida` fija en el mínimo todo lo que queda por debajo y el redondeo final
-  vuelve a recortar a `[mín, máx]`. 14 ingredientes de 31 platos y desayunos piden menos que su
-  mínimo; los más visibles: yogur como salsa de las hamburguesas (20–40 g → 125 g), yogur
+  vuelve a recortar a `[mín, máx]`. 12 ingredientes, más los dos aceites, piden menos que su
+  mínimo en 21 fichas (sin contar las que solo lo hacen con el aceite, cuyo «por debajo» es la
+  conversión de 5 ml a 4,6 g; `medicion/fichasBajoMinimo.mjs`). Corrige la cifra anterior de
+  este README, «14 ingredientes de 31 platos», que contaba los aceites como si no lo fueran.
+  Los más visibles: yogur como salsa de las hamburguesas (20–40 g → 125 g), yogur
   griego (60–80 g → 125 g), leche de las crepes (100 → 145 ml), aguacate (¼ o ⅓ → ½), clara
   (1 → 2), queso en lonchas (20 → 30 g), garbanzos cocidos del buddha bowl (60 → 120 g).
-  Variante medida en el banco, solo en una copia fuera del repo: «si la ficha pide menos que el
-  mínimo, el mínimo (y el paso, si es mayor) pasan a ser lo que pide la ficha», sin tocar el
-  aceite. Cambian 128 de 2688 comidas (53 de 96 semanas de texto); ningún perfil sale de ±5 %
-  que no lo estuviera (vegana-1400 baja de 3 a 2 semanas fuera); la proteína media del día
-  cambia como mucho 0,4 g; comidas principales cortas de proteína, sin cambios; 0 vetados.
-  Pendiente de decisión.
+  Variantes medidas (`medicion/variantesMinimos.mjs`, sin tocar el aceite):
+  - **A** «el mínimo pasa a ser lo que pide la ficha»: cambian 128 de 2688 comidas, pero a
+    3714 kcal el yogur de salsa llega a 420 g (`medicion/ladoAlto.mjs`). Descartada.
+  - **B** «lo que la ficha pide por debajo del mínimo queda fijo en la ficha» (elegida por Javi
+    el 2026-11-12, pendiente de la comprobación de masas): cambian 142 de 2688; ningún perfil
+    sale de ±5 % que no lo estuviera (vegana-1400 baja de 3 a 2 semanas fuera); la proteína
+    media del día cambia como mucho 0,6 g; principales cortas de proteína, sin cambios.
+  Pendiente de decisión (borrador D-112, sin escribir en `DECISIONS.md`).
 - **Pasta sin gluten con SIBO: corregido en `9ae4a5e`.** Test en `src/plan/tests/siboPasta.test.js`.
 - **SIBO: kcal declaradas distintas de las releídas (23 comidas en 8 semanas), sin investigar.**
   Tras la corrección de la pasta queda ese recuento en `sibo-2000` (en los demás perfiles, 0 a

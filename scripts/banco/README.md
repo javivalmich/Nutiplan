@@ -292,14 +292,15 @@ Hallados al medir; ninguno se ha corregido ni decidido aquí.
   aromatizado con ajo (opcional)», sin cantidad; el lector (el mismo para raciones y medidor)
   le ponía la cantidad de aceite del texto, así que 66 de 224 comidas de `sibo-2000` llevaban
   dos aceites. De ahí 21 de las 23 comidas con kcal declaradas ≠ releídas (las otras 2 son el
-  queso en lonchas). Decisión de Javi (2026-11-12): el aromatizado **sustituye** al AOVE, con
-  su cantidad; se lee como `aove`. Sin AOVE en la compra no se añade aceite (6 platos
-  asiáticos con aceite de sésamo o girasol y la fabada del catálogo). En `sibo-2000`, 8
-  semanas: aceite releído 2406 → 1799 g; cambian 74 de 224 comidas; la energía va al pan sin
-  gluten (+1300 g), patata (+580 g), boniato, arroz y quinoa; el ingrediente proteico de las
-  principales, 148,5 → 147,8 g de media; kcal declaradas ≠ releídas, 23 → 2.
-  `textoSinCantidad` sube (218 → 264) porque el texto del plato sigue diciendo «AOVE» y la
-  métrica busca el ingrediente por su nombre de la compra; las cifras de ml del texto
-  coinciden con la compra en las 46 comidas que las dan (las otras 20 no dan cifra).
+  queso en lonchas). Decisiones de Javi (2026-11-12): el aromatizado **sustituye** al aceite
+  de cocinar (el AOVE o, si no hay, el de girasol; nunca el de sésamo ni una línea que lo
+  nombre), con su cantidad, y se lee como `aove`; el texto del plato nombra el mismo aceite que
+  la compra. Sin aceite de cocinar que sustituir no se añade aceite, y el texto dice «aceite»
+  donde la adaptación del ajo escribía el aromatizado (en el catálogo: el pad thai, con
+  «Aceite de sésamo o girasol», y la fabada). En `sibo-2000`, 8 semanas: aceite releído 2406 →
+  1799 g; cambian 74 de 224 comidas; la energía va al pan sin gluten (+1300 g), patata
+  (+580 g), boniato, arroz y quinoa; el ingrediente proteico de las principales, 148,5 → 147,8 g
+  de media; kcal declaradas ≠ releídas, 23 → 2. Con el texto coherente, `textoSinCantidad`
+  vuelve a 218 (había subido a 264 mientras el texto decía «AOVE» y la compra el aromatizado).
 - **Mejillones por unidades** (fideuá de marisco): se escriben medias unidades («15½ unidades»).
   Dentro de tolerancia (1,5 g como mucho).

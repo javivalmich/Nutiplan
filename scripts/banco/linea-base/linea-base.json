@@ -3004,8 +3004,8 @@
      "tomate": 2,
      "tomate_triturado": 3
     },
-    "textoIgual": 605,
-    "textoSinCantidad": 264
+    "textoIgual": 651,
+    "textoSinCantidad": 218
    },
    "composicion": {
     "especieDiasSeguidos": 0,
@@ -3103,7 +3103,7 @@
    "planes": [
     {
      "semana": 60,
-     "huella": "dfa3016ff26922df",
+     "huella": "c216f753e04ac8e8",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -0.2,
@@ -3128,7 +3128,7 @@
     },
     {
      "semana": 61,
-     "huella": "6375fc09c1a45385",
+     "huella": "00ac6ae33d0f0127",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -0.8,
@@ -3153,7 +3153,7 @@
     },
     {
      "semana": 62,
-     "huella": "00f2caf022b0307a",
+     "huella": "8fa6c759d3a029b2",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -0.9,
@@ -3178,7 +3178,7 @@
     },
     {
      "semana": 63,
-     "huella": "77aae459d78f3535",
+     "huella": "efd77f44833fd3b7",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -1.3,
@@ -3203,7 +3203,7 @@
     },
     {
      "semana": 64,
-     "huella": "de81e2ad27a72796",
+     "huella": "8231d16919b1b7b3",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -0.9,
@@ -3228,7 +3228,7 @@
     },
     {
      "semana": 65,
-     "huella": "4c2852984b30a2fa",
+     "huella": "616b5cf0cdde023d",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": 0,
@@ -3253,7 +3253,7 @@
     },
     {
      "semana": 66,
-     "huella": "1233bf1e9904eef8",
+     "huella": "a3d18237d1de87c4",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -2.5,
@@ -3278,7 +3278,7 @@
     },
     {
      "semana": 67,
-     "huella": "81c2e9bb8cf22fdc",
+     "huella": "1fea221ce20ff937",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -0.9,

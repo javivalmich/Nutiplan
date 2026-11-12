@@ -110,24 +110,25 @@ export function protagonistaFodmap(texto) {
 }
 
 const AROMATIZADO = /^\s*aceite aromatizado con ajo/i;
-const AOVE = /^\s*(aove|aceite de oliva( virgen)?( extra)?)\b/i;
+const ACEITE_AROMATIZADO = 'aceite aromatizado con ajo';
+// Aceite de cocinar que el aromatizado puede sustituir, por orden: el AOVE y,
+// si no hay, el de girasol. Nunca el de sésamo (aliño de sabor propio), ni una
+// línea que lo nombre («Aceite de sésamo o girasol»).
+const COCINAR = [
+  { tipo: 'aove', linea: /^\s*(aove|aceite de oliva( virgen)?( extra)?)\b/i, texto: /\baove\b( virgen extra)?|\baceite de oliva( virgen)?( extra)?/gi },
+  { tipo: 'girasol', linea: /^\s*aceite de girasol\b/i, texto: /\baceite de girasol\b/gi },
+];
+const SESAMO = /s[eé]samo/i;
 
-/**
- * Líneas de la compra: el ajo suelto desaparece; el resto se adapta.
- * I-4 (decisión de Javi, 2026-11-12): sin ajo, el aceite aromatizado con ajo
- * SUSTITUYE al AOVE del plato, con su misma cantidad: una sola línea de aceite.
- * Antes se añadía al final «Aceite aromatizado con ajo (opcional)», sin
- * cantidad, y se contaba como una segunda ración de aceite. Sin AOVE en la
- * compra no hay nada que sustituir y no se añade aceite.
- */
-export function adaptarCompraFodmap(lineas) {
+/** Compra adaptada y qué aceite de cocinar se ha sustituido (o null). */
+function adaptarCompra(lineas) {
   const out = [];
   let sinAjo = false;
   for (const l of lineas || []) {
     if (/^\s*ajos?\b/i.test(l)) { sinAjo = true; continue; }
     if (/^\s*guisantes\b/i.test(l)) continue;
     // Ya sustituido: se conserva (adaptar dos veces da lo mismo). La línea
-    // antigua sin cantidad se quita y se sustituye el AOVE.
+    // antigua sin cantidad se quita y se sustituye el aceite de cocinar.
     if (AROMATIZADO.test(l)) {
       if (/\(opcional\)/i.test(l)) sinAjo = true;
       else out.push(l);
@@ -136,11 +137,50 @@ export function adaptarCompraFodmap(lineas) {
     const a = adaptarTextoFodmap(l);
     if (a) out.push(a);
   }
-  if (sinAjo && !out.some((l) => AROMATIZADO.test(l))) {
-    const i = out.findIndex((l) => AOVE.test(l));
-    if (i >= 0) out[i] = out[i].replace(AOVE, 'Aceite aromatizado con ajo');
+  if (!sinAjo || out.some((l) => AROMATIZADO.test(l))) return { lineas: out, sustituido: null };
+  for (const c of COCINAR) {
+    const i = out.findIndex((l) => c.linea.test(l) && !SESAMO.test(l));
+    if (i >= 0) {
+      out[i] = out[i].replace(c.linea, 'Aceite aromatizado con ajo');
+      return { lineas: out, sustituido: c };
+    }
   }
-  return out;
+  return { lineas: out, sustituido: null };
+}
+
+/**
+ * Líneas de la compra: el ajo suelto desaparece; el resto se adapta.
+ * I-4 (decisiones de Javi, 2026-11-12): sin ajo, el aceite aromatizado con ajo
+ * SUSTITUYE al aceite de cocinar del plato (el AOVE o, si no hay, el de
+ * girasol; nunca el de sésamo), con su misma cantidad: una sola línea de
+ * aceite. Antes se añadía al final «Aceite aromatizado con ajo (opcional)», sin
+ * cantidad, y se contaba como una segunda ración de aceite. Sin aceite de
+ * cocinar en la compra no hay nada que sustituir y no se añade aceite.
+ */
+export function adaptarCompraFodmap(lineas) {
+  return adaptarCompra(lineas).lineas;
+}
+
+// Mayúscula solo si empieza el texto o una frase; tras «·» o dentro de una frase,
+// minúscula, como escribe adaptarTextoFodmap (así adaptar dos veces da lo mismo).
+const enSuSitio = (nuevo) => (m, ...args) => {
+  const offset = args[args.length - 2];
+  const antes = args[args.length - 1].slice(0, offset);
+  return /(^\s*|\.\s+)$/.test(antes) ? nuevo.charAt(0).toUpperCase() + nuevo.slice(1) : nuevo;
+};
+
+/**
+ * I-4. El texto nombra el mismo aceite que la compra: el aceite de cocinar
+ * sustituido pasa a llamarse aceite aromatizado con ajo; y si la compra no
+ * lleva aceite aromatizado (no había aceite de cocinar que sustituir), el texto
+ * dice «aceite» donde la adaptación del ajo había escrito el aromatizado.
+ */
+function textoCoherente(texto, sustituido, conAromatizado) {
+  if (typeof texto !== 'string') return texto;
+  let t = texto;
+  if (sustituido) t = t.replace(sustituido.texto, enSuSitio(ACEITE_AROMATIZADO));
+  if (!conAromatizado) t = t.replace(/aceite aromatizado con ajo(\s*\(sin trozos(?: de ajo)?\))?/gi, enSuSitio('aceite'));
+  return t;
 }
 
 const RESTANTE = /lenteja|garbanzo|alubia|jud[ií]as? (blanca|pinta)|fabes|frijol|guisante|hummus|falafel|\bhabas?\b|edamame|cusc[uú]s|bulgur|seit[aá]n|centeno|cebada|coliflor|champi[ñn]ones(?! en conserva)|champi[ñn][oó]n\b|\bsetas?\b|shiitake|esp[aá]rrago|alcachofa|aguacate|guacamole|anacardo|pistacho|manzana|\bperas?\b|mango|sand[ií]a|melocot[oó]n|ciruela|cereza|\bajo\b|ajillo|\bcebolla\b|sopa de cebolla|crema de puerro|inulina|agave/i;
@@ -155,13 +195,16 @@ export function fodmapRestante(texto) {
 /** Adapta una comida completa (título, preparación, compra y receta). */
 export function adaptarComidaFodmap(meal) {
   if (!meal) return meal;
+  const { lineas, sustituido } = adaptarCompra(meal.shopping);
+  const conAromatizado = lineas.some((l) => AROMATIZADO.test(l));
+  const texto = (t) => textoCoherente(adaptarTextoFodmap(t), sustituido, conAromatizado);
   return {
     ...meal,
-    title: adaptarTextoFodmap(meal.title),
-    p1: adaptarTextoFodmap(meal.p1),
-    p2: adaptarTextoFodmap(meal.p2),
-    shopping: adaptarCompraFodmap(meal.shopping),
-    recipe: Array.isArray(meal.recipe) ? meal.recipe.map((p) => (typeof p === 'string' ? adaptarTextoFodmap(p) : p)) : meal.recipe,
+    title: texto(meal.title),
+    p1: texto(meal.p1),
+    p2: texto(meal.p2),
+    shopping: lineas,
+    recipe: Array.isArray(meal.recipe) ? meal.recipe.map((p) => (typeof p === 'string' ? texto(p) : p)) : meal.recipe,
     adaptadoFodmap: true,
   };
 }

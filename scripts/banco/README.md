@@ -158,10 +158,37 @@ porcentaje: 4 g de aceite son unas 36 kcal y cuentan como «dentro»; conviene m
 es el de `main` `19a300c`; ningún commit de esta rama anterior a I-4 lo modifica.
 sha256 (con saltos LF) `6605c9f11400477c87473a76219705c49732cd8d1ee911f94f5b896c9ca439cb`.
 
-Preexistente y ya registrado: `vegana-1400` queda fuera de ±5 % en 2 de 8 semanas (+2,4 a
-+6,5 %). Consta en `DECISIONS.md:4499` (tabla de D-110, fila «Vegana 1400 kcal», +1,4…+8,2 %),
+Preexistente y ya registrado: `vegana-1400` queda fuera de ±5 % en 3 de 8 semanas (+3,4 a
++6,5 %; eran 2 de 8 antes de arreglar el lector, ver «Notas de medición»). Consta en `DECISIONS.md:4499` (tabla de D-110, fila «Vegana 1400 kcal», +1,4…+8,2 %),
 `:4508` (pendientes de D-110: «la semana sale hasta un 8 % por encima») y `:4530` (D-111:
 «salvo la vegana de 1400 kcal, que ya estaba en +8,2 %»).
+
+## Notas de medición
+
+- **El medidor relee texto.** `medirPlan` (`src/plan/medidor/medir.js`), que es con lo que se
+  comprueba el ±5 % semanal, lee la lista de la compra ya escrita de cada comida con
+  `leerComida`; no parte de los gramos que decidieron las raciones. Mide lo que el usuario ve,
+  y por eso cualquier fallo de lectura o de escritura cambia la cifra. El medidor no se ejecuta
+  en la app: solo lo importan tests y scripts. En la app, `leerComida` lo usan `ajustarDia`
+  (lee la ficha de partida), `gramosDeBase` (cantidades del ancla) y `desayunosApp.js`.
+- **Las cifras históricas con medias piezas estaban infravaloradas.** Hasta el commit `666d4c1`
+  el lector leía «1½» como 1 y no leía «½» sin palabra detrás. Toda medición anterior (D-100,
+  D-110, D-111, los informes de auditoría y la primera línea base de este banco) contaba de
+  menos esas comidas: «Aguacate (1½)» como 140 g en vez de 210 y «Aguacate (½)» o «Patata (½)»
+  como 0 g. El menú no cambió; cambió lo que se medía. Efecto en este banco: `vegana-1400` pasa
+  de 2 a 3 semanas de 8 fuera de ±5 % (la semana 61, de +3,9 % a +5,1 %), y el desvío mínimo
+  de `omni-2600-3comidas` de −4,9 % a −4,6 % y el de `vegetariana-2000` de −3,2 % a −2,4 %.
+  Barrido de comprobación: 13 879 fichas (catálogo, platos de dieta y desayunos, a cuatro
+  objetivos de kcal y seis perfiles, con y sin adaptar) se leen igual con el lector anterior y
+  con el actual; la entrada de `ajustarDia` no cambia.
+- **Fallo intermitente de `scripts/fase7/entrega.test.js`.** En la suite completa fallan a veces
+  uno o dos tests del bloque «CLI: rechazos por sha256» («aborta sin escribir si el sha256 de la
+  vista no coincide», `:625`; «no admite la clave como argumento ni la ejecución sin
+  confirmación», `:639`), con este mensaje: `Error: Test timed out in 5000ms.` Son tests que
+  lanzan un proceso de Node y tienen el tiempo límite por defecto. Aislado, el archivo pasa (36
+  de 36, tres veces seguidas). Visto en 3 de las últimas 6 ejecuciones completas de esta rama.
+  No importa nada de `src/plan`. Es plausible, no demostrado, que `scripts/banco/banco.test.js`
+  (el test más pesado añadido en esta rama) lo haga más frecuente al cargar la máquina.
 
 ## Pendientes anotados (sin tocar)
 
@@ -174,8 +201,11 @@ Hallados al medir; ninguno se ha corregido ni decidido aquí.
 - **Raciones (apartado D): cantidades en pasos de 10 g poco naturales.** La patata, el pan, la
   fruta, el queso y los lácteos se deciden en pasos de 10 g (`RANGO` en
   `src/engine2/nutrientes/raciones.js`), y de ahí salen cifras como «Patata (260 g, aprox. 1½
-  grandes)» o «Queso (30 g, 1½ lonchas)». I-4 solo hace que se muestre lo decidido; no cambia
-  qué se decide.
+  grandes)». I-4 solo hace que se muestre lo decidido; no cambia qué se decide.
+- **Queso en lonchas (hamburguesa de ternera): sin corregir.** Se deciden 30 g y la compra dice
+  «2 loncha» (40 g). El cambio de escritura se descartó (decisión de Javi del 2026-11-12): son
+  las 10 pruebas que quedan fuera de tolerancia en la ida y vuelta de catálogo. Depende del
+  punto siguiente.
 - **Raciones (D): mínimos por encima de la ficha.** El mínimo del rango puede superar lo que el
   plato pide: «Aguacate (1/4)» sube siempre a ½ (mínimo de media pieza) y «Queso light en
   lonchas (1 loncha)» sube siempre a 30 g (mínimo del queso fresco), aunque la ficha de la

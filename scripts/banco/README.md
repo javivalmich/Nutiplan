@@ -151,6 +151,24 @@ porcentaje: 4 g de aceite son unas 36 kcal y cuentan como «dentro»; conviene m
 - La familia de un plato es la de su proteína principal: un plato de carne con huevo cuenta
   como carne.
 - 8 semanas por perfil: sirve para comparar antes y después, no para estimar frecuencias raras.
+- **Deuda: medidor y raciones comparten lector.** Las raciones leen la ficha con `leerComida`
+  y el medidor relee la compra final con el mismo `leerComida`. Un error de lectura (una línea
+  que se reconoce con otra clave, una cantidad que se toma del texto) entra igual en lo que se
+  decide y en lo que se mide, así que el ±5 % y `kcalDeclaradaDistintaDeReleida` no lo ven.
+  Caso real: el aceite aromatizado de SIBO, leído como segunda ración de aceite en 66 de 224
+  comidas, salía dentro de ±5 %. Solo lo destapó la diferencia de redondeo de ml a gramos.
+  **Propuesta de comprobación independiente (sin implementar):**
+  1. *Lecturas de referencia:* una tabla congelada con cada forma distinta de línea de la
+     compra del catálogo (unas cientos), anotada a mano una vez con su clave y sus gramos, sin
+     usar `RECONOCER` ni `gramosDe`. Un test compara el lector con la tabla. Un cambio del
+     lector que altere una lectura falla y obliga a revisar la anotación.
+  2. *Invariantes por comida*, que no dependen de qué clave se asigne: como mucho una línea de
+     aceite de cocinar; ninguna cantidad tomada del texto (`ml (texto)`, `estimado`) si otra
+     línea del mismo grupo ya da cifra; las líneas sin cantidad, contadas y listadas.
+  3. *Cuadre con lo estructurado:* en los platos compuestos, los gramos por hueco
+     (`_componer.gramos`: proteína, hidrato, verduras, aceite) existen sin pasar por el texto.
+     Compararlos con la lectura de su compra ya escrita, hueco a hueco. Las fichas del catálogo
+     no traen kcal propias, así que no hay cuadre equivalente para los platos no compuestos.
 
 ## Línea base
 
@@ -193,10 +211,14 @@ Preexistente y ya registrado: `vegana-1400` queda fuera de ±5 % en 3 de 8 seman
   una edición del árbol de trabajo). En todas las tandas el mensaje es el mismo
   (`Test timed out in 5000ms`, 13 veces), en los tests de `:625`, `:639` y el de «aborta sin
   escribir si el sha256 del manifiesto no es MANIFIESTO_SHA256», y dos veces también en
-  `scripts/fase7/escanearSemillas.test.js` («es determinista salvo la fecha»). Las ejecuciones
-  con fallos son las más lentas (49 a 58 s frente a 40 s): apunta a carga de la máquina y al
-  límite de 5 s de esos tests, que lanzan procesos. Por eso el banco sigue en la suite por
-  defecto. `scripts/fase7` no se ha tocado.
+  `scripts/fase7/escanearSemillas.test.js` («es determinista salvo la fecha»). Por eso el banco
+  sigue en la suite por defecto. `scripts/fase7` no se ha tocado.
+  **Es anterior a la rama** (comprobado el 2026-11-12 en un worktree temporal de `main`
+  `19a300c`, ya borrado): 1 fallo en 5 ejecuciones completas, el mismo test (`:639`) y el mismo
+  mensaje, en una ejecución de duración normal (39,3 s). Retira la explicación anterior de que
+  los fallos venían de ejecuciones lentas: en la rama también falló una de 40 s. Con 5 o 10
+  ejecuciones por tanda, la diferencia de frecuencia (1 de 5 en `main`, 7 de 10 en la rama) no
+  es concluyente. Los cuatro archivos de test nuevos de la rama suman unos 2,2 s.
 
 ## Mediciones versionadas (`medicion/`)
 

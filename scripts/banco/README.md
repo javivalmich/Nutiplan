@@ -162,3 +162,25 @@ Preexistente y ya registrado: `vegana-1400` queda fuera de ±5 % en 2 de 8 seman
 +6,5 %). Consta en `DECISIONS.md:4499` (tabla de D-110, fila «Vegana 1400 kcal», +1,4…+8,2 %),
 `:4508` (pendientes de D-110: «la semana sale hasta un 8 % por encima») y `:4530` (D-111:
 «salvo la vegana de 1400 kcal, que ya estaba en +8,2 %»).
+
+## Pendientes anotados (sin tocar)
+
+Hallados al medir; ninguno se ha corregido ni decidido aquí.
+
+- **Aceite (fuera de I-4, decisión de Javi del 2026-11-12).** Se decide en gramos (pasos de 5 g)
+  y se escribe en ml redondeados a 5: 20 g → «20 ml» = 18,4 g. Queda documentado como redondeo
+  **dentro de tolerancia** (hasta 1,6 g por comida); es casi todo lo que cuenta
+  `dentroDeTolerancia`, junto con la leche y las bebidas vegetales.
+- **Raciones (apartado D): cantidades en pasos de 10 g poco naturales.** La patata, el pan, la
+  fruta, el queso y los lácteos se deciden en pasos de 10 g (`RANGO` en
+  `src/engine2/nutrientes/raciones.js`), y de ahí salen cifras como «Patata (260 g, aprox. 1½
+  grandes)» o «Queso (30 g, 1½ lonchas)». I-4 solo hace que se muestre lo decidido; no cambia
+  qué se decide.
+- **Raciones (D): mínimos por encima de la ficha.** El mínimo del rango puede superar lo que el
+  plato pide: «Aguacate (1/4)» sube siempre a ½ (mínimo de media pieza) y «Queso light en
+  lonchas (1 loncha)» sube siempre a 30 g (mínimo del queso fresco), aunque la ficha de la
+  hamburguesa marca el queso como «no escalar».
+- **Pasta sin gluten con SIBO.** Se decide más de 80 g y la compra muestra siempre 80 g. Causa
+  confirmada y fijada en `src/plan/tests/siboPasta.test.js` (`it.fails`). Sin corregir.
+- **Mejillones por unidades** (fideuá de marisco): se escriben medias unidades («15½ unidades»).
+  Dentro de tolerancia (1,5 g como mucho).

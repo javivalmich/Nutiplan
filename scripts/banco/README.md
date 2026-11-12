@@ -156,7 +156,7 @@ porcentaje: 4 g de aceite son unas 36 kcal y cuentan como «dentro»; conviene m
 
 `linea-base/linea-base.json` (versión 2 del banco: añade la tolerancia de 5 g). El motor medido
 es el de `main` `19a300c`; ningún commit de esta rama anterior a I-4 lo modifica.
-sha256 (con saltos LF) `6605c9f11400477c87473a76219705c49732cd8d1ee911f94f5b896c9ca439cb`.
+sha256 (con saltos LF) `6de30106e07d3fa543ab4d7754c713b321be36d3925552995f6ab420bcce67b3`.
 
 Preexistente y ya registrado: `vegana-1400` queda fuera de ±5 % en 3 de 8 semanas (+3,4 a
 +6,5 %; eran 2 de 8 antes de arreglar el lector, ver «Notas de medición»). Consta en `DECISIONS.md:4499` (tabla de D-110, fila «Vegana 1400 kcal», +1,4…+8,2 %),
@@ -200,8 +200,15 @@ Hallados al medir; ninguno se ha corregido ni decidido aquí.
   `dentroDeTolerancia`, junto con la leche y las bebidas vegetales.
 - **Raciones (apartado D): cantidades en pasos de 10 g poco naturales.** La patata, el pan, la
   fruta, el queso y los lácteos se deciden en pasos de 10 g (`RANGO` en
-  `src/engine2/nutrientes/raciones.js`), y de ahí salen cifras como «Patata (260 g, aprox. 1½
-  grandes)». I-4 solo hace que se muestre lo decidido; no cambia qué se decide.
+  `src/engine2/nutrientes/raciones.js`), y de ahí salen cifras como «Patata (260 g)». I-4 solo
+  hace que se muestre lo decidido; no cambia qué se decide.
+- **Referencia en piezas de la patata: pendiente del rediseño del escalado del plan
+  compartido.** Los cuatro platos que la ficha escribe por piezas (cocido madrileño express y
+  los tres caldos gallegos) se muestran solo en gramos, «Patata (350 g)», sin piezas ni
+  «aprox.» (decisión de Javi del 2026-11-12). Motivo: `cloneAndScalePlan`
+  (`src/ui/views/OriginalPlanApp.jsx`) escala los gramos del texto y no las piezas, y una
+  orientación «aprox. 2 grandes» quedaba desfasada en los planes clonados (231 g «aprox. 2
+  grandes»). Recuperar la referencia en piezas exige antes rediseñar ese escalado.
 - **Queso en lonchas (hamburguesa de ternera): sin corregir.** Se deciden 30 g y la compra dice
   «2 loncha» (40 g). El cambio de escritura se descartó (decisión de Javi del 2026-11-12): son
   las 10 pruebas que quedan fuera de tolerancia en la ida y vuelta de catálogo. Depende del

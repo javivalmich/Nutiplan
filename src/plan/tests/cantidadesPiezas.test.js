@@ -1,6 +1,6 @@
-// I-4: ingredientes escritos por piezas cuya cantidad se decide en gramos.
-// La compra muestra los gramos decididos (valor único) y las piezas solo como
-// orientación: lo que se muestra es lo que se calculó, y se vuelve a leer igual.
+// I-4: ingredientes que la ficha escribe por piezas y cuya cantidad se decide
+// en gramos. La compra muestra solo los gramos decididos: lo que se muestra es
+// lo que se calculó, y se vuelve a leer igual.
 import { describe, it, expect } from 'vitest';
 import { reescribirComida } from '../cantidades.js';
 import { leerComida } from '../medidor/leerComida.js';
@@ -15,53 +15,52 @@ const plato = (nombre) => {
   return componerPlato(d, d.momento.includes('comida') ? 'comida' : 'cena', 2000);
 };
 
-describe('patata por piezas (I-4, punto 2)', () => {
+describe('patata por piezas (I-4, punto 2): solo gramos', () => {
   const CALDOS = ['Caldo gallego de grelos (completo)', 'Caldo gallego de grelos (ligero)', 'Caldo gallego de repollo (completo)'];
+  const CUATRO = [...CALDOS, 'Cocido madrileño express'];
 
-  it('reproduce el caso de los 400 g: 350 g decididos ya no se muestran ni se releen como 2 patatas', () => {
+  it('reproduce el caso de los 400 g: 350 g decididos se muestran y se releen como 350 g', () => {
     const m = decidir(plato('Caldo gallego de grelos (ligero)'), 'patata', 350);
-    expect(linea(m, /patata/i)).toBe('Patata (350 g, aprox. 2 grandes)');
+    expect(linea(m, /patata/i)).toBe('Patata (350 g)');
     expect(leido(m, 'patata')).toBe(350);
   });
 
-  it('en los cuatro platos, cualquier cantidad decidida se muestra en gramos y se relee igual', () => {
-    for (const nombre of [...CALDOS, 'Cocido madrileño express']) {
+  it('en los cuatro platos, cualquier cantidad (también 200 g, la de la ficha) se escribe solo en gramos', () => {
+    for (const nombre of CUATRO) {
       const base = plato(nombre);
       for (let g = 100; g <= 490; g += 10) {
-        if (g === 200) continue; // la cantidad de partida: la línea no se toca
         const m = decidir(base, 'patata', g);
-        expect(linea(m, /patata/i).startsWith(`Patata (${g} g, `)).toBe(true);
+        expect(linea(m, /patata/i)).toBe(`Patata (${g} g)`);
         expect(leido(m, 'patata')).toBe(g);
         expect(leerComida(m).sinCantidad).toEqual([]);
       }
     }
   });
 
-  it('las piezas orientan: exactas sin «aprox.», concordadas, y «ud» si la ficha no decía tamaño', () => {
-    const caldo = plato('Caldo gallego de repollo (completo)');
-    expect(linea(decidir(caldo, 'patata', 100), /patata/i)).toBe('Patata (100 g, ½ grande)');
-    expect(linea(decidir(caldo, 'patata', 250), /patata/i)).toBe('Patata (250 g, aprox. 1½ grandes)');
-    expect(linea(decidir(caldo, 'patata', 300), /patata/i)).toBe('Patata (300 g, 1½ grandes)');
-    expect(linea(decidir(caldo, 'patata', 400), /patata/i)).toBe('Patata (400 g, 2 grandes)');
+  it('el cocido («Patata (1)», sin tamaño) también', () => {
     const cocido = plato('Cocido madrileño express');
-    expect(linea(decidir(cocido, 'patata', 130), /patata/i)).toBe('Patata (130 g, aprox. ½ ud)');
-    expect(linea(decidir(cocido, 'patata', 300), /patata/i)).toBe('Patata (300 g, 1½ ud)');
+    expect(linea(cocido, /patata/i)).toBe('Patata (1)');
+    expect(linea(decidir(cocido, 'patata', 130), /patata/i)).toBe('Patata (130 g)');
+    expect(linea(decidir(cocido, 'patata', 200), /patata/i)).toBe('Patata (200 g)');
   });
 
-  it('volver a ajustar una línea ya escrita así da lo mismo que ajustarla desde la ficha', () => {
+  it('volver a ajustar una línea ya escrita da lo mismo que ajustarla desde la ficha', () => {
     const caldo = plato('Caldo gallego de grelos (completo)');
     const dosVeces = decidir(decidir(caldo, 'patata', 350), 'patata', 260);
-    expect(linea(dosVeces, /patata/i)).toBe(linea(decidir(caldo, 'patata', 260), /patata/i));
-    expect(linea(dosVeces, /patata/i)).toBe('Patata (260 g, aprox. 1½ grandes)');
+    expect(linea(dosVeces, /patata/i)).toBe('Patata (260 g)');
+    expect(linea(decidir(decidir(caldo, 'patata', 350), 'patata', 350), /patata/i)).toBe('Patata (350 g)');
   });
 
   it('no cambia nada más de la comida ni la patata escrita en gramos de otros platos', () => {
     const caldo = plato('Caldo gallego de grelos (ligero)');
-    const m = decidir(caldo, 'patata', 350);
-    expect(m.shopping.filter((s) => !/patata/i.test(s))).toEqual(caldo.shopping.filter((s) => !/patata/i.test(s)));
-    expect([m.p1, m.p2, m.recipe]).toEqual([caldo.p1, caldo.p2, caldo.recipe]);
+    for (const g of [200, 350]) {
+      const m = decidir(caldo, 'patata', g);
+      expect(m.shopping.filter((s) => !/patata/i.test(s))).toEqual(caldo.shopping.filter((s) => !/patata/i.test(s)));
+      expect([m.p1, m.p2, m.recipe]).toEqual([caldo.p1, caldo.p2, caldo.recipe]);
+    }
     const otro = { p1: 'Merluza (200g) al horno', p2: 'Patata (200g g) — cocer', shopping: ['Merluza (200g)', 'Patata (200g)'] };
     expect(decidir(otro, 'patata', 300).shopping).toEqual(['Merluza (200g)', 'Patata (300g)']);
+    expect(decidir(otro, 'patata', 200)).toEqual(otro);
   });
 });
 

@@ -78,29 +78,16 @@ function formatoN(v) {
 // I-4. Ingredientes que la ficha escribe por piezas («Patata (1 grande)») pero
 // cuya cantidad se decide en gramos (su rango va en pasos de 10 g, no de media
 // pieza). Redondear a piezas mostraba otra cantidad que la calculada: 350 g
-// salían como «2 grande» y se releían como 400 g. Se escriben los gramos
-// decididos, que son el único valor, y las piezas solo como orientación:
-// «Patata (350 g, aprox. 2 grandes)». Nada se propaga al cálculo.
-const GRAMOS_CON_PIEZAS = new Set(['patata']);
-const PAREN_PIEZAS = /\((?:\d+\s*g,\s*(?:aprox\.\s*)?)?(\d+\/\d+|\d*½|\d+)(?:\s+([a-záéíóúñ]+))?\)/i;
-
-function lineaGramosConPiezas(c) {
-  if (!GRAMOS_CON_PIEZAS.has(c.clave)) return null;
-  // La ficha («(1 grande)», leída por piezas) o una línea ya escrita así («(350 g, aprox. 2 grandes)»).
-  const yaEscrita = /\(\d+\s*g,/.test(c.texto);
-  if (c.como !== 'ud' && !yaEscrita) return null;
-  const m = c.texto.match(PAREN_PIEZAS);
-  if (!m) return null;
-  const piezas = c.despues / INGREDIENTES[c.clave].gUd;
-  const exacto = Math.abs(piezas * 2 - Math.round(piezas * 2)) < 1e-6;
-  const orientacion = concordar(`${fraccion(piezas)} ${m[2] || 'ud'}`);
-  return c.texto.replace(/\([^)]*\)/, `(${Math.round(c.despues)} g, ${exacto ? '' : 'aprox. '}${orientacion})`);
-}
+// salían como «2 grande» y se releían como 400 g. Se escriben solo los gramos
+// decididos, siempre (también si coinciden con la ficha): «Patata (350 g)».
+// Sin piezas: el plan compartido (cloneAndScalePlan) escala los gramos y no las
+// piezas, y una referencia en piezas quedaría desfasada. Nada se propaga al cálculo.
+const SIEMPRE_EN_GRAMOS = new Set(['patata']);
+const enGramosSiempre = (c) => SIEMPRE_EN_GRAMOS.has(c.clave) && c.como === 'ud';
 
 /** Cambia los números del paréntesis (y un «+ Ng» detrás) de una línea de la compra. */
 function reescribirLinea(c) {
-  const conPiezas = lineaGramosConPiezas(c);
-  if (conPiezas) return conPiezas;
+  if (enGramosSiempre(c)) return c.texto.replace(/\([^)]*\)/, `(${Math.round(c.despues)} g)`);
   let usados = c.valores.slice();
   const tomar = (unidad, antes) => {
     const i = usados.findIndex((v) => v.unidad === unidad && Math.abs(v.antes - antes) < 1e-9);
@@ -212,9 +199,11 @@ export function reescribirComida(meal, items) {
   const validos = items.filter((it) => it.gramos > 0);
   const todos = validos.map((it) => (Math.abs(it.despues - it.gramos) > 0.05 ? cambioDe(it) : { ...cambioDe({ ...it, despues: it.gramos }), f: 1 }));
   const cambios = todos.filter((c) => c.f !== 1);
-  if (!cambios.length) return { meal, sinCambiar: 0 };
+  // Lo que se escribe siempre en gramos se reescribe aunque no cambie de cantidad.
+  const lineas = [...cambios, ...todos.filter((c) => c.f === 1 && enGramosSiempre(c))];
+  if (!lineas.length) return { meal, sinCambiar: 0 };
   const cuenta = { sinCambiar: 0 };
-  const porLinea = new Map(cambios.map((c) => [c.texto, c]));
+  const porLinea = new Map(lineas.map((c) => [c.texto, c]));
   const shopping = (meal.shopping || []).map((s) => (porLinea.has(String(s)) ? reescribirLinea(porLinea.get(String(s))) : s));
   const nuevo = {
     ...meal,

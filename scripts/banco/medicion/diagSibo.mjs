@@ -33,7 +33,7 @@ for (let s = SEMANA_INICIAL; s < SEMANA_INICIAL + SEMANAS_POR_DEFECTO; s++) {
       const aceites = items.filter((x) => x.clave === 'aove' || x.clave === 'aceite_semillas');
       lineasAceite += aceites.length;
       const arom = (m.shopping || []).some((l) => /aromatizado/i.test(l));
-      if (arom) { conAromatizado++; if (items.some((x) => x.clave === 'aove')) conAromatizadoYAove++; }
+      if (arom) { conAromatizado++; if ((m.shopping || []).some((l) => /^\s*(aove|aceite de oliva)/i.test(l))) conAromatizadoYAove++; }
       if (!m.nutricion) return;
       const rel = medirComida(m, COMPOSICION).kcal;
       const dk = rel - m.nutricion.kcal;
@@ -50,6 +50,6 @@ for (let s = SEMANA_INICIAL; s < SEMANA_INICIAL + SEMANAS_POR_DEFECTO; s++) {
 }
 const porCausa = { aromatizado: casos.filter((c) => c.aromatizado).length, otras: casos.filter((c) => !c.aromatizado).length };
 log(`${id}: ${comidas} comidas; kcal declaradas ≠ releídas: ${casos.length} (con aceite aromatizado ${porCausa.aromatizado}, otras ${porCausa.otras})`);
-log(`  comidas con «aceite aromatizado»: ${conAromatizado} (con AOVE además: ${conAromatizadoYAove}); líneas de aceite releídas: ${lineasAceite}`);
+log(`  comidas con «aceite aromatizado»: ${conAromatizado} (con otra línea de AOVE además: ${conAromatizadoYAove}); líneas de aceite releídas: ${lineasAceite}`);
 if (detalle) log(JSON.stringify(casos, null, 1));
 else for (const c of casos) log(`  s${c.s} ${c.dia} ${c.time} «${c.title}»: declarada ${c.declarada}, releída ${c.releida} (${c.dk > 0 ? '+' : ''}${c.dk}) ${c.dif.join('; ')}`);

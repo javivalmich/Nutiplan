@@ -144,6 +144,8 @@ const RECONOCER = [
   [/mantequilla de cacahuete/, 'crema_cacahuete'],
   [/mantequilla/, 'mantequilla'],
   [/aove|aceite de oliva/, 'aove'],
+  // SIBO: sustituye al AOVE del plato (es aceite de oliva aromatizado).
+  [/aceite aromatizado con ajo/, 'aove'],
   [/aceite/, 'aceite_semillas'],
   [/almendra/, 'almendra'],
   [/nueces o almendras|nuez(?! moscada)|nueces/, 'nuez'],

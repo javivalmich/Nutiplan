@@ -265,8 +265,19 @@ Hallados al medir; ninguno se ha corregido ni decidido aquí.
     media del día cambia como mucho 0,6 g; principales cortas de proteína, sin cambios.
   Pendiente de decisión (borrador D-112, sin escribir en `DECISIONS.md`).
 - **Pasta sin gluten con SIBO: corregido en `9ae4a5e`.** Test en `src/plan/tests/siboPasta.test.js`.
-- **SIBO: kcal declaradas distintas de las releídas (23 comidas en 8 semanas), sin investigar.**
-  Tras la corrección de la pasta queda ese recuento en `sibo-2000` (en los demás perfiles, 0 a
-  3). Puede ser otra adaptación que cambia el texto después de calcular; no comprobado.
+- **SIBO: aceite aromatizado con ajo contado como segunda ración de aceite. Corregido** (test en
+  `src/plan/tests/siboAceite.test.js`). La adaptación quitaba el ajo y añadía «Aceite
+  aromatizado con ajo (opcional)», sin cantidad; el lector (el mismo para raciones y medidor)
+  le ponía la cantidad de aceite del texto, así que 66 de 224 comidas de `sibo-2000` llevaban
+  dos aceites. De ahí 21 de las 23 comidas con kcal declaradas ≠ releídas (las otras 2 son el
+  queso en lonchas). Decisión de Javi (2026-11-12): el aromatizado **sustituye** al AOVE, con
+  su cantidad; se lee como `aove`. Sin AOVE en la compra no se añade aceite (6 platos
+  asiáticos con aceite de sésamo o girasol y la fabada del catálogo). En `sibo-2000`, 8
+  semanas: aceite releído 2406 → 1799 g; cambian 74 de 224 comidas; la energía va al pan sin
+  gluten (+1300 g), patata (+580 g), boniato, arroz y quinoa; el ingrediente proteico de las
+  principales, 148,5 → 147,8 g de media; kcal declaradas ≠ releídas, 23 → 2.
+  `textoSinCantidad` sube (218 → 264) porque el texto del plato sigue diciendo «AOVE» y la
+  métrica busca el ingrediente por su nombre de la compra; las cifras de ml del texto
+  coinciden con la compra en las 46 comidas que las dan (las otras 20 no dan cifra).
 - **Mejillones por unidades** (fideuá de marisco): se escriben medias unidades («15½ unidades»).
   Dentro de tolerancia (1,5 g como mucho).

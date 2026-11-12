@@ -109,18 +109,37 @@ export function protagonistaFodmap(texto) {
   return m ? m[0].toLowerCase() : null;
 }
 
-/** Líneas de la compra: el ajo suelto desaparece; el resto se adapta. */
+const AROMATIZADO = /^\s*aceite aromatizado con ajo/i;
+const AOVE = /^\s*(aove|aceite de oliva( virgen)?( extra)?)\b/i;
+
+/**
+ * Líneas de la compra: el ajo suelto desaparece; el resto se adapta.
+ * I-4 (decisión de Javi, 2026-11-12): sin ajo, el aceite aromatizado con ajo
+ * SUSTITUYE al AOVE del plato, con su misma cantidad: una sola línea de aceite.
+ * Antes se añadía al final «Aceite aromatizado con ajo (opcional)», sin
+ * cantidad, y se contaba como una segunda ración de aceite. Sin AOVE en la
+ * compra no hay nada que sustituir y no se añade aceite.
+ */
 export function adaptarCompraFodmap(lineas) {
   const out = [];
-  let aceiteAjo = false;
+  let sinAjo = false;
   for (const l of lineas || []) {
-    if (/^\s*ajos?\b/i.test(l)) { aceiteAjo = true; continue; }
+    if (/^\s*ajos?\b/i.test(l)) { sinAjo = true; continue; }
     if (/^\s*guisantes\b/i.test(l)) continue;
-    if (/^\s*aceite aromatizado con ajo/i.test(l)) { aceiteAjo = true; continue; }
+    // Ya sustituido: se conserva (adaptar dos veces da lo mismo). La línea
+    // antigua sin cantidad se quita y se sustituye el AOVE.
+    if (AROMATIZADO.test(l)) {
+      if (/\(opcional\)/i.test(l)) sinAjo = true;
+      else out.push(l);
+      continue;
+    }
     const a = adaptarTextoFodmap(l);
     if (a) out.push(a);
   }
-  if (aceiteAjo) out.push('Aceite aromatizado con ajo (opcional)');
+  if (sinAjo && !out.some((l) => AROMATIZADO.test(l))) {
+    const i = out.findIndex((l) => AOVE.test(l));
+    if (i >= 0) out[i] = out[i].replace(AOVE, 'Aceite aromatizado con ajo');
+  }
   return out;
 }
 

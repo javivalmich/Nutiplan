@@ -55,7 +55,13 @@ function cambioDe(it) {
     for (const g of paren.matchAll(/(\d+)\s*g\b/g)) valores.push({ unidad: 'g', antes: Number(g[1]), despues: r5(Number(g[1]) * f) });
   } else {
     const gs = [...paren.matchAll(/(\d+(?:[.,]\d+)?)\s*g\b/g)].map((x) => leerNum(x[1]));
-    gs.forEach((v, i) => valores.push({ unidad: 'g', antes: v, despues: i === gs.length - 1 && it.como === 'g' ? Math.round(it.despues) : r5(v * f) }));
+    // I-4. «Pan duro (40g) + 30g para tostar»: la cantidad leída es la suma de
+    // las dos partes, así que el paréntesis lleva lo decidido MENOS la parte de
+    // fuera (que reescribirLinea escala igual, con r5). Antes llevaba todo lo
+    // decidido y se mostraba de más.
+    const fuera = it.texto.match(/\)\s*\+\s*(\d+)\s*g\b/);
+    const aparte = fuera && it.como === 'g' ? r5(Number(fuera[1]) * f) : 0;
+    gs.forEach((v, i) => valores.push({ unidad: 'g', antes: v, despues: i === gs.length - 1 && it.como === 'g' ? Math.round(it.despues) - aparte : r5(v * f) }));
     if (it.como === 'ml (texto)') valores.push({ unidad: 'ml', antes: Math.round(it.gramos / (ing.gMl || 1)), despues: r5(it.despues / (ing.gMl || 1)) });
     const ml = paren.match(/(\d+(?:[.,]\d+)?)\s*ml/);
     if (ml) valores.push({ unidad: 'ml', antes: leerNum(ml[1]), despues: it.como === 'ml' ? r5(it.despues / (ing.gMl || 1)) : r5(leerNum(ml[1]) * f) });

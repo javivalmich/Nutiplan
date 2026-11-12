@@ -290,15 +290,13 @@
     "mejillon|ud": 40
    },
    "ejemplos": [
-    "pan_blanco|g «Gazpacho con huevo duro, atún y pan»: decidido 30 g → «Pan duro (30g) + 15g para tostar» → releído 45 g",
     "queso_fresco|loncha «Hamburguesa de ternera con pan brioche y patatas gajo»: decidido 30 g → «Queso light en lonchas (2 loncha)» → releído 40 g"
    ],
-   "fueraDeTolerancia": 21,
+   "fueraDeTolerancia": 10,
    "fueraPorClaveYForma": {
-    "pan_blanco|g": 11,
     "queso_fresco|loncha": 10
    },
-   "iguales": 23391,
+   "iguales": 23402,
    "ilegibles": 0,
    "ilegiblesPorClaveYForma": {},
    "ingredientes": 836,
@@ -308,11 +306,10 @@
     "bebida_vegetal|ml": 2.5,
     "leche_desnatada|ml": 2.5,
     "mejillon|ud": 1.5,
-    "pan_blanco|g": 60,
     "queso_fresco|loncha": 10
    },
    "platos": 288,
-   "platosFueraDeTolerancia": 2,
+   "platosFueraDeTolerancia": 1,
    "pruebas": 24904
   },
   "platos": 241

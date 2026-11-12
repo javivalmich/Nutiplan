@@ -64,3 +64,29 @@ describe('patata por piezas (I-4, punto 2)', () => {
     expect(decidir(otro, 'patata', 300).shopping).toEqual(['Merluza (200g)', 'Patata (300g)']);
   });
 });
+
+describe('pan con una parte aparte: «Pan duro (40g) + 30g para tostar» (I-4, punto 4)', () => {
+  const gazpacho = () => plato('Gazpacho con huevo duro, atún y pan');
+
+  it('la ficha se lee como la suma de las dos partes', () => {
+    expect(linea(gazpacho(), /pan duro/i)).toBe('Pan duro (40g) + 30g para tostar');
+    expect(leido(gazpacho(), 'pan_blanco')).toBe(70);
+  });
+
+  it('reproduce el descuadre: lo decidido se reparte entre las dos partes y suma lo decidido', () => {
+    const m = decidir(gazpacho(), 'pan_blanco', 100);
+    expect(linea(m, /pan duro/i)).toBe('Pan duro (55g) + 45g para tostar');
+    expect(leido(m, 'pan_blanco')).toBe(100);
+  });
+
+  it('en todo su rango, lo que se muestra suma lo decidido y conserva la proporción', () => {
+    for (let g = 30; g <= 140; g += 10) {
+      if (g === 70) continue; // la cantidad de partida: la línea no se toca
+      const m = decidir(gazpacho(), 'pan_blanco', g);
+      const [, dentro, aparte] = linea(m, /pan duro/i).match(/\((\d+)g\) \+ (\d+)g para tostar/).map(Number);
+      expect(dentro + aparte).toBe(g);
+      expect(leido(m, 'pan_blanco')).toBe(g);
+      expect(Math.abs(aparte - (g * 30) / 70)).toBeLessThanOrEqual(2.5);
+    }
+  });
+});

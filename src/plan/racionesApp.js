@@ -101,6 +101,29 @@ function baseDe(m) {
   return b;
 }
 
+/**
+ * I-4. Clave con que se lee cada ingrediente de un plato compuesto una vez
+ * adaptado al perfil, frente a la clave del compuesto. La adaptación cambia
+ * el nombre de algunos ingredientes («Pasta integral» → «Pasta sin gluten» con
+ * SIBO), así que la comida adaptada se lee con otra clave (pasta_seco) que la
+ * que recomponer() busca (pasta_integral_seco). Se adapta cada línea de la
+ * compra sin adaptar por separado y se compara su lectura.
+ * @returns {Map<string, string>} clave leída en la comida adaptada → clave del compuesto
+ */
+export function clavesDeAdaptacion(meal, profile) {
+  const mapa = new Map();
+  if (!meal || !meal._componer) return mapa;
+  const sinAdaptar = recomponer(meal, new Map());
+  for (const linea of sinAdaptar.shopping || []) {
+    const antes = leerComida({ shopping: [linea] }).items[0];
+    if (!antes) continue;
+    const adaptada = adaptarSiProcede({ time: meal.time, title: '', p1: '', p2: '', shopping: [linea], recipe: [] }, profile);
+    const despues = leerComida({ shopping: adaptada.shopping || [] }).items.find((it) => it.gramos === antes.gramos) || null;
+    if (despues && despues.clave !== antes.clave) mapa.set(despues.clave, antes.clave);
+  }
+  return mapa;
+}
+
 export function ajustarDia(day, profile, targetKcal, { composicion = COMPOSICION } = {}) {
   const actuales = day.meals || [];
   const meals = actuales.map((m) => (m ? baseDe(m) : m));
@@ -130,8 +153,13 @@ export function ajustarDia(day, profile, targetKcal, { composicion = COMPOSICION
     if (m._componer) {
       // D-108: un plato compuesto se vuelve a escribir entero con sus gramos
       // nuevos (y se vuelve a adaptar a la dieta o a SIBO del perfil).
+      // Los gramos se leyeron de la comida adaptada: se pasan a la clave del compuesto.
+      const deAdaptacion = clavesDeAdaptacion(m, profile);
       const porClave = new Map();
-      for (const it of items) if (!porClave.has(it.clave)) porClave.set(it.clave, it.despues);
+      for (const it of items) {
+        const clave = deAdaptacion.get(it.clave) || it.clave;
+        if (!porClave.has(clave)) porClave.set(clave, it.despues);
+      }
       const sinAdaptar = recomponer(m, porClave);
       delete sinAdaptar.adaptadoDieta;
       delete sinAdaptar.adaptadoFodmap;

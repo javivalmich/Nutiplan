@@ -156,7 +156,7 @@ porcentaje: 4 g de aceite son unas 36 kcal y cuentan como «dentro»; conviene m
 
 `linea-base/linea-base.json` (versión 2 del banco: añade la tolerancia de 5 g). El motor medido
 es el de `main` `19a300c`; ningún commit de esta rama anterior a I-4 lo modifica.
-sha256 (con saltos LF) `6de30106e07d3fa543ab4d7754c713b321be36d3925552995f6ab420bcce67b3`.
+sha256 (con saltos LF) `00ec172d8e74ef4707bdd834f06d82aeaa8b8fb2a44fcdafed958f707691e1d1`.
 
 Preexistente y ya registrado: `vegana-1400` queda fuera de ±5 % en 3 de 8 semanas (+3,4 a
 +6,5 %; eran 2 de 8 antes de arreglar el lector, ver «Notas de medición»). Consta en `DECISIONS.md:4499` (tabla de D-110, fila «Vegana 1400 kcal», +1,4…+8,2 %),

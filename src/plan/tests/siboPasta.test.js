@@ -1,18 +1,17 @@
-// I-4, punto 5 — DEFECTO CONOCIDO, SIN CORREGIR (pendiente de autorización).
-// Con SIBO, la pasta de los platos compuestos se adapta a «pasta sin gluten».
-// Las raciones deciden sus gramos, pero el texto y la compra se quedan con la
-// cantidad de partida (80 g).
-// Causa: la comida adaptada se lee como `pasta_seco`, y recomponer() busca los
-// gramos decididos con la clave del compuesto, `pasta_integral_seco`
-// (src/plan/textos/componer.js, recomponer): no los encuentra y deja los de partida.
-// `it.fails` documenta el defecto: cuando se corrija, este test pasará a fallar
-// y habrá que quitarle la marca.
+// I-4, punto 5. Con SIBO, la adaptación cambia el nombre de algunos
+// ingredientes de los platos compuestos («Pasta integral» → «Pasta sin
+// gluten», «espárragos» → «judías verdes»), y la comida adaptada se lee con
+// otra clave (pasta_seco, judia_verde) que la que recomponer() busca
+// (pasta_integral_seco, esparrago). Antes no encontraba los gramos decididos y
+// el texto se quedaba con los de partida (la pasta, siempre 80 g).
+// Celíaco, sin lactosa, vegetariana y vegana no adaptan los compuestos con
+// cambio de clave (clavesDeAdaptacion vacío): se comprueba también.
 import { describe, it, expect } from 'vitest';
 import { catalogoApp } from '../catalogo.js';
 import { componerPlato, tuplaDe } from '../textos/componer.js';
 import { clavesDe } from '../textos/compuestos.js';
 import { adaptarSiProcede } from '../adaptar.js';
-import { ajustarDia } from '../racionesApp.js';
+import { ajustarDia, clavesDeAdaptacion } from '../racionesApp.js';
 import { leerComida } from '../medidor/leerComida.js';
 import { racionesCalculadas } from '../../../scripts/banco/metricas.mjs';
 
@@ -43,7 +42,7 @@ describe('pasta de los platos compuestos: lo decidido es lo que se muestra', () 
     }
   });
 
-  it.fails('con SIBO, la compra muestra la pasta sin gluten decidida (hoy se queda en 80 g)', () => {
+  it('con SIBO, la compra muestra la pasta sin gluten decidida', () => {
     for (const d of pastas) {
       const r = pastaDecididaYMostrada(d, SIBO);
       expect(r.linea).toMatch(/pasta sin gluten/i);
@@ -52,11 +51,29 @@ describe('pasta de los platos compuestos: lo decidido es lo que se muestra', () 
     }
   });
 
-  it('con SIBO, hoy: se decide más de 80 g y la compra dice 80 g en todos los platos de pasta', () => {
-    for (const d of pastas) {
-      const r = pastaDecididaYMostrada(d, SIBO);
-      expect(r.decidida).toBeGreaterThan(80);
-      expect(r.linea).toBe('Pasta sin gluten (80 g)');
+  // La verdura es fija en las raciones (D-108), así que hoy este cambio de clave
+  // no produce descuadre: se comprueba que el mapa la recoge para cuando lo haga.
+  it('con SIBO, la verdura que cambia de nombre (espárragos → judías verdes) queda en el mapa de claves', () => {
+    const conEsparrago = catalogoApp().filter((d) => { const t = tuplaDe(d.id); return t && clavesDe(t).V === 'esparrago'; });
+    expect(conEsparrago.length).toBeGreaterThan(0);
+    for (const d of conEsparrago) {
+      const m = adaptarSiProcede(componerPlato(d, d.momento.includes('comida') ? 'comida' : 'cena', 2000), SIBO);
+      expect(clavesDeAdaptacion(m, SIBO).get('judia_verde')).toBe('esparrago');
+      const items = leerComida(m).items.map((it) => ({ clave: it.clave, gramos: it.gramos }));
+      const verdura = items.find((i) => i.clave === 'judia_verde');
+      expect(verdura).toBeTruthy();
+      // Con el mapa, los gramos leídos de las judías verdes llegan al hueco del espárrago.
+      const releido = leerComida(adaptarSiProcede(m, SIBO)).items.find((i) => i.clave === 'judia_verde').gramos;
+      expect(releido).toBe(verdura.gramos);
+    }
+  });
+
+  it('celíaco, sin lactosa, vegetariana y vegana: ninguna adaptación de un compuesto cambia de clave', () => {
+    const PERFILES = [{ ...SIN_SIBO, intolerances: ['gluten'] }, { ...SIN_SIBO, intolerances: ['lactosa'] }, { ...SIN_SIBO, dieta: 'vegetariana' }, { ...SIN_SIBO, dieta: 'vegana' }];
+    const compuestos = catalogoApp().filter((d) => tuplaDe(d.id));
+    for (const p of PERFILES) for (const d of compuestos) {
+      const m = adaptarSiProcede(componerPlato(d, d.momento.includes('comida') ? 'comida' : 'cena', 2000), p);
+      expect(clavesDeAdaptacion(m, p).size).toBe(0);
     }
   });
 });

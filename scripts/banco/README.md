@@ -304,11 +304,11 @@ Hallados al medir; ninguno se ha corregido ni decidido aquí.
   le ponía la cantidad de aceite del texto, así que 66 de 224 comidas de `sibo-2000` llevaban
   dos aceites. De ahí 21 de las 23 comidas con kcal declaradas ≠ releídas (las otras 2 son el
   queso en lonchas). Decisiones de Javi (2026-11-12): el aromatizado **sustituye** al aceite
-  de cocinar (el AOVE o, si no hay, el de girasol; nunca el de sésamo ni una línea que lo
-  nombre), con su cantidad, y se lee como `aove`; el texto del plato nombra el mismo aceite que
-  la compra. Sin aceite de cocinar que sustituir no se añade aceite, y el texto dice «aceite»
-  donde la adaptación del ajo escribía el aromatizado (en el catálogo: el pad thai, con
-  «Aceite de sésamo o girasol», y la fabada). En `sibo-2000`, 8 semanas: aceite releído 2406 →
+  de cocinar (el AOVE o, si no hay, el de girasol, también «Aceite de sésamo o girasol» del pad
+  thai; nunca el de sésamo solo), con su cantidad, y se lee como `aove`; el texto del plato
+  nombra el mismo aceite que la compra. Sin aceite de cocinar que sustituir no se añade aceite,
+  y el texto dice «aceite» donde la adaptación del ajo escribía el aromatizado (en el catálogo,
+  la fabada). En `sibo-2000`, 8 semanas: aceite releído 2406 →
   1799 g; cambian 74 de 224 comidas; la energía va al pan sin gluten (+1300 g), patata
   (+580 g), boniato, arroz y quinoa; el ingrediente proteico de las principales, 148,5 → 147,8 g
   de media; kcal declaradas ≠ releídas, 23 → 2. Con el texto coherente, `textoSinCantidad`

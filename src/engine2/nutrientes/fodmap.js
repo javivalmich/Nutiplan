@@ -112,13 +112,13 @@ export function protagonistaFodmap(texto) {
 const AROMATIZADO = /^\s*aceite aromatizado con ajo/i;
 const ACEITE_AROMATIZADO = 'aceite aromatizado con ajo';
 // Aceite de cocinar que el aromatizado puede sustituir, por orden: el AOVE y,
-// si no hay, el de girasol. Nunca el de sésamo (aliño de sabor propio), ni una
-// línea que lo nombre («Aceite de sésamo o girasol»).
+// si no hay, el de girasol (también «Aceite de sésamo o girasol», el aceite de
+// cocinar del pad thai; decisión de Javi del 2026-11-13). Nunca el aceite de
+// sésamo solo, que es un aliño de sabor propio.
 const COCINAR = [
   { tipo: 'aove', linea: /^\s*(aove|aceite de oliva( virgen)?( extra)?)\b/i, texto: /\baove\b( virgen extra)?|\baceite de oliva( virgen)?( extra)?/gi },
-  { tipo: 'girasol', linea: /^\s*aceite de girasol\b/i, texto: /\baceite de girasol\b/gi },
+  { tipo: 'girasol', linea: /^\s*aceite de (s[eé]samo o )?girasol\b/i, texto: /\baceite de (s[eé]samo o )?girasol\b/gi },
 ];
-const SESAMO = /s[eé]samo/i;
 
 /** Compra adaptada y qué aceite de cocinar se ha sustituido (o null). */
 function adaptarCompra(lineas) {
@@ -139,7 +139,7 @@ function adaptarCompra(lineas) {
   }
   if (!sinAjo || out.some((l) => AROMATIZADO.test(l))) return { lineas: out, sustituido: null };
   for (const c of COCINAR) {
-    const i = out.findIndex((l) => c.linea.test(l) && !SESAMO.test(l));
+    const i = out.findIndex((l) => c.linea.test(l));
     if (i >= 0) {
       out[i] = out[i].replace(c.linea, 'Aceite aromatizado con ajo');
       return { lineas: out, sustituido: c };

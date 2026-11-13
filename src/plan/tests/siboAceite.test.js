@@ -48,9 +48,17 @@ describe('SIBO: el aceite aromatizado con ajo sustituye al AOVE', () => {
       .toEqual(['Pollo (150g)', 'Aceite aromatizado con ajo (15ml)', 'Aceite de girasol (10ml)']);
   });
 
-  it('nunca sustituye a una línea que nombra el sésamo', () => {
+  it('nunca sustituye al aceite de sésamo solo', () => {
     expect(adaptarCompraFodmap(['Gambas (200g)', 'Ajo (1 diente)', 'Aceite de sésamo (5ml)'])).toEqual(['Gambas (200g)', 'Aceite de sésamo (5ml)']);
-    expect(adaptarCompraFodmap(['Gambas (200g)', 'Ajo (1 diente)', 'Aceite de sésamo o girasol (15ml)'])).toEqual(['Gambas (200g)', 'Aceite de sésamo o girasol (15ml)']);
+  });
+
+  // Decisión de Javi (2026-11-13): «Aceite de sésamo o girasol» (pad thai) es el aceite de
+  // cocinar del plato y pasa a aceite aromatizado; la receta conserva «Calienta aceite aromatizado con ajo».
+  it('«Aceite de sésamo o girasol» pasa a aceite aromatizado y la receta lo conserva', () => {
+    const m = adaptarComidaFodmap({ title: 'Pad thai con gambas', p1: 'Fideos de arroz salteados al wok · gambas', p2: 'Lima', shopping: ['Gambas peladas (225g)', 'Ajo (2 dientes)', 'Aceite de sésamo o girasol (15ml)'], recipe: ['Dora el ajo picado en el aceite. Reserva.'] });
+    expect(m.shopping).toEqual(['Gambas peladas (225g)', 'Aceite aromatizado con ajo (15ml)']);
+    expect(m.recipe[0]).toMatch(/^Calienta aceite aromatizado con ajo/);
+    expect(aceitesDe(m)).toEqual([expect.objectContaining({ clave: 'aove', como: 'ml' })]);
   });
 });
 

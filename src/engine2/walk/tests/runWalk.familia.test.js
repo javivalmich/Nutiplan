@@ -161,3 +161,51 @@ describe('runWalk: no repetir familia proteica en dias seguidos', () => {
     }
   });
 });
+
+// Red de seguridad (decision de Javi, 2026-11-13): el filtro de familia mira un
+// hueco cada vez. En un catalogo muy corto puede gastar antes de tiempo los
+// platos que valian para un hueco posterior y dejarlo sin ninguno. Antes de
+// fallar (y de que la app caiga al motor viejo), el walk se repite entero sin
+// ese filtro, y lo dice en el decision log.
+describe('runWalk: red de seguridad del filtro de familia', () => {
+  // Caso real: el de scripts/phaseP2c (lactosa + gluten por el veto de engine2
+  // deja 18 platos para 14 huecos). Con el filtro, Domingo/cena se queda sin platos.
+  const corto = { weekArc: null, catalog: loadCatalog(), seed: 'baseline-mant-intol16', profile: { trainingDays: [], intolerances: ['lactosa', 'gluten'] } };
+  corto.weekArc = buildWeekArc({ profile: corto.profile, seed: corto.seed, strategy: 'mantenimiento_equilibrado' }).weekArc;
+
+  it('si un hueco posterior se queda sin platos, repite el walk sin el filtro y lo deja en el log', () => {
+    const { slots, decisionLog } = runWalk(corto);
+    expect(slots).toHaveLength(14);
+    expect(slots.every((s) => !s.abierto && s.dishId)).toBe(true);
+    const retirada = decisionLog.filter((e) => e.causa === 'familia_dias_seguidos_retirada');
+    expect(retirada).toHaveLength(1);
+    expect(retirada[0].evento).toBe(true);
+    expect(retirada[0].evidencia).toContain('pool rotativo vacio');
+    expect(decisionLog.some((e) => String(e.evidencia || '').includes(`${NOTA}:`))).toBe(false);
+  });
+
+  it('es determinista: dos ejecuciones dan lo mismo', () => {
+    expect(JSON.stringify(runWalk(corto))).toBe(JSON.stringify(runWalk(corto)));
+  });
+
+  it('con catalogo de sobra no se retira nada', () => {
+    const catalog = aplicarAjustesD099(loadCatalog());
+    for (let seed = 0; seed < 6; seed++) {
+      const { weekArc } = buildWeekArc({ profile: { trainingDays: [] }, seed: `familia-red-${seed}`, strategy: 'x' });
+      const { decisionLog } = runWalk({ weekArc, catalog, seed: `familia-red-${seed}` });
+      expect(decisionLog.some((e) => e.causa === 'familia_dias_seguidos_retirada')).toBe(false);
+    }
+  });
+
+  it('si tampoco sin el filtro hay platos, falla como antes', () => {
+    const { anchors, dishes } = anchorEverythingExcept([{ day: 'Lunes', momento: 'cena' }, { day: 'Martes', momento: 'cena' }]);
+    const weekArc = { beats: beats7(), anchors };
+    expect(() => runWalk({ weekArc, catalog: [...dishes, pescadoCena], seed: 'familia-red-vacio' })).toThrow(/pool rotativo vacio/);
+  });
+
+  it('con dieta vegetariana no hay filtro: ese mismo caso no falla ni retira nada', () => {
+    const { decisionLog } = runWalk({ ...corto, profile: { ...corto.profile, dieta: 'vegetariana' } });
+    expect(decisionLog.some((e) => e.causa === 'familia_dias_seguidos_retirada')).toBe(false);
+  });
+});
+

@@ -184,6 +184,34 @@ function reshapeP1aEntry(entry) {
  * @returns {{slots: object[], decisionLog: object[]}}
  */
 export function runWalk(input) {
+  // Red de seguridad del filtro de familia (decision de Javi, 2026-11-13).
+  // Ese filtro mira un hueco cada vez: en un catalogo muy corto puede gastar
+  // antes de tiempo los platos que valian para un hueco posterior y dejarlo
+  // sin ninguno. Si el walk falla por pool vacio y el filtro habia descartado
+  // algun candidato, se repite ENTERO sin el filtro (misma seed: mismo
+  // resultado siempre) antes de propagar el fallo, y se dice en el log.
+  const uso = { familiaDescarto: false };
+  try {
+    return walkUnaVez(input, { sinFamilia: false, uso });
+  } catch (err) {
+    if (!(err && err.poolVacio) || !uso.familiaDescarto) throw err;
+    const resultado = walkUnaVez(input, { sinFamilia: true, uso: { familiaDescarto: false } });
+    resultado.decisionLog.push({
+      decisionId: `walk-select-${resultado.decisionLog.length}`,
+      day: undefined,
+      momento: undefined,
+      plato: undefined,
+      causa: 'familia_dias_seguidos_retirada',
+      evidencia: `con el filtro «familia en dias seguidos» el walk se quedaba sin platos (${err.message}); `
+        + 'se repite la semana entera sin ese filtro, antes de dar el fallo por bueno',
+      alternativasDescartadas: [],
+      evento: true,
+    });
+    return resultado;
+  }
+}
+
+function walkUnaVez(input, { sinFamilia, uso }) {
   // input.memoryStore se recibe por inyeccion y NUNCA se lee ni se invoca aqui (D-019, v13):
   // no se desestructura para que quede estructuralmente imposible tocarlo por accidente.
   const {
@@ -349,10 +377,12 @@ export function runWalk(input) {
         if (pool.length) pushEvent(day, 'repeticion_por_catalogo_corto', `${day}/${momento}: no queda ningún plato sin repetir; se admite repetir (hasta ${maxRepeticiones} veces por semana): ${pool.length} candidatos`);
       }
       if (pool.length === 0) {
-        throw new Error(
+        const errPool = new Error(
           `runWalk: pool rotativo vacio para ${day}/${momento} `
             + `(rol="rotativo", momento admite "${momento}", excluidos los ids ya usados en la semana y los vetados)`,
         );
+        errPool.poolVacio = true; // lo lee la red de seguridad del filtro de familia
+        throw errPool;
       }
 
       // Prototipo (visor): tope de proteina principal por semana. Si dejaria el
@@ -402,7 +432,7 @@ export function runWalk(input) {
       const baseF = poolSeparado.length ? poolSeparado : base0;
       let baseH = baseF;
       let notaFamilia = '';
-      if (profile?.dieta !== 'vegetariana' && profile?.dieta !== 'vegana' && !esSugerencia) {
+      if (!sinFamilia && profile?.dieta !== 'vegetariana' && profile?.dieta !== 'vegana' && !esSugerencia) {
         const familiasCercanas = new Set();
         for (const s2 of slots.values()) {
           if (s2.abierto || !s2.dishId) continue;
@@ -415,6 +445,7 @@ export function runWalk(input) {
         if (poolFamilia.length === baseF.length) notaFamilia = '';
         else if (poolFamilia.length) {
           baseH = poolFamilia;
+          uso.familiaDescarto = true;
           notaFamilia = `familia en dias seguidos: descarta ${baseF.length - poolFamilia.length} candidatos de ${[...familiasCercanas].join(', ')} (ya salen el dia de al lado); `;
         } else notaFamilia = `familia en dias seguidos sin aplicar: dejaria el hueco sin candidatos (${[...familiasCercanas].join(', ')} ya salen el dia de al lado); `;
       }

@@ -42,8 +42,8 @@ const CAMBIOS = [
   [W, "      const esSugerencia = slot.fixedRole === 'libre' && momento === 'comida';",
     `      if (${G}) ${G}.momento = momento;\n      const esSugerencia = !(${G} && ${G}.flags.sinS) && slot.fixedRole === 'libre' && momento === 'comida';`],
   // sinBm deshace el filtro de familia.
-  [W, "      if (profile?.dieta !== 'vegetariana' && profile?.dieta !== 'vegana' && !esSugerencia) {",
-    `      if (!(${G} && ${G}.flags.sinBm) && profile?.dieta !== 'vegetariana' && profile?.dieta !== 'vegana' && !esSugerencia) {`],
+  [W, "      if (!sinFamilia && profile?.dieta !== 'vegetariana' && profile?.dieta !== 'vegana' && !esSugerencia) {",
+    `      if (!sinFamilia && !(${G} && ${G}.flags.sinBm) && profile?.dieta !== 'vegetariana' && profile?.dieta !== 'vegana' && !esSugerencia) {`],
   // Bd: también el mismo día.
   [W, '          if (Math.abs(DAYS_ORDER.indexOf(s2.day) - i) !== 1) continue;',
     `          { const dist = Math.abs(DAYS_ORDER.indexOf(s2.day) - i); if (!(dist === 1 || (dist === 0 && ${G} && ${G}.flags.Bd))) continue; }`],

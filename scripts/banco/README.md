@@ -236,6 +236,9 @@ archivo de salida que se les pasa. No forman parte de `npm test`. Las variantes 
 | `proporcionMasas.mjs` | Proporción de los ingredientes de masa (crepes, batido, hamburguesa de tofu, pizza) |
 | `diagSibo.mjs [perfil]` | Comidas con kcal declaradas ≠ releídas y líneas de aceite aromatizado |
 | `variantesMinimos.mjs` | Hook: `--variante=B` (por defecto), `A`, `B-escala`, `B-fija` |
+| `auditoriaPescado.mjs` | Auditoría B: pescado por semana, causa de cada hueco de pescado, pescado tras cada filtro del walk, catálogo, rachas ≥ 5 y alternativas (`--alternativas`) |
+| `contrafactualesPescado.mjs` | Hook que instrumenta el walk y, con `--sin=suelo,legumbre,separacion,tope,verdura,prefA`, desactiva reglas en memoria |
+| `auditoriaPescadoDetalle.mjs` | Verdura por familia en el catálogo, suelos atendidos y sugerencia del sábado |
 
 Reproducir la cifra de la variante B (142 de 2688 comidas):
 

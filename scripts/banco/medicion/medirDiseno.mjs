@@ -44,27 +44,14 @@ globalThis.__cf = {
   flags,
   momento: null,
   inicio() { walk = { B: { evaluados: 0, aplicado: 0, sinCandidato: 0 }, huecos: [] }; },
-  hueco(h) { walk.huecos.push({ day: h.day, momento: h.momento, causaFreq: h.causaFreq, target: (String(h.notaFreq || '').match(/target="(\w+)"/) || [])[1] || null, sinCand: (String(h.notaFreq || '').match(/sin candidato en el pool post-A\/B: \[([^\]]*)\]/) || [])[1] || null }); },
-  // B: no repetir familia proteica (proteinType, 8 valores) del día anterior ni del siguiente.
-  // La sugerencia de la comida libre del sábado no es un plato servido: ni se filtra ni cuenta
-  // como vecina. Con vuelta atrás: si dejaría el hueco sin candidatos, no se aplica.
-  filtroFamilia({ day, momento, i, slots, base }) {
-    if (day === 'Sabado' && momento === 'comida') return base;
-    walk.B.evaluados += 1;
-    const fam = (d) => (flags.Bm && familia(d) === 'marisco' ? 'pescado' : familia(d));
-    const vecinas = new Set();
-    for (const s of slots.values()) {
-      if (s.abierto || !s.dishId) continue;
-      if (s.day === 'Sabado' && s.momento === 'comida') continue;
-      if (Math.abs(DAYS_ORDER.indexOf(s.day) - i) !== 1) continue;
-      const d = porIdWalk.get(s.dishId);
-      if (d) vecinas.add(fam(d));
+  hueco(h) {
+    // Filtro de familia (Bm, en src/): se lee de la evidencia del hueco.
+    if (h.omnivoro && !h.esSugerencia && !flags.sinBm) {
+      walk.B.evaluados += 1;
+      if (/^familia en dias seguidos sin aplicar/.test(h.notaFamilia || '')) walk.B.sinCandidato += 1;
+      else if (h.notaFamilia) walk.B.aplicado += 1;
     }
-    const f = base.filter((d) => !vecinas.has(fam(d)));
-    if (f.length === base.length) return base;
-    if (!f.length) { walk.B.sinCandidato += 1; return base; }
-    walk.B.aplicado += 1;
-    return f;
+    walk.huecos.push({ day: h.day, momento: h.momento, causaFreq: h.causaFreq, target: (String(h.notaFreq || '').match(/target="(\w+)"/) || [])[1] || null, sinCand: (String(h.notaFreq || '').match(/sin candidato en el pool post-A\/B: \[([^\]]*)\]/) || [])[1] || null });
   },
   // A: en la comida, primero los suelos semanales; si ninguno se puede atender, lo de siempre.
   elegirNivel: (flags.A || flags.A2) ? (input, original, { satisfaceVerdura: sv, resolver }) => {

@@ -20,7 +20,10 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
 | `dd0c6d4` | Auditoría B: scripts de medición del pescado (sin cambiar reglas) |
 | `2bc9c61` | `DECISIONS.md`: D-112 (mínimos de la ficha) y D-113 (SIBO, aceite aromatizado) |
 | `8af6b7d` | `ESTADO.md` al día y scripts del diseño medido de pescado y legumbres |
-| el siguiente a `8af6b7d` | S: la sugerencia de la comida libre no es consumo (`runWalk.js`, test `runWalk.sugerencia.test.js`, línea base regenerada) |
+| `47705c1` | S: la sugerencia de la comida libre no es consumo (`runWalk.js`, test `runWalk.sugerencia.test.js`, línea base regenerada) |
+| `fe1367e` | Ñoquis con espinacas y requesón: el texto nombra cada ingrediente con su cantidad (test `noquisTexto.test.js`) |
+| `2b40664` | `DECISIONS.md`: D-114 (la sugerencia de la comida libre no es consumo) |
+| el siguiente a `2b40664` | Bm: no repetir familia proteica en días seguidos (`runWalk.js`, `bases.js`, test `runWalk.familia.test.js`, línea base regenerada) |
 
 ## Decisiones de Javi (2026-11-12 y 2026-11-13)
 
@@ -38,8 +41,12 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
   - **S, aprobada e implementada:** la sugerencia de la comida libre del sábado no sube los contadores de los suelos ni marca la verdura del día. Sigue contando para no repetir plato.
     - Además, el paso 4 no la dirige (así se midió); sigue contando para el tope y la separación por especie.
     - El motor con S da los mismos menús que la variante medida en memoria (2400 semanas idénticas). `--cf=sinS` reproduce la línea anterior.
-    - Sin asiento en `DECISIONS.md` todavía: necesita autorización.
-  - **B:** para «no repetir familia en días seguidos», pescado y marisco son una sola familia (Bm). Sin implementar.
+    - Asiento: D-114.
+  - **Bm, aprobada e implementada:** una familia proteica que sale el día anterior o el siguiente no se repite; pescado y marisco son una sola familia. Solo omnívoros. Si dejaría el hueco sin candidatos no se aplica, y queda en la evidencia del hueco.
+    - No mira la comida y la cena del mismo día. La sugerencia del sábado ni se filtra ni cuenta como vecina. El ancla no pasa por el filtro (la coloca `expandWeekArc.js` antes del walk).
+    - El motor con Bm da los mismos menús que la variante medida en memoria (2400 semanas idénticas). `--cf=sinBm` la deshace.
+    - Sin asiento en `DECISIONS.md`: el borrador (extiende D-099.3.e) está pendiente de autorización.
+    - No está en las alternativas (`alternativa.js`): pedir otro plato puede romper la regla. Pendiente de decisión.
   - **A** (en la comida, los suelos antes que la verdura): sin implementar.
 
 ## Pendientes y de qué dependen
@@ -66,8 +73,8 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
   - B con la definición del README deja rachas (pescado y marisco se alternan). Con Bm la racha máxima es de 2 días y el pescado baja a 4,42.
   - S: los días sin verdura (0,64 por semana, todos sábados) pasan a 0.
   - Verdura «desconocida»: 63 de 235 platos (16 de ave, los 9 de cereal).
-  - Pendiente de decidir: A, Bm y el suelo de legumbre. No proponer techos semanales.
-- **`src/plan/tests/dietas.test.js:144` falla desde S** («las cantidades del texto coinciden con las de la compra», 31 de 32, umbral 97 %). Con S, la semilla 42 de la vegetariana saca «Ñoquis con espinacas y requesón», cuyo texto dice «salsa de espinacas y requesón (150g)» y la compra «Requesón (210g)». El descuadre es anterior a S: la línea base ya contaba `requeson: 1` en texto ≠ compra. Depende de una decisión de Javi (corregir el texto del plato, cambiar la semilla del test o su umbral).
+  - Pendiente de decidir: A y el suelo de legumbre (A, sin implementar por decisión de Javi). No proponer techos semanales.
+- **`scripts/phaseP2c/compareD2.test.js` falla desde Bm:** `runWalk: pool rotativo vacio para Domingo/cena`. Es el caso «lactosa+gluten» de ese script, que pasa las intolerancias al veto propio de engine2 y deja 18 platos para 14 huecos (217 de 235 vetados). La app no usa esa vía: filtra el catálogo antes (`filtrarCatalogo`) y el celíaco sin lactosa conserva 89 comidas y 85 cenas. Medido en la vía de la app: 540 semanas de 9 perfiles omnívoros con varias intolerancias (mínimo 38 comidas), ninguna cae al motor viejo ni a repetir platos. Depende de una decisión de Javi (qué hacer con ese script de Fase 4).
 - **Test intermitente** `scripts/fase7/entrega.test.js:639` (tiempo límite de 5 s): ya fallaba en `main` y no se toca.
 - **Lint:** 154 problemas que ya estaban en `main`. Ninguno en los archivos tocados por esta rama.
 

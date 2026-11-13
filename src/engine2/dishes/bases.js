@@ -83,5 +83,18 @@ export function proteinaPrincipal(dish) {
   return (vista.tupla && vista.tupla.P) || vista.claveP || null;
 }
 
+/**
+ * Familia proteica de un plato para la regla «no repetir familia en dias
+ * seguidos» (decision de Javi, 2026-11-13): el proteinType del resolvedor, con
+ * pescado y marisco como UNA sola familia. null si el plato no se puede
+ * resolver (catalogos sinteticos de test): un plato sin familia ni se descarta
+ * ni cuenta como vecino.
+ */
+export function familiaProteica(dish) {
+  const vista = vistaSegura(dish);
+  if (!vista || !vista.proteinType) return null;
+  return vista.proteinType === 'marisco' ? 'pescado' : vista.proteinType;
+}
+
 /** Tope de veces que una misma proteina principal sale en la semana (comida + cena). */
 export const TOPE_PROTEINA_SEMANA = 2;

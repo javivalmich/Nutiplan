@@ -239,7 +239,7 @@ archivo de salida que se les pasa. No forman parte de `npm test`. Las variantes 
 | `auditoriaPescado.mjs` | Auditoría B: pescado por semana, causa de cada hueco de pescado, pescado tras cada filtro del walk, catálogo, rachas ≥ 5 y alternativas (`--alternativas`) |
 | `contrafactualesPescado.mjs` | Hook que instrumenta el walk y, con `--sin=suelo,legumbre,separacion,tope,verdura,prefA`, desactiva reglas en memoria |
 | `auditoriaPescadoDetalle.mjs` | Verdura por familia en el catálogo, suelos atendidos y sugerencia del sábado |
-| `contrafactualesDiseno.mjs` | Hook de diseño: con `--cf=A,B,Bm,S,leg2,sinNiveles,azar` aplica en memoria los contrafactuales de pescado y legumbres (ver su cabecera) |
+| `contrafactualesDiseno.mjs` | Hook de diseño: con `--cf=A,Bd,sinBm,sinS,leg2,sinNiveles,azar` aplica en memoria los contrafactuales de pescado y legumbres (ver su cabecera) |
 | `medirDiseno.mjs <salida.json>` | Una fila por semana (200 por perfil con `--semanas 200`): pescado, legumbre, días sin verdura, rachas, kcal, proteína, reglas de D-099.3, restricciones, paso 4 y platos |
 | `resumenDiseno.mjs <nombre=archivo> …` | Resume esos volcados por grupo de perfiles, con el error típico y la dispersión entre bloques de 8 semanas |
 | `analisisDiseno.mjs <análisis> <nombre=archivo> …` | `reparto` (pescados por semana), `legumbres` (clase y especie), `vegana`, `familias` y `texto` (tres semanas de omni-2174) |

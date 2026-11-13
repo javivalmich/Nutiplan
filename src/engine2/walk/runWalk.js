@@ -105,7 +105,7 @@ import { DAYS_ORDER } from '../skeleton/days.js';
 import { mulberry32, seedFromString } from '../skeleton/rng.js';
 import { MOMENTOS } from '../dishes/schema.js';
 import { computeVetoUniverse } from './vetoes.js';
-import { proteinaPrincipal, TOPE_PROTEINA_SEMANA } from '../dishes/bases.js';
+import { proteinaPrincipal, familiaProteica, TOPE_PROTEINA_SEMANA } from '../dishes/bases.js';
 import { alinoDe, TOPE_AJILLO_SEMANA } from '../dishes/alinosD105.js';
 import {
   initFrequencyState, registerConsumption, chooseFrequencyLevel, chooseIdentityLevel,
@@ -197,6 +197,8 @@ export function runWalk(input) {
   const usedNames = new Set();
   const protPorId = new Map(catalog.map((d) => [d.id, d]));
   const protMemo = new Map();
+  const famMemo = new Map();
+  const familiaCache = (id) => { if (!famMemo.has(id)) famMemo.set(id, protPorId.has(id) ? familiaProteica(protPorId.get(id)) : null); return famMemo.get(id); };
   const proteinaCache = (id) => { if (!protMemo.has(id)) protMemo.set(id, protPorId.has(id) ? proteinaPrincipal(protPorId.get(id)) : null); return protMemo.get(id); };
   const { slots: p1aSlots, decisionLog: p1aRawLog } = expandWeekArc({ weekArc, catalog, seed, platosRecientes, intolerancias: profile?.intolerances ?? [] });
 
@@ -326,6 +328,8 @@ export function runWalk(input) {
       const key = slotKey(day, momento);
       const slot = slots.get(key);
       if (!slot.abierto) continue; // Paso 1: ya colocado, la cadena no corre.
+      // La comida del dia libre es una sugerencia, no un plato servido (D-099.3.i, D-114).
+      const esSugerencia = slot.fixedRole === 'libre' && momento === 'comida';
 
       let pool = catalog.filter((d) => d.rol === 'rotativo' && d.momento.includes(momento) && !usedIds.has(d.id) && !usedNames.has(d.nombre || d.id) && !vetoedIds.has(d.id) && !recientes.has(d.nombre || d.id));
       // D-107: con un catálogo muy corto (dieta vegana y sin soja, p. ej.) la
@@ -388,7 +392,32 @@ export function runWalk(input) {
       // D-107 (dieta vegetariana): huevo como mucho una vez al dia y en como
       // mucho TOPE_CENAS_HUEVO cenas por semana. Si dejaria el hueco sin
       // candidatos, no se aplica y se dice.
-      const baseH = poolSeparado.length ? poolSeparado : base0;
+      // Familia en dias seguidos (decision de Javi, 2026-11-13; extiende
+      // D-099.3.e): una familia proteica (proteinType, con pescado y marisco
+      // como una sola) que ya sale el dia anterior o el siguiente no se repite
+      // aqui. Solo dietas omnivoras. No mira el mismo dia. La sugerencia de la
+      // comida libre no es un plato servido: ni se filtra ni cuenta como
+      // vecina. Los platos del ancla los coloca P1a y no pasan por aqui. Si no
+      // queda ningun candidato, no se aplica y se dice en la evidencia.
+      const baseF = poolSeparado.length ? poolSeparado : base0;
+      let baseH = baseF;
+      let notaFamilia = '';
+      if (profile?.dieta !== 'vegetariana' && profile?.dieta !== 'vegana' && !esSugerencia) {
+        const familiasCercanas = new Set();
+        for (const s2 of slots.values()) {
+          if (s2.abierto || !s2.dishId) continue;
+          if (s2.fixedRole === 'libre' && s2.momento === 'comida') continue;
+          if (Math.abs(DAYS_ORDER.indexOf(s2.day) - i) !== 1) continue;
+          const fam = familiaCache(s2.dishId);
+          if (fam) familiasCercanas.add(fam);
+        }
+        const poolFamilia = baseF.filter((d) => !familiasCercanas.has(familiaCache(d.id)));
+        if (poolFamilia.length === baseF.length) notaFamilia = '';
+        else if (poolFamilia.length) {
+          baseH = poolFamilia;
+          notaFamilia = `familia en dias seguidos: descarta ${baseF.length - poolFamilia.length} candidatos de ${[...familiasCercanas].join(', ')} (ya salen el dia de al lado); `;
+        } else notaFamilia = `familia en dias seguidos sin aplicar: dejaria el hueco sin candidatos (${[...familiasCercanas].join(', ')} ya salen el dia de al lado); `;
+      }
       let poolHuevo = baseH;
       let notaHuevo = '';
       if (profile?.dieta === 'vegetariana') {
@@ -474,7 +503,7 @@ export function runWalk(input) {
       // consumo: el paso 4 no la dirige, y mas abajo no sube los contadores
       // de los suelos ni marca la verdura del dia. Sigue en usedIds/usedNames
       // (no repetir plato) y cuenta para el tope y la separacion por proteina.
-      const esSugerencia = slot.fixedRole === 'libre' && momento === 'comida';
+      // (esSugerencia se calcula al abrir el hueco.)
       const { nivel: candidatesFinal, causa: causaFreq, evidencia: notaFreq } = esSugerencia
         ? { nivel: candidatesB, causa: null, evidencia: null }
         : chooseFrequencyLevel({
@@ -514,7 +543,7 @@ export function runWalk(input) {
         momento,
         chosen.id,
         causa,
-        `${notaTope}${notaSeparada}${notaHuevo}${notaAlino}${notaA}; ${notaB}${notaSugerencia}${notaFreq ? `; ${notaFreq}` : ''}${notaIdentidad ? `; ${notaIdentidad}` : ''}${notaRng}`,
+        `${notaTope}${notaSeparada}${notaFamilia}${notaHuevo}${notaAlino}${notaA}; ${notaB}${notaSugerencia}${notaFreq ? `; ${notaFreq}` : ''}${notaIdentidad ? `; ${notaIdentidad}` : ''}${notaRng}`,
         alternativas,
       );
       if (!esSugerencia) registerConsumption(freqState, chosen, day, undefined, fuenteEditorial);

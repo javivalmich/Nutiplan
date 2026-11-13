@@ -4532,3 +4532,61 @@ Medido
 
 Estado resultante
 El huevo sale en cantidades de casa: 1 a 3 por comida y nunca más de 4 al día.
+
+## D-112 — [2026-11-13] Raciones: lo que la ficha pide por debajo del mínimo se respeta
+
+Decide: Javi (variante B, elegida el 2026-11-12). Implementado en `4a0f8db` (rama `motor/i0-banco-cantidades`).
+
+Contexto
+D-100 fija un «rango humano por ingrediente» (`DECISIONS.md:4254`) sin valores; los valores están en `raciones.js` (`RANGO`, `RANGO_UD`, `RANGO_GRUPO`). `ajustarComida` subía al mínimo todo lo que quedaba por debajo. En 21 fichas hay 12 ingredientes por debajo de su mínimo (más los dos aceites, cuyo «por debajo» es la conversión de 5 ml a 4,6 g). Así, el yogur que va de salsa (20 g) se servía a 125 g, ¼ de aguacate a ½, una clara de rebozar a 2, y a 3714 kcal la cancha del ceviche llegaba a 145 g. Se midió también la variante A (el mínimo pasa a ser lo que pide la ficha) y se descartó: el yogur de salsa llegaba a 420 g.
+
+Decisión
+1. Si la ficha pide de un ingrediente ajustable menos que el mínimo de su rango, ese ingrediente queda fijo en la cantidad de la ficha: no sube al mínimo ni crece con el objetivo. Su energía cuenta, y el resto del plato se ajusta alrededor.
+2. Quedan fuera el aceite, lo que añade engine2 (pan, fruta y frutos secos) y las masas de receta marcadas en la ficha (`masa: true`: crepes de avena y batido de soja), que conservan el comportamiento anterior.
+3. Cada ingrediente fijado así deja en el decision log la causa `cantidad_de_la_ficha`, con la cantidad de la ficha y el mínimo.
+4. Tests en `minimosFicha.test.js`: 19 fichas a 1434, 2174 y 3714 kcal conservan su cantidad, las dos masas mantienen el comportamiento anterior y la causa queda en el log. Las 19 fichas probadas son las 21 que piden algo por debajo del mínimo menos las 2 masas.
+
+Consecuencia aceptada (Javi)
+Los ingredientes fijados por la ficha, incluidos los que dan nombre al plato, no crecen con el objetivo. A más calorías, el plato crece por sus otros ingredientes.
+
+Medido
+Banco, 12 perfiles × 8 semanas, `1ca217c` → `4a0f8db`; repetido el 2026-11-13 contra `139b3c1`, con el mismo resultado.
+- Cambian 62 de 2688 comidas, todas con el mismo plato.
+- Ningún perfil sale de ±5 %. La vegana de 1400 kcal pasa de 3 a 2 semanas fuera.
+- La proteína media del día cambia como mucho 0,4 g.
+- La energía va a la patata (+900 g) y al pan integral (+240 g).
+- Con las masas incluidas habría cambiado como mucho 0,6 g de proteína, en 139 comidas (variante en memoria sobre `1ca217c`; el borrador decía 142, medido sobre una base anterior).
+
+Pendiente
+- La masa como unidad. Para conservar la proporción de la receta dentro de ±10 %, la masa tendría que escalar con un solo factor, en pasos del ingrediente más grueso: medio factor en las crepes (1 de sus 2 huevos) y uno entero en el batido (1 plátano). Iría en el grupo proteico si lleva algo proteico, y sin mínimos sueltos por ingrediente. Escalar cada ingrediente con su propio grupo no basta: el huevo/avena de las crepes sale entre 1,12 y 2,27, frente a 2,65 en la ficha.
+- El huevo de las crepes. Ya hoy se desvía de la proporción (huevo/avena 1,77 a 1434 kcal, frente a 2,65 en la ficha).
+- El batido solo se ha visto a 1400 kcal. En el banco solo aparece en el perfil vegano de 1400 kcal; el caso de 3714 kcal se midió poniéndolo a mano en un día.
+
+Estado resultante
+Lo que la ficha pide en poca cantidad (una salsa, un rebozado, un aderezo) se sirve en esa cantidad a cualquier objetivo de calorías. Las dos masas siguen como antes, a la espera de decidir la masa como unidad.
+
+## D-113 — [2026-11-13] SIBO: el aceite aromatizado con ajo sustituye al aceite de cocinar
+
+Decide: Javi (2026-11-12 y 2026-11-13). Implementado en `33abeae`, `1ca217c` y `5c2e1a9` (rama `motor/i0-banco-cantidades`).
+
+Contexto
+Con SIBO, la adaptación quitaba el ajo y añadía al final de la compra «Aceite aromatizado con ajo (opcional)», sin cantidad. El lector, que es el mismo para las raciones y para el medidor, le ponía la cantidad de aceite del texto. En el perfil SIBO del banco, 66 de 224 comidas llevaban así dos aceites, y de ahí venían 21 de las 23 comidas con kcal declaradas distintas de las releídas. La semana salía dentro de ±5 % igualmente, porque el error entraba igual en lo decidido y en lo medido.
+
+Decisión
+1. Con SIBO, el aceite aromatizado con ajo sustituye al aceite de cocinar, con su misma cantidad: el AOVE o, si no hay, el de girasol, incluido «Aceite de sésamo o girasol» (pad thai). La compra lleva una sola línea de aceite de cocinar, que se lee como AOVE.
+2. Nunca sustituye al aceite de sésamo solo, que es un aliño de sabor propio.
+3. El texto del plato nombra el mismo aceite que la compra. Si no hay aceite de cocinar que sustituir, no se añade aceite y el texto dice «aceite» donde la adaptación del ajo escribía el aromatizado (en el catálogo, la fabada).
+4. Tests en `src/plan/tests/siboAceite.test.js` (`src/engine2/nutrientes/fodmap.js`).
+
+Medido
+Perfil `sibo-2000` del banco, 8 semanas, 224 comidas, `08c05f3` → `1ca217c`; repetido el 2026-11-13.
+- Comidas con dos aceites: 66 → 0.
+- Aceite releído: 2406 → 1799 g.
+- Cambian 74 de 224 comidas, ninguna de plato.
+- La energía va al pan sin gluten (+1300 g), la patata (+580 g), el boniato (+330 g), el arroz (+250 g) y la quinoa (+205 g).
+- Comidas con kcal declaradas distintas de las releídas: 23 → 2. Las 2 eran el queso en lonchas, que resuelve D-112: en `139b3c1` son 0.
+- Semanas fuera de ±5 %: 0 antes y después (desvío de −2,2…−0,3 % a −2,5…0,0 %). Proteína media del día: 103,9 → 105,6 g.
+- El pad thai no sale en ninguna de las 2688 comidas del banco: su cambio (`5c2e1a9`) solo está cubierto por el test.
+
+Estado resultante
+Una persona con SIBO ve un solo aceite de cocinar por plato, con su cantidad, y el mismo nombre en la receta y en la compra.

@@ -9,6 +9,11 @@
 //   2. Tope de proteína principal por semana y proteína separada (no el mismo
 //      día ni el de al lado). Si dejarían sin candidatos, no se aplican y se
 //      dice.
+//   2a. Familia en días seguidos (decisión de Javi, 2026-11-13; extiende
+//      D-099.3.e): no una familia proteica que ya sale el día anterior o el
+//      siguiente (pescado y marisco, una sola). Solo dietas omnívoras. No se
+//      aplica si el plato que se quita era del ancla (manda el
+//      aprovechamiento). Si dejaría sin candidatos, no se aplica y se dice.
 //   2b. Aliños (D-105): no el mismo aliño que el otro plato del día, y el
 //      ajillo como mucho 2 veces por semana. Si dejaría sin candidatos, no se
 //      aplica y se dice.
@@ -26,7 +31,7 @@
 import { DAYS_ORDER } from '../skeleton/days.js';
 import { mulberry32, seedFromString } from '../skeleton/rng.js';
 import { computeVetoUniverse } from './vetoes.js';
-import { proteinaPrincipal, TOPE_PROTEINA_SEMANA, llevaBase } from '../dishes/bases.js';
+import { proteinaPrincipal, familiaProteica, TOPE_PROTEINA_SEMANA, llevaBase } from '../dishes/bases.js';
 import { alinoDe, TOPE_AJILLO_SEMANA } from '../dishes/alinosD105.js';
 import { TOPE_CENAS_HUEVO } from './runWalk.js';
 
@@ -84,6 +89,17 @@ export function elegirAlternativa(input) {
   const cercanas = new Set(otros.filter((s) => Math.abs(DAYS_ORDER.indexOf(s.day) - i) <= 1).map((s) => proteinaPrincipal(porId.get(s.dishId) || {})).filter(Boolean));
   const separados = pool.filter((d) => !cercanas.has(proteinaPrincipal(d)));
   if (separados.length) { if (separados.length < pool.length) nota('alternativa_proteina_separada', `descarta ${pool.length - separados.length} platos de ${[...cercanas].join(', ')} (ya salen ese día o el de al lado)`); pool = separados; } else nota('alternativa_proteina_separada_sin_aplicar', 'dejaría sin candidatos');
+
+  // 2a. Familia en días seguidos (como runWalk). La sugerencia de la comida
+  // libre no llega en `semana` (no es un plato servido), así que no cuenta.
+  if (dieta !== 'vegetariana' && dieta !== 'vegana' && !anclaBase) {
+    const familias = new Set(otros.filter((s) => Math.abs(DAYS_ORDER.indexOf(s.day) - i) === 1).map((s) => familiaProteica(porId.get(s.dishId) || {})).filter(Boolean));
+    const otraFamilia = pool.filter((d) => !familias.has(familiaProteica(d)));
+    if (otraFamilia.length) {
+      if (otraFamilia.length < pool.length) nota('alternativa_familia_dias_seguidos', `descarta ${pool.length - otraFamilia.length} platos de ${[...familias].join(', ')} (ya salen el día de al lado)`);
+      pool = otraFamilia;
+    } else nota('alternativa_familia_dias_seguidos_sin_aplicar', `dejaría sin candidatos (${[...familias].join(', ')} ya salen el día de al lado)`);
+  }
 
   // 2b. Aliños (D-105, como runWalk).
   const alinosHoy = new Set(otros.filter((s) => s.day === day).map((s) => alinoDe(porId.get(s.dishId) || {})).filter(Boolean));

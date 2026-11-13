@@ -18,6 +18,7 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
 | `33abeae`, `1ca217c`, `5c2e1a9` | SIBO: el aceite aromatizado con ajo sustituye al aceite de cocinar; el texto nombra el mismo aceite; pad thai |
 | `4a0f8db` | Variante B: lo que la ficha pide por debajo del mínimo queda fijo en la ficha, salvo las masas |
 | `dd0c6d4` | Auditoría B: scripts de medición del pescado (sin cambiar reglas) |
+| `2bc9c61` | `DECISIONS.md`: D-112 (mínimos de la ficha) y D-113 (SIBO, aceite aromatizado) |
 
 ## Decisiones de Javi (2026-11-12 y 2026-11-13)
 
@@ -30,11 +31,14 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
   - El texto del plato nombra el mismo aceite que la compra.
 - **Mínimos:** variante B (lo que la ficha pide por debajo del mínimo queda fijo en la ficha). Las masas marcadas en la ficha (`masa: true`: crepes de avena y batido de soja) conservan el comportamiento anterior.
   - Consecuencia aceptada: los ingredientes fijados por la ficha, incluidos los que dan nombre al plato, no crecen con el objetivo.
-- **D-112:** el borrador está abajo, sin escribir en `DECISIONS.md`.
+- **D-112 y D-113:** escritas en `DECISIONS.md` (`2bc9c61`). En D-112, la variante con las masas incluidas cambia 139 comidas (el borrador decía 142).
+- **Pescado y legumbres (2026-11-13):**
+  - **S, aprobada:** la sugerencia de la comida libre del sábado no sube los contadores de los suelos ni marca la verdura del día. Sigue contando para no repetir plato.
+  - **B:** para «no repetir familia en días seguidos», pescado y marisco son una sola familia (Bm). Sin implementar.
+  - **A** (en la comida, los suelos antes que la verdura): sin implementar.
 
 ## Pendientes y de qué dependen
 
-- **D-112 en `DECISIONS.md`:** necesita la autorización de Javi para editar ese archivo.
 - **Masa como unidad:** depende de una decisión de Javi. Diseño propuesto: un solo factor para toda la masa, en pasos del ingrediente más grueso (medio factor en las crepes, que llevan 2 huevos; uno entero en el batido, por su plátano). Grupo proteico si lleva algo proteico, y sin mínimos sueltos por ingrediente. Hay que medirlo antes de implementarlo.
 - **Huevo de las crepes:** su proporción ya se desvía hoy (huevo/avena 1,77 frente a 2,65 de la ficha). Va ligado a la masa como unidad.
 - **Batido:** en el banco solo sale a 1400 kcal (perfil vegano); el caso de 3714 kcal no se ha visto en un plan real.
@@ -49,28 +53,17 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
   - La sugerencia del sábado cuenta para el suelo sin servirse.
   - Muchos platos de ave tienen la verdura como «desconocida».
   - Las alternativas «ligero» devuelven pescado el 54 % de las veces.
+- **Diseño medido de pescado y legumbres** (200 semanas por perfil, en memoria; scripts `contrafactualesDiseno.mjs`, `medirDiseno.mjs`, `resumenDiseno.mjs`, `analisisDiseno.mjs` y `verduraDesconocida.mjs`). Cifras de los 9 perfiles con pescado:
+  - Línea actual: 4,91 pescados y 0,97 legumbres por semana. En bloques de 72 semanas va de 4,74 a 5,13: con ese tamaño, menos de 0,3 de diferencia es ruido.
+  - Azar puro sobre el catálogo: 4,11. Con el tope y la separación por especie, 4,84: el ave baja de 3,82 a 2,75 platos por semana.
+  - El 4,40 de la auditoría se reproduce (4,41), pero no es el peso del catálogo.
+  - A: legumbre 2,72, pescado 4,33, ningún día sin verdura fuera del sábado. Con el suelo de legumbre en 2: legumbre 2,02 y pescado 4,70 (A+S).
+  - B con la definición del README deja rachas (pescado y marisco se alternan). Con Bm la racha máxima es de 2 días y el pescado baja a 4,42.
+  - S: los días sin verdura (0,64 por semana, todos sábados) pasan a 0.
+  - Verdura «desconocida»: 63 de 235 platos (16 de ave, los 9 de cereal).
+  - Pendiente de decidir: A, Bm y el suelo de legumbre. No proponer techos semanales.
 - **Test intermitente** `scripts/fase7/entrega.test.js:639` (tiempo límite de 5 s): ya fallaba en `main` y no se toca.
 - **Lint:** 154 problemas que ya estaban en `main`. Ninguno en los archivos tocados por esta rama.
-
-## Borrador de D-112 (texto completo, sin escribir en `DECISIONS.md`)
-
-> **D-112 — 2026-11-13 Raciones: lo que la ficha pide por debajo del mínimo se respeta**
-> Decide: Javi. Implementado en `4a0f8db` (rama `motor/i0-banco-cantidades`).
->
-> **Contexto.** D-100 fija un «rango humano por ingrediente» (`DECISIONS.md:4254`) sin valores; los valores están en `raciones.js` (`RANGO`, `RANGO_UD`, `RANGO_GRUPO`). `ajustarComida` subía al mínimo todo lo que quedaba por debajo. En 21 fichas hay 12 ingredientes por debajo de su mínimo (más los dos aceites, cuyo «por debajo» es la conversión de 5 ml a 4,6 g). Así, el yogur que va de salsa (20 g) se servía a 125 g, ¼ de aguacate a ½, una clara de rebozar a 2, y a 3714 kcal la cancha del ceviche llegaba a 145 g. Se midió también la variante A (el mínimo pasa a ser lo que pide la ficha) y se descartó: el yogur de salsa llegaba a 420 g.
->
-> **Decisión.**
-> 1. Si la ficha pide de un ingrediente ajustable menos que el mínimo de su rango, ese ingrediente queda fijo en la cantidad de la ficha: no sube al mínimo ni crece con el objetivo. Su energía cuenta, y el resto del plato se ajusta alrededor.
-> 2. Quedan fuera el aceite, lo que añade engine2 (pan, fruta y frutos secos) y las masas de receta marcadas en la ficha (`masa: true`: crepes de avena y batido de soja), que conservan el comportamiento anterior.
-> 3. Cada ingrediente fijado así deja en el decision log la causa `cantidad_de_la_ficha`, con la cantidad de la ficha y el mínimo.
-> 4. Tests en `minimosFicha.test.js`: 19 fichas a 1434, 2174 y 3714 kcal conservan su cantidad, las dos masas mantienen el comportamiento anterior y la causa queda en el log.
->
-> **Resultado medido** (banco, 12 perfiles × 8 semanas): cambian 62 de 2688 comidas. Ningún perfil sale de ±5 % (la vegana de 1400 kcal pasa de 3 a 2 semanas fuera), y la proteína media del día cambia como mucho 0,4 g. Con las masas incluidas habría llegado a 0,6 g, en 142 comidas. La energía va a la patata (+900 g) y al pan (+240 g).
->
-> **Pendiente.**
-> - **La masa como unidad.** Para conservar la proporción de la receta dentro de ±10 %, la masa tendría que escalar con un solo factor, en pasos del ingrediente más grueso: medio factor en las crepes (1 de sus 2 huevos) y uno entero en el batido (1 plátano). Iría en el grupo proteico si lleva algo proteico, y sin mínimos sueltos por ingrediente. Escalar cada ingrediente con su propio grupo no basta: el huevo/avena de las crepes sale entre 1,12 y 2,27, frente a 2,65 en la ficha.
-> - **El huevo de las crepes.** Ya hoy se desvía de la proporción (huevo/avena 1,77 a 1434 kcal, frente a 2,65 en la ficha).
-> - **El batido solo se ha visto a 1400 kcal.** En el banco solo aparece en el perfil vegano de 1400 kcal; el caso de 3714 kcal se midió poniéndolo a mano en un día.
 
 ## Prohibiciones
 

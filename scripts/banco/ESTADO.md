@@ -23,7 +23,10 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
 | `47705c1` | S: la sugerencia de la comida libre no es consumo (`runWalk.js`, test `runWalk.sugerencia.test.js`, línea base regenerada) |
 | `fe1367e` | Ñoquis con espinacas y requesón: el texto nombra cada ingrediente con su cantidad (test `noquisTexto.test.js`) |
 | `2b40664` | `DECISIONS.md`: D-114 (la sugerencia de la comida libre no es consumo) |
-| el siguiente a `2b40664` | Bm: no repetir familia proteica en días seguidos (`runWalk.js`, `bases.js`, test `runWalk.familia.test.js`, línea base regenerada) |
+| `e2eaf89` | Bm: no repetir familia proteica en días seguidos (`runWalk.js`, `bases.js`, test `runWalk.familia.test.js`, línea base regenerada) |
+| `c22367a` | Bm, red de seguridad: el walk se repite sin el filtro de familia antes de fallar |
+| `12c3aff` | Bm en las alternativas (`alternativa.js`) |
+| el siguiente a `12c3aff` | `DECISIONS.md`: D-115; barrido de fichas con una cifra para dos ingredientes |
 
 ## Decisiones de Javi (2026-11-12 y 2026-11-13)
 
@@ -45,8 +48,10 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
   - **Bm, aprobada e implementada:** una familia proteica que sale el día anterior o el siguiente no se repite; pescado y marisco son una sola familia. Solo omnívoros. Si dejaría el hueco sin candidatos no se aplica, y queda en la evidencia del hueco.
     - No mira la comida y la cena del mismo día. La sugerencia del sábado ni se filtra ni cuenta como vecina. El ancla no pasa por el filtro (la coloca `expandWeekArc.js` antes del walk).
     - El motor con Bm da los mismos menús que la variante medida en memoria (2400 semanas idénticas). `--cf=sinBm` la deshace.
-    - Sin asiento en `DECISIONS.md`: el borrador (extiende D-099.3.e) está pendiente de autorización.
-    - No está en las alternativas (`alternativa.js`): pedir otro plato puede romper la regla. Pendiente de decisión.
+    - Red de seguridad (`c22367a`): si el walk se queda sin platos en un hueco posterior, se repite entero sin el filtro y lo dice en el log (`familia_dias_seguidos_retirada`). No se activa en las 2400 semanas del banco.
+    - También en las alternativas (`12c3aff`), salvo cuando el plato que se quita era del ancla.
+    - Asiento: D-115 (extiende D-099.3.e).
+    - Ampliarla al mismo día está medido y sin implementar (pescado 3,87 por semana, el 82 % de las semanas en 4).
   - **A** (en la comida, los suelos antes que la verdura): sin implementar.
 
 ## Pendientes y de qué dependen
@@ -74,7 +79,8 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
   - S: los días sin verdura (0,64 por semana, todos sábados) pasan a 0.
   - Verdura «desconocida»: 63 de 235 platos (16 de ave, los 9 de cereal).
   - Pendiente de decidir: A y el suelo de legumbre (A, sin implementar por decisión de Javi). No proponer techos semanales.
-- **`scripts/phaseP2c/compareD2.test.js` falla desde Bm:** `runWalk: pool rotativo vacio para Domingo/cena`. Es el caso «lactosa+gluten» de ese script, que pasa las intolerancias al veto propio de engine2 y deja 18 platos para 14 huecos (217 de 235 vetados). La app no usa esa vía: filtra el catálogo antes (`filtrarCatalogo`) y el celíaco sin lactosa conserva 89 comidas y 85 cenas. Medido en la vía de la app: 540 semanas de 9 perfiles omnívoros con varias intolerancias (mínimo 38 comidas), ninguna cae al motor viejo ni a repetir platos. Depende de una decisión de Javi (qué hacer con ese script de Fase 4).
+- **Fichas con una cifra para dos ingredientes** (`medicion/barridoCifraCompartida.mjs`, 183 fichas, solo `p1` y `p2`): queda 1 como los ñoquis, sin corregir: «Crema de calabacín y espinacas con quinoa y semillas» («espinacas y patata (100g)»). Otros 34 tramos nombran dos ingredientes pero la cifra es de uno solo y se reescribe bien.
+- **Perfiles de 2600 y 3714 kcal:** quedan un 2,4 % por debajo de su objetivo de media, con las raciones en el techo. De ahí salen casi todas las semanas fuera de ±5 % (12 de 1800 con Bm). Es anterior a S y a Bm.
 - **Test intermitente** `scripts/fase7/entrega.test.js:639` (tiempo límite de 5 s): ya fallaba en `main` y no se toca.
 - **Lint:** 154 problemas que ya estaban en `main`. Ninguno en los archivos tocados por esta rama.
 

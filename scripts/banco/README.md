@@ -244,6 +244,7 @@ archivo de salida que se les pasa. No forman parte de `npm test`. Las variantes 
 | `resumenDiseno.mjs <nombre=archivo> …` | Resume esos volcados por grupo de perfiles, con el error típico y la dispersión entre bloques de 8 semanas |
 | `analisisDiseno.mjs <análisis> <nombre=archivo> …` | `reparto` (pescados por semana), `legumbres` (clase y especie), `vegana`, `familias` y `texto` (tres semanas de omni-2174) |
 | `verduraDesconocida.mjs` | Platos con la verdura «desconocida» por familia y lista de los de ave |
+| `barridoCifraCompartida.mjs` | Fichas cuyo texto lleva una sola cifra en un tramo que nombra dos o más ingredientes (el caso de los ñoquis); lista, no corrige |
 
 Reproducir la cifra de la variante B (142 de 2688 comidas):
 

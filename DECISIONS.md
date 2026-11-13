@@ -4622,3 +4622,41 @@ Pendiente
 
 Estado resultante
 Lo que el usuario no come no cuenta: los suelos de pescado y legumbre y la verdura diaria se cumplen con platos servidos.
+
+## D-115 — [2026-11-13] No repetir familia proteica en días seguidos
+
+Decide: Javi. Implementado en `e2eaf89` (regla), `c22367a` (red de seguridad) y `12c3aff` (alternativas), rama `motor/i0-banco-cantidades`.
+
+Contexto
+D-099.3.e separa por proteína principal, que es la especie: la misma no sale el mismo día ni en días seguidos. No impide encadenar especies de una misma familia (merluza, atún, gambas). Medido en 200 semanas por perfil, con los 9 perfiles del banco que comen pescado: 4,94 pescados por semana, rachas de hasta 7 días seguidos con pescado y 2,33 repeticiones de familia en días seguidos por semana. El azar puro sobre el catálogo da 4,11 pescados; el tope y la separación por especie lo suben a 4,84, porque el pescado tiene muchas especies y el ave solo dos.
+
+Decisión
+Se extiende D-099.3.e, que queda como está.
+1. Una familia proteica que ya sale el día anterior o el siguiente no se repite. Familia es el `proteinType` del plato; pescado y marisco cuentan como una sola (`familiaProteica`, `src/engine2/dishes/bases.js`).
+2. Solo dietas omnívoras. En vegetariana y vegana casi todo es «vegetal» y la regla no es aplicable.
+3. Es un filtro con vuelta atrás, después de la separación por proteína: si dejaría el hueco sin candidatos, no se aplica y la evidencia del hueco lo dice.
+4. No mira la comida y la cena del mismo día.
+5. La sugerencia de la comida libre ni se filtra ni cuenta como vecina (D-114).
+6. Los dos platos del ancla no pasan por el filtro: los coloca `expandWeekArc.js` antes del walk. Pueden ser de la misma familia en días seguidos, como en D-099.3.e, y cuentan como vecinos para los demás huecos.
+7. Red de seguridad. El filtro mira un hueco cada vez y, en un catálogo muy corto, puede gastar antes los platos que valían para un hueco posterior y dejarlo sin ninguno. Si el walk falla por eso y el filtro había descartado algún candidato, se repite la semana entera sin el filtro (misma semilla) antes de dar el fallo por bueno, y queda en el decision log con la causa `familia_dias_seguidos_retirada`. Es un envoltorio de `runWalk`; si tampoco así hay platos, el fallo sigue como antes.
+8. Alternativas. `elegirAlternativa` aplica la misma regla, con las causas `alternativa_familia_dias_seguidos` y `alternativa_familia_dias_seguidos_sin_aplicar`. No se aplica cuando el plato que se quita era del ancla: manda el aprovechamiento.
+9. Tests: `src/engine2/walk/tests/runWalk.familia.test.js` (regla y red de seguridad) y `src/engine2/walk/tests/alternativa.test.js`.
+
+Medido
+200 semanas por perfil, antes → después, en los 9 perfiles con pescado. El motor con la regla da los mismos menús que la variante medida en memoria antes de implementarla (2400 semanas idénticas).
+- Pescado servido por semana: 4,94 → 4,38. Semanas con 5 o más: 66 % → 42 %.
+- Racha máxima de días seguidos con pescado: 7 → 2.
+- Repeticiones de familia en días seguidos: 2,33 → 0,08 por semana; las que quedan son pares del ancla.
+- Huecos donde no se aplica por falta de candidatos: 3 de 23.010. En el perfil sin pescado ni marisco, 248 de 2.600 (9,5 %).
+- Misma familia en la comida y la cena de un día: 0,51 → 0,76 por semana (la regla no lo mira).
+- Proteína media del día: 132,6 → 131,9 g. Reglas de D-099.3 y restricciones: 0 infracciones.
+- Red de seguridad: no se activa en ninguna de las 2400 semanas del banco, ni en 540 semanas de 9 perfiles omnívoros con varias intolerancias (el más corto, 38 comidas y 53 cenas). Se activa en el caso «lactosa + gluten» de `scripts/phaseP2c`, que deja 18 platos para 14 huecos por una vía que la app no usa.
+- Semanas fuera de ±5 % de calorías: 4 → 12 de 1800. Son `omni-2600-3comidas` (1 → 7), `omni-3714` (1 → 4) y el perfil con ancla (0 → 1); `omni-1434` baja de 2 a 0. No es un desplazamiento: el desvío medio de los dos primeros no cambia (−2,35 → −2,31 % y −2,50 → −2,56 %) y las semanas por debajo de −4 % son las mismas (14 → 14 y 14 → 15). Esos dos perfiles ya están un 2,4 % por debajo de su objetivo, con las raciones en el techo, y el −5 % cae en la cola de su reparto. La línea anterior a D-114 tenía 6 y 3 semanas fuera en esos mismos perfiles.
+- Línea base del banco regenerada en `e2eaf89`; la red de seguridad y las alternativas no la cambian.
+
+Pendiente
+- Ampliar la regla al mismo día (comida y cena de distinta familia): medido, sin implementar. Deja el pescado en 3,87 por semana, con el 82 % de las semanas en 4, y sube los huecos sin candidato (41 de 2.600 con SIBO, 478 sin pescado ni marisco).
+- Los perfiles de 2600 y 3714 kcal quedan un 2,4 % por debajo de su objetivo de media: es anterior a esta regla.
+
+Estado resultante
+Un omnívoro no come la misma familia de proteína dos días seguidos, salvo los dos platos del ancla, ni en el menú ni al pedir una alternativa.

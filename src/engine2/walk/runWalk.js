@@ -467,9 +467,22 @@ export function runWalk(input) {
 
       // Paso 4 (frecuencias, D-024): opera sobre candidatesB (post A/B),
       // ANTES del desempate final -- el RNG solo ve el nivel ganador.
-      const { nivel: candidatesFinal, causa: causaFreq, evidencia: notaFreq } = chooseFrequencyLevel({
-        day, candidatesB, state: freqState, fuenteEditorial,
-      });
+      //
+      // Sugerencia de la comida libre (decision de Javi, 2026-11-13): la
+      // comida del dia libre no se sirve; el plato elegido queda solo como
+      // sugerencia (materializePlan lo marca `libre`, D-099.3.i). No es
+      // consumo: el paso 4 no la dirige, y mas abajo no sube los contadores
+      // de los suelos ni marca la verdura del dia. Sigue en usedIds/usedNames
+      // (no repetir plato) y cuenta para el tope y la separacion por proteina.
+      const esSugerencia = slot.fixedRole === 'libre' && momento === 'comida';
+      const { nivel: candidatesFinal, causa: causaFreq, evidencia: notaFreq } = esSugerencia
+        ? { nivel: candidatesB, causa: null, evidencia: null }
+        : chooseFrequencyLevel({
+          day, candidatesB, state: freqState, fuenteEditorial,
+        });
+      const notaSugerencia = esSugerencia
+        ? '; sugerencia de la comida libre: no es consumo (no cuenta para los suelos semanales ni para la verdura del dia; el paso 4 no la dirige)'
+        : '';
 
       // Paso 5 (identidad de verdura, D-044): opera sobre candidatesFinal
       // (post paso4), ANTES del desempate final -- mismo principio que
@@ -501,10 +514,10 @@ export function runWalk(input) {
         momento,
         chosen.id,
         causa,
-        `${notaTope}${notaSeparada}${notaHuevo}${notaAlino}${notaA}; ${notaB}${notaFreq ? `; ${notaFreq}` : ''}${notaIdentidad ? `; ${notaIdentidad}` : ''}${notaRng}`,
+        `${notaTope}${notaSeparada}${notaHuevo}${notaAlino}${notaA}; ${notaB}${notaSugerencia}${notaFreq ? `; ${notaFreq}` : ''}${notaIdentidad ? `; ${notaIdentidad}` : ''}${notaRng}`,
         alternativas,
       );
-      registerConsumption(freqState, chosen, day, undefined, fuenteEditorial);
+      if (!esSugerencia) registerConsumption(freqState, chosen, day, undefined, fuenteEditorial);
     }
   }
 

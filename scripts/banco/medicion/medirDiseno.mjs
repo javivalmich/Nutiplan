@@ -67,9 +67,8 @@ globalThis.__cf = {
     return f;
   },
   // A: en la comida, primero los suelos semanales; si ninguno se puede atender, lo de siempre.
-  elegirNivel: (flags.A || flags.A2 || flags.S) ? (input, original, { satisfaceVerdura: sv, resolver }) => {
-    if (flags.S && input.day === 'Sabado' && globalThis.__cf.momento === 'comida') return { nivel: input.candidatesB, causa: null, evidencia: null };
-    if (!(flags.A || flags.A2) || globalThis.__cf.momento !== 'comida') return original(input);
+  elegirNivel: (flags.A || flags.A2) ? (input, original, { satisfaceVerdura: sv, resolver }) => {
+    if (globalThis.__cf.momento !== 'comida') return original(input);
     const { day, state, candidatesB } = input;
     const sinVerduraHoy = !state.diasConVerdura.has(day);
     const semanal = original({ ...input, state: { ...state, diasConVerdura: new Set([...state.diasConVerdura, day]) } });

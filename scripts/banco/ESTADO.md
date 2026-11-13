@@ -19,6 +19,8 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
 | `4a0f8db` | Variante B: lo que la ficha pide por debajo del mínimo queda fijo en la ficha, salvo las masas |
 | `dd0c6d4` | Auditoría B: scripts de medición del pescado (sin cambiar reglas) |
 | `2bc9c61` | `DECISIONS.md`: D-112 (mínimos de la ficha) y D-113 (SIBO, aceite aromatizado) |
+| `8af6b7d` | `ESTADO.md` al día y scripts del diseño medido de pescado y legumbres |
+| el siguiente a `8af6b7d` | S: la sugerencia de la comida libre no es consumo (`runWalk.js`, test `runWalk.sugerencia.test.js`, línea base regenerada) |
 
 ## Decisiones de Javi (2026-11-12 y 2026-11-13)
 
@@ -33,7 +35,10 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
   - Consecuencia aceptada: los ingredientes fijados por la ficha, incluidos los que dan nombre al plato, no crecen con el objetivo.
 - **D-112 y D-113:** escritas en `DECISIONS.md` (`2bc9c61`). En D-112, la variante con las masas incluidas cambia 139 comidas (el borrador decía 142).
 - **Pescado y legumbres (2026-11-13):**
-  - **S, aprobada:** la sugerencia de la comida libre del sábado no sube los contadores de los suelos ni marca la verdura del día. Sigue contando para no repetir plato.
+  - **S, aprobada e implementada:** la sugerencia de la comida libre del sábado no sube los contadores de los suelos ni marca la verdura del día. Sigue contando para no repetir plato.
+    - Además, el paso 4 no la dirige (así se midió); sigue contando para el tope y la separación por especie.
+    - El motor con S da los mismos menús que la variante medida en memoria (2400 semanas idénticas). `--cf=sinS` reproduce la línea anterior.
+    - Sin asiento en `DECISIONS.md` todavía: necesita autorización.
   - **B:** para «no repetir familia en días seguidos», pescado y marisco son una sola familia (Bm). Sin implementar.
   - **A** (en la comida, los suelos antes que la verdura): sin implementar.
 
@@ -62,6 +67,7 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
   - S: los días sin verdura (0,64 por semana, todos sábados) pasan a 0.
   - Verdura «desconocida»: 63 de 235 platos (16 de ave, los 9 de cereal).
   - Pendiente de decidir: A, Bm y el suelo de legumbre. No proponer techos semanales.
+- **`src/plan/tests/dietas.test.js:144` falla desde S** («las cantidades del texto coinciden con las de la compra», 31 de 32, umbral 97 %). Con S, la semilla 42 de la vegetariana saca «Ñoquis con espinacas y requesón», cuyo texto dice «salsa de espinacas y requesón (150g)» y la compra «Requesón (210g)». El descuadre es anterior a S: la línea base ya contaba `requeson: 1` en texto ≠ compra. Depende de una decisión de Javi (corregir el texto del plato, cambiar la semilla del test o su umbral).
 - **Test intermitente** `scripts/fase7/entrega.test.js:639` (tiempo límite de 5 s): ya fallaba en `main` y no se toca.
 - **Lint:** 154 problemas que ya estaban en `main`. Ninguno en los archivos tocados por esta rama.
 

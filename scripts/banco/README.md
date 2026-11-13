@@ -264,11 +264,13 @@ Hallados al medir; ninguno se ha corregido ni decidido aquí.
   (`src/ui/views/OriginalPlanApp.jsx`) escala los gramos del texto y no las piezas, y una
   orientación «aprox. 2 grandes» quedaba desfasada en los planes clonados (231 g «aprox. 2
   grandes»). Recuperar la referencia en piezas exige antes rediseñar ese escalado.
-- **Queso en lonchas (hamburguesa de ternera): sin corregir.** Se deciden 30 g y la compra dice
-  «2 loncha» (40 g). El cambio de escritura se descartó (decisión de Javi del 2026-11-12): son
-  las 10 pruebas que quedan fuera de tolerancia en la ida y vuelta de catálogo. Depende del
-  punto siguiente.
-- **Raciones (D): mínimos por encima de la ficha. Propuesta medida, sin implementar.** El mínimo
+- **Queso en lonchas (hamburguesa de ternera): resuelto en los planes por la variante B.** Se
+  decidían 30 g (el mínimo) y la compra decía «2 loncha» (40 g); con la B la loncha queda en lo
+  que pide la ficha (1 loncha, 20 g) y desaparece de los menús del banco
+  (`fueraDeTolerancia` 0 en todos los perfiles). La ida y vuelta de catálogo sigue contando sus
+  10 pruebas fuera de tolerancia: escala la ficha sin pasar por las raciones.
+- **Raciones (D): mínimos por encima de la ficha. Variante B implementada** (borrador D-112;
+  test en `src/plan/tests/minimosFicha.test.js`). El mínimo
   del rango (`RANGO`, `RANGO_UD`, `RANGO_GRUPO` en `raciones.js`) se aplica aunque la ficha pida
   menos: `ajustarComida` fija en el mínimo todo lo que queda por debajo y el redondeo final
   vuelve a recortar a `[mín, máx]`. 12 ingredientes, más los dos aceites, piden menos que su
@@ -282,10 +284,19 @@ Hallados al medir; ninguno se ha corregido ni decidido aquí.
   - **A** «el mínimo pasa a ser lo que pide la ficha»: cambian 128 de 2688 comidas, pero a
     3714 kcal el yogur de salsa llega a 420 g (`medicion/ladoAlto.mjs`). Descartada.
   - **B** «lo que la ficha pide por debajo del mínimo queda fijo en la ficha» (elegida por Javi
-    el 2026-11-12, pendiente de la comprobación de masas): cambian 142 de 2688; ningún perfil
-    sale de ±5 % que no lo estuviera (vegana-1400 baja de 3 a 2 semanas fuera); la proteína
-    media del día cambia como mucho 0,6 g; principales cortas de proteína, sin cambios.
-  Pendiente de decisión (borrador D-112, sin escribir en `DECISIONS.md`).
+    el 2026-11-12): con las masas incluidas cambiaban 142 de 2688, pero las crepes quedaban con
+    100 ml de leche para 80–110 g de avena y el batido con 3–4 plátanos a 3714 kcal
+    (`medicion/proporcionMasas.mjs`).
+  - **Implementada: B salvo las masas de receta** marcadas en la ficha (`masa: true` en
+    `src/data/DESAYUNOS.js`: crepes de avena y batido de soja), que conservan el comportamiento
+    anterior. Cada ingrediente fijado deja la causa `cantidad_de_la_ficha` en el decision log.
+    Banco, antes y después: cambian 62 de 2688 comidas, todas con el mismo plato; ningún
+    perfil sale de ±5 % (vegana-1400, de 3 a 2 semanas fuera); kcal/día media por perfil, como
+    mucho −4 (omni-2174, 2153 → 2149); proteína media del día, como mucho −0,4 g; principales
+    cortas, sin cambios. Bajan yogur natural (−2980 g en 30 comidas), queso en lonchas,
+    aguacate, clara y yogur griego; la energía va a patata (+900 g en 27), pan integral
+    (+240 g en 20), ternera y pavo picados (+215 y +90 g) y AOVE (+106 g en 23).
+  Pendiente: la masa como unidad (escalar juntas con un solo factor), sin decidir.
 - **Pasta sin gluten con SIBO: corregido en `9ae4a5e`.** Test en `src/plan/tests/siboPasta.test.js`.
 - **SIBO: aceite aromatizado con ajo contado como segunda ración de aceite. Corregido** (test en
   `src/plan/tests/siboAceite.test.js`). La adaptación quitaba el ajo y añadía «Aceite

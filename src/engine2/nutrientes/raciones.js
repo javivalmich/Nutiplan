@@ -78,6 +78,7 @@ const RANGO_UD = Object.freeze({
 const SIEMPRE_FIJO = new Set(['levadura_nutricional', 'harina', 'pan_rallado', 'tahini', 'leche_coco', 'coco_rallado', 'algas', 'aceituna', 'pepinillo']);
 
 const r1 = (x) => Math.round(x * 10) / 10;
+const ACEITES = new Set(['aove', 'aceite_semillas']);
 
 export const FALTA_PARA_ACOMPANAR = 0.05;
 export const TOPE_HUEVOS_COMIDA = 3;
@@ -154,6 +155,19 @@ export function ajustarComida(items, meta, composicion, amplitud = 1, { topeHuev
     const comp = composicion[it.clave];
     const papel = comp && !it.fijo ? papelDe(it.clave, comp) : 'fijo';
     let rango = papel === 'fijo' ? null : rangoDe(it.clave, it.unidad);
+    // D-112 (borrador, decisión de Javi del 2026-11-12): lo que la ficha pide
+    // por debajo del mínimo de su rango (el yogur que va de salsa, ¼ de
+    // aguacate, una clara para rebozar) queda fijo en lo que pide la ficha: ni
+    // sube al mínimo ni crece con el objetivo; el resto del plato se ajusta
+    // alrededor. No se aplica al aceite (su «por debajo» es la conversión de 5 ml
+    // a 4,6 g), a lo que añade engine2, ni a las masas de receta (crepes,
+    // batido), que conservan el comportamiento anterior hasta que se decida
+    // cómo escalan juntas.
+    let fijoPorFicha = null;
+    if (rango && !it.anadido && !it.masa && !ACEITES.has(it.clave) && it.gramos < rango[0] - 0.05) {
+      fijoPorFicha = { ficha: it.gramos, minimo: rango[0] };
+      rango = null;
+    }
     // D-111: huevos por comida con tope (lo decide racionesDia según el día).
     if (rango && it.clave === 'huevo' && topeHuevos) {
       const tope = topeHuevos * INGREDIENTES.huevo.gUd;
@@ -169,7 +183,7 @@ export function ajustarComida(items, meta, composicion, amplitud = 1, { topeHuev
       const [a, b, p] = rango;
       rango = [a, Math.max(b, Math.floor((b * amplitud) / p) * p), p];
     }
-    return { ...it, papel: rango ? papel : 'fijo', rango, nuevo: it.gramos, limitado: null };
+    return { ...it, papel: rango ? papel : 'fijo', rango, nuevo: it.gramos, limitado: null, fijoPorFicha };
   });
   const libres = () => estado.filter((e) => e.papel !== 'fijo' && !e.limitado);
 
@@ -212,7 +226,7 @@ export function ajustarComida(items, meta, composicion, amplitud = 1, { topeHuev
   }
   const total = suma(estado, composicion, (e) => e.nuevo);
   return {
-    items: estado.map((e) => ({ clave: e.clave, unidad: e.unidad, antes: e.gramos, gramos: r1(e.nuevo), papel: e.papel, limitado: e.limitado, ...(e.anadido ? { anadido: true } : {}) })),
+    items: estado.map((e) => ({ clave: e.clave, unidad: e.unidad, antes: e.gramos, gramos: r1(e.nuevo), papel: e.papel, limitado: e.limitado, ...(e.anadido ? { anadido: true } : {}), ...(e.fijoPorFicha ? { fijoPorFicha: e.fijoPorFicha } : {}) })),
     kcal: Math.round(total.kcal),
     proteina: Math.round(total.proteina),
   };
@@ -347,6 +361,10 @@ export function racionesDia({ comidas, aparte = [], objetivo, composicion, vetad
       causa: 'raciones_por_objetivo', momento: c.momento, id: c.id,
       detalle: `objetivo ${Math.round(r.meta.kcal)} kcal y ${Math.round(r.meta.proteina)} g de proteína → ${r.kcal} kcal y ${r.proteina} g${limitados.length ? `; en su límite: ${limitados.join(', ')}` : ''}`,
     });
+    const deFicha = r.items.filter((i) => i.fijoPorFicha);
+    if (deFicha.length) {
+      log.push({ causa: 'cantidad_de_la_ficha', momento: c.momento, id: c.id, detalle: `fijo en lo que pide la ficha, por debajo del mínimo de su rango: ${deFicha.map((i) => `${i.clave} ${i.fijoPorFicha.ficha} g (mínimo ${i.fijoPorFicha.minimo} g)`).join(', ')}` });
+    }
     if (r.meta.proteinaMin && r.proteina < r.meta.proteinaMin - 0.5) {
       log.push({ causa: 'proteina_por_debajo_del_minimo', momento: c.momento, id: c.id, detalle: `${r.proteina} g frente a ${Math.round(r.meta.proteinaMin)} g: el plato no tiene ingredientes proteicos suficientes dentro de sus rangos` });
     }

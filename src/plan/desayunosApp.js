@@ -25,7 +25,7 @@ function adaptada(item, profile) {
   let m = { time: item.time, emoji: item.emoji, title: item.title, p1: item.p1, p2: item.p2, shopping: [...item.shopping], recipe: [...item.recipe], metadata: { ...item.metadata } };
   if (((profile && profile.intolerances) || []).includes('lactosa')) m = adaptarComidaLactosa(m);
   m = adaptarSiProcede(m, profile);
-  return { ...m, _motor: 'engine2', _desayunoId: item.id };
+  return { ...m, _motor: 'engine2', _desayunoId: item.id, ...(item.masa ? { masa: true } : {}) };
 }
 
 /**

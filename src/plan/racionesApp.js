@@ -137,7 +137,7 @@ export function ajustarDia(day, profile, targetKcal, { composicion = COMPOSICION
       id: String(i),
       momento: MOMENTO[m.time] || 'tentempie',
       libre,
-      items: lectura.items.map((it) => ({ clave: it.clave, gramos: it.gramos, unidad: it.como === 'ud' ? 'ud' : 'g', fijo: /estimado/.test(it.como) })),
+      items: lectura.items.map((it) => ({ clave: it.clave, gramos: it.gramos, unidad: it.como === 'ud' ? 'ud' : 'g', fijo: /estimado/.test(it.como), ...(m.masa ? { masa: true } : {}) })),
     });
   });
   const batido = batidoDelDia(profile, day);

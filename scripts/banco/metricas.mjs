@@ -166,7 +166,7 @@ export function racionesCalculadas(day, perfil, kcal) {
     const l = lecturas[i];
     comidas.push({
       id: String(i), momento: MOMENTO[m.time] || 'tentempie', libre: l.libre || !!(m._spec && m._spec.isFree),
-      items: l.items.map((it) => ({ clave: it.clave, gramos: it.gramos, unidad: it.como === 'ud' ? 'ud' : 'g', fijo: /estimado/.test(it.como) })),
+      items: l.items.map((it) => ({ clave: it.clave, gramos: it.gramos, unidad: it.como === 'ud' ? 'ud' : 'g', fijo: /estimado/.test(it.como), ...(m.masa ? { masa: true } : {}) })),
     });
   });
   const batido = batidoDelDia(perfil, day);

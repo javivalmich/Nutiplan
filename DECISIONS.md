@@ -4590,3 +4590,35 @@ Perfil `sibo-2000` del banco, 8 semanas, 224 comidas, `08c05f3` → `1ca217c`; r
 
 Estado resultante
 Una persona con SIBO ve un solo aceite de cocinar por plato, con su cantidad, y el mismo nombre en la receta y en la compra.
+
+## D-114 — [2026-11-13] La sugerencia de la comida libre del sábado no es consumo
+
+Decide: Javi. Implementado en `47705c1` (rama `motor/i0-banco-cantidades`).
+
+Contexto
+La comida del sábado es libre y el plato que elige el walk queda solo como sugerencia (D-099.3.i). Aun así, el walk la registraba como consumo, igual que un plato servido (`runWalk.js`, `registerConsumption`): subía el contador del suelo semanal de su familia, vedaba ese suelo el domingo y marcaba el sábado como día con verdura. Medido en 200 semanas por perfil, con los 9 perfiles del banco que comen pescado:
+- Los 0,64 días sin verdura por semana eran todos sábados: con la sugerencia cubriendo la verdura, la cena ya no se dirigía a un plato con verdura.
+- Cuando la sugerencia era de pescado (578 de 1800 semanas) se servían 4,57 pescados, frente a 5,06 en el resto, y en 2 semanas el suelo de 3 se cumplió con 2 servidos.
+
+Decisión
+1. La sugerencia de la comida libre no es consumo: no sube los contadores de los suelos semanales (ni activa su veda) y no marca la verdura del día ni su identidad (paso 5).
+2. El paso 4 no la dirige: se elige entre los candidatos que dejan los filtros y las preferencias, sin nivel de verdura ni de suelo.
+3. Sigue contando para no repetir plato en la semana ni en la siguiente, y para el tope y la separación por proteína principal (D-099.3.d y e).
+4. El hueco es la comida del día con `fixedRole: "libre"`, el mismo criterio con el que `materializePlan.js` la marca `libre`. La evidencia del hueco lo dice en el decision log.
+5. Test en `src/engine2/walk/tests/runWalk.sugerencia.test.js`: 3 de sus 6 casos fallaban antes del cambio.
+
+Medido
+200 semanas por perfil, antes → después. El motor con el cambio da los mismos menús que la variante medida en memoria antes de implementarla (2400 semanas idénticas).
+- Días sin verdura por semana: 0,64 → 0,00 en los 9 perfiles con pescado; 0,64 → 0,13 sin pescado ni marisco; 0,04 → 0,00 en la vegetariana; 0,17 → 0,00 en la vegana.
+- Pescado servido por semana: 4,91 → 4,94 (dentro del ruido). Semanas con menos de 3 servidos: 2 de 1800 → 0.
+- Con la sugerencia de pescado se sirven 4,83, frente a 4,99 en el resto.
+- Calorías y proteína: sin cambios (132,6 g de proteína al día; semanas fuera de ±5 %, 10 → 4 de 1800).
+- Reglas de D-099.3 y restricciones: 0 infracciones antes y después.
+- Línea base del banco regenerada en el mismo commit.
+
+Pendiente
+- En el perfil sin pescado ni marisco quedan 0,13 días sin verdura por semana.
+- El cambio hizo que un test de dietas sacara un plato cuyo texto ya no cuadraba con la compra (ñoquis con espinacas y requesón). Se corrigió aparte, en la ficha del plato (`fe1367e`).
+
+Estado resultante
+Lo que el usuario no come no cuenta: los suelos de pescado y legumbre y la verdura diaria se cumplen con platos servidos.

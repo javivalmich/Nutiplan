@@ -79,6 +79,10 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
   - S: los días sin verdura (0,64 por semana, todos sábados) pasan a 0.
   - Verdura «desconocida»: 63 de 235 platos (16 de ave, los 9 de cereal).
   - Pendiente de decidir: A y el suelo de legumbre (A, sin implementar por decisión de Javi). No proponer techos semanales.
+- **Estructura de la comida y legumbre (2026-11-14):** medido y sin implementar. Informe, scripts y borradores de asientos en [`medicion/estructura-comida.md`](medicion/estructura-comida.md).
+  - La legumbre de primero con un segundo de proteína (regla de Javi de octubre, sin asiento) cubre la proteína: las comidas y cenas cortas bajan de 3,08 a 1,82 por semana.
+  - Los días de legumbre se sortean con la semilla; modifica D-024. Con 3 días, legumbre 2,95 por semana.
+  - Pendiente de Javi: suelo 2 o 3, segundo con o sin pescado, los platos redactados de legumbre y el domingo.
 - **Fichas con una cifra para dos ingredientes** (`medicion/barridoCifraCompartida.mjs`, 183 fichas, solo `p1` y `p2`): queda 1 como los ñoquis, sin corregir: «Crema de calabacín y espinacas con quinoa y semillas» («espinacas y patata (100g)»). Otros 34 tramos nombran dos ingredientes pero la cifra es de uno solo y se reescribe bien.
 - **Perfiles de 2600 y 3714 kcal:** quedan un 2,4 % por debajo de su objetivo de media, con las raciones en el techo. De ahí salen casi todas las semanas fuera de ±5 % (12 de 1800 con Bm). Es anterior a S y a Bm.
 - **Test intermitente** `scripts/fase7/entrega.test.js:639` (tiempo límite de 5 s): ya fallaba en `main` y no se toca.

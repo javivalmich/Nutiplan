@@ -88,6 +88,7 @@ for (const id of ['omni-1434', 'omni-2174', 'omni-3714']) {
   for (const f of ['ave', 'carne', 'pescado', 'marisco', 'huevo']) { console.log('  ' + resumen(a.filter((x) => x.f === f), `PSa segundo ${f}`)); console.log('  ' + resumen(b.filter((x) => x.f === f), `PSb segundo ${f}`)); }
   const ej = (xs, t) => { const x = xs.find((y) => /Lentejas con pimentón con zanahoria/.test(y.L.nombre) && /Pechuga de pollo a la plancha/.test(y.S.nombre)); if (x) console.log(`  ej. ${t}: «${x.L.nombre}» + «${x.S.nombre}» → ${x.kcal}/${x.oK} kcal, ${x.prot}/${x.oP} g, ${x.gTotal} g, legumbre seca ${x.gLeg} g, proteico ${x.gProt} g, extra: ${x.anadidos || '—'} [${x.limites}]`); };
   ej(a, 'PSa'); ej(b, 'PSb'); ej(c, 'PSc');
+  for (const [t, xs] of [['PSa', a], ['PSb', b], ['PSc', c]]) console.log('  ' + resumen(xs.filter((x) => x.f !== 'huevo'), t + ' sin segundos de huevo'));
   const extras = (xs) => { const o = {}; for (const x of xs) for (const e of (x.anadidos ? x.anadidos.split('+') : [])) { const k = e.split(' ')[0]; o[k] = (o[k] || 0) + 1; } return JSON.stringify(o); };
   console.log(`  extras PSa ${extras(a)} · PSb ${extras(b)} · U ${extras(U)}`);
 }

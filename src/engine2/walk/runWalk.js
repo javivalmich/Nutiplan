@@ -510,9 +510,16 @@ function walkUnaVez(input, { sinFamilia, uso }) {
       }
 
       const anteayer = i > 1 ? getDishAt(DAYS_ORDER[i - 2], momento) : null;
+      // La sugerencia de la comida libre no es una comida servida (decision de
+      // Javi, 2026-11-14; amplia D-114): B no la cuenta como comida anterior.
+      // Con ella como «ayer» o «anteayer» no hay racha de dos comidas servidas.
+      const diaSugerenciaPrevia = [i - 1, i - 2].filter((j) => j >= 0).map((j) => DAYS_ORDER[j])
+        .find((d) => momento === 'comida' && slots.get(slotKey(d, momento))?.fixedRole === 'libre');
       let candidatesB = candidatesA;
       let notaB;
-      if (!ayer || !anteayer || ayer.tempFeel !== anteayer.tempFeel) {
+      if (diaSugerenciaPrevia) {
+        notaB = `preferencia B no aplica: la comida del ${diaSugerenciaPrevia} es la sugerencia de la comida libre, no una comida servida`;
+      } else if (!ayer || !anteayer || ayer.tempFeel !== anteayer.tempFeel) {
         notaB = `preferencia B no aplica: no hay racha de 2 dias previos con el mismo tempFeel en ${momento}`;
       } else {
         const objetivoTempFeel = ayer.tempFeel;

@@ -27,6 +27,9 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
 | `c22367a` | Bm, red de seguridad: el walk se repite sin el filtro de familia antes de fallar |
 | `12c3aff` | Bm en las alternativas (`alternativa.js`) |
 | el siguiente a `12c3aff` | `DECISIONS.md`: D-115; barrido de fichas con una cifra para dos ingredientes |
+| `db9a2fd`, `ed19d4f` | Medición de la comida con primero y segundo: datos, scripts e informe (`medicion/estructura-comida.md`), sin cambiar reglas |
+| `b5a5723` | La preferencia B no mira la sugerencia de la comida libre (test `runWalk.preferenciaB.test.js`, línea base regenerada) |
+| el siguiente a `b5a5723` | `DECISIONS.md`: ampliación de D-114; `medicion/compararPreferenciaB.mjs` |
 
 ## Decisiones de Javi (2026-11-12 y 2026-11-13)
 

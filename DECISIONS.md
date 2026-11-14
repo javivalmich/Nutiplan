@@ -4623,6 +4623,17 @@ Pendiente
 Estado resultante
 Lo que el usuario no come no cuenta: los suelos de pescado y legumbre y la verdura diaria se cumplen con platos servidos.
 
+Ampliación — [2026-11-14] La preferencia B no mira la sugerencia
+Decide: Javi. Implementado en `b5a5723` (rama `motor/i0-banco-cantidades`).
+1. La sugerencia tampoco cuenta como comida anterior para la preferencia B (no tres comidas seguidas con el mismo `tempFeel`, `runWalk.js:512-534`). Si la comida de ayer o de anteayer es la sugerencia, no hay racha de dos comidas servidas: B no se aplica y la evidencia del hueco lo dice.
+2. Solo afecta a la comida del domingo. La cena del sábado se sirve y B la sigue mirando.
+3. Test en `src/engine2/walk/tests/runWalk.preferenciaB.test.js`: el caso del domingo fallaba antes del cambio. Línea base del banco regenerada en el mismo commit.
+Medido: 200 semanas por perfil, antes → después, en los 9 perfiles con pescado (`scripts/banco/medicion/compararPreferenciaB.mjs` sobre dos salidas de `medirDiseno.mjs`). Cambian los menús de 1698 de 1800 semanas: al cambiar el domingo cambia el azar de los huecos siguientes y la semana siguiente.
+- Comida del domingo: «caliente» 995 → 1156, «frío» 299 → 189 y «muy caliente» 443 → 345, de 1800 (el resto son platos cuya sensación térmica el script no lee: 63 → 110). Antes B le quitaba sobre todo lo «caliente», que es lo más frecuente en la comida; ahora el domingo queda como los demás días.
+- Pescado servido por semana: 4,38 → 4,40. Legumbre: 1,15 → 1,13. Proteína media del día: 131,9 → 132,0 g.
+- Reglas de D-099.3, familia en días seguidos y restricciones: 0 infracciones antes y después.
+Pendiente: la preferencia A (no repetir el tipo de plato de ayer, `runWalk.js:497-510`) sigue mirando la sugerencia como comida anterior.
+
 ## D-115 — [2026-11-13] No repetir familia proteica en días seguidos
 
 Decide: Javi. Implementado en `e2eaf89` (regla), `c22367a` (red de seguridad) y `12c3aff` (alternativas), rama `motor/i0-banco-cantidades`.

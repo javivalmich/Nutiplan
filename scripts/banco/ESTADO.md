@@ -1,4 +1,4 @@
-# Estado de la rama `motor/i0-banco-cantidades` (traspaso, 2026-11-13)
+# Estado de la rama `motor/i0-banco-cantidades` (traspaso, 2026-11-15)
 
 Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, creada desde `main`
 `19a300c`. Sin merge a `main`. La sesión de auditoría de seguridad trabaja aparte, en
@@ -32,6 +32,14 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
 | el siguiente a `b5a5723` | `DECISIONS.md`: ampliación de D-114; `medicion/compararPreferenciaB.mjs` |
 | `873f227` | Medición: opciones (a), (b) y (c) del hook de primero y segundo |
 | el siguiente a `873f227` | Medición con la red de seguridad; `DECISIONS.md`: D-116 y D-117 (sin implementar) |
+| `4378c3a` | Etapa 1 de D-117: sorteo de los 3 días de legumbre con la semilla (`walk/legumbre.js`); SIBO no sortea (`dias_legumbre_sin_sorteo`) |
+| `f10f600` | D-117: en la comida de un día sorteado, el nivel de legumbre va antes que A, B y la verdura; fuera de esos días no hay suelo de legumbre; el día de al lado no lleva legumbre |
+| `db4ded5` | D-116: segundo plato de ave o carne tras un primero de legumbre, con (b); `runWalk` devuelve `segundos` y `materializePlan` pone `segundo` en la comida |
+| `006f3a0` | D-116.5: red de seguridad, la semana se repite sin segundos (`segundos_retirados_d099`) |
+| `de0041a` | D-116.5: una infracción de D-099.3 sin segundos que retirar tiene causa propia (`infraccion_d099_sin_segundos`) |
+| `d6b44de` | Orden de las dos redes (familia y D-099) visible en el log; como mucho 4 walks por semana |
+| `a7d81ef` | Test: perfil con 1 o 2 compuestos de legumbre (3 días sorteados, sin suelo de D-024) |
+| el siguiente a `a7d81ef` | Comparación motor real frente al prototipo (`medicion/compararMotorHook.mjs`); el hook lee el walk de `ba52d21` |
 
 ## Decisiones de Javi (2026-11-12 y 2026-11-13)
 
@@ -84,10 +92,13 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
   - S: los días sin verdura (0,64 por semana, todos sábados) pasan a 0.
   - Verdura «desconocida»: 63 de 235 platos (16 de ave, los 9 de cereal).
   - Pendiente de decidir: A y el suelo de legumbre (A, sin implementar por decisión de Javi). No proponer techos semanales.
-- **Estructura de la comida y legumbre (2026-11-14 y 2026-11-15):** decidida en D-116 y D-117, sin implementar; la etapa 1 está descrita en el informe. Informe, scripts y borradores de asientos en [`medicion/estructura-comida.md`](medicion/estructura-comida.md).
-  - La legumbre de primero con un segundo de proteína (regla de Javi de octubre, sin asiento) cubre la proteína: las comidas y cenas cortas bajan de 3,08 a 1,82 por semana.
-  - Los días de legumbre se sortean con la semilla; modifica D-024. Con 3 días, legumbre 2,95 por semana.
-  - Pendiente de Javi: suelo 2 o 3, segundo con o sin pescado, los platos redactados de legumbre y el domingo.
+- **Estructura de la comida y legumbre (D-116 y D-117):** etapa 1 implementada en el MOTOR (`src/engine2`, commits `4378c3a` a `a7d81ef`), sin la opción (c). Informe y scripts en [`medicion/estructura-comida.md`](medicion/estructura-comida.md).
+  - **El motor decide los segundos, pero la app todavía no los enseña.** `materializePlan` pone `segundo` en la comida y `src/plan` lo ignora: el usuario ve la legumbre como plato único, sin su segundo, y el segundo no entra en la compra ni en las raciones. Mientras no se haga la parte de `src/plan`, la rama no se debe llevar a `main`.
+  - Comparación (`medicion/compararMotorHook.mjs`, 200 semanas por perfil, 10 perfiles): el motor da los mismos menús que el prototipo de medición en las 2000 semanas. El prototipo se validó antes contra el hook de `ba52d21` (2000 semanas idénticas). Infracciones de D-099.3: 0. Red de seguridad: 71 de 2000 semanas, todas del perfil sin pescado ni marisco. Legumbre 3,02 y pescado 3,90 por semana (8 perfiles).
+  - Diferencias con el hook, aprobadas por Javi: la red solo se repite si había segundos, y una infracción sin segundos tiene causa propia; la repetición sin segundos vuelve a empezar con el filtro de familia (máximo 4 walks); un perfil sin compuestos de legumbre (SIBO) no sortea días ni apaga el suelo de D-024 (sus 200 semanas, idénticas a `ba52d21`); causa nueva `dias_legumbre_sin_sorteo`.
+  - El banco (`metricas.mjs`) cuenta los segundos desde el decision log, aparte: las cuentas de familias y especies siguen midiendo lo que el plan enseña.
+  - Pendiente: la parte de `src/plan` (montar la comida doble, raciones con el tope de la legumbre, textos, `platosSemana`), las alternativas de una comida con dos platos, el domingo como día de legumbre y la legumbre a 4 (AESAN).
+  - Riesgo sin cubrir (igual que el hook): si el segundo gasta el último plato que valía para un hueco posterior, el walk falla por pool vacío y la app cae al motor viejo. La red de D-116.5 no lo recoge. No sale en el banco.
 - **Fichas con una cifra para dos ingredientes** (`medicion/barridoCifraCompartida.mjs`, 183 fichas, solo `p1` y `p2`): queda 1 como los ñoquis, sin corregir: «Crema de calabacín y espinacas con quinoa y semillas» («espinacas y patata (100g)»). Otros 34 tramos nombran dos ingredientes pero la cifra es de uno solo y se reescribe bien.
 - **Perfiles de 2600 y 3714 kcal:** quedan un 2,4 % por debajo de su objetivo de media, con las raciones en el techo. De ahí salen casi todas las semanas fuera de ±5 % (12 de 1800 con Bm). Es anterior a S y a Bm.
 - **Test intermitente** `scripts/fase7/entrega.test.js:639` (tiempo límite de 5 s): ya fallaba en `main` y no se toca.

@@ -8,6 +8,14 @@
 // en el texto de la comida (p1/p2) y, si no la hay, lo deja anotado como
 // «sinCantidad» en vez de inventarla.
 //
+// La comida con primero y segundo (D-116, textos/comidaDoble.js) lleva dos
+// platos en una sola comida: la compra del primero y, detrás, la del segundo
+// (`_doble.corte` dice cuántas líneas son del primero), con el primero en p1 y
+// el segundo en p2. Cada plato tiene su aceite: una línea de aceite sin
+// cantidad se busca en el texto de SU plato, y cada ingrediente dice de qué
+// plato es (`plato`: 1 o 2). Así la comida doble se lee igual junta que plato
+// a plato.
+//
 // Vive en src/plan (capa de la app), no en src/eval: eval no puede importar
 // engine2 (tripwire inverso). Nada de engine2 lo importa.
 
@@ -218,8 +226,12 @@ export function leerComida(meal) {
   const sinCantidad = [];
   let libre = false;
   const texto = `${meal.p1 || ''} · ${meal.p2 || ''}`;
-  for (const s of meal.shopping || []) {
-    const linea = String(s);
+  // Comida doble: líneas de la compra que son del primero (las demás, del segundo).
+  const corte = meal._dishId2 && meal._doble && Number.isInteger(meal._doble.corte) ? meal._doble.corte : null;
+  const compra = meal.shopping || [];
+  for (let k = 0; k < compra.length; k++) {
+    const linea = String(compra[k]);
+    const plato = corte == null ? null : (k < corte ? 1 : 2);
     const nombre = linea.replace(/\s*\(.*$/, '').trim();
     const clave = reconocer(nombre);
     if (clave === null) { libre = true; continue; }
@@ -234,13 +246,13 @@ export function leerComida(meal) {
     const extra = linea.match(/\)\s*\+\s*(\d+)\s*g\b/);
     if (g && extra) g = { gramos: g.gramos + Number(extra[1]), como: g.como };
     if (!g && (clave === 'aove' || clave === 'aceite_semillas')) {
-      const ml = aceiteEnTexto(texto);
+      const ml = aceiteEnTexto(plato === 1 ? meal.p1 : plato === 2 ? meal.p2 : texto);
       if (ml != null) g = { gramos: ml * ing.gMl, como: 'ml (texto)' };
       // «· AOVE» sin cantidad (tostadas, desayunos): un chorrito, 10 ml. Estimado y marcado.
       else g = { gramos: 10 * ing.gMl, como: 'estimado 10 ml' };
     }
     if (!g) { sinCantidad.push(linea); continue; }
-    items.push({ clave, gramos: Math.round(g.gramos * 10) / 10, como: g.como, texto: linea, nombre });
+    items.push({ clave, gramos: Math.round(g.gramos * 10) / 10, como: g.como, texto: linea, nombre, ...(plato ? { plato } : {}) });
   }
   return { items, sinCantidad, libre };
 }

@@ -1,11 +1,12 @@
 // Resumen de variantesRed.mjs: MEDICIÓN, no cambia reglas. Lee las salidas de medirEstructura.mjs de «hoy»
-// (ba52d21, sin la regla), de la red actual y de la red con la regla apagada, y escribe una tabla por perfil.
-// Uso: node scripts/banco/medicion/resumenVariantesRed.mjs <hoy.json> <actual.json> <sinRegla.json> [salida.md]
+// (ba52d21, sin la regla), de la red anterior (sin segundos y con los días sorteados, hasta 3622d54) y de la red
+// con la regla apagada (el motor desde ff2fa23), y escribe una tabla por perfil.
+// Uso: node scripts/banco/medicion/resumenVariantesRed.mjs <hoy.json> <anterior.json> <reglaApagada.json> [salida.md]
 import fs from 'node:fs';
 
 const [fHoy, fActual, fSinRegla, salida] = process.argv.slice(2);
 if (!fHoy || !fActual || !fSinRegla) throw new Error('Uso: resumenVariantesRed.mjs <hoy.json> <actual.json> <sinRegla.json> [salida.md]');
-const VARIANTES = [['Hoy (ba52d21)', fHoy], ['Red actual (sin segundos, días sorteados)', fActual], ['Red con la regla apagada (D-024)', fSinRegla]]
+const VARIANTES = [['Hoy (ba52d21)', fHoy], ['Red anterior (sin segundos, días sorteados)', fActual], ['Red con la regla apagada (D-024)', fSinRegla]]
   .map(([nombre, f]) => [nombre, JSON.parse(fs.readFileSync(f, 'utf8'))]);
 const n2 = (x) => x.toFixed(2).replace('.', ',');
 const n1 = (x) => x.toFixed(1).replace('.', ',');

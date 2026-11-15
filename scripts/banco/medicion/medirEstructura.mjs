@@ -168,7 +168,7 @@ function fila(plan, p, obj, visible, recientes, s) {
     }
   });
   const sinAplicar = (re, soloSegundo) => log.filter((e) => (soloSegundo ? e.causa === 'segundo_de_legumbre' : e.causa !== 'segundo_de_legumbre' && e.plato) && re.test(e.evidencia || '')).length;
-  const causas = cuenta(log.filter((e) => ['segundo_sin_candidato', 'segundo_sin_tope_plato_unico', 'segundos_retirados_d099', 'dia_legumbre_sin_candidato', 'frecuencia_corta_sin_candidato', 'familia_dias_seguidos_retirada', 'repeticion_por_catalogo_corto', 'vecino_de_dia_legumbre', 'infraccion_d099_sin_segundos', 'dias_legumbre_sin_sorteo'].includes(e.causa)), (e) => e.causa);
+  const causas = cuenta(log.filter((e) => ['segundo_sin_candidato', 'segundo_sin_tope_plato_unico', 'segundos_retirados_d099', 'dia_legumbre_sin_candidato', 'frecuencia_corta_sin_candidato', 'familia_dias_seguidos_retirada', 'repeticion_por_catalogo_corto', 'vecino_de_dia_legumbre', 'infraccion_d099_sin_segundos', 'dias_legumbre_sin_sorteo', 'segundos_retirados_pool_vacio'].includes(e.causa)), (e) => e.causa);
   const m = medirPlan(plan, { kcal: p.kcal, proteina: obj.proteina, peso: obj.pesoKg }, COMPOSICION);
   const x = restriccionesSemana(plan, p.perfil);
   const sug = ap.filter((a) => a.libre);

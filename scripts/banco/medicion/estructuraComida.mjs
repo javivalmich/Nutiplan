@@ -15,13 +15,15 @@
 //   --ec=topePlatoUnico      (b) si ningún segundo cumple el tope de 2 por especie, ese día la legumbre va
 //                            como plato único
 //   --ec=protAjustada        (c) en la comida con segundo, la proteína se calcula con la legumbre ya ajustada
+//   --ec=red                 red de seguridad: si la semana termina con alguna infracción de D-099.3, se repite
+//                            el walk entero sin segundos (legumbre como plato único), con la misma semilla
 // Se combinan con comas: --ec=suelo2,sinPescado,todas. No se combina con contrafactualesDiseno.mjs.
 // Si un ancla no aparece exactamente una vez, falla.
 import { register } from 'node:module';
 
 const arg = process.argv.find((a) => a.startsWith('--ec='));
 const partes = arg ? arg.slice('--ec='.length).split(',').filter(Boolean) : ['off'];
-const VALIDOS = ['off', 'suelo2', 'suelo3', 'pescado', 'sinPescado', 'todas', 'lentejas', 'antesAB', 'topePlatoUnico', 'protAjustada'];
+const VALIDOS = ['off', 'suelo2', 'suelo3', 'pescado', 'sinPescado', 'todas', 'lentejas', 'antesAB', 'topePlatoUnico', 'protAjustada', 'red'];
 for (const p of partes) if (!VALIDOS.includes(p)) throw new Error(`estructuraComida: opción desconocida «${p}»`);
 const flags = {
   off: partes.includes('off'),
@@ -31,9 +33,10 @@ const flags = {
   antesAB: partes.includes('antesAB'),
   topePlatoUnico: partes.includes('topePlatoUnico'),
   protAjustada: partes.includes('protAjustada'),
+  red: partes.includes('red'),
 };
 globalThis.__ecFlags = flags;
-process.stderr.write(`[estructuraComida] ${flags.off ? 'reglas actuales' : `suelo ${flags.suelo}, segundo ${flags.pescado ? 'con' : 'sin'} pescado, alcance ${flags.alcance}${flags.antesAB ? ', (a)' : ''}${flags.topePlatoUnico ? ', (b)' : ''}${flags.protAjustada ? ', (c)' : ''}`}\n`);
+process.stderr.write(`[estructuraComida] ${flags.off ? 'reglas actuales' : `suelo ${flags.suelo}, segundo ${flags.pescado ? 'con' : 'sin'} pescado, alcance ${flags.alcance}${flags.antesAB ? ', (a)' : ''}${flags.topePlatoUnico ? ', (b)' : ''}${flags.protAjustada ? ', (c)' : ''}${flags.red ? ', red de seguridad' : ''}`}\n`);
 
 const W = '/src/engine2/walk/runWalk.js';
 const RA = '/src/plan/racionesApp.js';
@@ -53,6 +56,9 @@ const CAMBIOS = flags.off ? [] : [
   // Tras colocar la comida, el segundo (si el plato elegido es un primero de legumbre).
   [W, '      if (!esSugerencia) registerConsumption(freqState, chosen, day, undefined, fuenteEditorial);',
     `      if (!esSugerencia) registerConsumption(freqState, chosen, day, undefined, fuenteEditorial);\n      if (__ec && momento === 'comida' && !esSugerencia) ${G}.segundo(__ec, chosen.id, ${ARGS});`],
+  // Red de seguridad: con infracciones de D-099.3, la semana se repite sin segundos.
+  [W, '    return walkUnaVez(input, { sinFamilia: false, uso });',
+    `    if (${G} && ${G}.flags.red && ${G}.activo(input.profile)) return ${G}.red(input, walkUnaVez(input, { sinFamilia: false, uso }), () => walkUnaVez(input, { sinFamilia: false, uso: { familiaDescarto: false } }));\n    return walkUnaVez(input, { sinFamilia: false, uso });`],
   // (a) En la comida de un día sorteado, el nivel de legumbre antes que las preferencias A y B.
   [W, '      let candidatesA = poolAlino.length ? poolAlino : base1;',
     `      let candidatesA = poolAlino.length ? poolAlino : base1;\n      if (__ec && ${G}.flags.antesAB) candidatesA = ${G}.antesAB(__ec, day, momento, candidatesA);`],

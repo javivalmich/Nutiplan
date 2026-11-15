@@ -30,6 +30,8 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
 | `db9a2fd`, `ed19d4f` | Medición de la comida con primero y segundo: datos, scripts e informe (`medicion/estructura-comida.md`), sin cambiar reglas |
 | `b5a5723` | La preferencia B no mira la sugerencia de la comida libre (test `runWalk.preferenciaB.test.js`, línea base regenerada) |
 | el siguiente a `b5a5723` | `DECISIONS.md`: ampliación de D-114; `medicion/compararPreferenciaB.mjs` |
+| `873f227` | Medición: opciones (a), (b) y (c) del hook de primero y segundo |
+| el siguiente a `873f227` | Medición con la red de seguridad; `DECISIONS.md`: D-116 y D-117 (sin implementar) |
 
 ## Decisiones de Javi (2026-11-12 y 2026-11-13)
 
@@ -82,7 +84,7 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
   - S: los días sin verdura (0,64 por semana, todos sábados) pasan a 0.
   - Verdura «desconocida»: 63 de 235 platos (16 de ave, los 9 de cereal).
   - Pendiente de decidir: A y el suelo de legumbre (A, sin implementar por decisión de Javi). No proponer techos semanales.
-- **Estructura de la comida y legumbre (2026-11-14):** medido y sin implementar. Informe, scripts y borradores de asientos en [`medicion/estructura-comida.md`](medicion/estructura-comida.md).
+- **Estructura de la comida y legumbre (2026-11-14 y 2026-11-15):** decidida en D-116 y D-117, sin implementar; la etapa 1 está descrita en el informe. Informe, scripts y borradores de asientos en [`medicion/estructura-comida.md`](medicion/estructura-comida.md).
   - La legumbre de primero con un segundo de proteína (regla de Javi de octubre, sin asiento) cubre la proteína: las comidas y cenas cortas bajan de 3,08 a 1,82 por semana.
   - Los días de legumbre se sortean con la semilla; modifica D-024. Con 3 días, legumbre 2,95 por semana.
   - Pendiente de Javi: suelo 2 o 3, segundo con o sin pescado, los platos redactados de legumbre y el domingo.

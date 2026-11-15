@@ -5,8 +5,8 @@ import path from 'node:path';
 
 const dir = process.argv[2];
 if (!dir) throw new Error('Falta la carpeta de los .json');
-const ORDEN = ['off', 'decidida', 's2-pescado-todas', 's2-sinPescado-todas', 's2-pescado-lentejas', 's2-sinPescado-lentejas', 's3-pescado-todas', 's3-sinPescado-todas', 's3-pescado-lentejas', 's3-sinPescado-lentejas'];
-const NOMBRE = { off: 'Hoy', decidida: 'Decidida: 3 · sin pescado · todas, con (a), (b) y (c)', 's2-pescado-todas': '2 · con pescado · todas', 's2-sinPescado-todas': '2 · sin pescado · todas', 's2-pescado-lentejas': '2 · con pescado · lentejas', 's2-sinPescado-lentejas': '2 · sin pescado · lentejas', 's3-pescado-todas': '3 · con pescado · todas', 's3-sinPescado-todas': '3 · sin pescado · todas', 's3-pescado-lentejas': '3 · con pescado · lentejas', 's3-sinPescado-lentejas': '3 · sin pescado · lentejas' };
+const ORDEN = ['off', 'final', 'decidida', 's2-pescado-todas', 's2-sinPescado-todas', 's2-pescado-lentejas', 's2-sinPescado-lentejas', 's3-pescado-todas', 's3-sinPescado-todas', 's3-pescado-lentejas', 's3-sinPescado-lentejas'];
+const NOMBRE = { off: 'Hoy', final: 'Final: 3 · sin pescado · todas, con (a), (b) y la red', decidida: 'Decidida: 3 · sin pescado · todas, con (a), (b) y (c)', 's2-pescado-todas': '2 · con pescado · todas', 's2-sinPescado-todas': '2 · sin pescado · todas', 's2-pescado-lentejas': '2 · con pescado · lentejas', 's2-sinPescado-lentejas': '2 · sin pescado · lentejas', 's3-pescado-todas': '3 · con pescado · todas', 's3-sinPescado-todas': '3 · sin pescado · todas', 's3-pescado-lentejas': '3 · con pescado · lentejas', 's3-sinPescado-lentejas': '3 · sin pescado · lentejas' };
 const datos = {};
 for (const k of ORDEN) { const f = path.join(dir, `${k}.json`); if (fs.existsSync(f)) datos[k] = JSON.parse(fs.readFileSync(f, 'utf8')); }
 const claves = ORDEN.filter((k) => datos[k]);
@@ -106,6 +106,7 @@ const c100 = (xs, f) => f1((100 * suma(xs, f)) / xs.length);
 log(porVariante(OMNI8, [
   ['Segundo sin candidato', (xs) => c100(xs, (r) => r.causas.segundo_sin_candidato)],
   ['Sin segundo por el tope: plato único', (xs) => c100(xs, (r) => r.causas.segundo_sin_tope_plato_unico)],
+  ['Red: semana sin segundos', (xs) => c100(xs, (r) => r.causas.segundos_retirados_d099)],
   ['Día de legumbre sin candidato', (xs) => c100(xs, (r) => r.causas.dia_legumbre_sin_candidato)],
   ['Suelo corto sin candidato (paso 4)', (xs) => c100(xs, (r) => r.causas.frecuencia_corta_sin_candidato)],
   ['Walk repetido sin familia', (xs) => c100(xs, (r) => r.causas.familia_dias_seguidos_retirada)],
@@ -138,7 +139,7 @@ log(porVariante(TODOS, [
 log('\n### Por perfil: pescado, legumbre, calorías y proteína\n');
 for (const k of claves) {
   log(`**${NOMBRE[k]}**\n`);
-  log(tabla(['Perfil', 'Pescado/sem', 'Legumbre/sem', 'Con segundo/sem', 'Desvío kcal', 'Fuera de ±5 %', 'Proteína/día (% obj.)', 'Cortas/sem', 'D-115 sin ancla', 'Día sorteado sin legumbre', 'Segundo sin candidato'],
-    TODOS.map((p) => { const xs = filasDe(k, [p]); return [p, f2(media(xs.map((r) => r.pescado))), f2(media(xs.map((r) => r.legumbre))), f2(media(xs.map((r) => r.segundos))), `${f2(media(xs.map((r) => r.desvio)))} %`, xs.filter((r) => !r.dentro).length, `${f1(100 * media(xs.map((r) => r.protDia / r.objProt)))} %`, f2(media(xs.map((r) => r.cortas))), suma(xs, (r) => r.d115.familiaDiasSeguidosSinAncla), suma(xs, (r) => r.causas.dia_legumbre_sin_candidato), suma(xs, (r) => r.causas.segundo_sin_candidato)]; })));
+  log(tabla(['Perfil', 'Pescado/sem', 'Legumbre/sem', 'Con segundo/sem', 'Desvío kcal', 'Fuera de ±5 %', 'Proteína/día (% obj.)', 'Cortas/sem', 'D-115 sin ancla', 'Día sorteado sin legumbre', 'Segundo sin candidato', 'Red: semanas sin segundos'],
+    TODOS.map((p) => { const xs = filasDe(k, [p]); return [p, f2(media(xs.map((r) => r.pescado))), f2(media(xs.map((r) => r.legumbre))), f2(media(xs.map((r) => r.segundos))), `${f2(media(xs.map((r) => r.desvio)))} %`, xs.filter((r) => !r.dentro).length, `${f1(100 * media(xs.map((r) => r.protDia / r.objProt)))} %`, f2(media(xs.map((r) => r.cortas))), suma(xs, (r) => r.d115.familiaDiasSeguidosSinAncla), suma(xs, (r) => r.causas.dia_legumbre_sin_candidato), suma(xs, (r) => r.causas.segundo_sin_candidato), suma(xs, (r) => r.causas.segundos_retirados_d099)]; })));
   log();
 }

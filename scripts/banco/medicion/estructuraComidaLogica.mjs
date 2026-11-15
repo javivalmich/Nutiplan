@@ -26,7 +26,13 @@
 //       legumbre va como plato único y el log lo dice (segundo_sin_tope_plato_unico).
 //   (c) protAjustada: en la comida con segundo, los factores de proteína y energía se resuelven a la
 //       vez (dos ecuaciones, dos incógnitas): la proteína del segundo se calcula con la legumbre ya
-//       ajustada y no con su cantidad de partida.
+//       ajustada y no con su cantidad de partida. (Descartada por Javi el 2026-11-14.)
+// Red de seguridad (decisión de Javi, 2026-11-14): si la semana termina con alguna infracción de
+// D-099.3 (plato repetido en la semana o de la anterior, una especie más de 2 veces, el mismo día o
+// en días seguidos salvo el ancla, legumbre en la cena), se repite el walk entero sin segundos, con
+// la misma semilla: los días sorteados siguen y la legumbre va como plato único. El log lo dice
+// (segundos_retirados_d099). Se mira sobre los platos servidos (sin la sugerencia del sábado), con
+// los segundos dentro, igual que medirEstructura.mjs.
 const R = new URL('../../../', import.meta.url).href;
 const { resolveDishComposition } = await import(R + 'src/engine2/dishes/compositionResolver.js');
 const { proteinaPrincipal, familiaProteica, TOPE_PROTEINA_SEMANA } = await import(R + 'src/engine2/dishes/bases.js');
@@ -91,6 +97,7 @@ export function construirPS(actual, primero, segundo, kcal, tope) {
 }
 
 export function instalar(flags) {
+  const estado = { sinSegundos: false };
   const FAMILIAS_SEGUNDO = new Set(['ave', 'carne', ...(flags.pescado ? ['pescado', 'marisco'] : [])]);
   const esPrimero = (d) => { const t = tuplaDe(d.id); return !!t && t.tmpl === 'legumbre' && (flags.alcance === 'todas' || t.P === 'lentejas'); };
   const esNivelDia = (d) => (flags.alcance === 'todas' ? esCompuestoLegumbre(d) : esLegumbre(d));
@@ -161,7 +168,7 @@ export function instalar(flags) {
     segundo(ctx, primeroId, a) {
       const { day, i, slot, slots, catalog, usedIds, usedNames, recientes, vetoedIds, freqState, fuenteEditorial, sinFamilia, uso, decisionLog } = a;
       const clave = `${day}::comida::segundo`;
-      if (slot.fixedRole === 'libre' || slots.has(clave)) return;
+      if (estado.sinSegundos || slot.fixedRole === 'libre' || slots.has(clave)) return;
       const porId = (id) => catalog.find((d) => d.id === id);
       const primero = porId(primeroId);
       if (!primero || !esPrimero(primero)) return;
@@ -221,6 +228,60 @@ export function instalar(flags) {
       if (!rango) return marca;
       const amplitud = Math.min(AMPLITUD_MAX, Math.max(1, targetKcal / KCAL_RACION_NORMAL));
       return { ...marca, ampliado: (m._ps.tope + 0.5) / amplitud - rango[1] };
+    },
+
+    /** Infracciones de D-099.3 de una semana del walk, con los segundos dentro (lista de textos). */
+    infracciones(input, r) {
+      const porId = new Map(input.catalog.map((d) => [d.id, d]));
+      const nombre = (id) => (porId.get(id) && porId.get(id).nombre) || id;
+      const anclas = new Set(r.decisionLog.filter((e) => typeof e.causa === 'string' && e.causa.startsWith('ancla_base') && e.day && e.momento).map((e) => `${e.day}::${e.momento}`));
+      const servidos = r.slots.filter((s) => s.dishId && !(s.fixedRole === 'libre' && s.momento === 'comida'))
+        .map((s) => ({ day: s.day, momento: s.momento, id: s.dishId, ancla: anclas.has(`${s.day}::${s.momento}`) }));
+      for (const e of r.decisionLog) if (e.causa === 'segundo_de_legumbre') servidos.push({ day: e.day, momento: 'comida', id: e.plato, ancla: false });
+      const out = [];
+      const nombres = servidos.map((s) => nombre(s.id));
+      const repetidos = nombres.filter((n, k) => nombres.indexOf(n) !== k);
+      if (repetidos.length) out.push(`plato repetido: ${[...new Set(repetidos)].join(', ')}`);
+      const recientes = new Set((input.platosRecientes || []).map(nombre));
+      const anteriores = nombres.filter((n) => recientes.has(n));
+      if (anteriores.length) out.push(`plato de la semana anterior: ${anteriores.join(', ')}`);
+      const especie = (s) => proteinaPrincipal(porId.get(s.id) || { id: s.id });
+      const cuenta = {};
+      for (const s of servidos) { const e = especie(s); if (e) cuenta[e] = (cuenta[e] || 0) + 1; }
+      const masDeDos = Object.entries(cuenta).filter(([, n]) => n > 2);
+      if (masDeDos.length) out.push(`especie mas de 2 veces: ${masDeDos.map(([e, n]) => `${e} ${n}`).join(', ')}`);
+      for (let i = 0; i < DAYS_ORDER.length; i++) {
+        const hoy = servidos.filter((s) => s.day === DAYS_ORDER[i]);
+        const esp = hoy.map(especie).filter(Boolean);
+        const dobles = esp.filter((e, k) => esp.indexOf(e) !== k);
+        if (dobles.length) out.push(`${DAYS_ORDER[i]}: ${[...new Set(dobles)].join(', ')} dos veces el mismo dia`);
+        if (i === DAYS_ORDER.length - 1) continue;
+        const man = servidos.filter((s) => s.day === DAYS_ORDER[i + 1]);
+        for (const e of new Set(esp)) {
+          const h = hoy.filter((s) => especie(s) === e);
+          const m = man.filter((s) => especie(s) === e);
+          if (m.length && !(h.some((s) => s.ancla) && m.some((s) => s.ancla))) out.push(`${e} en ${DAYS_ORDER[i]} y ${DAYS_ORDER[i + 1]}`);
+        }
+      }
+      const cenaLegumbre = servidos.filter((s) => s.momento === 'cena' && esLegumbre(porId.get(s.id) || { id: s.id }));
+      if (cenaLegumbre.length) out.push(`legumbre en la cena: ${cenaLegumbre.map((s) => s.day).join(', ')}`);
+      return out;
+    },
+
+    /** Red de seguridad: con infracciones de D-099.3, la semana se repite entera sin segundos. */
+    red(input, r, rehacer) {
+      const inf = globalThis.__ec.infracciones(input, r);
+      if (!inf.length) return r;
+      estado.sinSegundos = true;
+      let r2;
+      try { r2 = rehacer(); } finally { estado.sinSegundos = false; }
+      r2.decisionLog.push({
+        decisionId: `walk-select-${r2.decisionLog.length}`, day: undefined, momento: undefined, plato: undefined,
+        causa: 'segundos_retirados_d099',
+        evidencia: `con los segundos la semana incumplia D-099.3 (${inf.join('; ')}); se repite el walk entero sin segundos, con la misma semilla: la legumbre de los dias sorteados va como plato unico`,
+        alternativasDescartadas: [], evento: true, infracciones: inf,
+      });
+      return r2;
     },
 
     /** (a) Nivel del día de legumbre antes de las preferencias A y B. */

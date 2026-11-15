@@ -734,6 +734,8 @@ No es necesaria para que la regla funcione.
 
 ## 10. Borradores de asientos
 
+> **Superados (2026-11-15).** Los asientos definitivos son D-116 y D-117 de `DECISIONS.md`, con la variante decidida por Javi: todas las legumbres compuestas, suelo 3, segundo sin pescado ni marisco, día de legumbre antes de las preferencias A y B, plato único si el segundo no cumple el tope y red de seguridad sin segundos. La proteína resuelta a la vez quedó descartada. Sus cifras salen de `estructura-comida-final/` (`medirEstructura.mjs --ec=suelo3,sinPescado,todas,antesAB,topePlatoUnico,red`). Los borradores de abajo se conservan como estaban.
+
 No están en `DECISIONS.md`. Los valores entre corchetes son los de la recomendación y dependen de lo que decida Javi.
 
 ### D-116 (borrador) — La legumbre no va como plato único: primero y segundo

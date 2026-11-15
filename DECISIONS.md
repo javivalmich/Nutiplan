@@ -4671,3 +4671,75 @@ Pendiente
 
 Estado resultante
 Un omnívoro no come la misma familia de proteína dos días seguidos, salvo los dos platos del ancla, ni en el menú ni al pedir una alternativa.
+
+## D-116 — [2026-11-15] La legumbre compuesta no va como plato único: primero y segundo
+
+Decide: Javi. Sin implementar: medido en memoria (`scripts/banco/medicion/estructura-comida.md`), sobre `b5a5723`.
+
+Contexto
+Javi lo dijo en octubre y no quedó escrito: las lentejas o una sopa pueden ir de primero con pollo de segundo, pero no como plato único. Hoy la legumbre sale 1,27 veces por semana, siempre como plato único, con el 78 % de la proteína de su comida de mediana; 1921 de 2027 comidas de legumbre quedan por debajo del 95 %. La legumbre es un ingrediente «energético» en las raciones (`raciones.js:115`) y el plato no tiene nada proteico que subir. El plato único completo (legumbre con cereal o con proteína dentro) se descartó: el cereal baja la proteína y solo 5 de los 18 platos de legumbre llevan proteína. (Cifras de 200 semanas por perfil en los 8 perfiles omnívoros sin SIBO.)
+
+Decisión
+1. Un plato compuesto de legumbre (legumbre con verdura) no se sirve solo: va de primero, con un segundo de proteína con verdura en la misma comida. Vale para todas las legumbres compuestas, no solo para las lentejas.
+2. El segundo es un plato compuesto de proteína con verdura, sin cereal, de ave o de carne: ni pescado ni marisco, ni huevo. Sale de los platos que el catálogo marca como de cena (hoy, 23 sin pescado ni huevo).
+3. El segundo se come: cuenta para no repetir plato (D-099.3.d), para el tope y la separación por especie (D-099.3.e), para la familia en días seguidos (D-115) y para la verdura del día y el suelo de pescado (D-024). Pasa por esos filtros con la misma vuelta atrás. El paso 4 no lo dirige.
+4. Si ningún segundo disponible cumple el tope de 2 por especie, ese día la legumbre va como plato único, y el decision log lo dice (`segundo_sin_tope_plato_unico`).
+5. Red de seguridad. Si la semana termina con alguna infracción de D-099.3 (plato repetido en la semana o de la anterior, una especie más de 2 veces, el mismo día o en días seguidos salvo los platos del ancla, legumbre en la cena), se repite el walk entero sin segundos, con la misma semilla. Los días de legumbre de D-117 se mantienen y la legumbre va como plato único. Queda en el log con la causa `segundos_retirados_d099` y la lista de infracciones. Se mira sobre los platos servidos, con los segundos dentro y sin la sugerencia del sábado.
+6. Raciones: los dos platos son una sola comida, con el objetivo de siempre. El primero parte de media ración (legumbre 50 g en seco, que es el mínimo de su rango; verdura y aceite a la mitad), y la legumbre se ajusta con tope en lo que el mismo plato recibe como plato único a 2174 kcal. La proteína se reparte como en cualquier comida: los proteicos se dimensionan con la legumbre a su cantidad de partida. Javi descartó resolver proteína y energía a la vez. Medido, dejaba la proteína de la comida en su objetivo exacto (100 % de mediana frente a 112 %), con 30 comidas por debajo del 95 % en lugar de 7 y 190 fuera de ±5 % de calorías en lugar de 121.
+7. Texto: una sola comida, con el primero en `p1` y el segundo en `p2`, la compra y la receta de los dos seguidas. La forma del plan no cambia.
+8. Los platos redactados de legumbre (cocido, fabada, hummus con pollo, curry con arroz, burrito, falafel, ensalada de lentejas) no cambian: siguen como plato único.
+9. Solo dietas omnívoras. En vegetariana y vegana no hay segundos (los 8 de la vegetariana son de huevo; la vegana no tiene ninguno) y la regla no se aplica. La sugerencia de la comida libre no lleva segundo (D-114).
+10. Toda elección deja su causa en el decision log: `segundo_de_legumbre` (con los filtros que actuaron), `segundo_sin_candidato`, `segundo_sin_tope_plato_unico` y `segundos_retirados_d099`.
+
+Medido
+200 semanas por perfil, reglas actuales → esta decisión con D-117, en memoria (`medirEstructura.mjs` con `--ec=suelo3,sinPescado,todas,antesAB,topePlatoUnico,red`, tablas de `resumenEstructura.mjs`). Salvo que se diga otra cosa, en los 8 perfiles omnívoros sin SIBO (1600 semanas).
+- Reglas de D-099.3: 0 infracciones en los 10 perfiles medidos, igual que hoy. D-114: la sugerencia nunca lleva segundo. Restricciones: 0 comidas con un alimento vetado o eliminado.
+- Red de seguridad: actúa en 71 de 2000 semanas, todas del perfil sin pescado ni marisco (71 de sus 200). En los otros 9 perfiles, nunca. Sin ella, ese perfil tenía 21 semanas con una especie más de 2 veces, 11 especies repetidas el mismo día y 34 en días seguidos.
+- Segundo sin tope, plato único (punto 4): 3 veces en 200 semanas, en el perfil sin pescado ni marisco; nunca en los demás.
+- Comida con segundo: 112 % de su objetivo de proteína de mediana; 13 de 4783 por debajo del 95 %.
+- Comidas y cenas cortas de proteína: 3,04 → 1,85 por semana. Proteína del día: 100,8 % → 104,5 % del objetivo.
+- Comida de legumbre a 1434 kcal: unos 451 g (329 como plato único), con 50 g de legumbre en seco y 95 g de carne o ave. A 3714 kcal: unos 927 g (933 como plato único), con 105 g de legumbre en seco y 260 g de carne o ave, 100 g de proteína para un objetivo de 83 y pan o fruta en el 90 % de los casos.
+- Pescado servido: 4,33 → 3,90 por semana. Semanas con menos de 3: 1 → 5 de 1600.
+- Familia en días seguidos (D-115), sin ancla: 2 → 238 en las 1600 semanas (0,15 por semana); en el perfil sin pescado ni marisco, 269 → 367 en 200. El filtro no se puede aplicar al segundo 14,6 veces por cada 100 semanas: el segundo solo puede ser ave o carne, y a veces las dos ya salen el día de al lado.
+- Perfil sin pescado ni marisco: comidas y cenas cortas 4,29 → 3,64 por semana (5,00 en las semanas en que actúa la red, 2,89 en el resto).
+
+Pendiente
+- Implementación por etapas: `scripts/banco/medicion/estructura-comida.md`, sección 9. La etapa 1 no cambia la forma del plan ni toca el plan compartido.
+- Alternativas de una comida con dos platos (hoy la cambiarían por un plato único).
+- La preferencia A sigue mirando la sugerencia del sábado (D-114).
+- La sopa de primero: no hay en el catálogo sopas ni cremas sin proteína.
+
+Estado resultante
+Sin cambio en el motor hasta que se implemente.
+
+## D-117 — [2026-11-15] Días de legumbre sorteados con la semilla (modifica D-024)
+
+Decide: Javi. Sin implementar: medido en memoria con D-116 (`scripts/banco/medicion/estructura-comida.md`), sobre `b5a5723`.
+
+Contexto
+D-024 atiende los suelos semanales en el primer hueco donde se puede, después de las preferencias A y B y después de la verdura del día (asiento 3), con una veda de un día (asiento 4). En la comida la verdura gana casi siempre y el suelo de legumbre apenas actúa: hoy la legumbre sale 1,27 veces por semana con un suelo de 3. Poner los suelos antes que la verdura en la comida (contrafactual A) la sube a 2,74, pero la fija en lunes, miércoles y viernes en 1281 de 1600 semanas, porque el walk recorre la semana en orden y la veda hace el resto.
+
+Decisión
+1. Antes del walk se sortean con la semilla 3 días de legumbre, con un RNG propio (`::walk::estructura`). El sorteo es entre todos los conjuntos válidos de días: sin el día de la comida libre, sin dos días seguidos y sin los días en que el ancla ya colocó un plato. Las legumbres del ancla cuentan para los 3. El domingo puede salir.
+2. En la comida de un día sorteado, el nivel de legumbre va antes que las preferencias A y B y antes que la verdura del día. Dentro del nivel, A y B siguen actuando con su vuelta atrás. Si no hay candidato de legumbre, el hueco sigue como siempre y el log lo dice (`dia_legumbre_sin_candidato`).
+3. Esto modifica D-024 en esos huecos: el paso 4 iba después de las preferencias A y B (cascada pool → A → B → paso 4), y el asiento 3 ponía la verdura del día antes que los contadores semanales.
+4. Fuera de los días sorteados el suelo semanal de legumbre no actúa. La precedencia «legumbre antes que pescado» del asiento 2 de D-024 deja de tener objeto; el suelo de pescado sigue igual.
+5. El día anterior y el siguiente a uno sorteado no llevan legumbre a la comida, si quedan otros candidatos (`vecino_de_dia_legumbre`). Para la legumbre, sustituye a la veda del asiento 4 de D-024.
+6. El suelo de legumbre de `weeklyTargets.js` (3) es el número de días sorteados.
+7. Sin pesos: filtros, un orden de prioridades y azar sembrado. Causas en el log: `dias_legumbre_sorteados` (con los días y el número de conjuntos válidos), `dia_legumbre_sorteado`, `dia_legumbre_sin_candidato` y `vecino_de_dia_legumbre`.
+8. Solo dietas omnívoras. En vegetariana y vegana D-024 sigue como está.
+
+Medido
+Las mismas 200 semanas por perfil de D-116 (8 perfiles omnívoros sin SIBO, 1600 semanas).
+- Legumbre: 1,27 → 3,02 por semana; 2,99 con segundo y 0,03 como plato único (platos redactados). Semanas con menos de 3: 1510 → 37 de 1600.
+- Reparto por día (comidas de legumbre por semana): L 0,54 · M 0,29 · X 0,47 · J 0,28 · V 0,61 · S 0 · D 0,83. El patrón más frecuente (miércoles, viernes y domingo) sale el 19 % de las semanas. El domingo entra en 6 de los 7 conjuntos válidos de 3 días.
+- Día sorteado sin legumbre: 2,7 por cada 100 semanas. Con el nivel del día después de A y B eran 5,6; los que quedan los dejan sin candidatos los filtros que van antes de A (no repetir plato, tope y separación por especie, aliño). No se ha medido cuál.
+- Días sin verdura: 0,03 por semana, igual que hoy.
+- Reglas de D-099.3: 0 infracciones en los 10 perfiles medidos (con la red de seguridad de D-116).
+
+Pendiente
+- Un perfil sin ningún plato de legumbre (SIBO) sortea días igual y los anota todos sin candidato (600 en 200 semanas). La implementación no debe sortear días para ese perfil.
+- El recordatorio de D-024 sobre subir la legumbre a 4 (AESAN) sigue abierto.
+
+Estado resultante
+Sin cambio en el motor hasta que se implemente con D-116.

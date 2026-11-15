@@ -267,6 +267,9 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
       const nota = notaAncla(resumenAncla, d2.day, causaDe.get(`${d2.day}|comida`));
       if (nota) nuevaComida.slotNote = nota;
       platosSemana.push(comida2.dish.nombre);
+      // D-116: el segundo de la comida de legumbre se come; cuenta para no repetirlo la semana
+      // siguiente (D-099.3.d). La app todavía no lo escribe en la comida (etapa 2, paso 6).
+      if (comida2.segundo) platosSemana.push(comida2.segundo.nombre);
       memL.push(claveMemoria(proteinaDe(comida2.dish)));
     }
     let nuevaCena = marca(cena, cena2.dish, 'cena');

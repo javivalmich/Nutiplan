@@ -156,3 +156,57 @@ describe('runWalk: red de seguridad de los segundos (D-116.5)', () => {
     }
   });
 });
+
+// Orden de las dos redes (D-115.7 y D-116.5). Cada intento pasa primero por la red del filtro de
+// familia; la de D-099 mira la semana que sale de ahi y, si la rehace sin segundos, la repeticion
+// vuelve a empezar CON el filtro de familia. Sin bucle: como mucho 4 walks por semana.
+describe('runWalk: las dos redes en la misma semana', () => {
+  // Caso sintetico encontrado por busqueda (semilla «buscar-10060»): con segundos, el walk se queda sin
+  // platos con el filtro de familia; sin el filtro sale, pero con infracciones de D-099.3; sin segundos
+  // y otra vez con el filtro, la semana cumple.
+  const abiertos = [{ day: 'Martes', momento: 'comida' }, { day: 'Martes', momento: 'cena' }, { day: 'Lunes', momento: 'cena' }, { day: 'Miercoles', momento: 'comida' }];
+  const nombres = ['Lentejas con pimentón con zanahoria', 'Pechuga de pavo a la plancha con limón, orégano y ajo con brócoli',
+    'Lomo de cerdo a la plancha con mostaza y miel con brócoli', 'Pechuga de pollo salteado con hierbas provenzales con champiñones',
+    'Nuggets caseros de pollo al airfryer con patata gajo'];
+  const a = anchorEverythingExcept(abiertos);
+  const input = { weekArc: { beats: beats7(), anchors: a.anchors }, catalog: [...a.dishes, ...nombres.map((n) => real.find((d) => d.nombre === n))], seed: 'buscar-10060' };
+
+  it('fixtures localizadas', () => {
+    expect(input.catalog.every(Boolean)).toBe(true);
+  });
+
+  it('la red de familia actua dentro del intento con segundos, y la repeticion sin segundos empieza con el filtro', () => {
+    const r = runWalk(input);
+    const [ev] = retirada(r);
+    expect(ev).toBeDefined();
+    expect(ev.semanaDescartada).toEqual({ familiaRetirada: true });
+    expect(ev.walks).toEqual(['con segundos, con filtro de familia', 'con segundos, sin filtro de familia', 'sin segundos, con filtro de familia']);
+    expect(ev.evidencia).toContain('vuelve a empezar con el');
+    // La semana que se queda es la del tercer walk: con el filtro, sin segundos y sin infracciones.
+    expect(r.decisionLog.some((e) => e.causa === 'familia_dias_seguidos_retirada')).toBe(false);
+    expect(r.segundos).toEqual([]);
+    expect(infraccionesD099(input, r)).toEqual([]);
+    expect(sinArreglo(r)).toHaveLength(0);
+  });
+
+  it('es determinista y no pasa de 4 walks', () => {
+    expect(JSON.stringify(runWalk(input))).toBe(JSON.stringify(runWalk(input)));
+    let vistas = 0;
+    for (let s = 0; s < 40; s++) {
+      const otra = { ...input, seed: `dos-redes-${s}` };
+      let r;
+      try { r = runWalk(otra); } catch (err) {
+        // Catalogo de 5 platos para 4 huecos y un segundo: con algunas semillas no hay platos. No lo causa
+        // la regla: sin ella (dieta vegetariana) esas semillas fallan igual.
+        expect(err.poolVacio).toBe(true);
+        expect(() => runWalk({ ...otra, profile: { dieta: 'vegetariana' } })).toThrow(/pool rotativo vacio/);
+        continue;
+      }
+      vistas += 1;
+      for (const e of retirada(r)) expect(e.walks.length).toBeLessThanOrEqual(4);
+      expect(retirada(r).length).toBeLessThanOrEqual(1);
+      expect(r.decisionLog.filter((e) => e.causa === 'familia_dias_seguidos_retirada').length).toBeLessThanOrEqual(1);
+    }
+    expect(vistas).toBeGreaterThan(10);
+  });
+});

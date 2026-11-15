@@ -8,12 +8,15 @@
 // sin importar nada de src/engine.
 
 import { calcMacros, computeStrategy } from '../engine/nutrition.js';
-import { racionesDia } from '../engine2/nutrientes/raciones.js';
+import { racionesDia, rangoDe, AMPLITUD_MAX, KCAL_RACION_NORMAL } from '../engine2/nutrientes/raciones.js';
 import { COMPOSICION } from '../engine2/nutrientes/composicion.js';
+import { INGREDIENTES } from '../engine2/nutrientes/ingredientes.js';
 import { leerComida } from './medidor/leerComida.js';
 import { reescribirComida } from './cantidades.js';
 import { adaptarComidaFodmap } from '../engine2/nutrientes/fodmap.js';
 import { recomponer, aplicarAnclaLibre } from './textos/componer.js';
+import { escribirCompuesto, gramosDePartida } from './textos/compuestos.js';
+import { esComidaDoble, recomponerDoble, platosDe } from './textos/comidaDoble.js';
 import { adaptarSiProcede } from './adaptar.js';
 
 const MOMENTO = Object.freeze({ Desayuno: 'desayuno', Comida: 'comida', Cena: 'cena' });
@@ -124,6 +127,82 @@ export function clavesDeAdaptacion(meal, profile) {
   return mapa;
 }
 
+// ─── Comida con primero y segundo (D-116.6) ─────────────────────────────────
+
+export const KCAL_TOPE_LEGUMBRE = 2174;
+const esLegumbre = (clave) => (INGREDIENTES[clave] || {}).grupo === 'legumbre';
+const itemDe = (it) => ({ clave: it.clave, gramos: it.gramos, unidad: it.como === 'ud' ? 'ud' : 'g', fijo: /estimado/.test(it.como) });
+const topes = new Map();
+
+/**
+ * Tope de la legumbre de un primero (D-116.6): los gramos en seco que ese
+ * plato recibe como plato único a 2174 kcal.
+ *
+ * Se calcula con las mismas raciones de siempre (racionesDia), con el plato
+ * solo en la comida de un día de 2174 kcal de cuatro comidas (desayuno,
+ * comida, cena y un tentempié; las otras tres no intervienen) y sin
+ * restricciones. Depende solo del plato: no hace falta un plan de referencia.
+ * La proteína del objetivo no interviene, porque el plato único de legumbre
+ * no lleva ingredientes proteicos (la legumbre es energética en las raciones).
+ * Da los mismos 14 valores que el prototipo de medición, que los sacaba de un
+ * plan de referencia (racionesDoble.test.js).
+ * @param {object} tupla tupla del plato compuesto de legumbre
+ * @returns {number} gramos en seco
+ */
+export function topeLegumbre(tupla, composicion = COMPOSICION) {
+  const clave = JSON.stringify(tupla);
+  if (composicion === COMPOSICION && topes.has(clave)) return topes.get(clave);
+  const plato = escribirCompuesto({ tupla, nombre: '', momento: 'comida', gramos: gramosDePartida(tupla, KCAL_TOPE_LEGUMBRE) });
+  const otra = (id, momento) => ({ id, momento, libre: true, items: [] });
+  const r = racionesDia({
+    comidas: [otra('d', 'desayuno'), { id: 'c', momento: 'comida', libre: false, items: leerComida(plato).items.map(itemDe) }, otra('n', 'cena'), otra('t', 'tentempie')],
+    aparte: [], objetivo: { kcal: KCAL_TOPE_LEGUMBRE, proteina: 0, pesoKg: 0 }, composicion, vetados: vetadosDe({}),
+  });
+  const tope = Math.round(r.comidas.c.items.filter((i) => esLegumbre(i.clave)).reduce((a, i) => a + i.gramos, 0));
+  if (composicion === COMPOSICION) topes.set(clave, tope);
+  return tope;
+}
+
+/**
+ * Lo que la comida doble añade a un ingrediente al entrar en las raciones: la
+ * legumbre del primero lleva su tope como máximo (en lugar del máximo general
+ * de la legumbre, que además crece con el objetivo).
+ */
+function extraDoble(m, it, targetKcal, composicion) {
+  if (it.plato !== 1 || !esLegumbre(it.clave)) return {};
+  const rango = rangoDe(it.clave, 'g');
+  const tope = topeLegumbre(m._doble.primero._componer.tupla, composicion);
+  if (!rango || !tope) return {};
+  // ajustarComida suma `ampliado` al máximo del rango y después lo multiplica por la amplitud
+  // del objetivo: con esta cuenta el máximo queda en el tope, sea cual sea el objetivo.
+  const amplitud = Math.min(AMPLITUD_MAX, Math.max(1, targetKcal / KCAL_RACION_NORMAL));
+  return { ampliado: (tope + 0.5) / amplitud - rango[1] };
+}
+
+/**
+ * Escribe la comida doble con los gramos decididos: cada plato con los suyos
+ * (el mismo ingrediente puede estar en los dos, el aceite por ejemplo), cada
+ * uno adaptado al perfil, y lo que añaden las raciones (pan, fruta), detrás del
+ * segundo. Nunca pasa por reescribirComida.
+ */
+function escribirDoble(m, items, anadidos, profile) {
+  const { primero, segundo } = platosDe(m);
+  const gramosDe = (n, plato) => {
+    const deAdaptacion = clavesDeAdaptacion(plato, profile);
+    const porClave = new Map();
+    for (const it of items) {
+      if (it.plato !== n) continue;
+      const clave = deAdaptacion.get(it.clave) || it.clave;
+      if (!porClave.has(clave)) porClave.set(clave, it.despues);
+    }
+    return porClave;
+  };
+  return recomponerDoble(m, gramosDe(1, primero), gramosDe(2, segundo), {
+    trasPrimero: (p) => adaptarSiProcede(p, profile),
+    trasSegundo: (s) => adaptarSiProcede(anadir(s, anadidos, 'comida'), profile),
+  });
+}
+
 export function ajustarDia(day, profile, targetKcal, { composicion = COMPOSICION } = {}) {
   const actuales = day.meals || [];
   const meals = actuales.map((m) => (m ? baseDe(m) : m));
@@ -137,7 +216,7 @@ export function ajustarDia(day, profile, targetKcal, { composicion = COMPOSICION
       id: String(i),
       momento: MOMENTO[m.time] || 'tentempie',
       libre,
-      items: lectura.items.map((it) => ({ clave: it.clave, gramos: it.gramos, unidad: it.como === 'ud' ? 'ud' : 'g', fijo: /estimado/.test(it.como), ...(m.masa ? { masa: true } : {}) })),
+      items: lectura.items.map((it) => ({ ...itemDe(it), ...(m.masa ? { masa: true } : {}), ...(esComidaDoble(m) ? extraDoble(m, it, targetKcal, composicion) : {}) })),
     });
   });
   const batido = batidoDelDia(profile, day);
@@ -150,7 +229,12 @@ export function ajustarDia(day, profile, targetKcal, { composicion = COMPOSICION
     const n = lecturas[i].items.length;
     const items = lecturas[i].items.map((it, k) => ({ ...it, despues: res.items[k].gramos }));
     let escrita;
-    if (m._componer) {
+    const anadidos = res.items.slice(n).filter((x) => x.anadido);
+    const doble = esComidaDoble(m);
+    if (doble) {
+      // D-116: los dos platos se vuelven a escribir, cada uno con sus gramos y ya con lo añadido.
+      escrita = { meal: escribirDoble(m, items, anadidos, profile), sinCambiar: 0 };
+    } else if (m._componer) {
       // D-108: un plato compuesto se vuelve a escribir entero con sus gramos
       // nuevos (y se vuelve a adaptar a la dieta o a SIBO del perfil).
       // Los gramos se leyeron de la comida adaptada: se pasan a la clave del compuesto.
@@ -169,8 +253,8 @@ export function ajustarDia(day, profile, targetKcal, { composicion = COMPOSICION
       if (m._ancla) escrita = { ...escrita, meal: aplicarAnclaLibre(escrita.meal) };
     }
     sinCambiar += escrita.sinCambiar;
-    let conAnadidos = anadir(escrita.meal, res.items.slice(n).filter((x) => x.anadido), MOMENTO[m.time] || 'tentempie');
-    if (m._componer) conAnadidos = adaptarSiProcede(conAnadidos, profile);
+    let conAnadidos = doble ? escrita.meal : anadir(escrita.meal, anadidos, MOMENTO[m.time] || 'tentempie');
+    if (doble) { /* ya adaptada, plato a plato */ } else if (m._componer) conAnadidos = adaptarSiProcede(conAnadidos, profile);
     else if (conAnadidos.acompanamientos && ((profile && profile.intolerances) || []).includes('sibo')) conAnadidos = { ...adaptarComidaFodmap(conAnadidos), title: conAnadidos.title };
     // Lo que no son cantidades (nota del ancla, marcas de la app) se conserva de la comida actual.
     const actual = { ...actuales[i] };
@@ -180,6 +264,7 @@ export function ajustarDia(day, profile, targetKcal, { composicion = COMPOSICION
       ...(m._ancla ? { _ancla: m._ancla } : {}),
       p1: conAnadidos.p1, p2: conAnadidos.p2, shopping: conAnadidos.shopping, recipe: conAnadidos.recipe,
       ...(conAnadidos.acompanamientos ? { acompanamientos: conAnadidos.acompanamientos } : {}),
+      ...(doble ? { _doble: conAnadidos._doble } : {}),
       _base: m,
       nutricion: { kcal: res.kcal, proteina: res.proteina, objetivoKcal: res.objetivo.kcal, objetivoProteina: res.objetivo.proteina },
     };

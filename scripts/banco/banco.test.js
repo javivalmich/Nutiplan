@@ -7,7 +7,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { medirPerfil, diferencias, estado } from './banco.mjs';
 import { PERFILES, SEMANAS_POR_DEFECTO } from './perfiles.mjs';
-import { composicionSemana } from './metricas.mjs';
+import { composicionSemana, huecosSemana } from './metricas.mjs';
+import { catalogoApp } from '../../src/plan/catalogo.js';
+import { nombreVisible } from '../../src/engine2/dishes/alinosD105.js';
+import { esCompuestoLegumbre, esSegundoDeLegumbre, proteinaPrincipal } from '../../src/engine2/dishes/bases.js';
 
 const AQUI = path.dirname(fileURLToPath(import.meta.url));
 const lineaBase = JSON.parse(fs.readFileSync(path.join(AQUI, 'linea-base', 'linea-base.json'), 'utf8'));
@@ -55,5 +58,37 @@ describe('banco I-0', { timeout: 120000 }, () => {
     expect(r.familiaMismoDia).toBe(2);
     expect(r.platoRepetidoEnSemana).toBe(2);
     expect(r.platoDeSemanaAnterior).toBe(2);
+  });
+
+  it('el segundo de la comida de legumbre (D-116) cuenta en familias, especies y D-099.3', () => {
+    const catalogo = catalogoApp();
+    const porId = new Map(catalogo.map((d) => [d.id, d]));
+    const lentejas = catalogo.find((d) => esCompuestoLegumbre(d) && d.nombre.startsWith('Lentejas'));
+    const pollos = catalogo.filter((d) => esSegundoDeLegumbre(d) && proteinaPrincipal(d) === 'pollo').slice(0, 3);
+    const ternera = catalogo.find((d) => esSegundoDeLegumbre(d) && proteinaPrincipal(d) === 'ternera');
+    const meal = (time, d) => ({ time, title: nombreVisible(d.nombre), _dishId: d.id, _motor: 'engine2' });
+    // Lunes: lentejas con pollo de segundo y pollo de cena; martes: ternera y pollo. El segundo solo está en el log
+    // (la app todavía no lo escribe en la comida).
+    const plan = {
+      days: [
+        { name: 'Lunes', meals: [meal('Comida', lentejas), meal('Cena', pollos[1])] },
+        { name: 'Martes', meals: [meal('Comida', ternera), meal('Cena', pollos[2])] },
+      ],
+      decisionLog: [{ causa: 'segundo_de_legumbre', day: 'Lunes', momento: 'comida_segundo', plato: pollos[0].id, primero: lentejas.id }],
+    };
+    const huecos = huecosSemana(plan, porId);
+    const segundo = huecos.find((h) => h.rol === 'segundo');
+    expect(segundo).toMatchObject({ dia: 0, momento: 'comida', id: pollos[0].id, titulo: nombreVisible(pollos[0].nombre), familia: 'ave', especie: 'pollo', libre: false });
+    const r = composicionSemana(plan, porId, [nombreVisible(pollos[0].nombre)]);
+    expect(r.servidos).toBe(5);
+    expect(r.porFamilia).toEqual({ legumbre: 1, ave: 3, carne: 1 });
+    expect(r.porEspecie.pollo).toBe(3);
+    expect(r.especieMasDeDosVeces).toBe(1);
+    expect(r.especieMismoDia).toBe(1);
+    expect(r.familiaMismoDia).toBe(1);
+    expect(r.especieDiasSeguidos).toBe(1);
+    expect(r.familiaDiasSeguidos).toBe(1);
+    expect(r.platoDeSemanaAnterior).toBe(1);
+    expect(r.segundos).toBe(1);
   });
 });

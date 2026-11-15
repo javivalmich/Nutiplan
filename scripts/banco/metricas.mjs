@@ -18,6 +18,8 @@ import { COMPOSICION } from '../../src/engine2/nutrientes/composicion.js';
 import { objetivoDe, batidoDelDia, vetadosDe } from '../../src/plan/racionesApp.js';
 import { intoleranciasDe, filtrarCatalogo } from '../../src/plan/engine2App.js';
 import { resolveDishComposition } from '../../src/engine2/dishes/compositionResolver.js';
+import { nombreVisible } from '../../src/engine2/dishes/alinosD105.js';
+import { DAYS_ORDER } from '../../src/engine2/skeleton/days.js';
 
 const DIAS = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 const MOMENTO = { Desayuno: 'desayuno', Comida: 'comida', Cena: 'cena' };
@@ -52,6 +54,8 @@ const esRedactado = (id) => typeof id === 'string' && !id.startsWith('[');
 /**
  * Huecos de comida y cena de la semana con su plato, familia y especie.
  * La comida libre del sábado se devuelve como sugerencia (no cuenta como servida).
+ * El segundo de una comida de legumbre (D-116) va como un hueco más de la comida, con rol «segundo».
+ * Se lee de la comida (`_dishId2`) o, mientras la app no lo escriba en ella, del decision log.
  */
 export function huecosSemana(plan, porId) {
   const out = [];
@@ -70,7 +74,24 @@ export function huecosSemana(plan, porId) {
       });
     }
   });
-  return out;
+  // D-116: segundos. Con la comida doble escrita (`_dishId2`) manda la comida; si no, el decision log.
+  const segundos = new Map();
+  for (const e of plan.decisionLog || []) {
+    if (e && e.causa === 'segundo_de_legumbre' && DAYS_ORDER.includes(e.day)) segundos.set(DAYS_ORDER.indexOf(e.day), e.plato);
+  }
+  plan.days.forEach((d, i) => {
+    const m = (d.meals || []).find((x) => x && x.time === 'Comida' && !x.sugerencia);
+    if (m && m._dishId2) segundos.set(i, m._dishId2);
+  });
+  for (const [i, id] of [...segundos].sort((a, b) => a[0] - b[0])) {
+    const d = plan.days[i];
+    const dish = porId.get(id);
+    out.push({
+      dia: i, nombreDia: (d && d.name) || DIAS[i], momento: 'comida', rol: 'segundo', id, titulo: dish ? nombreVisible(dish.nombre) : String(id),
+      libre: false, motor: 'engine2', redactado: esRedactado(id), ancla: false, ...familiaDe(dish || null),
+    });
+  }
+  return out.sort((a, b) => a.dia - b.dia || (a.momento === b.momento ? 0 : a.momento === 'comida' ? -1 : 1));
 }
 
 /** Composición por familias, repeticiones consecutivas y reglas de menú de D-099 (solo se cuentan, no se imponen). */
@@ -85,7 +106,7 @@ export function composicionSemana(plan, porId, platosSemanaAnterior = []) {
     // Pares de días seguidos que comparten familia / especie (cada familia compartida cuenta una vez por par de días).
     familiaDiasSeguidos: 0, familiaDiasSeguidosSinAncla: 0, especieDiasSeguidos: 0, especieDiasSeguidosSinAncla: 0,
     familiaDiasSeguidosPorFamilia: {},
-    familiaMismoDia: 0,
+    familiaMismoDia: 0, especieMismoDia: 0,
     rachaPescado: 0,
     // Reglas de D-099.3 medidas sobre lo servido.
     platoRepetidoEnSemana: 0, platoDeSemanaAnterior: 0, especieMasDeDosVeces: 0, legumbreEnCena: 0,
@@ -104,7 +125,10 @@ export function composicionSemana(plan, porId, platosSemanaAnterior = []) {
     const esPescado = hoy.some((h) => h.familia === 'pescado' || h.familia === 'marisco');
     racha = esPescado ? racha + 1 : 0;
     r.rachaPescado = Math.max(r.rachaPescado, racha);
-    if (hoy.length === 2 && hoy[0].familia === hoy[1].familia) r.familiaMismoDia += 1;
+    // Familias y especies que se repiten el mismo día (cada una cuenta una vez); con el segundo, el día tiene 3 platos.
+    const repetidas = (campo) => { const xs = hoy.map((h) => h[campo]).filter(Boolean); return new Set(xs.filter((x, k) => xs.indexOf(x) !== k)).size; };
+    r.familiaMismoDia += repetidas('familia');
+    r.especieMismoDia += repetidas('especie');
     if (i === 6) break;
     const man = delDia(i + 1);
     for (const [campo, clave] of [['familia', 'familiaDiasSeguidos'], ['especie', 'especieDiasSeguidos']]) {

@@ -109,7 +109,7 @@ export function medirPerfil(p, semanas) {
     filas.push({
       semana, huella: huellaPlan(plan), motor: plan.motor || 'legacy', aviso: plan.motorAviso ? plan.motorAviso.split(' (')[0] : null,
       desvioKcal: m.desvioSemana, pescado: c.pescado, legumbre: c.legumbre,
-      platos: huecosSemana(plan, porId).map((h) => `${h.nombreDia.slice(0, 2)}-${h.momento === 'comida' ? 'C' : 'N'}${h.libre ? '*' : ''} [${h.familia}] ${h.titulo}`),
+      platos: huecosSemana(plan, porId).map((h) => `${h.nombreDia.slice(0, 2)}-${h.rol === 'segundo' ? '2' : h.momento === 'comida' ? 'C' : 'N'}${h.libre ? '*' : ''} [${h.familia}] ${h.titulo}`),
     });
     anterior = plan;
   }

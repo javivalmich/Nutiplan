@@ -19,6 +19,14 @@
 //   - Raciones: los dos platos son una sola comida. El primero parte de media ración (legumbre
 //     50 g en seco, que es el mínimo de su rango; verdura y aceite a la mitad) y la legumbre se
 //     ajusta con tope en lo que el plato único recibe a 2174 kcal.
+// Opciones añadidas el 2026-11-14 para la variante decidida por Javi (medida sobre b5a5723):
+//   (a) antesAB: en la comida de un día sorteado, el nivel de legumbre va antes que las preferencias
+//       A y B; A y B siguen actuando dentro del nivel, con su vuelta atrás.
+//   (b) topePlatoUnico: si ningún segundo disponible cumple el tope de 2 por especie, ese día la
+//       legumbre va como plato único y el log lo dice (segundo_sin_tope_plato_unico).
+//   (c) protAjustada: en la comida con segundo, los factores de proteína y energía se resuelven a la
+//       vez (dos ecuaciones, dos incógnitas): la proteína del segundo se calcula con la legumbre ya
+//       ajustada y no con su cantidad de partida.
 const R = new URL('../../../', import.meta.url).href;
 const { resolveDishComposition } = await import(R + 'src/engine2/dishes/compositionResolver.js');
 const { proteinaPrincipal, familiaProteica, TOPE_PROTEINA_SEMANA } = await import(R + 'src/engine2/dishes/bases.js');
@@ -174,6 +182,10 @@ export function instalar(flags) {
       };
       const cuenta = new Map();
       for (const s of puestos) { const pr = proteinaPrincipal(porId(s.dishId)); if (pr) cuenta.set(pr, (cuenta.get(pr) || 0) + 1); }
+      if (flags.topePlatoUnico && !pool.some((d) => (cuenta.get(proteinaPrincipal(d)) || 0) < TOPE_PROTEINA_SEMANA)) {
+        evento(decisionLog, day, 'segundo_sin_tope_plato_unico', `«${primero.nombre}» va como plato unico: ningun segundo disponible cumple el tope de proteina (${TOPE_PROTEINA_SEMANA}/semana)`);
+        return;
+      }
       filtrar(`tope de proteina (${TOPE_PROTEINA_SEMANA}/semana)`, (d) => (cuenta.get(proteinaPrincipal(d)) || 0) < TOPE_PROTEINA_SEMANA);
       const cercanas = new Set(puestos.filter((s) => dist(s) <= 1).map((s) => proteinaPrincipal(porId(s.dishId))).filter(Boolean));
       filtrar('proteina separada', (d) => !cercanas.has(proteinaPrincipal(d)), [...cercanas].join(', '));
@@ -201,13 +213,40 @@ export function instalar(flags) {
       registerConsumption(freqState, elegido, day, undefined, fuenteEditorial); // el segundo se come: cuenta para suelos, verdura e identidad
     },
 
-    /** Tope propio de la legumbre del primero (lo que recibe el plato único a 2174 kcal). */
+    /** Marca de la comida con segundo y tope propio de la legumbre del primero (lo que recibe el plato único a 2174 kcal). */
     itemExtra(m, it, k, targetKcal) {
-      if (k >= m._ps.n1 || !m._ps.tope || (INGREDIENTES[it.clave] || {}).grupo !== 'legumbre') return {};
+      const marca = { ps: true };
+      if (k >= m._ps.n1 || !m._ps.tope || (INGREDIENTES[it.clave] || {}).grupo !== 'legumbre') return marca;
       const rango = rangoDe(it.clave, 'g');
-      if (!rango) return {};
+      if (!rango) return marca;
       const amplitud = Math.min(AMPLITUD_MAX, Math.max(1, targetKcal / KCAL_RACION_NORMAL));
-      return { ampliado: (m._ps.tope + 0.5) / amplitud - rango[1] };
+      return { ...marca, ampliado: (m._ps.tope + 0.5) / amplitud - rango[1] };
+    },
+
+    /** (a) Nivel del día de legumbre antes de las preferencias A y B. */
+    antesAB(ctx, day, momento, candidatos) {
+      if (momento !== 'comida' || !ctx.dias.has(day)) return candidatos;
+      const nivel = candidatos.filter(esNivelDia);
+      return nivel.length ? nivel : candidatos;
+    },
+
+    /**
+     * (c) Factores de proteína (fP) y energía (fE) de una comida con segundo, resueltos a la vez:
+     * fP·P_prot + fE·E_prot = Pr y fP·P_kcal + fE·E_kcal = K. Si el sistema no tiene solución con
+     * los dos factores positivos, se usa el cálculo de siempre (proteína con la legumbre de partida).
+     */
+    factores({ sp, se, K, Pr, nP, nE }) {
+      if (nP && nE && sp.proteina > 0 && se.kcal > 0) {
+        const det = sp.proteina * se.kcal - se.proteina * sp.kcal;
+        if (det > 0) {
+          const fP = (Pr * se.kcal - se.proteina * K) / det;
+          const fE = (sp.proteina * K - sp.kcal * Pr) / det;
+          if (fP >= 0 && fE >= 0) return { fP, fE };
+        }
+      }
+      const fP = nP && sp.proteina > 0 ? Math.max(0, (Pr - se.proteina) / sp.proteina) : 1;
+      const fE = nE && se.kcal > 0 ? Math.max(0, (K - sp.kcal * fP) / se.kcal) : 1;
+      return { fP, fE };
     },
 
     /** Vuelve a escribir los dos platos con los gramos decididos (cada uno con su texto de engine2). */

@@ -5,8 +5,8 @@ import path from 'node:path';
 
 const dir = process.argv[2];
 if (!dir) throw new Error('Falta la carpeta de los .json');
-const ORDEN = ['off', 's2-pescado-todas', 's2-sinPescado-todas', 's2-pescado-lentejas', 's2-sinPescado-lentejas', 's3-pescado-todas', 's3-sinPescado-todas', 's3-pescado-lentejas', 's3-sinPescado-lentejas'];
-const NOMBRE = { off: 'Hoy', 's2-pescado-todas': '2 · con pescado · todas', 's2-sinPescado-todas': '2 · sin pescado · todas', 's2-pescado-lentejas': '2 · con pescado · lentejas', 's2-sinPescado-lentejas': '2 · sin pescado · lentejas', 's3-pescado-todas': '3 · con pescado · todas', 's3-sinPescado-todas': '3 · sin pescado · todas', 's3-pescado-lentejas': '3 · con pescado · lentejas', 's3-sinPescado-lentejas': '3 · sin pescado · lentejas' };
+const ORDEN = ['off', 'decidida', 's2-pescado-todas', 's2-sinPescado-todas', 's2-pescado-lentejas', 's2-sinPescado-lentejas', 's3-pescado-todas', 's3-sinPescado-todas', 's3-pescado-lentejas', 's3-sinPescado-lentejas'];
+const NOMBRE = { off: 'Hoy', decidida: 'Decidida: 3 · sin pescado · todas, con (a), (b) y (c)', 's2-pescado-todas': '2 · con pescado · todas', 's2-sinPescado-todas': '2 · sin pescado · todas', 's2-pescado-lentejas': '2 · con pescado · lentejas', 's2-sinPescado-lentejas': '2 · sin pescado · lentejas', 's3-pescado-todas': '3 · con pescado · todas', 's3-sinPescado-todas': '3 · sin pescado · todas', 's3-pescado-lentejas': '3 · con pescado · lentejas', 's3-sinPescado-lentejas': '3 · sin pescado · lentejas' };
 const datos = {};
 for (const k of ORDEN) { const f = path.join(dir, `${k}.json`); if (fs.existsSync(f)) datos[k] = JSON.parse(fs.readFileSync(f, 'utf8')); }
 const claves = ORDEN.filter((k) => datos[k]);
@@ -105,6 +105,7 @@ log('### Huecos sin candidato y filtros que no se pudieron aplicar (8 perfiles, 
 const c100 = (xs, f) => f1((100 * suma(xs, f)) / xs.length);
 log(porVariante(OMNI8, [
   ['Segundo sin candidato', (xs) => c100(xs, (r) => r.causas.segundo_sin_candidato)],
+  ['Sin segundo por el tope: plato único', (xs) => c100(xs, (r) => r.causas.segundo_sin_tope_plato_unico)],
   ['Día de legumbre sin candidato', (xs) => c100(xs, (r) => r.causas.dia_legumbre_sin_candidato)],
   ['Suelo corto sin candidato (paso 4)', (xs) => c100(xs, (r) => r.causas.frecuencia_corta_sin_candidato)],
   ['Walk repetido sin familia', (xs) => c100(xs, (r) => r.causas.familia_dias_seguidos_retirada)],

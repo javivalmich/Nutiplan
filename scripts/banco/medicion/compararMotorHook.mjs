@@ -24,7 +24,8 @@ if (H.semanas !== M.semanas || H.filas.length !== M.filas.length) throw new Erro
 const n2 = (x) => x.toFixed(2).replace('.', ',');
 const suma = (xs, f) => xs.reduce((a, x) => a + (f(x) || 0), 0);
 const d099 = (r) => Object.values(r.d099).reduce((a, b) => a + b, 0);
-const red = (r) => (r.causas.segundos_retirados_d099 || 0);
+// El prototipo anota segundos_retirados_d099; el motor, desde la red con la regla apagada, regla_legumbre_retirada_*.
+const red = (r) => (r.causas.segundos_retirados_d099 || 0) + (r.causas.regla_legumbre_retirada_d099 || 0) + (r.causas.regla_legumbre_retirada_pool_vacio || 0);
 const perfiles = [...new Set(H.filas.map((r) => r.perfil))];
 // Los 8 perfiles omnívoros sin SIBO, como en D-116 y D-117.
 const OMNI8 = perfiles.filter((p) => p !== 'sibo-2000' && p !== 'sin-pescado-2000');
@@ -79,7 +80,7 @@ const cifras = (filas) => {
     vetados: suma(filas, (r) => r.vetados + r.eliminados),
     d114: suma(filas, (r) => r.d114.sugerenciaConSegundo),
     // Semanas con infracción de D-099.3 y sin segundos que retirar (D-116.5, causa propia del motor).
-    sinArreglo: filas.filter((r) => r.causas.infraccion_d099_sin_segundos).length,
+    sinArreglo: filas.filter((r) => r.causas.infraccion_d099_sin_segundos || r.causas.infraccion_d099_regla_retirada).length,
     sinArregloD099: filas.filter((r) => !r.segundos && d099(r) > 0).length,
     sinSorteo: filas.filter((r) => r.causas.dias_legumbre_sin_sorteo).length,
     n8: o8.length,
@@ -103,7 +104,7 @@ fila('SIBO: semanas con días sorteados', (c) => c.sorteosSibo, '0 en el motor')
 fila('SIBO: días sorteados sin candidato', (c) => c.diaSinSibo, '0 en el motor (600 en el prototipo)');
 fila('D-114: sugerencias con segundo', (c) => c.d114, '0');
 fila('Semanas con infracción de D-099.3 y sin segundos (contadas por medirEstructura)', (c) => c.sinArregloD099, '0');
-fila('Semanas con la causa infraccion_d099_sin_segundos (solo el motor la anota)', (c) => c.sinArreglo, '0');
+fila('Semanas con infraccion_d099_sin_segundos o infraccion_d099_regla_retirada (solo el motor las anota)', (c) => c.sinArreglo, '0');
 fila('Semanas con dias_legumbre_sin_sorteo (solo el motor la anota; SIBO)', (c) => c.sinSorteo, '200 en el motor');
 fila('Comidas con un alimento vetado o eliminado', (c) => c.vetados, '0');
 fila('Semanas fuera de ±5 % de calorías (8 perfiles)', (c) => c.fuera5);

@@ -17,8 +17,8 @@ for (const intol of casos) {
     if (plan.motor === 'legacy') { legacy++; const k = String(plan.motorFallo).replace(/\(.*$/, '').trim(); fallos.set(k, (fallos.get(k) || 0) + 1); }
     const log = plan.decisionLog || [];
     segundos += log.filter((e) => e.causa === 'segundo_de_legumbre').length;
-    red += log.filter((e) => e.causa === 'segundos_retirados_d099').length;
-    pool += log.filter((e) => e.causa === 'segundos_retirados_pool_vacio').length;
+    red += log.filter((e) => e.causa === 'regla_legumbre_retirada_d099').length;
+    pool += log.filter((e) => e.causa === 'regla_legumbre_retirada_pool_vacio').length;
     ant = plan;
   }
   console.log(JSON.stringify({ intol: intol.join('+'), semanas: 200, legacy, segundos, redD099: red, redPool: pool, fallos: Object.fromEntries(fallos) }));

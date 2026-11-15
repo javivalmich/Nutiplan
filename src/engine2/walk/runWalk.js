@@ -189,92 +189,88 @@ function reshapeP1aEntry(entry) {
  * @returns {{slots: object[], segundos: {day: string, momento: 'comida', dishId: string, primero: string}[], decisionLog: object[]}}
  */
 export function runWalk(input) {
-  // Red de seguridad de los segundos (D-116.5). El segundo añade apariciones
-  // de proteina a la semana; en un catalogo con pocas especies puede dejarla
-  // con alguna infraccion de D-099.3. Si la semana termina asi, el walk se
-  // repite ENTERO sin segundos, con la misma seed: los dias de legumbre
-  // sorteados siguen y la legumbre va como plato unico. Solo si habia algun
-  // segundo: sin ellos no hay nada que retirar.
+  // Red de seguridad de la regla de legumbre (D-116.5; decision de Javi del
+  // 2026-11-15). El segundo añade apariciones de proteina a la semana; en un
+  // catalogo con pocas especies puede dejarla con alguna infraccion de
+  // D-099.3, o gastar el ultimo plato que valia para un hueco posterior. En
+  // los dos casos el walk se repite ENTERO con la regla de D-116 y D-117
+  // apagada, con la misma seed: sin dias de legumbre sorteados, sin segundos y
+  // con el paso 4 de D-024 como antes. Repetir sin segundos pero con los dias
+  // sorteados dejaba la legumbre como plato unico esos dias, y la proteina
+  // peor que sin la regla (medido: scripts/banco/medicion/estructura-comida-final/variantes-red.md).
+  // Solo si habia algun segundo: sin ellos no hay nada que retirar.
   //
-  // Orden de las dos redes. Cada intento, con segundos o sin ellos, pasa por la
-  // red del filtro de familia (walkConRedDeFamilia): primero con el filtro y,
-  // solo si el walk se queda sin platos y el filtro habia descartado algo, sin
-  // el. La red de D-099 mira la semana que sale de ahi (con o sin el filtro) y,
-  // si la rehace, la repeticion sin segundos EMPIEZA OTRA VEZ CON el filtro de
+  // Orden de las redes. Cada intento, con la regla o sin ella, pasa por la red
+  // del filtro de familia (walkConRedDeFamilia): primero con el filtro y, solo
+  // si el walk se queda sin platos y el filtro habia descartado algo, sin el.
+  // La red de la regla mira lo que sale de ahi (la semana, o el fallo por pool
+  // vacio) y, si repite, la repeticion EMPIEZA OTRA VEZ CON el filtro de
   // familia. No hay bucle: son llamadas fijas, sin recursion. Como mucho 4
-  // walks por semana (con segundos: con filtro y sin el; sin segundos: con
-  // filtro y sin el); la semana sin segundos ya no se vuelve a repetir.
-  //
-  // Red del pool vacio (decision de Javi, 2026-11-15): el segundo gasta un
-  // plato, y si era el ultimo que valia para un hueco posterior el walk se
-  // queda sin platos. Si el intento con segundos falla asi y llego a colocar
-  // alguno, la semana se repite entera sin segundos, con la misma semilla,
-  // antes de dar el fallo por bueno (y de que la app caiga al motor viejo).
-  // Es la misma repeticion sin segundos de la red de D-099, por otra causa:
-  // las dos no se suman (el intento con segundos o falla o devuelve una
-  // semana) y el maximo sigue en 4 walks.
+  // walks por semana (con la regla: con filtro y sin el; sin la regla: con
+  // filtro y sin el). Las dos causas no se suman: el intento con la regla o
+  // falla o devuelve una semana. La semana sin la regla ya no se repite.
   const intentos = [];
   let resultado;
   try {
-    resultado = walkConRedDeFamilia(input, { sinSegundos: false, intentos });
+    resultado = walkConRedDeFamilia(input, { sinRegla: false, intentos });
   } catch (err) {
     if (!(err && err.poolVacio && err.segundosColocados > 0)) throw err;
-    const sinSegundos = walkConRedDeFamilia(input, { sinSegundos: true, intentos });
-    sinSegundos.decisionLog.push({
-      decisionId: `walk-select-${sinSegundos.decisionLog.length}`,
-      day: undefined,
-      momento: undefined,
-      plato: undefined,
-      causa: 'segundos_retirados_pool_vacio',
-      evidencia: `con los segundos el walk se quedaba sin platos (${err.message}); `
-        + 'se repite el walk entero sin segundos, con la misma semilla: la legumbre de los dias sorteados va como plato unico',
-      alternativasDescartadas: [],
-      evento: true,
-      walks: intentos.map((x) => `${x.sinSegundos ? 'sin' : 'con'} segundos, ${x.sinFamilia ? 'sin' : 'con'} filtro de familia`),
+    return repetirSinRegla(input, intentos, {
+      causa: 'regla_legumbre_retirada_pool_vacio',
+      motivo: `con los segundos el walk se quedaba sin platos (${err.message})`,
+      dias: err.diasLegumbre || [],
     });
-    const quedan = infraccionesD099(input, sinSegundos);
-    return quedan.length ? anotarSinArreglo(sinSegundos, quedan, true) : sinSegundos;
   }
   // Solo con la regla en marcha (dias de legumbre sorteados): sin ella no hay segundos ni red (D-116.9, D-117).
-  const conRegla = resultado.decisionLog.some((e) => e.causa === 'dias_legumbre_sorteados');
-  if (!conRegla) return resultado;
+  const sorteo = resultado.decisionLog.find((e) => e.causa === 'dias_legumbre_sorteados');
+  if (!sorteo) return resultado;
   const infracciones = infraccionesD099(input, resultado);
   if (!infracciones.length) return resultado;
-  if (!resultado.segundos.length) return anotarSinArreglo(resultado, infracciones, false);
+  if (!resultado.segundos.length) return anotarInfraccion(resultado, infracciones, 'infraccion_d099_sin_segundos', 'sin ningun segundo: la red de D-116.5 solo actua si los habia');
   const familiaRetirada = resultado.decisionLog.some((e) => e.causa === 'familia_dias_seguidos_retirada');
-  const sinSegundos = walkConRedDeFamilia(input, { sinSegundos: true, intentos });
-  sinSegundos.decisionLog.push({
-    decisionId: `walk-select-${sinSegundos.decisionLog.length}`,
+  return repetirSinRegla(input, intentos, {
+    causa: 'regla_legumbre_retirada_d099',
+    motivo: `con los segundos la semana incumplia D-099.3 (${infracciones.join('; ')})`
+      + (familiaRetirada ? '; la semana descartada ya se habia rehecho sin el filtro de familia, y la repeticion vuelve a empezar con el' : ''),
+    dias: sorteo.dias,
+    extra: { infracciones, semanaDescartada: { familiaRetirada } },
+  });
+}
+
+// La repeticion de la red: la semana entera con la regla de D-116 y D-117 apagada.
+function repetirSinRegla(input, intentos, { causa, motivo, dias, extra = {} }) {
+  const semana = walkConRedDeFamilia(input, { sinRegla: true, intentos });
+  semana.decisionLog.push({
+    decisionId: `walk-select-${semana.decisionLog.length}`,
     day: undefined,
     momento: undefined,
     plato: undefined,
-    causa: 'segundos_retirados_d099',
-    evidencia: `con los segundos la semana incumplia D-099.3 (${infracciones.join('; ')}); `
-      + 'se repite el walk entero sin segundos, con la misma semilla: la legumbre de los dias sorteados va como plato unico'
-      + (familiaRetirada ? '; la semana descartada ya se habia rehecho sin el filtro de familia, y la repeticion vuelve a empezar con el' : ''),
+    causa,
+    evidencia: `${motivo}; se repite el walk entero con la regla de D-116 y D-117 apagada, con la misma semilla: `
+      + `sin dias de legumbre sorteados (eran [${dias.join(', ')}]), sin segundos y con el paso 4 de D-024 como antes`,
     alternativasDescartadas: [],
     evento: true,
-    infracciones,
-    semanaDescartada: { familiaRetirada },
-    walks: intentos.map((x) => `${x.sinSegundos ? 'sin' : 'con'} segundos, ${x.sinFamilia ? 'sin' : 'con'} filtro de familia`),
+    diasDescartados: dias,
+    ...extra,
+    walks: intentos.map((x) => `${x.sinRegla ? 'sin' : 'con'} la regla, ${x.sinFamilia ? 'sin' : 'con'} filtro de familia`),
   });
-  const quedan = infraccionesD099(input, sinSegundos);
-  return quedan.length ? anotarSinArreglo(sinSegundos, quedan, true) : sinSegundos;
+  const quedan = infraccionesD099(input, semana);
+  return quedan.length
+    ? anotarInfraccion(semana, quedan, 'infraccion_d099_regla_retirada', 'con la regla de D-116 y D-117 apagada: la red ya no repite mas')
+    : semana;
 }
 
-// Una semana que termina con infracciones de D-099.3 sin segundos que
-// retirar (no los tenia, o ya se retiraron): la red de D-116.5 no la puede
-// arreglar. No se repite nada; queda en el log con su propia causa.
-function anotarSinArreglo(resultado, infracciones, trasRetirar) {
+// Una semana que termina con infracciones de D-099.3 que la red no arregla
+// (no tenia segundos, o ya se repitio con la regla apagada). No se repite
+// nada; queda en el log con su propia causa.
+function anotarInfraccion(resultado, infracciones, causa, detalle) {
   resultado.decisionLog.push({
     decisionId: `walk-select-${resultado.decisionLog.length}`,
     day: undefined,
     momento: undefined,
     plato: undefined,
-    causa: 'infraccion_d099_sin_segundos',
-    evidencia: `la semana incumple D-099.3 (${infracciones.join('; ')}) `
-      + (trasRetirar ? 'aun despues de retirar los segundos' : 'sin ningun segundo')
-      + ': la red de D-116.5 solo retira segundos y aqui no hay ninguno que retirar; la semana se queda asi',
+    causa,
+    evidencia: `la semana incumple D-099.3 (${infracciones.join('; ')}) ${detalle}; la semana se queda asi`,
     alternativasDescartadas: [],
     evento: true,
     infracciones,
@@ -282,7 +278,7 @@ function anotarSinArreglo(resultado, infracciones, trasRetirar) {
   return resultado;
 }
 
-function walkConRedDeFamilia(input, { sinSegundos, intentos = [] }) {
+function walkConRedDeFamilia(input, { sinRegla, intentos = [] }) {
   // Red de seguridad del filtro de familia (decision de Javi, 2026-11-13).
   // Ese filtro mira un hueco cada vez: en un catalogo muy corto puede gastar
   // antes de tiempo los platos que valian para un hueco posterior y dejarlo
@@ -291,12 +287,12 @@ function walkConRedDeFamilia(input, { sinSegundos, intentos = [] }) {
   // resultado siempre) antes de propagar el fallo, y se dice en el log.
   const uso = { familiaDescarto: false };
   try {
-    intentos.push({ sinSegundos, sinFamilia: false });
-    return walkUnaVez(input, { sinFamilia: false, uso, sinSegundos });
+    intentos.push({ sinRegla, sinFamilia: false });
+    return walkUnaVez(input, { sinFamilia: false, uso, sinRegla });
   } catch (err) {
     if (!(err && err.poolVacio) || !uso.familiaDescarto) throw err;
-    intentos.push({ sinSegundos, sinFamilia: true });
-    const resultado = walkUnaVez(input, { sinFamilia: true, uso: { familiaDescarto: false }, sinSegundos });
+    intentos.push({ sinRegla, sinFamilia: true });
+    const resultado = walkUnaVez(input, { sinFamilia: true, uso: { familiaDescarto: false }, sinRegla });
     resultado.decisionLog.push({
       decisionId: `walk-select-${resultado.decisionLog.length}`,
       day: undefined,
@@ -312,7 +308,7 @@ function walkConRedDeFamilia(input, { sinSegundos, intentos = [] }) {
   }
 }
 
-function walkUnaVez(input, { sinFamilia, uso, sinSegundos }) {
+function walkUnaVez(input, { sinFamilia, uso, sinRegla }) {
   // input.memoryStore se recibe por inyeccion y NUNCA se lee ni se invoca aqui (D-019, v13):
   // no se desestructura para que quede estructuralmente imposible tocarlo por accidente.
   const {
@@ -348,7 +344,8 @@ function walkUnaVez(input, { sinFamilia, uso, sinSegundos }) {
   // Dias de legumbre (D-117): se sortean con la semilla antes de elegir nada.
   // Solo dietas omnivoras; null si la regla no actua (dieta, o perfil sin
   // platos compuestos de legumbre).
-  const legumbre = reglaLegumbreActiva(profile)
+  // Con sinRegla (la repeticion de la red de D-116.5) la regla esta apagada: ni sorteo, ni segundos.
+  const legumbre = !sinRegla && reglaLegumbreActiva(profile)
     ? sortearDiasLegumbre({
       p1aSlots, catalog, vetoedIds, seed,
       registrar: (causa, evidencia, extra = {}) => decisionLog.push({
@@ -397,7 +394,7 @@ function walkUnaVez(input, { sinFamilia, uso, sinSegundos }) {
   // ancla; nunca para la sugerencia de la comida libre (D-114). El segundo se
   // come: cuenta para los suelos, la verdura del dia y la identidad.
   function segundoDe(day, i, slot, primeroId) {
-    if (!legumbre || sinSegundos || slot.fixedRole === 'libre') return;
+    if (!legumbre || slot.fixedRole === 'libre') return;
     const primero = protPorId.get(primeroId);
     if (!primero || !esCompuestoLegumbre(primero)) return;
     const elegido = elegirSegundo({
@@ -522,6 +519,7 @@ function walkUnaVez(input, { sinFamilia, uso, sinSegundos }) {
         );
         errPool.poolVacio = true; // lo leen la red del filtro de familia y la de los segundos
         errPool.segundosColocados = [...slots.values()].filter((s) => s.segundo).length;
+        errPool.diasLegumbre = legumbre ? [...legumbre.dias] : [];
         throw errPool;
       }
 

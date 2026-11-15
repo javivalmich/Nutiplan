@@ -158,7 +158,9 @@ export function composicionSemana(plan, porId, platosSemanaAnterior = []) {
   for (const e of log) if (e && e.causa === 'segundo_de_legumbre') inc(r.segundosPorFamilia, familiaDe(porId.get(e.plato)).familia);
   r.legumbrePlatoUnicoPorTope = causa('segundo_sin_tope_plato_unico');
   r.segundoSinCandidato = causa('segundo_sin_candidato');
-  r.semanasSegundosRetirados = causa('segundos_retirados_d099');
+  // Red de D-116.5: semanas repetidas con la regla de legumbre apagada (por D-099.3 o por pool vacío).
+  r.semanasReglaRetirada = causa('regla_legumbre_retirada_d099') + causa('regla_legumbre_retirada_pool_vacio');
+  r.semanasConInfraccionAnotada = causa('infraccion_d099_sin_segundos') + causa('infraccion_d099_regla_retirada');
   r.diaLegumbreSinCandidato = causa('dia_legumbre_sin_candidato');
   return r;
 }

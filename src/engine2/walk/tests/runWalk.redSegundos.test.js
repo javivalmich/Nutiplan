@@ -3,9 +3,10 @@
 // pocas especies, puede dejarla con alguna infraccion de D-099.3 (plato
 // repetido en la semana o de la anterior, una especie mas de 2 veces, el mismo
 // dia o en dias seguidos salvo el ancla, legumbre en la cena). Si la semana
-// termina asi, el walk se repite ENTERO sin segundos, con la misma semilla: los
-// dias sorteados siguen y la legumbre va como plato unico. El log lo dice con
-// la causa segundos_retirados_d099 y la lista de infracciones.
+// termina asi, el walk se repite ENTERO con la regla de D-116 y D-117 apagada
+// (decision de Javi, 2026-11-15): sin dias de legumbre sorteados, sin segundos
+// y con el paso 4 de D-024 como antes. El log lo dice con la causa
+// regla_legumbre_retirada_d099 y la lista de infracciones.
 
 import { describe, it, expect } from 'vitest';
 import { runWalk } from '../runWalk.js';
@@ -41,15 +42,17 @@ const real = loadCatalog().filter((d) => d.rol === 'rotativo');
 const lentejas = { ...real.find((d) => d.nombre === 'Lentejas con pimentón con zanahoria'), momento: ['comida'] };
 const pollos = real.filter((d) => esSegundoDeLegumbre(d) && proteinaPrincipal(d) === 'pollo').slice(0, 2);
 const MIERCOLES = [{ day: 'Miercoles', momento: 'comida' }, { day: 'Miercoles', momento: 'cena' }];
-const retirada = (r) => r.decisionLog.filter((e) => e.causa === 'segundos_retirados_d099');
+const retirada = (r) => r.decisionLog.filter((e) => e.causa === 'regla_legumbre_retirada_d099');
 const sinArreglo = (r) => r.decisionLog.filter((e) => e.causa === 'infraccion_d099_sin_segundos');
+const trasRetirar = (r) => r.decisionLog.filter((e) => e.causa === 'infraccion_d099_regla_retirada');
+const conRegla = (r) => r.decisionLog.some((e) => e.causa === 'dias_legumbre_sorteados');
 
 describe('runWalk: red de seguridad de los segundos (D-116.5)', () => {
   // El miercoles solo hay pollo para el segundo y para la cena: con segundo, pollo dos veces el mismo dia.
   const { anchors, dishes } = anchorEverythingExcept(MIERCOLES);
   const corto = { weekArc: { beats: beats7(), anchors }, catalog: [...dishes, lentejas, ...pollos], seed: 'red-segundos' };
 
-  it('si con los segundos la semana incumple D-099.3, se repite sin segundos y el log lo dice', () => {
+  it('si con los segundos la semana incumple D-099.3, se repite con la regla apagada y el log lo dice', () => {
     for (let s = 0; s < 8; s++) {
       const input = { ...corto, seed: `red-segundos-${s}` };
       const r = runWalk(input);
@@ -57,16 +60,21 @@ describe('runWalk: red de seguridad de los segundos (D-116.5)', () => {
       expect(r.slots.every((x) => !x.abierto && x.dishId)).toBe(true);
       expect(r.segundos).toEqual([]);
       expect(r.decisionLog.some((e) => e.causa === 'segundo_de_legumbre')).toBe(false);
-      // Los dias sorteados siguen y la legumbre va como plato unico.
-      expect(r.decisionLog.find((e) => e.causa === 'dias_legumbre_sorteados').dias).toEqual(['Miercoles']);
+      // La semana que queda no tiene dias sorteados: el paso 4 es el de D-024 (aqui, la verdura del dia).
+      expect(conRegla(r)).toBe(false);
       expect(r.slots.find((x) => x.day === 'Miercoles' && x.momento === 'comida').dishId).toBe(lentejas.id);
+      expect(r.decisionLog.find((e) => e.day === 'Miercoles' && e.momento === 'comida').evidencia).toContain('paso 4:');
+      expect(r.decisionLog.find((e) => e.day === 'Miercoles' && e.momento === 'comida').evidencia).not.toContain('es dia de legumbre');
       const ev = retirada(r);
       expect(ev).toHaveLength(1);
       expect(ev[0].evento).toBe(true);
       expect(ev[0].infracciones).toEqual(['Miercoles: pollo dos veces el mismo dia']);
+      expect(ev[0].diasDescartados).toEqual(['Miercoles']);
       expect(ev[0].evidencia).toContain('pollo dos veces el mismo dia');
+      expect(ev[0].evidencia).toContain('regla de D-116 y D-117 apagada');
       expect(infraccionesD099(input, r)).toEqual([]);
       expect(sinArreglo(r)).toHaveLength(0);
+      expect(trasRetirar(r)).toHaveLength(0);
     }
   });
 
@@ -98,7 +106,7 @@ describe('runWalk: red de seguridad de los segundos (D-116.5)', () => {
     expect(ev[0].evidencia).toContain('sin ningun segundo');
   });
 
-  it('si aun sin segundos la semana incumple, se anotan las dos causas y no se repite mas', () => {
+  it('si con la regla apagada la semana sigue incumpliendo, se anota con su propia causa y no se repite mas', () => {
     // Lunes, miercoles y viernes cenan pollo (solo hay dos): con o sin segundo, algo se repite (D-107).
     const abiertos = [{ day: 'Lunes', momento: 'cena' }, ...MIERCOLES, { day: 'Viernes', momento: 'cena' }];
     const a = anchorEverythingExcept(abiertos);
@@ -107,9 +115,11 @@ describe('runWalk: red de seguridad de los segundos (D-116.5)', () => {
       const r = runWalk(input);
       expect(r.segundos).toEqual([]);
       expect(retirada(r)).toHaveLength(1);
-      const ev = sinArreglo(r);
+      expect(sinArreglo(r)).toHaveLength(0);
+      const ev = trasRetirar(r);
       expect(ev).toHaveLength(1);
-      expect(ev[0].evidencia).toContain('aun despues de retirar los segundos');
+      expect(ev[0].evento).toBe(true);
+      expect(ev[0].evidencia).toContain('con la regla de D-116 y D-117 apagada');
       expect(ev[0].infracciones).toEqual(infraccionesD099(input, r));
       expect(ev[0].infracciones.length).toBeGreaterThan(0);
     }
@@ -125,7 +135,7 @@ describe('runWalk: red de seguridad de los segundos (D-116.5)', () => {
     }
   });
 
-  it('catalogo real sin pescado ni marisco: ninguna semana sale con infracciones, y la red actua alguna vez', () => {
+  it('catalogo real sin pescado ni marisco: la red actua alguna vez, y toda infraccion que quede esta en el log', () => {
     const catalog = aplicarAjustesD099(loadCatalog()).filter((d) => !['pescado'].includes(familiaProteica(d)));
     let retiradas = 0;
     let conSegundos = 0;
@@ -135,8 +145,9 @@ describe('runWalk: red de seguridad de los segundos (D-116.5)', () => {
       const { weekArc } = buildWeekArc({ profile: { trainingDays: [] }, seed, strategy: 'x' });
       const input = { weekArc, catalog, seed, platosRecientes: recientes };
       const r = runWalk(input);
-      expect(infraccionesD099(input, r)).toEqual([]);
-      if (retirada(r).length) { retiradas += 1; expect(r.segundos).toEqual([]); } else if (r.segundos.length) conSegundos += 1;
+      const quedan = infraccionesD099(input, r);
+      expect(quedan.length ? [...sinArreglo(r), ...trasRetirar(r)][0].infracciones : []).toEqual(quedan);
+      if (retirada(r).length) { retiradas += 1; expect(r.segundos).toEqual([]); expect(conRegla(r)).toBe(false); } else if (r.segundos.length) conSegundos += 1;
       recientes = [...r.slots.map((x) => x.dishId), ...r.segundos.map((x) => x.dishId)];
     }
     expect(retiradas).toBeGreaterThan(0);
@@ -175,12 +186,12 @@ describe('runWalk: las dos redes en la misma semana', () => {
     expect(input.catalog.every(Boolean)).toBe(true);
   });
 
-  it('la red de familia actua dentro del intento con segundos, y la repeticion sin segundos empieza con el filtro', () => {
+  it('la red de familia actua dentro del intento con la regla, y la repeticion con la regla apagada empieza con el filtro', () => {
     const r = runWalk(input);
     const [ev] = retirada(r);
     expect(ev).toBeDefined();
     expect(ev.semanaDescartada).toEqual({ familiaRetirada: true });
-    expect(ev.walks).toEqual(['con segundos, con filtro de familia', 'con segundos, sin filtro de familia', 'sin segundos, con filtro de familia']);
+    expect(ev.walks).toEqual(['con la regla, con filtro de familia', 'con la regla, sin filtro de familia', 'sin la regla, con filtro de familia']);
     expect(ev.evidencia).toContain('vuelve a empezar con el');
     // La semana que se queda es la del tercer walk: con el filtro, sin segundos y sin infracciones.
     expect(r.decisionLog.some((e) => e.causa === 'familia_dias_seguidos_retirada')).toBe(false);
@@ -221,14 +232,14 @@ describe('runWalk: red de los segundos ante un pool vacio', () => {
   const a = anchorEverythingExcept(abiertos);
   // Caso minimo: dos cenas para dos huecos de cena; con el segundo, la del jueves se queda sin plato.
   const input = { weekArc: { beats: beats7(), anchors: a.anchors }, catalog: [...a.dishes, lentejas, pollo, pescado], seed: 'red-pool' };
-  const porPool = (r) => r.decisionLog.filter((e) => e.causa === 'segundos_retirados_pool_vacio');
+  const porPool = (r) => r.decisionLog.filter((e) => e.causa === 'regla_legumbre_retirada_pool_vacio');
 
   it('fixtures localizadas', () => {
     expect(pollo.id).toBeDefined();
     expect(pescado.id).toBeDefined();
   });
 
-  it('si con los segundos el walk se queda sin platos, se repite sin segundos y el log lo dice', () => {
+  it('si con los segundos el walk se queda sin platos, se repite con la regla apagada y el log lo dice', () => {
     for (let s = 0; s < 8; s++) {
       const r = runWalk({ ...input, seed: `red-pool-${s}` });
       expect(r.slots.every((x) => !x.abierto && x.dishId)).toBe(true);
@@ -239,7 +250,9 @@ describe('runWalk: red de los segundos ante un pool vacio', () => {
       expect(ev).toHaveLength(1);
       expect(ev[0].evento).toBe(true);
       expect(ev[0].evidencia).toContain('pool rotativo vacio para Jueves/cena');
-      expect(ev[0].walks).toEqual(['con segundos, con filtro de familia', 'sin segundos, con filtro de familia']);
+      expect(ev[0].walks).toEqual(['con la regla, con filtro de familia', 'sin la regla, con filtro de familia']);
+      expect(ev[0].evidencia).toContain('regla de D-116 y D-117 apagada');
+      expect(conRegla(r)).toBe(false);
       expect(retirada(r)).toHaveLength(0);
       expect(infraccionesD099({ ...input, seed: `red-pool-${s}` }, r)).toEqual([]);
     }
@@ -249,7 +262,7 @@ describe('runWalk: red de los segundos ante un pool vacio', () => {
     expect(JSON.stringify(runWalk(input))).toBe(JSON.stringify(runWalk(input)));
   });
 
-  it('si tampoco sin segundos hay platos, falla como antes', () => {
+  it('si tampoco con la regla apagada hay platos, falla como antes', () => {
     // Una sola cena para dos huecos de cena: falta con segundos y sin ellos.
     const corto2 = { ...input, catalog: [...a.dishes, lentejas, pollo] };
     expect(() => runWalk(corto2)).toThrow(/pool rotativo vacio/);

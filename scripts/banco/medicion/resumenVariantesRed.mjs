@@ -12,8 +12,9 @@ const n1 = (x) => x.toFixed(1).replace('.', ',');
 const media = (xs, f) => xs.reduce((a, x) => a + f(x), 0) / xs.length;
 const suma = (xs, f) => xs.reduce((a, x) => a + (f(x) || 0), 0);
 const d099 = (r) => Object.values(r.d099).reduce((a, b) => a + b, 0);
-const redD099 = (r) => (r.causas.segundos_retirados_d099 || 0) > 0;
-const redPool = (r) => (r.causas.segundos_retirados_pool_vacio || 0) > 0;
+// Nombres de antes y de después de la red con la regla apagada.
+const redD099 = (r) => (r.causas.segundos_retirados_d099 || 0) + (r.causas.regla_legumbre_retirada_d099 || 0) > 0;
+const redPool = (r) => (r.causas.segundos_retirados_pool_vacio || 0) + (r.causas.regla_legumbre_retirada_pool_vacio || 0) > 0;
 const perfiles = [...new Set(VARIANTES[0][1].filas.map((r) => r.perfil))];
 
 const L = ['# Variantes de la red de seguridad de D-116.5', '',
@@ -23,7 +24,7 @@ for (const p of perfiles) {
   for (const [nombre, m] of VARIANTES) {
     const xs = m.filas.filter((r) => r.perfil === p);
     if (!xs.length) { L.push(`| ${nombre} | — | — | — | — | — | — | — |`); continue; }
-    L.push(`| ${nombre} | ${n2(media(xs, (r) => r.cortas))} | ${n2(media(xs, (r) => r.legumbre))} | ${n2(media(xs, (r) => r.segundos))} | ${n1(media(xs, (r) => (100 * r.protDia) / r.objProt))} % | ${suma(xs, d099)} | ${xs.filter(redD099).length} / ${xs.filter(redPool).length} | ${xs.filter((r) => r.causas.infraccion_d099_sin_segundos).length} |`);
+    L.push(`| ${nombre} | ${n2(media(xs, (r) => r.cortas))} | ${n2(media(xs, (r) => r.legumbre))} | ${n2(media(xs, (r) => r.segundos))} | ${n1(media(xs, (r) => (100 * r.protDia) / r.objProt))} % | ${suma(xs, d099)} | ${xs.filter(redD099).length} / ${xs.filter(redPool).length} | ${xs.filter((r) => r.causas.infraccion_d099_sin_segundos || r.causas.infraccion_d099_regla_retirada).length} |`);
   }
   L.push('');
 }

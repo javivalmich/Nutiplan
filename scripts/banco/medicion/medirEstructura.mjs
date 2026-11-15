@@ -5,8 +5,12 @@
 // Los perfiles vegetariano y vegano no se miden: la regla no se les aplica (no hay segundos).
 // Uso: node --import ./scripts/banco/resolver.mjs --import ./scripts/banco/medicion/estructuraComida.mjs \
 //        scripts/banco/medicion/medirEstructura.mjs <salida.json> --ec=suelo3,pescado,todas [--semanas 200]
-//        [--perfiles omni-2174,omni-1434] [--texto <salida.md>]
+//        [--perfiles omni-2174,omni-1434] [--texto <salida.md>] [--topes <otra-salida.json>]
+// Con --ec=motor mide el walk del motor real (D-116 y D-117 implementadas en src/engine2); la comida doble
+// se sigue montando aquí, en memoria, porque src/plan aún no la escribe. --topes toma de otra medición los
+// topes de la legumbre del primero, para que dos mediciones se puedan comparar gramo a gramo.
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 
 const R = new URL('../../../', import.meta.url).href;
 const { generarPlan, platosRecientesPara } = await import(R + 'src/plan/generarPlan.js');
@@ -67,6 +71,7 @@ const topes = new Map();
     topes.set(d.id, Math.round(r.comidas[String(iComida)].items.filter((i) => esLeg(i.clave)).reduce((a, i) => a + i.gramos, 0)));
   }
 }
+if (valor('--topes')) { topes.clear(); for (const [k, v] of Object.entries(JSON.parse(fs.readFileSync(valor('--topes'), 'utf8')).topes)) topes.set(k, v); }
 if (!flags.off) instalar(flags);
 
 // ─── Montaje de las comidas con primero y segundo sobre el plan ya generado ──────────────────
@@ -163,11 +168,17 @@ function fila(plan, p, obj, visible, recientes, s) {
     }
   });
   const sinAplicar = (re, soloSegundo) => log.filter((e) => (soloSegundo ? e.causa === 'segundo_de_legumbre' : e.causa !== 'segundo_de_legumbre' && e.plato) && re.test(e.evidencia || '')).length;
-  const causas = cuenta(log.filter((e) => ['segundo_sin_candidato', 'segundo_sin_tope_plato_unico', 'segundos_retirados_d099', 'dia_legumbre_sin_candidato', 'frecuencia_corta_sin_candidato', 'familia_dias_seguidos_retirada', 'repeticion_por_catalogo_corto', 'vecino_de_dia_legumbre'].includes(e.causa)), (e) => e.causa);
+  const causas = cuenta(log.filter((e) => ['segundo_sin_candidato', 'segundo_sin_tope_plato_unico', 'segundos_retirados_d099', 'dia_legumbre_sin_candidato', 'frecuencia_corta_sin_candidato', 'familia_dias_seguidos_retirada', 'repeticion_por_catalogo_corto', 'vecino_de_dia_legumbre', 'infraccion_d099_sin_segundos', 'dias_legumbre_sin_sorteo'].includes(e.causa)), (e) => e.causa);
   const m = medirPlan(plan, { kcal: p.kcal, proteina: obj.proteina, peso: obj.pesoKg }, COMPOSICION);
   const x = restriccionesSemana(plan, p.perfil);
   const sug = ap.filter((a) => a.libre);
+  // Huella del menú: qué plato va en cada hueco (comida, segundo y cena; también la sugerencia), y otra con
+  // las cantidades escritas. Sirven para comparar dos mediciones semana a semana.
+  const sha = (x) => crypto.createHash('sha1').update(JSON.stringify(x)).digest('hex').slice(0, 12);
+  const huella = sha(ap.map((a) => [a.dia, a.momento, a.rol, a.libre, a.id || a.nombre]));
+  const huellaTexto = sha(plan.days.map((d) => (d.meals || []).filter(Boolean).map((m0) => { const r0 = m0.sugerencia || m0; return [r0.time, r0.title, r0.p1, r0.p2, r0.shopping]; })));
   return {
+    huella, huellaTexto, menu: ap.map((a) => `${DIAS[a.dia]}${a.momento === 'comida' ? (a.rol === 'segundo' ? '2' : 'C') : 'N'}${a.libre ? '*' : ''} ${a.nombre}`),
     perfil: p.id, s, motor: plan.motor || 'legacy', aviso: plan.motorAviso ? String(plan.motorAviso).slice(0, 80) : null, fallo: plan.motorFallo ? String(plan.motorFallo).slice(0, 120) : null,
     pescado: serv.filter(esPesc).length, pescadoComida: serv.filter((a) => esPesc(a) && a.momento === 'comida' && a.rol !== 'segundo').length, pescadoSegundo: serv.filter((a) => esPesc(a) && a.rol === 'segundo').length, pescadoCena: serv.filter((a) => esPesc(a) && a.momento === 'cena').length, rachaPescado,
     legumbre: serv.filter((a) => a.familia === 'legumbre').length, diasLeg: serv.filter((a) => a.familia === 'legumbre').map((a) => DIAS[a.dia]).join(''), diasSorteados: diasSorteados.map((i) => DIAS[i]).join(''),

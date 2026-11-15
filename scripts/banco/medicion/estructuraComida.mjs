@@ -17,18 +17,33 @@
 //   --ec=protAjustada        (c) en la comida con segundo, la proteína se calcula con la legumbre ya ajustada
 //   --ec=red                 red de seguridad: si la semana termina con alguna infracción de D-099.3, se repite
 //                            el walk entero sin segundos (legumbre como plato único), con la misma semilla
+//   --ec=motor               el walk es el del motor real (D-116 y D-117 ya implementadas en src/engine2): el hook
+//                            no toca runWalk.js y solo aplica lo de racionesApp.js, que sigue sin implementar
+//                            (src/plan). Sirve para medir el motor real con las mismas métricas. No se combina.
 // Se combinan con comas: --ec=suelo2,sinPescado,todas. No se combina con contrafactualesDiseno.mjs.
 // Si un ancla no aparece exactamente una vez, falla.
+//
+// Desde que el motor implementa la regla (2026-11-15), las variantes del hook se aplican sobre el walk
+// ANTERIOR a la implementación: runWalk.js y materializePlan.js se leen de git (commit BASE_HOOK, o
+// --ec-base=<commit>), no del árbol de trabajo. Así el prototipo sigue siendo reproducible como referencia
+// (compararMotorHook.mjs). El resto de src/ es el del árbol de trabajo.
 import { register } from 'node:module';
+import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+
+const BASE_HOOK = 'ba52d21';
 
 const arg = process.argv.find((a) => a.startsWith('--ec='));
 const partes = arg ? arg.slice('--ec='.length).split(',').filter(Boolean) : ['off'];
-const VALIDOS = ['off', 'suelo2', 'suelo3', 'pescado', 'sinPescado', 'todas', 'lentejas', 'antesAB', 'topePlatoUnico', 'protAjustada', 'red'];
+const VALIDOS = ['off', 'motor', 'suelo2', 'suelo3', 'pescado', 'sinPescado', 'todas', 'lentejas', 'antesAB', 'topePlatoUnico', 'protAjustada', 'red'];
+if (partes.includes('motor') && partes.length > 1) throw new Error('estructuraComida: «motor» no se combina con otras opciones');
 for (const p of partes) if (!VALIDOS.includes(p)) throw new Error(`estructuraComida: opción desconocida «${p}»`);
+const motor = partes.includes('motor');
 const flags = {
   off: partes.includes('off'),
+  motor,
   suelo: partes.includes('suelo2') ? 2 : 3,
-  pescado: !partes.includes('sinPescado'),
+  pescado: !partes.includes('sinPescado') && !motor,
   alcance: partes.includes('lentejas') ? 'lentejas' : 'todas',
   antesAB: partes.includes('antesAB'),
   topePlatoUnico: partes.includes('topePlatoUnico'),
@@ -36,13 +51,14 @@ const flags = {
   red: partes.includes('red'),
 };
 globalThis.__ecFlags = flags;
-process.stderr.write(`[estructuraComida] ${flags.off ? 'reglas actuales' : `suelo ${flags.suelo}, segundo ${flags.pescado ? 'con' : 'sin'} pescado, alcance ${flags.alcance}${flags.antesAB ? ', (a)' : ''}${flags.topePlatoUnico ? ', (b)' : ''}${flags.protAjustada ? ', (c)' : ''}${flags.red ? ', red de seguridad' : ''}`}\n`);
+process.stderr.write(`[estructuraComida] ${flags.off ? 'reglas actuales' : motor ? 'walk del motor real; solo las raciones de la comida doble van en memoria' : `suelo ${flags.suelo}, segundo ${flags.pescado ? 'con' : 'sin'} pescado, alcance ${flags.alcance}${flags.antesAB ? ', (a)' : ''}${flags.topePlatoUnico ? ', (b)' : ''}${flags.protAjustada ? ', (c)' : ''}${flags.red ? ', red de seguridad' : ''}`}\n`);
 
 const W = '/src/engine2/walk/runWalk.js';
 const RA = '/src/plan/racionesApp.js';
 const RN = '/src/engine2/nutrientes/raciones.js';
 const G = 'globalThis.__ec';
 const ARGS = '{ day, i, slot, slots, catalog, usedIds, usedNames, recientes, vetoedIds, freqState, fuenteEditorial, sinFamilia, uso, decisionLog }';
+const SOLO_RACIONES = (c) => c[0] === RA;
 const CAMBIOS = flags.off ? [] : [
   // Sorteo de los días de legumbre, antes de elegir nada.
   [W, '  const rng = selectRng(seed);',
@@ -72,15 +88,28 @@ const CAMBIOS = flags.off ? [] : [
     `      items: lectura.items.map((it, __k) => ({ clave: it.clave, gramos: it.gramos, unidad: it.como === 'ud' ? 'ud' : 'g', fijo: /estimado/.test(it.como), ...(m.masa ? { masa: true } : {}), ...(m._ps && ${G} ? ${G}.itemExtra(m, it, __k, targetKcal) : {}) })),`],
   [RA, '    if (m._componer) {',
     `    if (m._ps && ${G}) { escrita = { meal: ${G}.escribirPS(m, items), sinCambiar: 0 }; } else if (m._componer) {`],
-];
+].filter((c) => !motor || SOLO_RACIONES(c));
+
+// Fuentes anteriores a la implementación, para las variantes del prototipo.
+const argBase = process.argv.find((a) => a.startsWith('--ec-base='));
+const base = argBase ? argBase.slice('--ec-base='.length) : BASE_HOOK;
+const MP = '/src/engine2/materializePlan.js';
+const RAIZ = fileURLToPath(new URL('../../../', import.meta.url));
+const ANTERIORES = {};
+if (!flags.off && !motor) {
+  for (const sufijo of [W, MP]) ANTERIORES[sufijo] = execFileSync('git', ['show', `${base}:${sufijo.slice(1)}`], { cwd: RAIZ, encoding: 'utf8', maxBuffer: 1 << 24 });
+  process.stderr.write(`[estructuraComida] runWalk.js y materializePlan.js de ${base} (anteriores a la implementación en el motor)\n`);
+}
 
 const hooks = `
 const CAMBIOS = ${JSON.stringify(CAMBIOS)};
+const ANTERIORES = ${JSON.stringify(ANTERIORES)};
 export async function load(url, contexto, siguiente) {
   const r = await siguiente(url, contexto);
   const mios = CAMBIOS.filter(([sufijo]) => url.endsWith(sufijo));
-  if (!mios.length) return r;
-  let t = String(r.source);
+  const anterior = Object.keys(ANTERIORES).find((sufijo) => url.endsWith(sufijo));
+  if (!mios.length && !anterior) return r;
+  let t = anterior ? ANTERIORES[anterior] : String(r.source);
   const nl = t.includes('\\r\\n') ? '\\r\\n' : '\\n';
   for (const [sufijo, ancla, nuevo] of mios) {
     const a = ancla.split('\\n').join(nl);

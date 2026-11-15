@@ -204,8 +204,37 @@ export function runWalk(input) {
   // familia. No hay bucle: son llamadas fijas, sin recursion. Como mucho 4
   // walks por semana (con segundos: con filtro y sin el; sin segundos: con
   // filtro y sin el); la semana sin segundos ya no se vuelve a repetir.
+  //
+  // Red del pool vacio (decision de Javi, 2026-11-15): el segundo gasta un
+  // plato, y si era el ultimo que valia para un hueco posterior el walk se
+  // queda sin platos. Si el intento con segundos falla asi y llego a colocar
+  // alguno, la semana se repite entera sin segundos, con la misma semilla,
+  // antes de dar el fallo por bueno (y de que la app caiga al motor viejo).
+  // Es la misma repeticion sin segundos de la red de D-099, por otra causa:
+  // las dos no se suman (el intento con segundos o falla o devuelve una
+  // semana) y el maximo sigue en 4 walks.
   const intentos = [];
-  const resultado = walkConRedDeFamilia(input, { sinSegundos: false, intentos });
+  let resultado;
+  try {
+    resultado = walkConRedDeFamilia(input, { sinSegundos: false, intentos });
+  } catch (err) {
+    if (!(err && err.poolVacio && err.segundosColocados > 0)) throw err;
+    const sinSegundos = walkConRedDeFamilia(input, { sinSegundos: true, intentos });
+    sinSegundos.decisionLog.push({
+      decisionId: `walk-select-${sinSegundos.decisionLog.length}`,
+      day: undefined,
+      momento: undefined,
+      plato: undefined,
+      causa: 'segundos_retirados_pool_vacio',
+      evidencia: `con los segundos el walk se quedaba sin platos (${err.message}); `
+        + 'se repite el walk entero sin segundos, con la misma semilla: la legumbre de los dias sorteados va como plato unico',
+      alternativasDescartadas: [],
+      evento: true,
+      walks: intentos.map((x) => `${x.sinSegundos ? 'sin' : 'con'} segundos, ${x.sinFamilia ? 'sin' : 'con'} filtro de familia`),
+    });
+    const quedan = infraccionesD099(input, sinSegundos);
+    return quedan.length ? anotarSinArreglo(sinSegundos, quedan, true) : sinSegundos;
+  }
   // Solo con la regla en marcha (dias de legumbre sorteados): sin ella no hay segundos ni red (D-116.9, D-117).
   const conRegla = resultado.decisionLog.some((e) => e.causa === 'dias_legumbre_sorteados');
   if (!conRegla) return resultado;
@@ -491,7 +520,8 @@ function walkUnaVez(input, { sinFamilia, uso, sinSegundos }) {
           `runWalk: pool rotativo vacio para ${day}/${momento} `
             + `(rol="rotativo", momento admite "${momento}", excluidos los ids ya usados en la semana y los vetados)`,
         );
-        errPool.poolVacio = true; // lo lee la red de seguridad del filtro de familia
+        errPool.poolVacio = true; // lo leen la red del filtro de familia y la de los segundos
+        errPool.segundosColocados = [...slots.values()].filter((s) => s.segundo).length;
         throw errPool;
       }
 

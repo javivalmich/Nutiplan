@@ -210,3 +210,53 @@ describe('runWalk: las dos redes en la misma semana', () => {
     expect(vistas).toBeGreaterThan(10);
   });
 });
+
+// Red del pool vacio (D-116.5, decision de Javi del 2026-11-15). El segundo gasta un plato: si era el
+// ultimo que valia para un hueco posterior, el walk se queda sin platos. Antes de fallar (y de que la
+// app caiga al motor viejo), la semana se repite entera sin segundos, con la misma semilla.
+describe('runWalk: red de los segundos ante un pool vacio', () => {
+  const pollo = { ...real.find(esSegundoDeLegumbre), momento: ['cena'] };
+  const pescado = { ...real.find((d) => d.momento.includes('cena') && familiaProteica(d) === 'pescado'), momento: ['cena'] };
+  const abiertos = [{ day: 'Martes', momento: 'comida' }, { day: 'Martes', momento: 'cena' }, { day: 'Jueves', momento: 'cena' }];
+  const a = anchorEverythingExcept(abiertos);
+  // Caso minimo: dos cenas para dos huecos de cena; con el segundo, la del jueves se queda sin plato.
+  const input = { weekArc: { beats: beats7(), anchors: a.anchors }, catalog: [...a.dishes, lentejas, pollo, pescado], seed: 'red-pool' };
+  const porPool = (r) => r.decisionLog.filter((e) => e.causa === 'segundos_retirados_pool_vacio');
+
+  it('fixtures localizadas', () => {
+    expect(pollo.id).toBeDefined();
+    expect(pescado.id).toBeDefined();
+  });
+
+  it('si con los segundos el walk se queda sin platos, se repite sin segundos y el log lo dice', () => {
+    for (let s = 0; s < 8; s++) {
+      const r = runWalk({ ...input, seed: `red-pool-${s}` });
+      expect(r.slots.every((x) => !x.abierto && x.dishId)).toBe(true);
+      expect(r.segundos).toEqual([]);
+      expect(r.slots.find((x) => x.day === 'Martes' && x.momento === 'comida').dishId).toBe(lentejas.id);
+      expect(new Set(['Martes', 'Jueves'].map((d) => r.slots.find((x) => x.day === d && x.momento === 'cena').dishId))).toEqual(new Set([pollo.id, pescado.id]));
+      const ev = porPool(r);
+      expect(ev).toHaveLength(1);
+      expect(ev[0].evento).toBe(true);
+      expect(ev[0].evidencia).toContain('pool rotativo vacio para Jueves/cena');
+      expect(ev[0].walks).toEqual(['con segundos, con filtro de familia', 'sin segundos, con filtro de familia']);
+      expect(retirada(r)).toHaveLength(0);
+      expect(infraccionesD099({ ...input, seed: `red-pool-${s}` }, r)).toEqual([]);
+    }
+  });
+
+  it('es determinista', () => {
+    expect(JSON.stringify(runWalk(input))).toBe(JSON.stringify(runWalk(input)));
+  });
+
+  it('si tampoco sin segundos hay platos, falla como antes', () => {
+    // Una sola cena para dos huecos de cena: falta con segundos y sin ellos.
+    const corto2 = { ...input, catalog: [...a.dishes, lentejas, pollo] };
+    expect(() => runWalk(corto2)).toThrow(/pool rotativo vacio/);
+  });
+
+  it('sin la regla no hay segundos y no cambia nada: ese caso no falla', () => {
+    const r = runWalk({ ...input, profile: { dieta: 'vegetariana' } });
+    expect(porPool(r)).toHaveLength(0);
+  });
+});

@@ -98,3 +98,27 @@ export function familiaProteica(dish) {
 
 /** Tope de veces que una misma proteina principal sale en la semana (comida + cena). */
 export const TOPE_PROTEINA_SEMANA = 2;
+
+/**
+ * ¿Es un plato compuesto de legumbre (legumbre con verdura, plantilla
+ * «legumbre»)? Son los «primeros» de D-116: no van como plato unico. Los
+ * platos redactados de legumbre (cocido, fabada...) no lo son.
+ */
+export function esCompuestoLegumbre(dish) {
+  const vista = vistaSegura(dish);
+  return !!(vista && vista.tupla && vista.tupla.tmpl === 'legumbre');
+}
+
+/** Familias que pueden ir de segundo tras un primero de legumbre (D-116.2): ni pescado, ni marisco, ni huevo. */
+export const FAMILIAS_SEGUNDO = Object.freeze(['ave', 'carne']);
+
+/**
+ * ¿Puede ir de segundo tras un primero de legumbre (D-116.2)? Un compuesto de
+ * proteina con verdura, sin cereal (plantilla «caliente_clasico», C vacio), de
+ * ave o de carne.
+ */
+export function esSegundoDeLegumbre(dish) {
+  const vista = vistaSegura(dish);
+  return !!(vista && vista.tupla && vista.tupla.tmpl === 'caliente_clasico' && !vista.tupla.C
+    && FAMILIAS_SEGUNDO.includes(vista.proteinType));
+}

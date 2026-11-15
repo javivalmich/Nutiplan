@@ -110,6 +110,7 @@ import { alinoDe, TOPE_AJILLO_SEMANA } from '../dishes/alinosD105.js';
 import {
   initFrequencyState, registerConsumption, chooseFrequencyLevel, chooseIdentityLevel,
 } from './frequencies.js';
+import { reglaLegumbreActiva, sortearDiasLegumbre } from './legumbre.js';
 
 /** D-107: cenas de huevo por semana como mucho, con dieta vegetariana (decisión de Javi). */
 export const TOPE_CENAS_HUEVO = 3;
@@ -243,6 +244,18 @@ function walkUnaVez(input, { sinFamilia, uso }) {
 
   const intolerancias = profile?.intolerances ?? [];
   const { vetoedIds, conteo: conteoVetos, activo: vetoActivo } = computeVetoUniverse(catalog, intolerancias, { fuenteEditorial });
+
+  // Dias de legumbre (D-117): se sortean con la semilla antes de elegir nada.
+  // Solo dietas omnivoras; null si la regla no actua (dieta, o perfil sin
+  // platos compuestos de legumbre).
+  const legumbre = reglaLegumbreActiva(profile)
+    ? sortearDiasLegumbre({
+      p1aSlots, catalog, vetoedIds, seed,
+      registrar: (causa, evidencia, extra = {}) => decisionLog.push({
+        decisionId: `walk-select-${decisionLog.length}`, day: undefined, momento: undefined, plato: undefined, causa, evidencia, alternativasDescartadas: [], evento: true, ...extra,
+      }),
+    })
+    : null;
 
   // Paso 4 (frecuencias, D-024): el estado arranca desde lo que P1a ya
   // coloco (ancla + sobras tambien son consumo, asiento 5).

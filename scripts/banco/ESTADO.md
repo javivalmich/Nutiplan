@@ -39,7 +39,11 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
 | `de0041a` | D-116.5: una infracción de D-099.3 sin segundos que retirar tiene causa propia (`infraccion_d099_sin_segundos`) |
 | `d6b44de` | Orden de las dos redes (familia y D-099) visible en el log; como mucho 4 walks por semana |
 | `a7d81ef` | Test: perfil con 1 o 2 compuestos de legumbre (3 días sorteados, sin suelo de D-024) |
-| el siguiente a `a7d81ef` | Comparación motor real frente al prototipo (`medicion/compararMotorHook.mjs`); el hook lee el walk de `ba52d21` |
+| `3a819ba` | Comparación motor real frente al prototipo (`medicion/compararMotorHook.mjs`); el hook lee el walk de `ba52d21` |
+| `8d6807d` | `DECISIONS.md`: líneas de implementación en D-116.5, D-117.2 y D-117.7 |
+| `2b49d3e` | D-116.5: si con los segundos el walk se queda sin platos, se repite sin segundos (`segundos_retirados_pool_vacio`) |
+| `a79249f` | `DECISIONS.md`: la red del pool vacío en D-116.5 |
+| el siguiente a `a79249f` | Plan de la etapa 2 (`src/plan`) en la sección 12 de `medicion/estructura-comida.md`; `repeticionSegundos.mjs` y `perfilesSinteticosApp.mjs` |
 
 ## Decisiones de Javi (2026-11-12 y 2026-11-13)
 
@@ -92,13 +96,15 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
   - S: los días sin verdura (0,64 por semana, todos sábados) pasan a 0.
   - Verdura «desconocida»: 63 de 235 platos (16 de ave, los 9 de cereal).
   - Pendiente de decidir: A y el suelo de legumbre (A, sin implementar por decisión de Javi). No proponer techos semanales.
-- **Estructura de la comida y legumbre (D-116 y D-117):** etapa 1 implementada en el MOTOR (`src/engine2`, commits `4378c3a` a `a7d81ef`), sin la opción (c). Informe y scripts en [`medicion/estructura-comida.md`](medicion/estructura-comida.md).
+- **Estructura de la comida y legumbre (D-116 y D-117):** etapa 1 implementada en el MOTOR (`src/engine2`, commits `4378c3a` a `2b49d3e`), sin la opción (c). Plan de la etapa 2 (`src/plan`), por pasos y con su test previo, en la sección 12 del informe. Informe y scripts en [`medicion/estructura-comida.md`](medicion/estructura-comida.md).
   - **El motor decide los segundos, pero la app todavía no los enseña.** `materializePlan` pone `segundo` en la comida y `src/plan` lo ignora: el usuario ve la legumbre como plato único, sin su segundo, y el segundo no entra en la compra ni en las raciones. Mientras no se haga la parte de `src/plan`, la rama no se debe llevar a `main`.
   - Comparación (`medicion/compararMotorHook.mjs`, 200 semanas por perfil, 10 perfiles): el motor da los mismos menús que el prototipo de medición en las 2000 semanas. El prototipo se validó antes contra el hook de `ba52d21` (2000 semanas idénticas). Infracciones de D-099.3: 0. Red de seguridad: 71 de 2000 semanas, todas del perfil sin pescado ni marisco. Legumbre 3,02 y pescado 3,90 por semana (8 perfiles).
   - Diferencias con el hook, aprobadas por Javi: la red solo se repite si había segundos, y una infracción sin segundos tiene causa propia; la repetición sin segundos vuelve a empezar con el filtro de familia (máximo 4 walks); un perfil sin compuestos de legumbre (SIBO) no sortea días ni apaga el suelo de D-024 (sus 200 semanas, idénticas a `ba52d21`); causa nueva `dias_legumbre_sin_sorteo`.
   - El banco (`metricas.mjs`) cuenta los segundos desde el decision log, aparte: las cuentas de familias y especies siguen midiendo lo que el plan enseña.
   - Pendiente: la parte de `src/plan` (montar la comida doble, raciones con el tope de la legumbre, textos, `platosSemana`), las alternativas de una comida con dos platos, el domingo como día de legumbre y la legumbre a 4 (AESAN).
-  - Riesgo sin cubrir (igual que el hook): si el segundo gasta el último plato que valía para un hueco posterior, el walk falla por pool vacío y la app cae al motor viejo. La red de D-116.5 no lo recoge. No sale en el banco.
+  - Pool vacío por el segundo (el riesgo que también tenía el hook): cubierto en `2b49d3e`. La semana se repite sin segundos; como mucho 4 walks por semana. No sale en el banco.
+  - **El segundo de la semana anterior se repite** por la entrada de la app: 435 de 2216 segundos en 800 semanas (`medicion/repeticionSegundos.mjs`). `platosSemana` no lleva los segundos, y la red no lo ve. Hoy no es visible porque la app no enseña el segundo. Es el paso 1 de la etapa 2. La comparación con el prototipo (2000 semanas iguales) mide la app con ese paso ya hecho, porque `medirEstructura.mjs` sí añade los segundos.
+  - Por la entrada de la app, ningún perfil sintético con lactosa y gluten (con o sin pescado, con huevo) cae al motor viejo en 200 semanas. Con gluten y sin pescado ni marisco, la red de D-099 retira los segundos en 186 a 194 de 200 semanas (`medicion/perfilesSinteticosApp.mjs`).
 - **Fichas con una cifra para dos ingredientes** (`medicion/barridoCifraCompartida.mjs`, 183 fichas, solo `p1` y `p2`): queda 1 como los ñoquis, sin corregir: «Crema de calabacín y espinacas con quinoa y semillas» («espinacas y patata (100g)»). Otros 34 tramos nombran dos ingredientes pero la cifra es de uno solo y se reescribe bien.
 - **Perfiles de 2600 y 3714 kcal:** quedan un 2,4 % por debajo de su objetivo de media, con las raciones en el techo. De ahí salen casi todas las semanas fuera de ±5 % (12 de 1800 con Bm). Es anterior a S y a Bm.
 - **Test intermitente** `scripts/fase7/entrega.test.js:639` (tiempo límite de 5 s): ya fallaba en `main` y no se toca.

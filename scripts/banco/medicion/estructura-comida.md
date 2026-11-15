@@ -827,13 +827,13 @@ Medido el 2026-11-15, por la entrada de la app (`generarPlan`):
 
 Cada paso es un commit con su test primero (que falle antes del cambio) y la línea base del banco regenerada si cambia. **[Visible]** marca los pasos que cambian lo que ve el usuario.
 
-### Paso 1. El segundo cuenta para no repetir la semana siguiente [Visible: cambia los menús de las semanas siguientes]
+### Paso 1. El segundo cuenta para no repetir la semana siguiente [Visible: cambia los menús de las semanas siguientes] — hecho en `11b3de4`: 0 de 2210 segundos repetidos
 
 - `engine2App.js`: al montar la semana, el nombre del segundo entra en `platosSemana`, junto al de la comida y la cena.
 - Test previo: dos semanas seguidas de un perfil omnívoro. El segundo de la semana N no sale en la semana N+1, ni como comida, ni como segundo, ni como cena. Hoy falla (sale en un 20 % de los casos).
 - Va primero porque es una regla del motor (D-099.3.d) que hoy se incumple sin que se vea, y no depende del resto.
 
-### Paso 2. Métricas del banco con los segundos en familias y especies [no visible]
+### Paso 2. Métricas del banco con los segundos en familias y especies [no visible] — hecho en `3622d54`
 
 - `scripts/banco/metricas.mjs`: `huecosSemana` devuelve también el segundo, con su familia y especie. Lo lee del log mientras la comida no lleve `_dishId2`, y de la comida desde el paso 4.
 - Con eso, las cuentas de familias y especies, días seguidos, D-099.3 y pescado o legumbre por semana incluyen el segundo. Hoy van aparte (`segundos`, `segundosPorFamilia`).

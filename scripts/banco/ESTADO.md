@@ -43,7 +43,10 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
 | `8d6807d` | `DECISIONS.md`: líneas de implementación en D-116.5, D-117.2 y D-117.7 |
 | `2b49d3e` | D-116.5: si con los segundos el walk se queda sin platos, se repite sin segundos (`segundos_retirados_pool_vacio`) |
 | `a79249f` | `DECISIONS.md`: la red del pool vacío en D-116.5 |
-| el siguiente a `a79249f` | Plan de la etapa 2 (`src/plan`) en la sección 12 de `medicion/estructura-comida.md`; `repeticionSegundos.mjs` y `perfilesSinteticosApp.mjs` |
+| `9141bab` | Plan de la etapa 2 (`src/plan`) en la sección 12 de `medicion/estructura-comida.md`; `repeticionSegundos.mjs` y `perfilesSinteticosApp.mjs` |
+| `09bf751` | Medición de dos variantes de la red de D-116.5 (`variantesRed.mjs`, `resumenVariantesRed.mjs`), sin cambiar la red |
+| `11b3de4` | Etapa 2, paso 1: el segundo entra en `platosSemana` (`src/plan/engine2App.js`); línea base regenerada |
+| `3622d54` | Etapa 2, paso 2: las métricas del banco cuentan los segundos en familias, especies y D-099.3; línea base regenerada |
 
 ## Decisiones de Javi (2026-11-12 y 2026-11-13)
 
@@ -103,7 +106,11 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
   - El banco (`metricas.mjs`) cuenta los segundos desde el decision log, aparte: las cuentas de familias y especies siguen midiendo lo que el plan enseña.
   - Pendiente: la parte de `src/plan` (montar la comida doble, raciones con el tope de la legumbre, textos, `platosSemana`), las alternativas de una comida con dos platos, el domingo como día de legumbre y la legumbre a 4 (AESAN).
   - Pool vacío por el segundo (el riesgo que también tenía el hook): cubierto en `2b49d3e`. La semana se repite sin segundos; como mucho 4 walks por semana. No sale en el banco.
-  - **El segundo de la semana anterior se repite** por la entrada de la app: 435 de 2216 segundos en 800 semanas (`medicion/repeticionSegundos.mjs`). `platosSemana` no lleva los segundos, y la red no lo ve. Hoy no es visible porque la app no enseña el segundo. Es el paso 1 de la etapa 2. La comparación con el prototipo (2000 semanas iguales) mide la app con ese paso ya hecho, porque `medirEstructura.mjs` sí añade los segundos.
+  - **Etapa 2, pasos 1 y 2 hechos** (`11b3de4`, `3622d54`). El segundo entra en `platosSemana`: `repeticionSegundos.mjs` da 0 de 2210 segundos repetidos de la semana anterior (antes, 435 de 2216). El banco cuenta los segundos en familias, especies y D-099.3, y da 0 infracciones en los perfiles omnívoros. El paso 3 (la comida doble como función pura) no está empezado.
+  - **Variantes de la red** (`medicion/estructura-comida-final/variantes-red.md`, 200 semanas por perfil, sin cambiar la red). Repetir con la regla apagada (D-024) en vez de sin segundos con los días sorteados:
+    - en el perfil sin pescado ni marisco del banco, baja las comidas y cenas cortas de 3,64 a 3,15 por semana, pero deja 2 infracciones de D-099.3;
+    - en los sintéticos con gluten, la red actúa casi todas las semanas en las dos variantes. La red actual deja la proteína peor que hoy (cortas 4,71 y 5,01 frente a 4,03 y 4,22) con 2 infracciones; la variante vuelve a lo de hoy (3,92 y 4,18) con sus 25 a 28 infracciones.
+    - Pendiente de Javi.
   - Por la entrada de la app, ningún perfil sintético con lactosa y gluten (con o sin pescado, con huevo) cae al motor viejo en 200 semanas. Con gluten y sin pescado ni marisco, la red de D-099 retira los segundos en 186 a 194 de 200 semanas (`medicion/perfilesSinteticosApp.mjs`).
 - **Fichas con una cifra para dos ingredientes** (`medicion/barridoCifraCompartida.mjs`, 183 fichas, solo `p1` y `p2`): queda 1 como los ñoquis, sin corregir: «Crema de calabacín y espinacas con quinoa y semillas» («espinacas y patata (100g)»). Otros 34 tramos nombran dos ingredientes pero la cifra es de uno solo y se reescribe bien.
 - **Perfiles de 2600 y 3714 kcal:** quedan un 2,4 % por debajo de su objetivo de media, con las raciones en el techo. De ahí salen casi todas las semanas fuera de ±5 % (12 de 1800 con Bm). Es anterior a S y a Bm.

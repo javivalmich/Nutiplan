@@ -296,11 +296,14 @@ export function initFrequencyState(p1aSlots, getVista, fuenteEditorial) {
  * registerConsumption/D-023); sin getVista, usa el catalogo real (con
  * fuenteEditorial si se inyecta, D-036) y acumula ids irresolubles en el
  * propio state.
- * @param {{day: string, candidatesB: object[], state: object, getVista?: (dish: object) => object, fuenteEditorial?: {version: number, confirmed: object}}} input
+ * suelosInactivos (D-117.4): contadores semanales que este paso no atiende.
+ * Con dias de legumbre sorteados, el walk pasa ['legumbre']: fuera de esos
+ * dias el suelo semanal de legumbre no actua (ni corto ni «sin candidato»).
+ * @param {{day: string, candidatesB: object[], state: object, getVista?: (dish: object) => object, fuenteEditorial?: {version: number, confirmed: object}, suelosInactivos?: string[]}} input
  * @returns {{nivel: object[], causa: string|null, evidencia: string|null}}
  */
 export function chooseFrequencyLevel({
-  day, candidatesB, state, getVista, fuenteEditorial,
+  day, candidatesB, state, getVista, fuenteEditorial, suelosInactivos = [],
 }) {
   const resolver = getVista || vistaPorDefecto(state, fuenteEditorial);
   const vistaPorId = new Map(candidatesB.map((d) => [d.id, resolver(d)]));
@@ -321,6 +324,7 @@ export function chooseFrequencyLevel({
   const diaAnt = diaAnterior(day);
   const cortasSinCandidato = [];
   for (const campo of PROTEIN_TARGET_ORDER) {
+    if (suelosInactivos.includes(campo)) continue;
     const corto = state.contadores[campo] < DEFAULT_WEEKLY_TARGETS[campo];
     if (!corto) continue;
     const vedado = state.incrementDays[campo].has(day) || (diaAnt !== null && state.incrementDays[campo].has(diaAnt));

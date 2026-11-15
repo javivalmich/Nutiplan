@@ -105,7 +105,7 @@ import { DAYS_ORDER } from '../skeleton/days.js';
 import { mulberry32, seedFromString } from '../skeleton/rng.js';
 import { MOMENTOS } from '../dishes/schema.js';
 import { computeVetoUniverse } from './vetoes.js';
-import { proteinaPrincipal, familiaProteica, TOPE_PROTEINA_SEMANA } from '../dishes/bases.js';
+import { proteinaPrincipal, familiaProteica, esCompuestoLegumbre, TOPE_PROTEINA_SEMANA } from '../dishes/bases.js';
 import { alinoDe, TOPE_AJILLO_SEMANA } from '../dishes/alinosD105.js';
 import {
   initFrequencyState, registerConsumption, chooseFrequencyLevel, chooseIdentityLevel,
@@ -509,6 +509,22 @@ function walkUnaVez(input, { sinFamilia, uso }) {
 
       const ayer = i > 0 ? getDishAt(DAYS_ORDER[i - 1], momento) : null;
       let candidatesA = poolAlino.length ? poolAlino : base1;
+      // Dia de legumbre (D-117.2, modifica D-024): en la comida de un dia
+      // sorteado, el nivel de legumbre (platos compuestos de legumbre) va
+      // ANTES que las preferencias A y B y que la verdura del dia. A y B
+      // siguen actuando dentro del nivel, con su vuelta atras. Sin candidato,
+      // el hueco sigue como siempre y el log lo dice. (El dia libre nunca se
+      // sortea: un dia de legumbre no es la sugerencia.)
+      let nivelLegumbre = null;
+      if (legumbre && momento === 'comida' && legumbre.dias.has(day)) {
+        const nivel = candidatesA.filter(esCompuestoLegumbre);
+        if (nivel.length) {
+          nivelLegumbre = { candidatos: nivel.length, de: candidatesA.length };
+          candidatesA = nivel;
+        } else {
+          pushEvent(day, 'dia_legumbre_sin_candidato', `${day} es dia de legumbre, pero ninguno de los ${candidatesA.length} candidatos del hueco (tras no repetir plato, tope y separacion por proteina, familia y alino) es un compuesto de legumbre; el hueco sigue con el paso 4 de siempre`);
+        }
+      }
       let notaA;
       if (!ayer) {
         notaA = `preferencia A no aplica: no hay dia anterior en la semana para ${day}/${momento}`;
@@ -555,11 +571,44 @@ function walkUnaVez(input, { sinFamilia, uso }) {
       // de los suelos ni marca la verdura del dia. Sigue en usedIds/usedNames
       // (no repetir plato) y cuenta para el tope y la separacion por proteina.
       // (esSugerencia se calcula al abrir el hueco.)
-      const { nivel: candidatesFinal, causa: causaFreq, evidencia: notaFreq } = esSugerencia
-        ? { nivel: candidatesB, causa: null, evidencia: null }
-        : chooseFrequencyLevel({
+      //
+      // Con dias de legumbre sorteados (D-117): en la comida de un dia
+      // sorteado el nivel ya esta fijado arriba (antes de A y B) y el paso 4
+      // no vuelve a partir; en los demas huecos el suelo semanal de legumbre
+      // no actua, y el dia de al lado de uno sorteado no lleva legumbre a la
+      // comida si quedan otros candidatos (sustituye, para la legumbre, a la
+      // veda de D-024).
+      let paso4;
+      if (esSugerencia) paso4 = { nivel: candidatesB, causa: null, evidencia: null };
+      else if (nivelLegumbre) {
+        paso4 = {
+          nivel: candidatesB,
+          causa: 'dia_legumbre_sorteado',
+          evidencia: `paso 4: ${day} es dia de legumbre (sorteado con la semilla); nivel de legumbre = ${nivelLegumbre.candidatos} candidatos de ${nivelLegumbre.de}, antes que las preferencias A y B y que la verdura del dia; ${candidatesB.length} tras A y B`,
+        };
+      } else if (legumbre) {
+        let baseB = candidatesB;
+        const vecino = momento === 'comida' && [i - 1, i + 1].some((j) => j >= 0 && j < DAYS_ORDER.length && legumbre.dias.has(DAYS_ORDER[j]));
+        if (vecino) {
+          const sin = candidatesB.filter((d) => familiaCache(d.id) !== 'legumbre');
+          if (sin.length && sin.length < candidatesB.length) baseB = sin;
+        }
+        paso4 = chooseFrequencyLevel({
+          day, candidatesB: baseB, state: freqState, fuenteEditorial, suelosInactivos: ['legumbre'],
+        });
+        if (baseB !== candidatesB) {
+          paso4 = {
+            ...paso4,
+            causa: paso4.causa || 'vecino_de_dia_legumbre',
+            evidencia: `${paso4.evidencia ? `${paso4.evidencia}; ` : 'paso 4: '}sin legumbre: el dia de al lado es dia de legumbre (${candidatesB.length - baseB.length} candidatos a nivel inferior)`,
+          };
+        }
+      } else {
+        paso4 = chooseFrequencyLevel({
           day, candidatesB, state: freqState, fuenteEditorial,
         });
+      }
+      const { nivel: candidatesFinal, causa: causaFreq, evidencia: notaFreq } = paso4;
       const notaSugerencia = esSugerencia
         ? '; sugerencia de la comida libre: no es consumo (no cuenta para los suelos semanales ni para la verdura del dia; el paso 4 no la dirige)'
         : '';

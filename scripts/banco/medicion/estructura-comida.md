@@ -812,3 +812,85 @@ Límites:
 - En el perfil con ancla no se ha recalculado lo que la receta manda guardar.
 - Vegetariano y vegano no se han medido.
 - Cada variante es una sola pasada de 200 semanas por perfil. Con 1600 semanas, diferencias de menos de 0,1 platos por semana son ruido.
+
+## 12. Plan de la etapa 2: la comida doble en `src/plan` (2026-11-15, sin implementar)
+
+La etapa 1 está en el motor (`src/engine2`, commits `4378c3a` a `2b49d3e`). `materializePlan` pone un `segundo` opcional en la comida, pero `src/plan` lo ignora. El usuario ve la legumbre como plato único, y el segundo no entra ni en la compra ni en las raciones. Esta etapa es la parte de `src/plan` que la sección 9 ponía en la etapa 1. La «etapa 2» de la sección 9 (alternativas de un solo plato y edición) queda para después.
+
+Medido el 2026-11-15, por la entrada de la app (`generarPlan`):
+
+- **El segundo de la semana anterior se repite.** La semana siguiente recibe `platosSemana`, que la app llena sin los segundos. En 800 semanas (omni-1434, omni-2174, celiaco-2400 y sin-pescado-2000), 435 de 2216 segundos repiten el de la semana anterior. La red de D-116.5 no lo ve: mira `platosRecientes`, que no los lleva.
+  - Hoy no es visible, porque la app no enseña el segundo.
+  - En la comparación con el prototipo (sección 4 y `compararMotorHook.mjs`) salía 0, porque `medirEstructura.mjs` sí añade los segundos a `platosSemana`. Esas 2000 semanas miden lo que hará la app cuando se haga el paso 1, no lo que hace hoy.
+- **Ninguna semana cae al motor viejo.** 0 de 200 con perfiles sintéticos de lactosa y gluten, con o sin pescado y marisco, y con huevo. Los fallos por pool vacío que vi antes (20 y 25 de 200) eran de una búsqueda que llamaba a `runWalk` directamente, con el veto interno de engine2, que la app no usa (`engine2App.js` le pasa las intolerancias vacías y filtra el catálogo antes). Ya fallaban igual en `ba52d21`.
+- **Perfiles sintéticos con gluten y sin pescado ni marisco:** la red de D-099 retira los segundos en 186 a 194 de 200 semanas. Ahí la comida de legumbre se queda casi siempre como plato único.
+
+Cada paso es un commit con su test primero (que falle antes del cambio) y la línea base del banco regenerada si cambia. **[Visible]** marca los pasos que cambian lo que ve el usuario.
+
+### Paso 1. El segundo cuenta para no repetir la semana siguiente [Visible: cambia los menús de las semanas siguientes]
+
+- `engine2App.js`: al montar la semana, el nombre del segundo entra en `platosSemana`, junto al de la comida y la cena.
+- Test previo: dos semanas seguidas de un perfil omnívoro. El segundo de la semana N no sale en la semana N+1, ni como comida, ni como segundo, ni como cena. Hoy falla (sale en un 20 % de los casos).
+- Va primero porque es una regla del motor (D-099.3.d) que hoy se incumple sin que se vea, y no depende del resto.
+
+### Paso 2. Métricas del banco con los segundos en familias y especies [no visible]
+
+- `scripts/banco/metricas.mjs`: `huecosSemana` devuelve también el segundo, con su familia y especie. Lo lee del log mientras la comida no lleve `_dishId2`, y de la comida desde el paso 4.
+- Con eso, las cuentas de familias y especies, días seguidos, D-099.3 y pescado o legumbre por semana incluyen el segundo. Hoy van aparte (`segundos`, `segundosPorFamilia`).
+- Test previo: un plan sintético con un segundo cuenta su especie en el tope, el mismo día y los días seguidos.
+- Cambian las cifras de la línea base, no los menús.
+
+### Paso 3. La comida doble como función pura [no visible]
+
+- Un módulo nuevo, por ejemplo `src/plan/textos/comidaDoble.js`, que hace lo que `construirPS` del prototipo:
+  - el primero a media ración (legumbre a 50 g en seco, verdura y aceite a la mitad);
+  - el segundo compuesto entero;
+  - los dos en `p1` y `p2`, la compra y la receta seguidas, `_dishId2` y los datos de cada plato en un campo con guion bajo.
+- Todavía no se llama desde la app.
+- Test previo: para los 14 primeros por los 23 segundos, la compra junta se relee igual que la de los dos platos por separado. El título, `p1` y `p2` siguen el formato del prototipo.
+
+### Paso 4. El lector y la comida doble [no visible]
+
+- `leerComida.js`: un aceite sin cantidad en la compra toma el primer «ml» del texto. En la comida doble sería el del primero aunque la línea sea del segundo.
+  - Cada línea de aceite de la comida doble debe llevar su cantidad.
+  - Si no, hay que leer la cantidad de cada plato en su parte del texto.
+- Test previo: las 14 × 23 comidas dobles, también con SIBO (aceite aromatizado), se releen con el aceite de cada plato en su sitio.
+
+### Paso 5. Raciones de la comida doble [no visible]
+
+- `racionesApp.js` (`ajustarDia`): los dos platos se racionan como una sola comida, con el objetivo de siempre.
+  - La legumbre del primero tiene el tope de lo que recibe como plato único a 2174 kcal (`itemExtra` del prototipo).
+  - Cada plato se vuelve a escribir con sus gramos (`recomponer`, como `escribirPS`).
+  - La comida doble nunca pasa por `reescribirComida` (`cantidades.js`): con el mismo ingrediente en los dos platos, el aceite por ejemplo, se reescribiría mal.
+  - `cantidades.js` no cambia.
+- Hay que calcular el tope en algún sitio: hoy lo calcula el medidor de la medición, con un plan de referencia. La forma de calcularlo en la app es una decisión abierta.
+- Test previo: a 1434, 2174 y 3714 kcal, gramos y proteína dentro de lo medido en la sección 4 (legumbre seca, proteico, kcal y proteína frente al objetivo). La legumbre nunca pasa del tope.
+
+### Paso 6. La app monta la comida doble [Visible: el usuario ve el primero y el segundo]
+
+- `engine2App.js`: si la comida trae `segundo`, se monta con el paso 3 y pasa por las raciones del paso 5.
+- Casos que tiene que cubrir:
+  - la comida que coloca el ancla, que lleva la receta de cocinar de una vez;
+  - SIBO y las dietas, aunque hoy no tengan segundos;
+  - `mealsPerDay: 2` (la comida es la única principal y su título lleva «(comida principal)»).
+- Test previo: una semana real con días de legumbre lleva en cada uno las dos partes en `p1` y `p2`. La compra incluye el segundo. `medirComida` da las kcal y la proteína de los dos platos.
+- Banco:
+  - Línea base regenerada.
+  - `medirEstructura.mjs --ec=motor` deja de montar la comida doble (ya la monta la app).
+  - Comparación con el prototipo: las 2000 semanas con el mismo texto y las mismas cantidades.
+- A mano: el título largo y las dos partes en `p1`, en la pantalla del móvil (sección 9, riesgos).
+
+### Paso 7. Cambiar una comida doble [Visible: el botón de alternativas]
+
+- `regenerarComidaEngine2` (`engine2App.js`):
+  - la semana que recibe `elegirAlternativa` incluye el segundo, para que el tope y la familia lo vean;
+  - al cambiar la comida doble por un plato único se quitan `_dishId2` y los datos del segundo, y su nombre sale de `platosSemana`.
+- Test previo: cambiar una comida doble devuelve un plato único, sin el segundo en la compra ni en `platosSemana`.
+- Las regeneraciones parciales del motor viejo no conocen el segundo y lo pierden (sección 9). No se tocan, por la constitución (motor viejo congelado). Queda como riesgo.
+
+### Paso 8. Documentación [no visible]
+
+- `ESTADO.md`, la sección 9 de este informe y el asiento que diga Javi.
+- No se toca el plan compartido: `cloneAndScalePlan` escala el texto de `p1`, `p2`, la compra y la receta, y con la comida doble hace lo mismo (sección 9).
+
+Fuera de esta etapa: alternativa solo del segundo, edición en el panel del nutricionista, sugerencia del sábado con segundo, la forma nueva del plan con dos platos como datos (etapa 3 de la sección 9), el domingo como día de legumbre y la legumbre a 4.

@@ -96,3 +96,33 @@ describe('runWalk: sorteo de los dias de legumbre (D-117)', () => {
     }
   });
 });
+
+// Perfil con 1 o 2 platos compuestos de legumbre (decision de Javi, 2026-11-15, igual que el hook):
+// se sortean 3 dias igual; los que no se llenan siguen la cascada normal y el log lo dice
+// (dia_legumbre_sin_candidato), sin el suelo semanal de D-024.
+describe('runWalk: perfil con pocos compuestos de legumbre', () => {
+  const compuestos = catalog.filter((d) => d.rol === 'rotativo' && esCompuestoLegumbre(d));
+  const redactado = catalog.find((d) => d.nombre === 'Fabada asturiana simplificada');
+  const universo = (n) => [...sinLegumbre, ...compuestos.slice(0, n), redactado];
+
+  for (const n of [1, 2]) {
+    it(`con ${n} compuesto(s): 3 dias sorteados, como mucho ${n} con legumbre compuesta, el resto sin candidato y sin suelo de D-024`, () => {
+      let sinCandidato = 0;
+      for (let s = 0; s < 24; s++) {
+        const seed = `pocos-${n}-${s}`;
+        const r = runWalk({ weekArc: semana(seed), catalog: universo(n), seed });
+        const [ev] = sorteo(r.decisionLog);
+        expect(ev.dias).toHaveLength(3);
+        const comidaDe = (d) => r.slots.find((x) => x.day === d && x.momento === 'comida').dishId;
+        const llenos = ev.dias.filter((d) => compuestos.some((c) => c.id === comidaDe(d)));
+        expect(llenos.length).toBeLessThanOrEqual(n);
+        const vacios = r.decisionLog.filter((e) => e.causa === 'dia_legumbre_sin_candidato').map((e) => e.day);
+        expect(vacios.sort()).toEqual(ev.dias.filter((d) => !llenos.includes(d)).sort());
+        sinCandidato += vacios.length;
+        // Ningun hueco atiende el suelo semanal de legumbre de D-024.
+        expect(r.decisionLog.some((e) => String(e.evidencia || '').includes('target="legumbre"'))).toBe(false);
+      }
+      expect(sinCandidato).toBeGreaterThanOrEqual(24 * (3 - n));
+    });
+  }
+});

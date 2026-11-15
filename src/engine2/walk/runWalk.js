@@ -113,7 +113,7 @@ import {
   initFrequencyState, registerConsumption, chooseFrequencyLevel, chooseIdentityLevel,
 } from './frequencies.js';
 import {
-  reglaLegumbreActiva, sortearDiasLegumbre, elegirSegundo, claveSegundo,
+  reglaLegumbreActiva, sortearDiasLegumbre, elegirSegundo, claveSegundo, infraccionesD099,
 } from './legumbre.js';
 
 /** D-107: cenas de huevo por semana como mucho, con dieta vegetariana (decisión de Javi). */
@@ -189,6 +189,33 @@ function reshapeP1aEntry(entry) {
  * @returns {{slots: object[], segundos: {day: string, momento: 'comida', dishId: string, primero: string}[], decisionLog: object[]}}
  */
 export function runWalk(input) {
+  // Red de seguridad de los segundos (D-116.5). El segundo añade apariciones
+  // de proteina a la semana; en un catalogo con pocas especies puede dejarla
+  // con alguna infraccion de D-099.3. Si la semana termina asi, el walk se
+  // repite ENTERO sin segundos, con la misma seed: los dias de legumbre
+  // sorteados siguen y la legumbre va como plato unico. Solo si habia algun
+  // segundo: sin ellos no hay nada que retirar.
+  const resultado = walkConRedDeFamilia(input, { sinSegundos: false });
+  if (!resultado.segundos.length) return resultado;
+  const infracciones = infraccionesD099(input, resultado);
+  if (!infracciones.length) return resultado;
+  const sinSegundos = walkConRedDeFamilia(input, { sinSegundos: true });
+  sinSegundos.decisionLog.push({
+    decisionId: `walk-select-${sinSegundos.decisionLog.length}`,
+    day: undefined,
+    momento: undefined,
+    plato: undefined,
+    causa: 'segundos_retirados_d099',
+    evidencia: `con los segundos la semana incumplia D-099.3 (${infracciones.join('; ')}); `
+      + 'se repite el walk entero sin segundos, con la misma semilla: la legumbre de los dias sorteados va como plato unico',
+    alternativasDescartadas: [],
+    evento: true,
+    infracciones,
+  });
+  return sinSegundos;
+}
+
+function walkConRedDeFamilia(input, { sinSegundos }) {
   // Red de seguridad del filtro de familia (decision de Javi, 2026-11-13).
   // Ese filtro mira un hueco cada vez: en un catalogo muy corto puede gastar
   // antes de tiempo los platos que valian para un hueco posterior y dejarlo
@@ -197,10 +224,10 @@ export function runWalk(input) {
   // resultado siempre) antes de propagar el fallo, y se dice en el log.
   const uso = { familiaDescarto: false };
   try {
-    return walkUnaVez(input, { sinFamilia: false, uso });
+    return walkUnaVez(input, { sinFamilia: false, uso, sinSegundos });
   } catch (err) {
     if (!(err && err.poolVacio) || !uso.familiaDescarto) throw err;
-    const resultado = walkUnaVez(input, { sinFamilia: true, uso: { familiaDescarto: false } });
+    const resultado = walkUnaVez(input, { sinFamilia: true, uso: { familiaDescarto: false }, sinSegundos });
     resultado.decisionLog.push({
       decisionId: `walk-select-${resultado.decisionLog.length}`,
       day: undefined,
@@ -216,7 +243,7 @@ export function runWalk(input) {
   }
 }
 
-function walkUnaVez(input, { sinFamilia, uso }) {
+function walkUnaVez(input, { sinFamilia, uso, sinSegundos }) {
   // input.memoryStore se recibe por inyeccion y NUNCA se lee ni se invoca aqui (D-019, v13):
   // no se desestructura para que quede estructuralmente imposible tocarlo por accidente.
   const {
@@ -301,7 +328,7 @@ function walkUnaVez(input, { sinFamilia, uso }) {
   // ancla; nunca para la sugerencia de la comida libre (D-114). El segundo se
   // come: cuenta para los suelos, la verdura del dia y la identidad.
   function segundoDe(day, i, slot, primeroId) {
-    if (!legumbre || slot.fixedRole === 'libre') return;
+    if (!legumbre || sinSegundos || slot.fixedRole === 'libre') return;
     const primero = protPorId.get(primeroId);
     if (!primero || !esCompuestoLegumbre(primero)) return;
     const elegido = elegirSegundo({

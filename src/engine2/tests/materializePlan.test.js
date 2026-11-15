@@ -161,7 +161,9 @@ describe('materializePlan — §4.6 decisionLog es UNA coleccion, cardinalidad =
     // un log). No se ejecuta la mutacion aqui -- ver reporte, Paso 3.
     const catalog = loadCatalog();
     const { weekArc, decisionLog: arcLog } = buildWeekArc(FIXTURE_INPUT);
-    const { decisionLog: walkLog } = runWalk({ weekArc, catalog, seed: FIXTURE_INPUT.seed, profile: FIXTURE_INPUT.profile });
+    // Mismo catalogo que usa materializePlan por dentro (ajustes de D-099 y nombres de D-105): con el catalogo
+    // sin ajustar el walk es otro y su log no tiene por que medir lo mismo.
+    const { decisionLog: walkLog } = runWalk({ weekArc, catalog: aplicarNombresD105(aplicarAjustesD099(catalog)), seed: FIXTURE_INPUT.seed, profile: FIXTURE_INPUT.profile });
     const plan = materializePlan({ ...FIXTURE_INPUT, catalog });
     expect(plan.decisionLog).toHaveLength(arcLog.length + walkLog.length);
     expect(plan.decisionLog).not.toHaveLength(walkLog.length);

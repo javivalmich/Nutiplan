@@ -2602,10 +2602,11 @@
    "cantidades": {
     "calculadoAusenteEnCompra": 0,
     "comidasAjustadas": 216,
-    "decididoIgualQueCompra": 544,
+    "decididoIgualQueCompra": 550,
     "dentroDeTolerancia": 134,
     "dentroPorClave": {
-     "aove": 119,
+     "aceite_semillas": 1,
+     "aove": 118,
      "kefir": 4,
      "leche_semi": 11
     },
@@ -2613,17 +2614,16 @@
     "enTechoBase": 17,
     "enTechoPorClave": {
      "boniato": 1,
-     "fruta": 19,
-     "pan_integral": 2,
-     "patata": 1,
+     "fruta": 18,
+     "pan_integral": 4,
      "semillas": 4
     },
-    "frutaAnadida": 9,
+    "frutaAnadida": 7,
     "fueraDeTolerancia": 0,
     "fueraPorClave": {},
     "huevosMaxComida": 3,
     "huevosMaxDia": 4,
-    "ingredientes": 678,
+    "ingredientes": 684,
     "kcalDeclaradaDistintaDeReleida": 0,
     "maximoG": {
      "alubias_seco": 120,
@@ -2634,12 +2634,13 @@
      "pan_blanco": 50,
      "pan_integral": 100,
      "pasta_integral_seco": 125,
-     "patata": 350,
+     "pasta_seco": 60,
+     "patata": 300,
      "quinoa_seco": 125
     },
     "mayorDiferenciaG": 1.6,
     "mayorDiferenciaKcal": 15,
-    "panAnadido": 50,
+    "panAnadido": 56,
     "principales": 112,
     "replicaDistinta": 0,
     "sobreTechoBase": 10,
@@ -2647,15 +2648,15 @@
     "textoDistintoPorClave": {
      "cebolla": 4,
      "huevo": 9,
-     "miel": 9,
-     "pan_integral": 3,
+     "miel": 7,
+     "pan_integral": 4,
      "salsa_soja": 1,
      "tomate": 6,
-     "tomate_triturado": 1,
+     "tomate_triturado": 2,
      "yogur_griego_0": 2
     },
-    "textoIgual": 652,
-    "textoSinCantidad": 249
+    "textoIgual": 653,
+    "textoSinCantidad": 253
    },
    "composicion": {
     "diaLegumbreSinCandidato": 1,
@@ -2667,8 +2668,8 @@
      "carne": 17
     },
     "familiaDiasSeguidosSinAncla": 17,
-    "familiaMismoDia": 10,
-    "legumbre": 26,
+    "familiaMismoDia": 5,
+    "legumbre": 27,
     "legumbreEnCena": 0,
     "legumbrePlatoUnicoPorTope": 0,
     "maximoSemanal": {
@@ -2678,7 +2679,7 @@
      "rachaPescado": 0
     },
     "mediaSemanal": {
-     "legumbre": 3.3,
+     "legumbre": 3.4,
      "pescado": 0
     },
     "pescado": 0,
@@ -2686,49 +2687,50 @@
     "platoRepetidoEnSemana": 0,
     "porEspecie": {
      "alubias": 4,
-     "cerdo": 12,
-     "conejo": 9,
+     "cerdo": 8,
+     "conejo": 10,
      "garbanzos": 12,
      "huevo": 16,
-     "jamon": 11,
-     "lentejas": 10,
+     "jamon": 10,
+     "lentejas": 11,
      "mozzarella": 1,
-     "pavo": 9,
-     "pollo": 8,
-     "ternera": 12
+     "pavo": 11,
+     "pollo": 11,
+     "ternera": 10
     },
     "porFamilia": {
-     "ave": 17,
-     "carne": 44,
-     "cereal": 1,
+     "ave": 21,
+     "carne": 38,
+     "cereal": 2,
      "huevo": 16,
-     "legumbre": 26
+     "legumbre": 27
     },
     "porFamiliaCena": {
-     "ave": 9,
-     "carne": 33,
-     "huevo": 14
+     "ave": 14,
+     "carne": 28,
+     "cereal": 1,
+     "huevo": 13
     },
     "porFamiliaComida": {
-     "ave": 8,
-     "carne": 11,
+     "ave": 7,
+     "carne": 10,
      "cereal": 1,
-     "huevo": 2,
-     "legumbre": 26
+     "huevo": 3,
+     "legumbre": 27
     },
     "redactadosCena": 25,
     "redactadosComida": 1,
     "segundoSinCandidato": 0,
-    "segundos": 26,
+    "segundos": 20,
     "segundosPorFamilia": {
-     "ave": 16,
-     "carne": 10
+     "ave": 9,
+     "carne": 11
     },
-    "semanasSegundosRetirados": 0,
+    "semanasSegundosRetirados": 2,
     "servidos": 104,
     "sugerenciaSabado": {
-     "carne": 5,
-     "legumbre": 3
+     "carne": 3,
+     "legumbre": 5
     }
    },
    "id": "sin-pescado-2000",
@@ -2739,11 +2741,11 @@
    "nutricion": {
     "comidasPrincipales": 144,
     "comidasPrincipalesCortas": 3,
-    "desvioSemanaMax": -0.2,
-    "desvioSemanaMedio": -1,
-    "desvioSemanaMin": -1.9,
+    "desvioSemanaMax": -0.4,
+    "desvioSemanaMedio": -1.1,
+    "desvioSemanaMin": -2,
     "diasFueraKcal": 0,
-    "diasSinProteina": 26,
+    "diasSinProteina": 29,
     "semanasFueraDe5": 0
    },
    "planes": [
@@ -2824,10 +2826,10 @@
     },
     {
      "semana": 63,
-     "huella": "b001259b2496b36f",
+     "huella": "be89d523e2001308",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -1.1,
+     "desvioKcal": -0.7,
      "pescado": 0,
      "legumbre": 3,
      "platos": [
@@ -2835,74 +2837,74 @@
       "Lu-N [carne] Ternera magra en ensalada",
       "Ma-C [legumbre] Lentejas con pimentón con pimientos",
       "Ma-N [huevo] Tortilla de patatas completa con ensalada",
-      "Mi-C [carne] Lomo de cerdo guisado con alcachofas y arroz blanco",
-      "Mi-N [carne] Hamburguesa de ternera con pan brioche y patatas gajo",
+      "Mi-C [carne] Conejo al horno con alcachofas y patata",
+      "Mi-N [ave] Quesadilla fitness de pollo y queso bajo en grasa",
       "Ju-C [legumbre] Garbanzos al curry con brócoli",
-      "Ju-N [huevo] Pisto manchego con huevo a la plancha",
-      "Vi-C [carne] Lomo de cerdo al horno con mostaza y miel con col de bruselas y patata",
-      "Vi-N [carne] Menestra de verduras de temporada con jamón",
-      "Sá-C* [carne] Caldo gallego de repollo (completo)",
-      "Sá-N [ave] Pechuga de pavo salteada con curry y cúrcuma con calabacín y arroz blanco",
-      "Do-C [legumbre] Lentejas con pimentón con zanahoria",
-      "Do-N [carne] Conejo al horno con espinacas y patata"
+      "Ju-N [huevo] Shakshuka con pan integral",
+      "Vi-C [carne] Conejo al ajillo con zanahoria y arroz blanco",
+      "Vi-N [ave] Pechuga de pavo al horno con tomate casero con berenjena",
+      "Sá-C* [legumbre] Curry de garbanzos con arroz basmati",
+      "Sá-N [carne] Lomo de cerdo al horno con mostaza y miel con col de bruselas y patata",
+      "Do-C [legumbre] Lentejas con pimentón con espinacas",
+      "Do-N [ave] Pechuga de pavo salteada con curry y cúrcuma con calabacín y arroz blanco"
      ]
     },
     {
      "semana": 64,
-     "huella": "1a312da5f4dbfc47",
+     "huella": "28ada0cc3508f917",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -1.6,
+     "desvioKcal": -1.3,
      "pescado": 0,
-     "legumbre": 3,
+     "legumbre": 4,
      "platos": [
       "Lu-C [legumbre] Alubias blancas al ajillo con acelgas",
-      "Lu-N [huevo] Crema de calabacín con queso fresco y huevo",
-      "Ma-C [carne] Lomo de cerdo al horno con calabacín y boniato",
-      "Ma-N [carne] Conejo al ajillo con alcachofas",
-      "Mi-C [legumbre] Garbanzos con pimentón con espinacas",
-      "Mi-N [huevo] Crema de calabaza con huevos encima",
+      "Lu-N [ave] Hamburguesa de pollo con pan integral y patatas gajo",
+      "Ma-C [carne] Conejo al ajillo con pimientos y patata",
+      "Ma-N [carne] Lomo de cerdo al horno con mostaza y miel con col de bruselas",
+      "Mi-C [legumbre] Lentejas con pimentón con zanahoria",
+      "Mi-N [huevo] Pisto manchego con huevo a la plancha",
       "Ju-C [carne] Conejo al horno con berenjena y arroz blanco",
-      "Ju-N [carne] Lomo de cerdo a la plancha con mostaza y miel con brócoli",
-      "Vi-C [ave] Pechuga de pavo en ensalada",
-      "Vi-N [carne] Sopa castellana con jamón serrano y huevo pochado",
-      "Sá-C* [legumbre] Fabada asturiana simplificada",
-      "Sá-N [carne] Ternera magra a la plancha con pimientos",
-      "Do-C [legumbre] Garbanzos estofados con alcachofas",
-      "Do-N [carne] Croquetas caseras de jamón al airfryer con ensalada"
+      "Ju-N [ave] Crema de calabaza con pechuga de pollo encima",
+      "Vi-C [legumbre] Garbanzos estofados con alcachofas",
+      "Vi-N [huevo] Crema de calabacín con queso fresco y huevo",
+      "Sá-C* [carne] Lomo de cerdo al horno con calabacín y boniato",
+      "Sá-N [ave] Pechuga de pavo a la plancha con brócoli",
+      "Do-C [legumbre] Garbanzos con pimentón con espinacas",
+      "Do-N [carne] Sopa castellana con jamón serrano y huevo pochado"
      ]
     },
     {
      "semana": 65,
-     "huella": "9b067160315bb197",
+     "huella": "b8a97e8fbedf76bc",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -0.7,
      "pescado": 0,
      "legumbre": 4,
      "platos": [
-      "Lu-C [legumbre] Lentejas al ajillo con calabacín",
+      "Lu-C [legumbre] Garbanzos con pimentón con zanahoria",
       "Lu-N [ave] Pechuga de pavo al horno con tomate casero con berenjena",
       "Ma-C [carne] Conejo al horno con alcachofas y patata",
-      "Ma-N [huevo] Huevos en tortilla con zanahoria",
-      "Mi-C [legumbre] Lentejas con pimentón con pimientos",
+      "Ma-N [huevo] Huevos a la plancha con tomate cherry",
+      "Mi-C [legumbre] Lentejas con pimentón con espinacas",
       "Mi-N [ave] Pechuga de pavo a la plancha con curry y cúrcuma con judías verdes y boniato",
-      "Ju-C [huevo] Huevos revueltos con espinacas y arroz blanco",
-      "Ju-N [carne] Ternera magra en ensalada",
-      "Vi-C [legumbre] Garbanzos con pimentón con zanahoria",
+      "Ju-C [carne] Ternera magra guisada con pimientos y arroz blanco",
+      "Ju-N [huevo] Shakshuka con pan integral",
+      "Vi-C [legumbre] Garbanzos al curry con brócoli",
       "Vi-N [carne] Menestra de verduras de temporada con jamón",
       "Sá-C* [carne] Caldo gallego de repollo (completo)",
-      "Sá-N [carne] Ternera magra al horno con brócoli y boniato",
-      "Do-C [legumbre] Garbanzos al curry con brócoli",
-      "Do-N [carne] Conejo al horno con espinacas y patata"
+      "Sá-N [carne] Ternera magra a la plancha con pimientos y patata",
+      "Do-C [legumbre] Lentejas con pimentón con pimientos",
+      "Do-N [carne] Croquetas caseras de jamón al airfryer con ensalada"
      ]
     },
     {
      "semana": 66,
-     "huella": "ddc22aa81a515d95",
+     "huella": "03e456bc6112daa1",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -1.9,
+     "desvioKcal": -1.8,
      "pescado": 0,
      "legumbre": 3,
      "platos": [
@@ -2911,40 +2913,40 @@
       "Ma-C [legumbre] Garbanzos estofados con alcachofas",
       "Ma-N [carne] Conejo al ajillo con espinacas",
       "Mi-C [ave] Pechuga de pollo en ensalada con quinoa",
-      "Mi-N [huevo] Pisto manchego con huevo a la plancha",
+      "Mi-N [huevo] Crema de calabaza con huevos encima",
       "Ju-C [legumbre] Alubias blancas al ajillo con acelgas",
       "Ju-N [carne] Hamburguesa de ternera con pan brioche y patatas gajo",
-      "Vi-C [ave] Pechuga de pavo al horno con tomate casero con berenjena y arroz blanco",
+      "Vi-C [ave] Pechuga de pavo al horno con judías verdes y patata",
       "Vi-N [carne] Sopa castellana con jamón serrano y huevo pochado",
-      "Sá-C* [carne] Caldo gallego de grelos (completo)",
+      "Sá-C* [legumbre] Falafel con tabulé de bulgur y yogur de menta",
       "Sá-N [carne] Lomo de cerdo al horno con mostaza y miel con col de bruselas",
       "Do-C [legumbre] Lentejas con pimentón con zanahoria",
-      "Do-N [carne] Croquetas caseras de jamón al airfryer con ensalada"
+      "Do-N [carne] Conejo al horno con espinacas y patata"
      ]
     },
     {
      "semana": 67,
-     "huella": "3a3d16a0d1643cba",
+     "huella": "8be07a2fde0f6b73",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -0.2,
+     "desvioKcal": -2,
      "pescado": 0,
      "legumbre": 4,
      "platos": [
       "Lu-C [legumbre] Lentejas al ajillo con calabacín",
-      "Lu-N [ave] Pechuga de pavo al horno con mostaza y miel con espinacas y boniato",
-      "Ma-C [carne] Lomo de cerdo guisado con alcachofas y arroz blanco",
-      "Ma-N [carne] Ternera magra a la plancha con pimientos",
-      "Mi-C [legumbre] Garbanzos al curry con brócoli",
-      "Mi-N [huevo] Shakshuka con pan integral",
-      "Ju-C [carne] Lomo de cerdo a la plancha con mostaza y miel con zanahoria y patata",
-      "Ju-N [carne] Menestra de verduras de temporada con jamón",
-      "Vi-C [legumbre] Lentejas con pimentón con pimientos",
-      "Vi-N [huevo] Crema de calabacín con queso fresco y huevo",
-      "Sá-C* [carne] Tacos de ternera al pastor con piña y cebolla",
-      "Sá-N [carne] Conejo al horno con espinacas y patata",
-      "Do-C [legumbre] Garbanzos con pimentón con zanahoria",
-      "Do-N [ave] Caldo gallego de grelos (ligero)"
+      "Lu-N [carne] Ternera magra a la plancha con pimientos y patata",
+      "Ma-C [huevo] Huevos revueltos con champiñones y patata",
+      "Ma-N [ave] Pechuga de pavo a la plancha con brócoli",
+      "Mi-C [legumbre] Garbanzos con pimentón con zanahoria",
+      "Mi-N [cereal] Ramen simplificado con pollo y huevo",
+      "Ju-C [huevo] Crema de espinacas con huevos encima",
+      "Ju-N [ave] Hamburguesa de pavo con pan integral y patatas gajo",
+      "Vi-C [legumbre] Garbanzos al curry con brócoli",
+      "Vi-N [carne] Menestra de verduras de temporada con jamón",
+      "Sá-C* [legumbre] Burrito de alubias negras, arroz y verduras",
+      "Sá-N [carne] Conejo al ajillo con champiñones y arroz blanco",
+      "Do-C [legumbre] Lentejas con pimentón con espinacas",
+      "Do-N [carne] Croquetas caseras de jamón al airfryer con ensalada"
      ]
     }
    ],

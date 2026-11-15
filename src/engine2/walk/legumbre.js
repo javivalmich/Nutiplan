@@ -12,7 +12,9 @@
 import { DAYS_ORDER } from '../skeleton/days.js';
 import { mulberry32, seedFromString } from '../skeleton/rng.js';
 import { DEFAULT_WEEKLY_TARGETS } from '../contracts/weeklyTargets.js';
-import { familiaProteica, esCompuestoLegumbre } from '../dishes/bases.js';
+import {
+  familiaProteica, proteinaPrincipal, esCompuestoLegumbre, TOPE_PROTEINA_SEMANA,
+} from '../dishes/bases.js';
 
 /** La regla es solo de dietas omnivoras (D-116.9, D-117.8). */
 export function reglaLegumbreActiva(profile) {
@@ -165,4 +167,62 @@ export function elegirSegundo({
     alternativasDescartadas: nivel.filter((d) => d.id !== elegido.id).map((d) => d.id),
   });
   return elegido;
+}
+
+/**
+ * Infracciones de D-099.3 de una semana ya elegida, con los segundos dentro
+ * (D-116.5). Se mira sobre los platos SERVIDOS: sin la sugerencia de la comida
+ * libre. Devuelve una lista de textos; vacia si la semana cumple.
+ *   - plato repetido en la semana, o de la semana anterior (por nombre visible);
+ *   - una especie (proteina principal) mas de 2 veces;
+ *   - una especie dos veces el mismo dia, o en dias seguidos (salvo cuando
+ *     las dos apariciones son platos del ancla);
+ *   - legumbre en la cena.
+ * Es una comprobacion (filtro booleano), no una medida que decida entre semanas.
+ * @param {{catalog: ReadonlyArray<object>, platosRecientes?: string[]}} input
+ * @param {{slots: object[], segundos: object[], decisionLog: object[]}} resultado
+ * @returns {string[]}
+ */
+export function infraccionesD099(input, resultado) {
+  const porId = new Map(input.catalog.map((d) => [d.id, d]));
+  const nombre = (id) => (porId.get(id) && porId.get(id).nombre) || id;
+  const anclas = new Set(resultado.decisionLog
+    .filter((e) => typeof e.causa === 'string' && e.causa.startsWith('ancla_base') && e.day && e.momento)
+    .map((e) => `${e.day}::${e.momento}`));
+  const servidos = resultado.slots
+    .filter((s) => s.dishId && !(s.fixedRole === 'libre' && s.momento === 'comida'))
+    .map((s) => ({ day: s.day, momento: s.momento, id: s.dishId, ancla: anclas.has(`${s.day}::${s.momento}`) }));
+  for (const s of resultado.segundos || []) servidos.push({ day: s.day, momento: 'comida', id: s.dishId, ancla: false });
+
+  const out = [];
+  const nombres = servidos.map((s) => nombre(s.id));
+  const repetidos = nombres.filter((n, k) => nombres.indexOf(n) !== k);
+  if (repetidos.length) out.push(`plato repetido: ${[...new Set(repetidos)].join(', ')}`);
+  const recientes = new Set((input.platosRecientes || []).map(nombre));
+  const anteriores = nombres.filter((n) => recientes.has(n));
+  if (anteriores.length) out.push(`plato de la semana anterior: ${anteriores.join(', ')}`);
+
+  const especie = (s) => (porId.has(s.id) ? proteinaPrincipal(porId.get(s.id)) : null);
+  const veces = new Map();
+  for (const s of servidos) { const e = especie(s); if (e) veces.set(e, (veces.get(e) || 0) + 1); }
+  const sobreTope = [...veces].filter(([, n]) => n > TOPE_PROTEINA_SEMANA);
+  if (sobreTope.length) out.push(`especie mas de ${TOPE_PROTEINA_SEMANA} veces: ${sobreTope.map(([e, n]) => `${e} ${n}`).join(', ')}`);
+
+  for (let i = 0; i < DAYS_ORDER.length; i++) {
+    const hoy = servidos.filter((s) => s.day === DAYS_ORDER[i]);
+    const esp = hoy.map(especie).filter(Boolean);
+    const dobles = esp.filter((e, k) => esp.indexOf(e) !== k);
+    if (dobles.length) out.push(`${DAYS_ORDER[i]}: ${[...new Set(dobles)].join(', ')} dos veces el mismo dia`);
+    if (i === DAYS_ORDER.length - 1) continue;
+    const manana = servidos.filter((s) => s.day === DAYS_ORDER[i + 1]);
+    for (const e of new Set(esp)) {
+      const h = hoy.filter((s) => especie(s) === e);
+      const m = manana.filter((s) => especie(s) === e);
+      if (m.length && !(h.some((s) => s.ancla) && m.some((s) => s.ancla))) out.push(`${e} en ${DAYS_ORDER[i]} y ${DAYS_ORDER[i + 1]}`);
+    }
+  }
+
+  const cenaLegumbre = servidos.filter((s) => s.momento === 'cena' && porId.has(s.id) && familiaProteica(porId.get(s.id)) === 'legumbre');
+  if (cenaLegumbre.length) out.push(`legumbre en la cena: ${cenaLegumbre.map((s) => s.day).join(', ')}`);
+  return out;
 }

@@ -88,9 +88,10 @@ describe('runWalk - v1: semana real (catalogo 241), degradacion de capricho visi
 
 
   it('14 entradas de relleno (no-evento), cada una con plato/causa/alternativasDescartadas', () => {
-    const rellenos = decisionLog.filter((d) => !d.evento);
+    // D-116: el segundo de una comida de legumbre tiene su propia entrada (momento "comida_segundo"); no es un hueco.
+    const rellenos = decisionLog.filter((d) => !d.evento && d.momento !== 'comida_segundo');
     expect(rellenos).toHaveLength(14);
-    for (const r of rellenos) {
+    for (const r of decisionLog.filter((d) => !d.evento)) {
       expect(typeof r.plato).toBe('string');
       expect(typeof r.causa).toBe('string');
       expect(r.causa.length).toBeGreaterThan(0);

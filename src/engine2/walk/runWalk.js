@@ -105,12 +105,16 @@ import { DAYS_ORDER } from '../skeleton/days.js';
 import { mulberry32, seedFromString } from '../skeleton/rng.js';
 import { MOMENTOS } from '../dishes/schema.js';
 import { computeVetoUniverse } from './vetoes.js';
-import { proteinaPrincipal, familiaProteica, esCompuestoLegumbre, TOPE_PROTEINA_SEMANA } from '../dishes/bases.js';
+import {
+  proteinaPrincipal, familiaProteica, esCompuestoLegumbre, esSegundoDeLegumbre, TOPE_PROTEINA_SEMANA,
+} from '../dishes/bases.js';
 import { alinoDe, TOPE_AJILLO_SEMANA } from '../dishes/alinosD105.js';
 import {
   initFrequencyState, registerConsumption, chooseFrequencyLevel, chooseIdentityLevel,
 } from './frequencies.js';
-import { reglaLegumbreActiva, sortearDiasLegumbre } from './legumbre.js';
+import {
+  reglaLegumbreActiva, sortearDiasLegumbre, elegirSegundo, claveSegundo,
+} from './legumbre.js';
 
 /** D-107: cenas de huevo por semana como mucho, con dieta vegetariana (decisión de Javi). */
 export const TOPE_CENAS_HUEVO = 3;
@@ -182,7 +186,7 @@ function reshapeP1aEntry(entry) {
  * entrada en la allowlist); el tercer productor (anchorVista) vive en
  * buildWeekArc.js, fuera de este modulo.
  * @param {{weekArc: object, catalog: ReadonlyArray<object>, seed: (number|string), memoryStore?: object, profile?: {intolerances?: string[]}, fuenteEditorial?: {version: number, confirmed: object}}} input
- * @returns {{slots: object[], decisionLog: object[]}}
+ * @returns {{slots: object[], segundos: {day: string, momento: 'comida', dishId: string, primero: string}[], decisionLog: object[]}}
  */
 export function runWalk(input) {
   // Red de seguridad del filtro de familia (decision de Javi, 2026-11-13).
@@ -292,6 +296,29 @@ function walkUnaVez(input, { sinFamilia, uso }) {
     });
   }
 
+  // Segundo de un primero de legumbre (D-116): la legumbre compuesta no va
+  // como plato unico. Vale para la que elige el walk y para la que coloco el
+  // ancla; nunca para la sugerencia de la comida libre (D-114). El segundo se
+  // come: cuenta para los suelos, la verdura del dia y la identidad.
+  function segundoDe(day, i, slot, primeroId) {
+    if (!legumbre || slot.fixedRole === 'libre') return;
+    const primero = protPorId.get(primeroId);
+    if (!primero || !esCompuestoLegumbre(primero)) return;
+    const elegido = elegirSegundo({
+      rng: legumbre.rng, primero, day, i, slots, catalog, usedIds, usedNames, recientes, vetoedIds, sinFamilia, uso,
+      proteinaDe: proteinaCache,
+      familiaDe: familiaCache,
+      alinoDe: (id) => (protPorId.has(id) ? alinoDe(protPorId.get(id)) : null),
+      topeProteina: TOPE_PROTEINA_SEMANA,
+      topeAjillo: TOPE_AJILLO_SEMANA,
+      esSegundo: esSegundoDeLegumbre,
+      nivelIdentidad: (candidatos) => chooseIdentityLevel({ candidatesFinal: candidatos, state: freqState, fuenteEditorial }),
+      decisionLog,
+      registrar: pushEvent,
+    });
+    if (elegido) registerConsumption(freqState, elegido, day, undefined, fuenteEditorial);
+  }
+
   function getDishAt(day, momento) {
     const slot = slots.get(slotKey(day, momento));
     if (!slot || slot.abierto || !slot.dishId) return null;
@@ -368,7 +395,10 @@ function walkUnaVez(input, { sinFamilia, uso }) {
     for (const momento of MOMENTOS) {
       const key = slotKey(day, momento);
       const slot = slots.get(key);
-      if (!slot.abierto) continue; // Paso 1: ya colocado, la cadena no corre.
+      if (!slot.abierto) { // Paso 1: ya colocado, la cadena no corre.
+        if (momento === 'comida') segundoDe(day, i, slot, slot.dishId);
+        continue;
+      }
       // La comida del dia libre es una sugerencia, no un plato servido (D-099.3.i, D-114).
       const esSugerencia = slot.fixedRole === 'libre' && momento === 'comida';
 
@@ -584,7 +614,7 @@ function walkUnaVez(input, { sinFamilia, uso }) {
         paso4 = {
           nivel: candidatesB,
           causa: 'dia_legumbre_sorteado',
-          evidencia: `paso 4: ${day} es dia de legumbre (sorteado con la semilla); nivel de legumbre = ${nivelLegumbre.candidatos} candidatos de ${nivelLegumbre.de}, antes que las preferencias A y B y que la verdura del dia; ${candidatesB.length} tras A y B`,
+          evidencia: `paso 4: ${day} es dia de legumbre (sorteado con la semilla); nivel preferente = ${nivelLegumbre.candidatos} compuestos de legumbre de ${nivelLegumbre.de} candidatos, fijado antes que las preferencias A y B y que la verdura del dia; ${candidatesB.length} tras A y B`,
         };
       } else if (legumbre) {
         let baseB = candidatesB;
@@ -600,7 +630,7 @@ function walkUnaVez(input, { sinFamilia, uso }) {
           paso4 = {
             ...paso4,
             causa: paso4.causa || 'vecino_de_dia_legumbre',
-            evidencia: `${paso4.evidencia ? `${paso4.evidencia}; ` : 'paso 4: '}sin legumbre: el dia de al lado es dia de legumbre (${candidatesB.length - baseB.length} candidatos a nivel inferior)`,
+            evidencia: `${paso4.evidencia ? `${paso4.evidencia}; ` : 'paso 4: '}nivel preferente sin legumbre (${baseB.length} de ${candidatesB.length} candidatos post-A/B): el dia de al lado es dia de legumbre`,
           };
         }
       } else {
@@ -647,6 +677,7 @@ function walkUnaVez(input, { sinFamilia, uso }) {
         alternativas,
       );
       if (!esSugerencia) registerConsumption(freqState, chosen, day, undefined, fuenteEditorial);
+      if (momento === 'comida' && !esSugerencia) segundoDe(day, i, slot, chosen.id);
     }
   }
 
@@ -667,5 +698,9 @@ function walkUnaVez(input, { sinFamilia, uso }) {
 
   const orderedSlots = DAYS_ORDER.flatMap((day) => MOMENTOS.map((momento) => slots.get(slotKey(day, momento))));
 
-  return { slots: orderedSlots, decisionLog };
+  // Segundos (D-116): no son huecos; van aparte, en orden de dia.
+  const segundos = DAYS_ORDER.map((day) => slots.get(claveSegundo(day))).filter(Boolean)
+    .map((s) => ({ day: s.day, momento: s.momento, dishId: s.dishId, primero: s.primero }));
+
+  return { slots: orderedSlots, segundos, decisionLog };
 }

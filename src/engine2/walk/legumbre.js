@@ -73,3 +73,96 @@ export function sortearDiasLegumbre({ p1aSlots, catalog, vetoedIds, seed, regist
     { dias, pedidos });
   return { dias: new Set(dias), rng };
 }
+
+/** Clave del segundo de la comida de `day` en el mapa de huecos del walk. */
+export const claveSegundo = (day) => `${day}::comida::segundo`;
+
+/**
+ * Segundo de un primero de legumbre ya colocado en la comida de `day` (D-116).
+ *
+ * Candidatos: platos rotativos que valen de segundo (compuesto de proteina con
+ * verdura, sin cereal, de ave o carne), sin usar en la semana ni en la
+ * anterior y sin vetar. En el catalogo son platos de cena: aqui se admiten en
+ * la comida. Pasan por los mismos filtros que cualquier hueco y en el mismo
+ * orden, cada uno con su vuelta atras: tope por especie, separacion por
+ * especie, familia en dias seguidos y alino; despues el paso 5 (identidad de
+ * verdura) y el azar sembrado («::walk::estructura»). El paso 4 no lo dirige.
+ *
+ * Si ningun candidato cumple el tope de 2 por especie, la legumbre va como
+ * plato unico (D-116.4). El segundo se guarda en el mapa de huecos del walk
+ * con una clave propia: asi los huecos siguientes lo ven como un plato mas
+ * (no repetir, tope, separacion, familia, alino) sin ser uno de los 14 huecos.
+ * Quien llama registra su consumo.
+ * @returns {object|null} el plato elegido, o null si la legumbre va como plato unico
+ */
+export function elegirSegundo({
+  rng, primero, day, i, slots, catalog, usedIds, usedNames, recientes, vetoedIds, sinFamilia, uso,
+  proteinaDe, familiaDe, alinoDe, topeProteina, topeAjillo, esSegundo, nivelIdentidad, decisionLog, registrar,
+}) {
+  const nombrePrimero = primero.nombre || primero.id;
+  let pool = catalog.filter((d) => d.rol === 'rotativo' && esSegundo(d) && !usedIds.has(d.id) && !usedNames.has(d.nombre || d.id)
+    && !vetoedIds.has(d.id) && !recientes.has(d.nombre || d.id));
+  if (!pool.length) {
+    registrar(day, 'segundo_sin_candidato', `«${nombrePrimero}» se queda sin segundo: ningun plato de proteina con verdura disponible (sin usar en la semana ni en la anterior)`);
+    return null;
+  }
+  const puestos = [...slots.values()].filter((s) => !s.abierto && s.dishId);
+  const dist = (s) => Math.abs(DAYS_ORDER.indexOf(s.day) - i);
+  const notas = [];
+  const filtrar = (nombre, pred, detalle) => {
+    const f = pool.filter(pred);
+    if (f.length === pool.length) return false;
+    if (f.length) { notas.push(`${nombre}: descarta ${pool.length - f.length} candidatos${detalle ? ` de ${detalle}` : ''}`); pool = f; return true; }
+    notas.push(`${nombre} sin aplicar: dejaria el segundo sin candidatos`);
+    return false;
+  };
+
+  const cuenta = new Map();
+  for (const s of puestos) { const pr = proteinaDe(s.dishId); if (pr) cuenta.set(pr, (cuenta.get(pr) || 0) + 1); }
+  const bajoTope = (d) => (cuenta.get(proteinaDe(d.id)) || 0) < topeProteina;
+  if (!pool.some(bajoTope)) {
+    registrar(day, 'segundo_sin_tope_plato_unico', `«${nombrePrimero}» va como plato unico: ningun segundo disponible cumple el tope de proteina (${topeProteina}/semana)`);
+    return null;
+  }
+  filtrar(`tope de proteina (${topeProteina}/semana)`, bajoTope);
+
+  const cercanas = new Set(puestos.filter((s) => dist(s) <= 1).map((s) => proteinaDe(s.dishId)).filter(Boolean));
+  filtrar('proteina separada', (d) => !cercanas.has(proteinaDe(d.id)), [...cercanas].join(', '));
+
+  if (!sinFamilia) {
+    const familias = new Set(puestos.filter((s) => dist(s) === 1 && !(s.fixedRole === 'libre' && s.momento === 'comida'))
+      .map((s) => familiaDe(s.dishId)).filter(Boolean));
+    if (filtrar('familia en dias seguidos', (d) => !familias.has(familiaDe(d.id)), [...familias].join(', '))) uso.familiaDescarto = true;
+  }
+
+  const alinosHoy = new Set();
+  let ajillos = 0;
+  for (const s of puestos) {
+    const al = alinoDe(s.dishId);
+    if (!al) continue;
+    if (s.day === day) alinosHoy.add(al);
+    if (al === 'ajillo') ajillos += 1;
+  }
+  filtrar('alino', (d) => { const al = alinoDe(d.id); return !al || (!alinosHoy.has(al) && !(al === 'ajillo' && ajillos >= topeAjillo)); });
+
+  const { nivel, causa: causaIdentidad } = nivelIdentidad(pool);
+  const k = Math.floor(rng() * nivel.length);
+  const elegido = nivel[k];
+  slots.set(claveSegundo(day), {
+    day, momento: 'comida', dishId: elegido.id, abierto: false, segundo: true, primero: primero.id,
+  });
+  usedIds.add(elegido.id);
+  usedNames.add(elegido.nombre || elegido.id);
+  decisionLog.push({
+    decisionId: `walk-select-${decisionLog.length}`,
+    day,
+    momento: 'comida_segundo',
+    plato: elegido.id,
+    primero: primero.id,
+    causa: 'segundo_de_legumbre',
+    evidencia: `«${nombrePrimero}» no va como plato unico: segundo de proteina con verdura; ${notas.join('; ')}${notas.length ? '; ' : ''}`
+      + `RNG «::walk::estructura» -> indice ${k} de ${nivel.length} candidatos${causaIdentidad ? ' tras el paso 5' : ''}`,
+    alternativasDescartadas: nivel.filter((d) => d.id !== elegido.id).map((d) => d.id),
+  });
+  return elegido;
+}

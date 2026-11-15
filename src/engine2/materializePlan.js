@@ -46,11 +46,14 @@ export function materializePlan(input) {
   const { weekArc, decisionLog: arcLog } = buildWeekArc({
     profile, seed, strategy, fuenteEditorial, cocinarEnCantidad,
   });
-  const { slots, decisionLog: walkLog } = runWalk({
+  const { slots, segundos, decisionLog: walkLog } = runWalk({
     weekArc, catalog, seed, profile, fuenteEditorial, platosRecientes, maxRepeticiones,
   });
 
   const slotsByKey = new Map(slots.map((s) => [`${s.day}::${s.momento}`, s]));
+  // D-116: la comida de legumbre compuesta lleva un segundo (opcional). No es
+  // un hueco mas: va dentro de su comida. Lo decide el walk; aqui solo se copia.
+  const segundoPorDia = new Map(segundos.map((s) => [s.day, s.dishId]));
 
   const days = DAYS_ORDER.map((day) => ({
     day,
@@ -60,7 +63,8 @@ export function materializePlan(input) {
       // sugerencia por si el usuario quiere cocinar.
       const beat = weekArc.beats.find((b) => b.day === day);
       const libre = momento === 'comida' && beat && beat.fixedRole === 'libre';
-      return { momento, dish: findDish(catalog, slot.dishId), ...(libre ? { libre: true } : {}) };
+      const segundo = momento === 'comida' && !libre && segundoPorDia.has(day) ? { segundo: findDish(catalog, segundoPorDia.get(day)) } : {};
+      return { momento, dish: findDish(catalog, slot.dishId), ...(libre ? { libre: true } : {}), ...segundo };
     }),
   }));
 

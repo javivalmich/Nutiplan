@@ -124,6 +124,18 @@ export function composicionSemana(plan, porId, platosSemanaAnterior = []) {
   r.especieMasDeDosVeces = Object.values(r.porEspecie).filter((n) => n > 2).length;
   r.pescado = (r.porFamilia.pescado || 0) + (r.porFamilia.marisco || 0);
   r.legumbre = r.porFamilia.legumbre || 0;
+  // D-116: segundos que elige el motor tras un primero de legumbre. Se leen del decision log:
+  // la app todavía no los escribe en la comida (src/plan sin tocar), así que NO entran en las
+  // cuentas de arriba (familias, especies, días seguidos), que miden lo que el plan enseña.
+  const log = plan.decisionLog || [];
+  const causa = (c) => log.filter((e) => e && e.causa === c).length;
+  r.segundos = causa('segundo_de_legumbre');
+  r.segundosPorFamilia = {};
+  for (const e of log) if (e && e.causa === 'segundo_de_legumbre') inc(r.segundosPorFamilia, familiaDe(porId.get(e.plato)).familia);
+  r.legumbrePlatoUnicoPorTope = causa('segundo_sin_tope_plato_unico');
+  r.segundoSinCandidato = causa('segundo_sin_candidato');
+  r.semanasSegundosRetirados = causa('segundos_retirados_d099');
+  r.diaLegumbreSinCandidato = causa('dia_legumbre_sin_candidato');
   return r;
 }
 

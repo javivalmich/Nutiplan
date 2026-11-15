@@ -92,7 +92,8 @@ describe('runWalk - v15: frecuencias (P2b-ii, paso 4 del walk, D-024)', () => {
     const catalog = loadCatalog();
     const { weekArc } = buildWeekArc({ profile: { trainingDays: [] }, seed: 0, strategy: 'x' });
     const { decisionLog } = runWalk({ weekArc, catalog, seed: 0 });
-    const rellenos = decisionLog.filter((d) => !d.evento);
+    // D-116: el segundo de una comida de legumbre tiene su propia entrada (momento "comida_segundo"); no es un hueco.
+    const rellenos = decisionLog.filter((d) => !d.evento && d.momento !== 'comida_segundo');
     for (const r of rellenos) {
       // Toda entrada de relleno tiene una evidencia bien formada: o no
       // menciona "paso 4:" (silencio, sin intervencion -- ver

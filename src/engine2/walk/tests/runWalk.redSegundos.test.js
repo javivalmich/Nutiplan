@@ -42,6 +42,7 @@ const lentejas = { ...real.find((d) => d.nombre === 'Lentejas con pimentón con 
 const pollos = real.filter((d) => esSegundoDeLegumbre(d) && proteinaPrincipal(d) === 'pollo').slice(0, 2);
 const MIERCOLES = [{ day: 'Miercoles', momento: 'comida' }, { day: 'Miercoles', momento: 'cena' }];
 const retirada = (r) => r.decisionLog.filter((e) => e.causa === 'segundos_retirados_d099');
+const sinArreglo = (r) => r.decisionLog.filter((e) => e.causa === 'infraccion_d099_sin_segundos');
 
 describe('runWalk: red de seguridad de los segundos (D-116.5)', () => {
   // El miercoles solo hay pollo para el segundo y para la cena: con segundo, pollo dos veces el mismo dia.
@@ -65,6 +66,7 @@ describe('runWalk: red de seguridad de los segundos (D-116.5)', () => {
       expect(ev[0].infracciones).toEqual(['Miercoles: pollo dos veces el mismo dia']);
       expect(ev[0].evidencia).toContain('pollo dos veces el mismo dia');
       expect(infraccionesD099(input, r)).toEqual([]);
+      expect(sinArreglo(r)).toHaveLength(0);
     }
   });
 
@@ -79,13 +81,48 @@ describe('runWalk: red de seguridad de los segundos (D-116.5)', () => {
     expect(retirada(r)).toHaveLength(0);
   });
 
-  it('sin segundos no hay nada que retirar: una semana que ya incumplia sin ellos no se repite', () => {
-    // Un plato repetido por catalogo corto (D-107), sin ningun segundo en la semana: la red no es para eso.
+  it('sin segundos no hay nada que retirar: la semana no se repite, y la infraccion queda con su propia causa', () => {
+    // Un plato repetido por catalogo corto (D-107), sin ningun segundo en la semana. La lenteja (sin hueco
+    // de comida abierto) solo hace que la regla este en marcha.
     const abiertos = [{ day: 'Lunes', momento: 'cena' }, { day: 'Miercoles', momento: 'cena' }];
     const a = anchorEverythingExcept(abiertos);
-    const r = runWalk({ weekArc: { beats: beats7(), anchors: a.anchors }, catalog: [...a.dishes, pollos[0]], seed: 'red-sin-segundos', maxRepeticiones: 2 });
+    const r = runWalk({ weekArc: { beats: beats7(), anchors: a.anchors }, catalog: [...a.dishes, lentejas, pollos[0]], seed: 'red-sin-segundos', maxRepeticiones: 2 });
+    expect(r.decisionLog.some((e) => e.causa === 'dias_legumbre_sorteados')).toBe(true);
+    expect(r.segundos).toEqual([]);
     expect(r.slots.filter((x) => x.dishId === pollos[0].id)).toHaveLength(2);
     expect(retirada(r)).toHaveLength(0);
+    const ev = sinArreglo(r);
+    expect(ev).toHaveLength(1);
+    expect(ev[0].evento).toBe(true);
+    expect(ev[0].infracciones).toContain(`plato repetido: ${pollos[0].nombre}`);
+    expect(ev[0].evidencia).toContain('sin ningun segundo');
+  });
+
+  it('si aun sin segundos la semana incumple, se anotan las dos causas y no se repite mas', () => {
+    // Lunes, miercoles y viernes cenan pollo (solo hay dos): con o sin segundo, algo se repite (D-107).
+    const abiertos = [{ day: 'Lunes', momento: 'cena' }, ...MIERCOLES, { day: 'Viernes', momento: 'cena' }];
+    const a = anchorEverythingExcept(abiertos);
+    for (let s = 0; s < 8; s++) {
+      const input = { weekArc: { beats: beats7(), anchors: a.anchors }, catalog: [...a.dishes, lentejas, ...pollos], seed: `red-sin-arreglo-${s}`, maxRepeticiones: 2 };
+      const r = runWalk(input);
+      expect(r.segundos).toEqual([]);
+      expect(retirada(r)).toHaveLength(1);
+      const ev = sinArreglo(r);
+      expect(ev).toHaveLength(1);
+      expect(ev[0].evidencia).toContain('aun despues de retirar los segundos');
+      expect(ev[0].infracciones).toEqual(infraccionesD099(input, r));
+      expect(ev[0].infracciones.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('sin la regla (dieta vegetariana o perfil sin compuestos de legumbre) no se anota nada', () => {
+    const abiertos = [{ day: 'Lunes', momento: 'cena' }, { day: 'Miercoles', momento: 'cena' }];
+    const a = anchorEverythingExcept(abiertos);
+    const base = { weekArc: { beats: beats7(), anchors: a.anchors }, seed: 'red-sin-regla', maxRepeticiones: 2 };
+    for (const r of [runWalk({ ...base, catalog: [...a.dishes, pollos[0]] }), runWalk({ ...base, catalog: [...a.dishes, lentejas, pollos[0]], profile: { dieta: 'vegetariana' } })]) {
+      expect(r.slots.filter((x) => x.dishId === pollos[0].id)).toHaveLength(2);
+      expect(sinArreglo(r)).toHaveLength(0);
+    }
   });
 
   it('catalogo real sin pescado ni marisco: ninguna semana sale con infracciones, y la red actua alguna vez', () => {

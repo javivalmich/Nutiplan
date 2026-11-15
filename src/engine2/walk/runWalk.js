@@ -196,9 +196,12 @@ export function runWalk(input) {
   // sorteados siguen y la legumbre va como plato unico. Solo si habia algun
   // segundo: sin ellos no hay nada que retirar.
   const resultado = walkConRedDeFamilia(input, { sinSegundos: false });
-  if (!resultado.segundos.length) return resultado;
+  // Solo con la regla en marcha (dias de legumbre sorteados): sin ella no hay segundos ni red (D-116.9, D-117).
+  const conRegla = resultado.decisionLog.some((e) => e.causa === 'dias_legumbre_sorteados');
+  if (!conRegla) return resultado;
   const infracciones = infraccionesD099(input, resultado);
   if (!infracciones.length) return resultado;
+  if (!resultado.segundos.length) return anotarSinArreglo(resultado, infracciones, false);
   const sinSegundos = walkConRedDeFamilia(input, { sinSegundos: true });
   sinSegundos.decisionLog.push({
     decisionId: `walk-select-${sinSegundos.decisionLog.length}`,
@@ -212,7 +215,28 @@ export function runWalk(input) {
     evento: true,
     infracciones,
   });
-  return sinSegundos;
+  const quedan = infraccionesD099(input, sinSegundos);
+  return quedan.length ? anotarSinArreglo(sinSegundos, quedan, true) : sinSegundos;
+}
+
+// Una semana que termina con infracciones de D-099.3 sin segundos que
+// retirar (no los tenia, o ya se retiraron): la red de D-116.5 no la puede
+// arreglar. No se repite nada; queda en el log con su propia causa.
+function anotarSinArreglo(resultado, infracciones, trasRetirar) {
+  resultado.decisionLog.push({
+    decisionId: `walk-select-${resultado.decisionLog.length}`,
+    day: undefined,
+    momento: undefined,
+    plato: undefined,
+    causa: 'infraccion_d099_sin_segundos',
+    evidencia: `la semana incumple D-099.3 (${infracciones.join('; ')}) `
+      + (trasRetirar ? 'aun despues de retirar los segundos' : 'sin ningun segundo')
+      + ': la red de D-116.5 solo retira segundos y aqui no hay ninguno que retirar; la semana se queda asi',
+    alternativasDescartadas: [],
+    evento: true,
+    infracciones,
+  });
+  return resultado;
 }
 
 function walkConRedDeFamilia(input, { sinSegundos }) {

@@ -1,4 +1,4 @@
-# Estado de la rama `motor/i0-banco-cantidades` (traspaso, 2026-11-17, noche)
+# Estado de la rama `motor/i0-banco-cantidades` (traspaso, 2026-11-18)
 
 Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, creada desde `main`
 `19a300c`. Sin merge a `main`. La sesión de auditoría de seguridad trabaja aparte, en
@@ -81,7 +81,22 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
 | `e3a3653` | Revisión, arreglo 4: una comida con segundo sin los datos de sus platos se trata como texto libre |
 | `65a0359` | Revisión, arreglo 5: test de los momentos de los primeros y los segundos |
 | `15b0c5c` | Revisión, arreglo 6: `DECISIONS.md`, D-116 y D-117 implementados; causas, red, sorteo parcial y alternativas |
-| el siguiente a `15b0c5c` | `ESTADO.md`, con la estimación del arreglo 7 |
+| `dcb0c85` | `ESTADO.md`, con la estimación del arreglo 7 |
+| `ebb60c7` | `DECISIONS.md`: D-116.6, el segundo crece desde su mínimo; pendiente de los días de crepes |
+| `bb9b2e1` | La versión del motor va en la meta de la semana (`days[0]._engine2.version`, `VERSION_MOTOR`); nada la lee todavía |
+| el siguiente a `bb9b2e1` | `ESTADO.md`: lista de lo que queda antes de `main` |
+
+## Antes de llevar la rama a `main` (en orden)
+
+1. **Planes guardados anteriores a esta rama (decide Javi).** Hoy el check-in y «Generar» rehacen la semana con las reglas nuevas: un usuario con un plan de antes vería cambiar los platos a media semana (comidas dobles, primeros nuevos), no solo las cantidades. Elegir entre aceptarlo o volver a racionar los menús guardados. La versión ya se escribe (`bb9b2e1`); la estimación, sus archivos y sus riesgos están en «Revisión independiente, arreglo 7». Va primero porque cambia código de la app.
+2. **Propuestas de vista (decide Javi).** (a) En el resumen del paciente del panel del nutricionista se ve solo `p1`: de la comida doble, solo el primero. (b) Editar a mano la compra de una comida doble en el panel descuadra la partición entre los dos platos; hoy, como mucho, deja la comida como texto libre (`e3a3653`). (c) En la receta, «De primero, …:» y «De segundo, …:» salen numerados como pasos.
+3. **Implementar lo decidido en 1 y 2**, con su test previo y la línea base del banco si cambia.
+4. **Prueba a mano, en el móvil y en el panel del nutricionista:** el título largo de la comida doble, las dos partes en `p1` y `p2`, la receta con los dos platos, la compra con dos aceites, el aviso de la comida doble sin alternativa y una alternativa de una comida doble. Nadie lo ha visto todavía en pantalla.
+5. **Revisión del diff de la rama frente a `main`** (motor, app, tests y scripts de medición). Los errores de lint de `OriginalPlanApp.jsx` ya estaban en `main`; la rama solo cambia una línea de ese archivo.
+6. **Batería completa en un entorno con `.env.local`**, para que cargue la suite `src/data/__tests__/pdb.characterization.test.js` (aquí no carga) y ver el test intermitente de `scripts/fase7` (tiempo límite de 5 s). Sin tocar Supabase ni producción.
+7. **PR a `main` con el visto bueno de Javi.** Sin merge sin su autorización.
+
+Pendiente, pero no bloquea `main` (decide Javi cuándo): la masa como unidad (crepes; con ella, los días de crepes a 1434 kcal que la comida doble lleva a +14 %); el domingo como día de legumbre y la legumbre a 4 (AESAN); un perfil con gluten y sin pescado en el banco; la preferencia A (suelos antes que la verdura en la comida); la alternativa solo del segundo; la sugerencia del sábado con segundo; el reparto de los primeros (lentejas con pimentón en el 35 %, por el catálogo y el tope de 2 ajillos por semana); la comprobación independiente del lector; la auditoría B del pescado.
 
 ## Decisiones de Javi (2026-11-12 y 2026-11-13)
 

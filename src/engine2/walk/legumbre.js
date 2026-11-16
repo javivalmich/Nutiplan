@@ -69,10 +69,18 @@ export function sortearDiasLegumbre({ p1aSlots, catalog, vetoedIds, seed, regist
     if (c.length) { validos = c.length; elegidos = c[Math.floor(rng() * c.length)]; break; }
   }
   const dias = elegidos.map((i) => DAYS_ORDER[i]);
+  // La evidencia dice los dias realmente sorteados: si no caben los pedidos (el
+  // ancla ocupa dias, sin dos seguidos), se sortean menos (D-117.1).
+  const n = dias.length;
+  const dicho = (k) => (k === 1 ? '1 dia' : `${k} dias`);
+  const cuantos = n === pedidos
+    ? ''
+    : n === 0 ? `se piden ${dicho(pedidos)}, pero no cabe ningun dia; ` : `se piden ${dicho(pedidos)}, pero solo ${n === 1 ? 'cabe' : 'caben'} ${n}; `;
+  const sorteo = n ? `se ${n === 1 ? 'sortea' : 'sortean'} ${dicho(n)} entre ${validos} conjuntos validos de ${n}` : 'no se sortea ninguno';
   registrar('dias_legumbre_sorteados',
-    `suelo de legumbre ${suelo}; ${legAncla.length} ya las pone el ancla; se sortean ${pedidos} dias entre ${validos} conjuntos validos `
+    `suelo de legumbre ${suelo}; ${legAncla.length} ya las pone el ancla; ${cuantos}${sorteo} `
       + `(sin el dia libre, sin dias seguidos, sin los dias del ancla) con RNG «::walk::estructura»: [${dias.join(', ')}]`,
-    { dias, pedidos });
+    { dias, pedidos, sorteados: n });
   return { dias: new Set(dias), rng };
 }
 

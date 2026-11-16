@@ -6,10 +6,11 @@
 //   1. Universo: platos del momento (comida/cena), no vetados por las
 //      intolerancias, que no salen ya esta semana ni salieron la anterior
 //      (por nombre visible), y distintos del plato que se quita.
-//   1a. Si lo que se quita es una comida con primero y segundo (D-116), el
-//      plato nuevo va solo: no puede ser un compuesto de legumbre, que quedaría
-//      como plato único (D-116.1; decisión de Javi del 2026-11-16). Es un veto:
-//      no se relaja.
+//   1a. Con sinLegumbreCompuesta, el plato nuevo no puede ser un compuesto de
+//      legumbre, que quedaría como plato único (D-116.1). Lo pide la app al
+//      cambiar una comida con primero y segundo (decisión de Javi del
+//      2026-11-16) y, en un perfil con sorteo de días de legumbre, al cambiar
+//      cualquier comida (2026-11-17). Es un veto: no se relaja.
 //   2. Tope de proteína principal por semana y proteína separada (no el mismo
 //      día ni el de al lado). Si dejarían sin candidatos, no se aplican y se
 //      dice.
@@ -62,7 +63,7 @@ export const DESEOS = Object.freeze({
  * @param {string|null} [input.anclaBase] ingrediente base si el plato que se quita era del ancla
  * @param {string} [input.dieta] omnivora | vegetariana | vegana (D-107: tope de huevo en vegetariana)
  * @param {string|number} input.seed
- * @param {boolean} [input.sinLegumbreCompuesta] lo que se quita es una comida con primero y segundo (D-116)
+ * @param {boolean} [input.sinLegumbreCompuesta] el plato nuevo no puede ser un compuesto de legumbre (D-116.1)
  * @returns {{ dish: object, decisionLog: object[] }}
  */
 export function elegirAlternativa(input) {
@@ -81,11 +82,11 @@ export function elegirAlternativa(input) {
 
   const posibles = catalog.filter((d) => d.rol !== 'capricho' && d.momento.includes(momento) && !vetoedIds.has(d.id)
     && !usados.has(d.nombre || d.id) && !recientes.has(d.nombre || d.id));
-  // 1a. Comida con primero y segundo: el plato nuevo va solo, así que no puede ser un compuesto de legumbre.
+  // 1a. El plato nuevo va solo, así que no puede ser un compuesto de legumbre (D-116.1).
   const universo = sinLegumbreCompuesta ? posibles.filter((d) => !esCompuestoLegumbre(d)) : posibles;
   if (!universo.length) throw new Error(`elegirAlternativa: sin platos posibles para ${day}/${momento}`);
   nota('alternativa_universo', `${universo.length} platos de ${momento}, sin repetir la semana ni la anterior${vetoedIds.size ? `, sin ${vetoedIds.size} vetados` : ''}`);
-  if (sinLegumbreCompuesta) nota('alternativa_sin_legumbre_compuesta', `se cambia una comida con primero y segundo por un plato único: fuera ${posibles.length - universo.length} compuestos de legumbre, que no van solos (D-116.1)`);
+  if (sinLegumbreCompuesta) nota('alternativa_sin_legumbre_compuesta', `el plato nuevo va solo: fuera ${posibles.length - universo.length} compuestos de legumbre, que no se sirven como plato único (D-116.1)`);
 
   // 2. Tope y separación de proteína (como runWalk).
   const cuenta = new Map();

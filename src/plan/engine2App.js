@@ -31,6 +31,8 @@ import { nombreDeBase } from './textos/compuestos.js';
 import { limpiarComidaLegacy } from './textos/legacy.js';
 import { adaptarSiProcede, conSibo, conDieta } from './adaptar.js';
 import { evaluateVeto } from '../engine2/walk/vetoes.js';
+import { reglaLegumbreActiva } from '../engine2/walk/legumbre.js';
+import { esCompuestoLegumbre } from '../engine2/dishes/bases.js';
 import { aplicarNombresD105, nombreVisible } from '../engine2/dishes/alinosD105.js';
 
 export const DIA_ENGINE2 = Object.freeze({
@@ -440,8 +442,10 @@ export function regenerarComidaEngine2(plan, dayIdx, time, deseo, profile, targe
     anclaBase: esAncla ? meta.ancla.base : null,
     dieta: dietaDe(profile),
     seed: `${opts.userId ?? 'anon'}:${opts.weekNumber ?? 0}`,
-    // D-116.1: una comida doble se cambia por un plato único, que no puede ser legumbre compuesta.
-    sinLegumbreCompuesta: esComidaDoble(actual),
+    // D-116.1: un compuesto de legumbre no se sirve como plato único. En un perfil con sorteo de días de
+    // legumbre (omnívoro, con compuestos de legumbre en su catálogo), ninguna alternativa puede serlo, sea doble
+    // o no la comida que se cambia (decisión de Javi del 2026-11-17).
+    sinLegumbreCompuesta: esComidaDoble(actual) || (reglaLegumbreActiva({ dieta: dietaDe(profile) }) && catalog.some((d) => d.rol === 'rotativo' && esCompuestoLegumbre(d))),
   });
 
   const compuesta = componerPlato(dish, momento, targetKcal, { ancla: esAncla && actual._ancla && decisionLog.some((e) => e.causa === 'alternativa_mantiene_ancla') ? actual._ancla : null });

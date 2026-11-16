@@ -54,6 +54,8 @@ const famDe = (d) => { try { const v = resolveDishComposition(d); return { famil
 const verdura = (d) => { try { return satisfaceVerdura(resolveDishComposition(d)); } catch { return false; } };
 const esLeg = (clave) => (INGREDIENTES[clave] || {}).grupo === 'legumbre';
 const esProteico = (clave) => !!COMPOSICION[clave] && papelDe(clave, COMPOSICION[clave]) === 'proteico';
+// ml de aceite de una comida (AOVE y aceite de semillas de la compra; sin cantidad, 10 ml).
+const mlAceite = (m) => Math.round(leerComida(m).items.filter((it) => it.clave === 'aove' || it.clave === 'aceite_semillas').reduce((a, it) => a + it.gramos / (INGREDIENTES[it.clave].gMl || 0.92), 0) * 10) / 10;
 
 // ─── Tope de la legumbre del primero: lo que recibe el plato único a 2174 kcal ───────────────
 // (antes de instalar la lógica: globalThis.__ec no existe y el código transformado no hace nada).
@@ -173,8 +175,9 @@ function fila(plan, p, obj, visible, recientes, s) {
       if (m.time !== 'Comida' || !dish || famDe(dish).familia !== 'legumbre') continue;
       const items = leerComida(m).items;
       const g = (pred) => Math.round(items.filter((it) => pred(it.clave)).reduce((a, it) => a + it.gramos, 0));
+      const g2 = (pred) => Math.round(items.filter((it) => it.plato === 2 && pred(it.clave)).reduce((a, it) => a + it.gramos, 0));
       legumbres.push({ d: i, ps: !!m._dishId2, t: dish.nombre, t2: m._dishId2 ? visible.get(m._dishId2).nombre : null, f2: m._dishId2 ? famDe(visible.get(m._dishId2)).familia : null, e: famDe(dish).especie, red: !m._dishId.startsWith('['),
-        kcal: n.kcal, oK: n.objetivoKcal, prot: n.proteina, oP: n.objetivoProteina, g: g(() => true), gLeg: g(esLeg), gProt: g(esProteico), extra: (m.acompanamientos || []).join('+'), sorteado: diasSorteados.includes(i) });
+        kcal: n.kcal, oK: n.objetivoKcal, prot: n.proteina, oP: n.objetivoProteina, g: g(() => true), gLeg: g(esLeg), gProt: g(esProteico), extra: (m.acompanamientos || []).join('+'), sorteado: diasSorteados.includes(i), ml: mlAceite(m), gSeg: m._dishId2 ? g2(esProteico) : null });
     }
   });
   // Comida doble escrita por src/plan: ¿se lee igual junta que plato a plato?
@@ -188,8 +191,11 @@ function fila(plan, p, obj, visible, recientes, s) {
       if (junto.length !== sueltos.length || junto.some((it, k) => it.clave !== sueltos[k].clave || Math.abs(it.gramos - sueltos[k].gramos) > 0.01)) lecturaDoble.distintas += 1;
     }
   }
+  // ml de aceite de cada día (sin el día de la comida libre).
+  const mlDias = plan.days.filter((d) => !(d.meals || []).some((m0) => m0 && m0.sugerencia)).map((d) => Math.round((d.meals || []).filter(Boolean).reduce((a, m0) => a + mlAceite(m0), 0) * 10) / 10);
+  const primeros = plan.days.map((d) => (d.meals || []).find((m0) => m0 && m0.time === 'Comida' && m0._dishId2)).filter(Boolean).map((m0) => m0._dishId);
   const sinAplicar = (re, soloSegundo) => log.filter((e) => (soloSegundo ? e.causa === 'segundo_de_legumbre' : e.causa !== 'segundo_de_legumbre' && e.plato) && re.test(e.evidencia || '')).length;
-  const causas = cuenta(log.filter((e) => ['segundo_sin_candidato', 'segundo_sin_tope_plato_unico', 'segundos_retirados_d099', 'dia_legumbre_sin_candidato', 'frecuencia_corta_sin_candidato', 'familia_dias_seguidos_retirada', 'repeticion_por_catalogo_corto', 'vecino_de_dia_legumbre', 'infraccion_d099_sin_segundos', 'dias_legumbre_sin_sorteo', 'segundos_retirados_pool_vacio', 'regla_legumbre_retirada_d099', 'regla_legumbre_retirada_pool_vacio', 'infraccion_d099_regla_retirada'].includes(e.causa)), (e) => e.causa);
+  const causas = cuenta(log.filter((e) => ['primero_legumbre_no_usada', 'primero_legumbre_no_usada_sin_aplicar', 'primero_alino_no_usado', 'primero_alino_no_usado_sin_aplicar', 'segundo_sin_candidato', 'segundo_sin_tope_plato_unico', 'segundos_retirados_d099', 'dia_legumbre_sin_candidato', 'frecuencia_corta_sin_candidato', 'familia_dias_seguidos_retirada', 'repeticion_por_catalogo_corto', 'vecino_de_dia_legumbre', 'infraccion_d099_sin_segundos', 'dias_legumbre_sin_sorteo', 'segundos_retirados_pool_vacio', 'regla_legumbre_retirada_d099', 'regla_legumbre_retirada_pool_vacio', 'infraccion_d099_regla_retirada'].includes(e.causa)), (e) => e.causa);
   const m = medirPlan(plan, { kcal: p.kcal, proteina: obj.proteina, peso: obj.pesoKg }, COMPOSICION);
   const x = restriccionesSemana(plan, p.perfil);
   const sug = ap.filter((a) => a.libre);
@@ -210,7 +216,7 @@ function fila(plan, p, obj, visible, recientes, s) {
     d115: { familiaDiasSeguidosSinAncla: familiaSeguidos, porFamilia: seguidosPorFamilia, familiaMismoDia },
     diasSinVerdura,
     desvio: m.desvioSemana, dentro: m.semanaDentro, kcalDia: m.mediaDia.kcal, protDia: m.mediaDia.proteina, objProt: obj.proteina, diasFueraKcal: m.diasFueraKcal, diasSinProteina: m.diasSinProteina, bajoMinimo: m.comidasPrincipalesCortas,
-    cortas, principales, protComidas, objComidas, lecturaDoble,
+    cortas, principales, protComidas, objComidas, lecturaDoble, mlDias, primeros,
     sinAplicar: { tope: sinAplicar(/tope de proteina sin aplicar/), separada: sinAplicar(/proteina separada sin aplicar/), familia: sinAplicar(/familia en dias seguidos sin aplicar/), alino: sinAplicar(/alino sin aplicar/) },
     sinAplicarSegundo: { tope: sinAplicar(/tope de proteina \(\d\/semana\) sin aplicar/, true), separada: sinAplicar(/proteina separada sin aplicar/, true), familia: sinAplicar(/familia en dias seguidos sin aplicar/, true), alino: sinAplicar(/alino sin aplicar/, true) },
     causas, vetados: x.conVetado, eliminados: x.conEliminado,

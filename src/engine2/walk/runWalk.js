@@ -376,6 +376,36 @@ function walkUnaVez(input, { sinFamilia, uso, sinRegla }) {
     });
   }
 
+  // D-117.2, modificado (decision de Javi del 2026-11-17): dentro del nivel de
+  // legumbre de un dia sorteado, y antes de las preferencias A y B, se prefiere
+  // un primero cuya legumbre no salga ya en la semana (en ningun plato servido,
+  // los del ancla incluidos) y, despues, uno cuyo aliño no lleve ya otro primero
+  // de la semana. Cada preferencia es un filtro con vuelta atras: si dejaria el
+  // hueco sin candidatos no se aplica, y las dos dejan su causa en el log. Sin
+  // pesos. La sugerencia de la comida libre no es un plato servido.
+  function preferirPrimero(day, candidatos) {
+    const servidos = [...slots.values()].filter((s2) => !s2.abierto && s2.dishId && !(s2.fixedRole === 'libre' && s2.momento === 'comida'));
+    let c = candidatos;
+    const legUsadas = new Set(servidos.map((s2) => proteinaCache(s2.dishId)).filter(Boolean));
+    const sinLeg = c.filter((d) => !legUsadas.has(proteinaCache(d.id)));
+    if (sinLeg.length && sinLeg.length < c.length) {
+      pushEvent(day, 'primero_legumbre_no_usada', `primero: descarta ${c.length - sinLeg.length} de ${c.length} candidatos de legumbre que ya salen esta semana (${[...legUsadas].join(', ')})`);
+      c = sinLeg;
+    } else if (!sinLeg.length) {
+      pushEvent(day, 'primero_legumbre_no_usada_sin_aplicar', 'primero: todas las legumbres candidatas ya salen esta semana; no se aplica');
+    }
+    const primeros = servidos.filter((s2) => s2.momento === 'comida' && !s2.segundo && protPorId.has(s2.dishId) && esCompuestoLegumbre(protPorId.get(s2.dishId)));
+    const alinos = new Set(primeros.map((s2) => alinoDe(protPorId.get(s2.dishId))).filter(Boolean));
+    const sinAlino = c.filter((d) => !alinos.has(alinoDe(d)));
+    if (sinAlino.length && sinAlino.length < c.length) {
+      pushEvent(day, 'primero_alino_no_usado', `primero: descarta ${c.length - sinAlino.length} de ${c.length} candidatos con un aliño que ya sale en otro primero (${[...alinos].join(', ')})`);
+      c = sinAlino;
+    } else if (!sinAlino.length) {
+      pushEvent(day, 'primero_alino_no_usado_sin_aplicar', 'primero: todos los candidatos llevan un aliño que ya sale; no se aplica');
+    }
+    return c;
+  }
+
   function pushEvent(day, causa, evidencia) {
     decisionLog.push({
       decisionId: `walk-select-${decisionLog.length}`,
@@ -645,7 +675,7 @@ function walkUnaVez(input, { sinFamilia, uso, sinRegla }) {
         const nivel = candidatesA.filter(esCompuestoLegumbre);
         if (nivel.length) {
           nivelLegumbre = { candidatos: nivel.length, de: candidatesA.length };
-          candidatesA = nivel;
+          candidatesA = preferirPrimero(day, nivel);
         } else {
           pushEvent(day, 'dia_legumbre_sin_candidato', `${day} es dia de legumbre, pero ninguno de los ${candidatesA.length} candidatos del hueco (tras no repetir plato, tope y separacion por proteina, familia y alino) es un compuesto de legumbre; el hueco sigue con el paso 4 de siempre`);
         }

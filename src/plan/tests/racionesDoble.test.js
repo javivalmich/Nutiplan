@@ -152,31 +152,26 @@ describe('raciones de la comida doble (D-116.6)', { timeout: 120000 }, () => {
     }
   });
 
-  it('en semanas reales, gramos, calorías y proteína dentro de lo medido con el prototipo (sección 4)', () => {
-    // Medianas del prototipo (estructura-comida-final/resumen.md), a 1434 / 2174 / 3714 kcal:
-    // legumbre seca 50 / 75 / 105 g; proteico 95 / 160 / 260 g; total 451 (384–639) / 597 (527–792) /
-    // 927 (777–1287) g; proteína de la comida 37 de 36 / 57 de 51 / 100 de 83 g.
-    const REF = { 1434: { legumbre: 50, proteico: 95, total: [384, 639], proteina: 37 }, 2174: { legumbre: 75, proteico: 160, total: [527, 792], proteina: 57 }, 3714: { legumbre: 105, proteico: 260, total: [777, 1287], proteina: 100 } };
-    const FUERA = { 1434: 4, 2174: 0, 3714: 0 };
+  it('en semanas reales, gramos, calorías y proteína dentro de lo medido (variantes-comida-doble.md, 10 + 10)', () => {
+    // D-116.6, modificado el 2026-11-16: la legumbre llega antes a su tope (el aceite ya no sube) y a 3714 kcal
+    // crece el segundo. Medianas de 200 semanas por perfil (variantes-comida-doble.md, variante 10 + 10), a
+    // 1434 / 2174 / 3714 kcal: legumbre seca 50 / 100 / 120 g; segundo 100 / 160 / 300 g. Aquí son 8 semanas
+    // (unas 24 comidas): la mediana de la muestra se mueve unos gramos.
+    const REF = { 1434: { legumbre: 50, proteico: 100 }, 2174: { legumbre: 100, proteico: 160 }, 3714: { legumbre: 120, proteico: 300 } };
     for (const kcal of Object.keys(PERFILES)) {
       const filas = semanasReales(Number(kcal));
       const ref = REF[kcal];
       expect(filas.length).toBeGreaterThanOrEqual(20);
-      expect(Math.abs(mediana(filas.map((f) => f.legumbre)) - ref.legumbre)).toBeLessThanOrEqual(5);
-      // 8 semanas (unas 24 comidas) frente a las 200 del prototipo: la mediana de la muestra se mueve unos gramos.
+      expect(Math.abs(mediana(filas.map((f) => f.legumbre)) - ref.legumbre)).toBeLessThanOrEqual(15);
       expect(Math.abs(mediana(filas.map((f) => f.proteico)) - ref.proteico)).toBeLessThanOrEqual(15);
-      expect(Math.abs(mediana(filas.map((f) => f.m.nutricion.proteina)) - ref.proteina)).toBeLessThanOrEqual(3);
       for (const f of filas) {
         expect(f.legumbre).toBeLessThanOrEqual(TOPES_PROTOTIPO[f.p.id]);
-        expect(f.total).toBeGreaterThanOrEqual(ref.total[0]);
-        expect(f.total).toBeLessThanOrEqual(ref.total[1]);
+        expect(f.proteico).toBeLessThanOrEqual(300);
       }
-      // Calorías: todas a menos de un 10 % del objetivo de la comida y casi todas dentro de ±5 %
-      // (en estas mismas semanas el prototipo deja fuera 4 de 23, 0 de 24 y 0 de 24, con el mismo texto;
-      // en su medición completa, 127 de 4783). Ninguna comida doble corta de proteína (prototipo: 13 de 4783 bajo el 95 %).
+      // Calorías: todas a menos de un 5 % del objetivo de la comida en estas semanas (antes del cambio, 4 de
+      // 23 fuera a 1434 kcal; en 200 semanas por perfil, 134 de 5214 → 32). Ninguna corta de proteína.
       const desvio = (f) => Math.abs(f.m.nutricion.kcal - f.m.nutricion.objetivoKcal) / f.m.nutricion.objetivoKcal;
-      expect(Math.max(...filas.map(desvio))).toBeLessThan(0.10);
-      expect(filas.filter((f) => desvio(f) > 0.05).length).toBeLessThanOrEqual(FUERA[kcal]);
+      expect(filas.filter((f) => desvio(f) > 0.05).length).toBe(0);
       expect(filas.filter((f) => f.m.nutricion.proteina < 0.95 * f.m.nutricion.objetivoProteina).length).toBe(0);
     }
   });
@@ -188,5 +183,58 @@ describe('raciones de la comida doble (D-116.6)', { timeout: 120000 }, () => {
     const una = ajustarDia(dia, perfil, 2174).day;
     const dos = ajustarDia(una, perfil, 2174).day;
     expect(dos.meals[0]).toEqual(una.meals[0]);
+  });
+});
+
+// D-116.6, modificado (decisión de Javi del 2026-11-16, variante 10 + 10 de variantes-comida-doble.md): la
+// comida doble no lleva más aceite que el máximo de un plato único en esa comida (20 g), 10 g en cada plato.
+// Lo que falte de kcal lo cubre la legumbre hasta su tope, después el segundo dentro de su rango y después
+// el pan o la fruta.
+describe('aceite de la comida doble y segundo que crece (D-116.6, modificado)', { timeout: 120000 }, () => {
+  const planes = Object.fromEntries(Object.entries(PERFILES).map(([kcal, perfil]) => {
+    const out = [];
+    let ant = null;
+    for (let w = 60; w < 66; w++) {
+      const plan = generarPlan(clonar(perfil), Number(kcal), { month: 9, pastProteins: {}, freeFormPool: FREEFORM_POOL, weekNumber: w, userId: `banco-omni-${kcal}`, saveMealMemory: () => {}, platosRecientes: platosRecientesPara(ant, w - 1, w) });
+      out.push(plan);
+      ant = plan;
+    }
+    return [kcal, out];
+  }));
+  const dobles = (kcal) => planes[kcal].flatMap((p) => p.days.flatMap((d) => d.meals.filter((m) => m && m._dishId2)));
+  const ml = (t) => Number((t.match(/AOVE \((\d+) ml\)/) || [])[1]);
+
+  it('cada plato lleva como mucho 10 ml de aceite; los dos, como mucho 20 ml', () => {
+    for (const kcal of Object.keys(PERFILES)) {
+      expect(dobles(kcal).length).toBeGreaterThanOrEqual(15);
+      for (const m of dobles(kcal)) {
+        expect(ml(m.p1)).toBeLessThanOrEqual(10);
+        expect(ml(m.p2)).toBeLessThanOrEqual(10);
+        const aceite = leerComida(m).items.filter((it) => it.clave === 'aove').reduce((a, it) => a + it.gramos, 0);
+        expect(aceite).toBeLessThanOrEqual(20);
+      }
+    }
+  });
+
+  it('a 3714 kcal el segundo crece dentro de su rango y lo dice el log; la legumbre no pasa de su tope', () => {
+    const crece = planes[3714].flatMap((p) => p.decisionLog.filter((e) => e.causa === 'proteico_crece_por_energia'));
+    expect(crece.length).toBeGreaterThan(0);
+    for (const e of crece) expect(e.detalle).toMatch(/legumbre y aceite en su máximo/);
+    for (const m of dobles(3714)) {
+      const items = leerComida(m).items;
+      const segundo = items.filter((it) => it.plato === 2 && esProteico(it.clave)).reduce((a, it) => a + it.gramos, 0);
+      expect(segundo).toBeLessThanOrEqual(300);
+      expect(items.filter((it) => it.plato === 1 && esLegumbre(it.clave)).reduce((a, it) => a + it.gramos, 0)).toBeLessThanOrEqual(topeLegumbre(tuplaDe(m._dishId)));
+      expect(Math.abs(m.nutricion.kcal - m.nutricion.objetivoKcal)).toBeLessThanOrEqual(0.05 * m.nutricion.objetivoKcal);
+    }
+  });
+
+  it('un plato único no cambia: el aceite sigue con su rango de siempre y su proteico no crece', () => {
+    for (const p of planes[3714]) {
+      expect(p.decisionLog.filter((e) => e.causa === 'proteico_crece_por_energia').every((e) => {
+        const dia = p.days.find((d) => d.name === e.day);
+        return dia && dia.meals.some((m) => m && m._dishId2);
+      })).toBe(true);
+    }
   });
 });

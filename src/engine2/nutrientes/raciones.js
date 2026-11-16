@@ -218,6 +218,27 @@ export function ajustarComida(items, meta, composicion, amplitud = 1, { topeHuev
     if (!cambio) break;
   }
 
+  // D-116.6, modificado (decisión de Javi del 2026-11-16): un proteico marcado
+  // con crecerSiFalta (el del segundo de la comida doble) crece dentro de su
+  // rango cuando ya no queda ningún energético libre (la legumbre en su tope y
+  // el aceite en su máximo) y aún faltan kcal. Va antes del pan o la fruta, que
+  // racionesDia solo añade si después sigue faltando más de un 5 %. Es un orden
+  // de prioridades: primero la legumbre, después el segundo, después el pan.
+  let crecido;
+  const crecen = estado.filter((e) => e.crecerSiFalta && e.papel === 'proteico' && e.rango && !e.limitado);
+  if (crecen.length && !estado.some((e) => e.papel === 'energetico' && !e.limitado)) {
+    const falta = meta.kcal - suma(estado, composicion, (e) => e.nuevo).kcal;
+    if (falta > 0) {
+      crecido = [];
+      for (const e of crecen) {
+        const antes = e.nuevo;
+        const g = e.nuevo + (falta * 100) / composicion[e.clave].kcal / crecen.length;
+        if (g >= e.rango[1]) { e.nuevo = e.rango[1]; e.limitado = 'maximo'; } else e.nuevo = g;
+        crecido.push({ clave: e.clave, antes: Math.round(antes), despues: null });
+      }
+    }
+  }
+
   // Medidas de casa.
   for (const e of estado) {
     if (e.papel === 'fijo') continue;
@@ -225,7 +246,9 @@ export function ajustarComida(items, meta, composicion, amplitud = 1, { topeHuev
     e.nuevo = Math.min(max, Math.max(min, Math.round(e.nuevo / paso) * paso));
   }
   const total = suma(estado, composicion, (e) => e.nuevo);
+  if (crecido) for (const c of crecido) c.despues = r1(estado.find((e) => e.clave === c.clave && e.crecerSiFalta).nuevo);
   return {
+    ...(crecido ? { crecido } : {}),
     items: estado.map((e) => ({ clave: e.clave, unidad: e.unidad, antes: e.gramos, gramos: r1(e.nuevo), papel: e.papel, limitado: e.limitado, ...(e.anadido ? { anadido: true } : {}), ...(e.fijoPorFicha ? { fijoPorFicha: e.fijoPorFicha } : {}) })),
     kcal: Math.round(total.kcal),
     proteina: Math.round(total.proteina),
@@ -361,6 +384,9 @@ export function racionesDia({ comidas, aparte = [], objetivo, composicion, vetad
       causa: 'raciones_por_objetivo', momento: c.momento, id: c.id,
       detalle: `objetivo ${Math.round(r.meta.kcal)} kcal y ${Math.round(r.meta.proteina)} g de proteína → ${r.kcal} kcal y ${r.proteina} g${limitados.length ? `; en su límite: ${limitados.join(', ')}` : ''}`,
     });
+    if (r.crecido) {
+      log.push({ causa: 'proteico_crece_por_energia', momento: c.momento, id: c.id, detalle: `legumbre y aceite en su máximo y aún faltaban kcal: crece ${r.crecido.map((x) => `${x.clave} ${x.antes} → ${x.despues} g`).join(', ')}, dentro de su rango, antes de añadir pan o fruta (D-116.6)` });
+    }
     const deFicha = r.items.filter((i) => i.fijoPorFicha);
     if (deFicha.length) {
       log.push({ causa: 'cantidad_de_la_ficha', momento: c.momento, id: c.id, detalle: `fijo en lo que pide la ficha, por debajo del mínimo de su rango: ${deFicha.map((i) => `${i.clave} ${i.fijoPorFicha.ficha} g (mínimo ${i.fijoPorFicha.minimo} g)`).join(', ')}` });

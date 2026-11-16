@@ -8,7 +8,7 @@
 // sin importar nada de src/engine.
 
 import { calcMacros, computeStrategy } from '../engine/nutrition.js';
-import { racionesDia, rangoDe, AMPLITUD_MAX, KCAL_RACION_NORMAL } from '../engine2/nutrientes/raciones.js';
+import { racionesDia, rangoDe, papelDe, AMPLITUD_MAX, KCAL_RACION_NORMAL } from '../engine2/nutrientes/raciones.js';
 import { COMPOSICION } from '../engine2/nutrientes/composicion.js';
 import { INGREDIENTES } from '../engine2/nutrientes/ingredientes.js';
 import { leerComida } from './medidor/leerComida.js';
@@ -163,12 +163,27 @@ export function topeLegumbre(tupla, composicion = COMPOSICION) {
   return tope;
 }
 
+// D-116.6, modificado (decisión de Javi del 2026-11-16): la comida doble no
+// lleva más aceite que el máximo de un plato único en esa comida (20 g): 10 g
+// en cada plato. El primero es un guiso que pocha la cebolla en el aceite; el
+// segundo, una plancha o un horno.
+export const ACEITE_MAX_POR_PLATO_DOBLE = 10;
+const ACEITES = new Set(['aove', 'aceite_semillas']);
+
 /**
- * Lo que la comida doble añade a un ingrediente al entrar en las raciones: la
- * legumbre del primero lleva su tope como máximo (en lugar del máximo general
- * de la legumbre, que además crece con el objetivo).
+ * Lo que la comida doble añade a un ingrediente al entrar en las raciones:
+ *   - cada aceite, su máximo en la comida doble (10 g por plato);
+ *   - el proteico del segundo, la marca para crecer dentro de su rango si la
+ *     legumbre ya está en su tope, el aceite en su máximo y faltan kcal;
+ *   - la legumbre del primero, su tope como máximo (en lugar del máximo
+ *     general de la legumbre, que además crece con el objetivo).
  */
 export function extraDoble(m, it, targetKcal, composicion = COMPOSICION) {
+  if (ACEITES.has(it.clave)) {
+    const rango = rangoDe(it.clave, 'g');
+    return rango ? { ampliado: ACEITE_MAX_POR_PLATO_DOBLE - rango[1] } : {};
+  }
+  if (it.plato === 2 && composicion[it.clave] && papelDe(it.clave, composicion[it.clave]) === 'proteico') return { crecerSiFalta: true };
   if (it.plato !== 1 || !esLegumbre(it.clave)) return {};
   const rango = rangoDe(it.clave, 'g');
   const tope = topeLegumbre(m._doble.primero._componer.tupla, composicion);

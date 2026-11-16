@@ -290,7 +290,8 @@ export function escribirCompuesto({ tupla, nombre, momento, gramos, ancla = null
     p2 = [...verdurasCon(true), A ? (A.tomate ? A.texto : `con ${A.texto}`) : null, aceite, 'queso rallado al gusto'].filter(Boolean).join(' · ');
   } else if (tmpl === 'legumbre') {
     p1 = `${P.compra} (${gP} g en seco) ${concuerda('guisado', P.g, P.n)}${conA}`;
-    p2 = [...verdurasCon(false), 'caldo de verduras', aceite].filter(Boolean).join(' · ');
+    // El hidrato de una legumbre compuesta (las lentejas con arroz) va aparte, con «en seco».
+    p2 = [carbTxt, ...verdurasCon(false), 'caldo de verduras', aceite].filter(Boolean).join(' · ');
   } else {
     p1 = `${cantidadP(P, gP)} ${metodo}${conA}`;
     p2 = [carbTxt, ...verdurasCon(true), aceite].filter(Boolean).join(' · ');
@@ -299,7 +300,7 @@ export function escribirCompuesto({ tupla, nombre, momento, gramos, ancla = null
   // ── Compra ──
   const shopping = [];
   shopping.push(compraP(P, gP, hueco === 'P' ? notaCompra : null));
-  if (C) shopping.push(`${C.compra} (${gC} g${hueco === 'C' && notaCompra ? `, ${notaCompra}` : ''})`);
+  if (C) shopping.push(`${C.compra} (${gC} g${tmpl === 'legumbre' && C.seco ? ' en seco' : ''}${hueco === 'C' && notaCompra ? `, ${notaCompra}` : ''})`);
   if (V) shopping.push(`${V.compra} (${V.medida(gV).corta}, ${gV} g)`);
   if (V2) shopping.push(`${V2.compra} (${V2.medida(gV2).corta}, ${gV2} g)`);
   if (A) shopping.push(...A.compra);
@@ -329,6 +330,11 @@ export function escribirCompuesto({ tupla, nombre, momento, gramos, ancla = null
     recipe.push(hueco === 'P' && ancla.rol === 'aprovechar'
       ? `Incorpora ${P.corto}, cubre con el caldo, añade el laurel${A ? `, ${A.texto}` : ''} y cuece 10 min a fuego suave.`
       : `Incorpora ${P.corto}, cubre con el caldo, añade el laurel${A ? `, ${A.texto}` : ''} y cuece a fuego suave ${t}, hasta que estén tiernos.`.replace('tiernos', P.g === 'f' ? 'tiernas' : 'tiernos'));
+    // El hidrato (las lentejas con arroz) se cuece aparte o, el día de aprovechar, se usa el ya cocido.
+    if (C) {
+      recipe.push(pasoBase('C', C.receta));
+      recipe.push(`Sirve ${P.el} con ${C.el}.`);
+    }
   } else if (tmpl === 'sopa_crema') {
     if (cookM === 'crudo') {
       recipe.push(`Tritura ${V ? V.el : 'la verdura'}${V2 ? ` con ${V2.el}` : ''} con el aceite, sal y un chorrito de agua fría hasta que quede fina; enfría en la nevera.`);
@@ -357,8 +363,9 @@ export function escribirCompuesto({ tupla, nombre, momento, gramos, ancla = null
   }
   if (trasBase >= 0 && ancla.guardar && ancla.guardar.length) {
     // Antes del paso de la base («Cocina de una vez 255 g…», y luego cómo); en
-    // las legumbres la cocción es el último paso: va al final.
-    const donde = tmpl === 'legumbre' ? recipe.length : trasBase;
+    // las legumbres, si la base es la legumbre, la cocción es el último paso: va
+    // al final. Si la base es su hidrato (las lentejas con arroz), antes del arroz.
+    const donde = tmpl === 'legumbre' && hueco === 'P' ? recipe.length : trasBase;
     recipe.splice(donde, 0, pasoCocinarDeMas(ancla.base, hueco === 'P' ? gP : gC, ancla.guardar));
   }
   if (batchable && shelfLifeDays > 1 && !aprovecha) recipe.push(`Se conserva bien en la nevera hasta ${shelfLifeDays} días.`);

@@ -35,6 +35,13 @@ import { reglaLegumbreActiva } from '../engine2/walk/legumbre.js';
 import { esCompuestoLegumbre } from '../engine2/dishes/bases.js';
 import { aplicarNombresD105, nombreVisible } from '../engine2/dishes/alinosD105.js';
 
+// Versión del motor que generó la semana, en la meta del primer día
+// (days[0]._engine2.version). La base de datos solo guarda los días: sirve para
+// reconocer más adelante un plan guardado antes de esta versión (comida doble de
+// D-116 y D-117, aceite 10 + 10, primeros nuevos). De momento solo se escribe:
+// nada la lee. Se cambia a mano cuando cambie lo que el plan guardado lleva.
+export const VERSION_MOTOR = '2026-11-17';
+
 export const DIA_ENGINE2 = Object.freeze({
   Lunes: 'Lunes', Martes: 'Martes', 'Miércoles': 'Miercoles', Jueves: 'Jueves',
   Viernes: 'Viernes', 'Sábado': 'Sabado', Domingo: 'Domingo',
@@ -334,7 +341,7 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
   // La base de datos solo guarda los días del plan (no los campos de arriba):
   // lo que engine2 necesita para recalcular y para las alternativas va también
   // dentro del primer día.
-  plan.days = guardarMeta(plan.days, { ancla: resumenAncla, platosSemana, platosSemanaAnterior: opts.platosRecientes || [], desayunosSemana: seguros.desayunosSemana });
+  plan.days = guardarMeta(plan.days, { version: VERSION_MOTOR, ancla: resumenAncla, platosSemana, platosSemanaAnterior: opts.platosRecientes || [], desayunosSemana: seguros.desayunosSemana });
   // Raciones de engine2: gramos según el objetivo del usuario (D-100).
   if (!conRaciones) return plan;
   return { ...cantidadesDelAncla(ajustarPlan(plan, profile, targetKcal), profile, targetKcal), raciones: 'engine2' };

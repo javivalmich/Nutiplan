@@ -33,6 +33,12 @@ import { adaptarSiProcede, conSibo, conDieta } from './adaptar.js';
 import { evaluateVeto } from '../engine2/walk/vetoes.js';
 import { reglaLegumbreActiva } from '../engine2/walk/legumbre.js';
 import { esCompuestoLegumbre } from '../engine2/dishes/bases.js';
+import { pescadoMaxSemanaDe } from '../engine2/contracts/profile.js';
+
+// Tope semanal de pescado y marisco (2026-11-18): el perfil reducido del motor
+// solo lleva pescadoMaxSemana si el perfil de la app lo trae; si no, el motor
+// usa su valor por defecto (3).
+const conTopePescado = (profile) => (profile && profile.pescadoMaxSemana != null ? { pescadoMaxSemana: profile.pescadoMaxSemana } : {});
 import { aplicarNombresD105, nombreVisible } from '../engine2/dishes/alinosD105.js';
 
 // Versión del motor que generó la semana, en la meta del primer día
@@ -220,6 +226,7 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
       trainingDays: (profile.trainingDays || []).map((d) => DIA_ENGINE2[d] || d),
       intolerances: intolEngine2,
       dieta: dietaDe(profile),
+      ...conTopePescado(profile),
     },
     seed: `${opts.userId ?? 'anon'}:${opts.weekNumber ?? 0}`,
     strategy: base.strategy,
@@ -453,6 +460,8 @@ export function regenerarComidaEngine2(plan, dayIdx, time, deseo, profile, targe
     // legumbre (omnívoro, con compuestos de legumbre en su catálogo), ninguna alternativa puede serlo, sea doble
     // o no la comida que se cambia (decisión de Javi del 2026-11-17).
     sinLegumbreCompuesta: esComidaDoble(actual) || (reglaLegumbreActiva({ dieta: dietaDe(profile) }) && catalog.some((d) => d.rol === 'rotativo' && esCompuestoLegumbre(d))),
+    // El tope semanal de pescado y marisco del perfil (o 3), como en la semana.
+    topePescado: pescadoMaxSemanaDe(conTopePescado(profile)),
   });
 
   const compuesta = componerPlato(dish, momento, targetKcal, { ancla: esAncla && actual._ancla && decisionLog.some((e) => e.causa === 'alternativa_mantiene_ancla') ? actual._ancla : null });

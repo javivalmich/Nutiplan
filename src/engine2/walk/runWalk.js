@@ -106,8 +106,10 @@ import { mulberry32, seedFromString } from '../skeleton/rng.js';
 import { MOMENTOS } from '../dishes/schema.js';
 import { computeVetoUniverse } from './vetoes.js';
 import {
-  proteinaPrincipal, familiaProteica, esCompuestoLegumbre, esSegundoDeLegumbre, TOPE_PROTEINA_SEMANA,
+  proteinaPrincipal, familiaProteica, esCompuestoLegumbre, esSegundoDeLegumbre, TOPE_PROTEINA_SEMANA, ESPECIES_PESCADO_MARISCO,
 } from '../dishes/bases.js';
+import { pescadoMaxSemanaDe } from '../contracts/profile.js';
+import { DEFAULT_WEEKLY_TARGETS } from '../contracts/weeklyTargets.js';
 import { alinoDe, TOPE_AJILLO_SEMANA } from '../dishes/alinosD105.js';
 import {
   initFrequencyState, registerConsumption, chooseFrequencyLevel, chooseIdentityLevel,
@@ -375,6 +377,13 @@ function walkUnaVez(input, { sinFamilia, uso, sinRegla }) {
   // coloco (ancla + sobras tambien son consumo, asiento 5).
   const freqState = initFrequencyState(p1aSlots, undefined, fuenteEditorial);
 
+  // Tope semanal de pescado y marisco (decision de Javi, 2026-11-18): el del
+  // perfil (pescadoMaxSemana, de 2 a 4) o 3 si no lo trae. Pescado y marisco
+  // como una sola familia, contados por especie. El suelo de pescado del paso 4
+  // (D-024) es el menor entre el suyo y el tope.
+  const topePescado = pescadoMaxSemanaDe(profile);
+  const suelos = { ...DEFAULT_WEEKLY_TARGETS, pescado: Math.min(DEFAULT_WEEKLY_TARGETS.pescado, topePescado) };
+
   function pushFill(day, momento, dishId, causa, evidencia, alternativasDescartadas) {
     const key = slotKey(day, momento);
     slots.set(key, { ...slots.get(key), dishId, abierto: false });
@@ -423,7 +432,7 @@ function walkUnaVez(input, { sinFamilia, uso, sinRegla }) {
     return c;
   }
 
-  function pushEvent(day, causa, evidencia) {
+  function pushEvent(day, causa, evidencia, extra = {}) {
     decisionLog.push({
       decisionId: `walk-select-${decisionLog.length}`,
       day,
@@ -433,8 +442,14 @@ function walkUnaVez(input, { sinFamilia, uso, sinRegla }) {
       evidencia,
       alternativasDescartadas: [],
       evento: true,
+      ...extra,
     });
   }
+
+  pushEvent(undefined, 'tope_pescado_semana_fijado',
+    `tope de pescado y marisco ${topePescado} por semana (${profile && 'pescadoMaxSemana' in profile ? 'del perfil' : 'por defecto'}); `
+      + `suelo de pescado ${suelos.pescado}${suelos.pescado < DEFAULT_WEEKLY_TARGETS.pescado ? ` (D-024 pide ${DEFAULT_WEEKLY_TARGETS.pescado}; baja al tope)` : ''}`,
+    { tope: topePescado, suelo: suelos.pescado });
 
   // Segundo de un primero de legumbre (D-116): la legumbre compuesta no va
   // como plato unico. Vale para la que elige el walk y para la que coloco el
@@ -589,7 +604,29 @@ function walkUnaVez(input, { sinFamilia, uso, sinRegla }) {
       // Prototipo (visor): una proteina que ya sale ese dia, el anterior o el
       // siguiente no se repite aqui (separar las dos veces de la semana). Si no
       // queda ningun candidato, no se aplica y se dice en la evidencia.
-      const base0 = poolTope.length ? poolTope : pool;
+      const baseTope = poolTope.length ? poolTope : pool;
+
+      // Tope semanal de pescado y marisco (2026-11-18): si la semana ya llega,
+      // el pescado sale del pool del hueco y el hueco sigue por la cascada
+      // normal. Con vuelta atras: si dejaria el hueco sin candidatos, no se
+      // aplica. Cuenta los platos servidos (no la sugerencia de la comida libre).
+      let base0 = baseTope;
+      {
+        let servidos = 0;
+        for (const s2 of slots.values()) {
+          if (s2.abierto || !s2.dishId || (s2.fixedRole === 'libre' && s2.momento === 'comida')) continue;
+          if (ESPECIES_PESCADO_MARISCO.has(proteinaCache(s2.dishId))) servidos += 1;
+        }
+        if (servidos >= topePescado) {
+          const sinPescado = baseTope.filter((d) => !ESPECIES_PESCADO_MARISCO.has(proteinaCache(d.id)));
+          if (sinPescado.length && sinPescado.length < baseTope.length) {
+            pushEvent(day, 'tope_pescado_semana', `${momento}: ya salen ${servidos} platos de pescado o marisco (tope ${topePescado}): fuera ${baseTope.length - sinPescado.length} candidatos`);
+            base0 = sinPescado;
+          } else if (!sinPescado.length) {
+            pushEvent(day, 'tope_pescado_semana_sin_aplicar', `${momento}: ya salen ${servidos} platos de pescado o marisco (tope ${topePescado}), pero quitarlos dejaria el hueco sin candidatos`);
+          }
+        }
+      }
       const cercanas = new Set();
       for (const s2 of slots.values()) {
         if (s2.abierto || !s2.dishId) continue;
@@ -767,7 +804,7 @@ function walkUnaVez(input, { sinFamilia, uso, sinRegla }) {
           if (sin.length && sin.length < candidatesB.length) baseB = sin;
         }
         paso4 = chooseFrequencyLevel({
-          day, candidatesB: baseB, state: freqState, fuenteEditorial, suelosInactivos: ['legumbre'],
+          day, candidatesB: baseB, state: freqState, fuenteEditorial, suelosInactivos: ['legumbre'], suelos,
         });
         if (baseB !== candidatesB) {
           paso4 = {
@@ -778,7 +815,7 @@ function walkUnaVez(input, { sinFamilia, uso, sinRegla }) {
         }
       } else {
         paso4 = chooseFrequencyLevel({
-          day, candidatesB, state: freqState, fuenteEditorial,
+          day, candidatesB, state: freqState, fuenteEditorial, suelos,
         });
       }
       const { nivel: candidatesFinal, causa: causaFreq, evidencia: notaFreq } = paso4;

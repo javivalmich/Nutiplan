@@ -100,6 +100,21 @@ export function familiaProteica(dish) {
 export const TOPE_PROTEINA_SEMANA = 2;
 
 /**
+ * Especies de pescado y marisco (proteina principal del catalogo). Para el
+ * tope semanal de pescado y marisco (perfil pescadoMaxSemana, 2026-11-18) se
+ * cuentan como una sola familia y por especie, asi que tambien cuentan los
+ * platos de familia «cereal» con atun o gambas.
+ */
+export const ESPECIES_PESCADO_MARISCO = Object.freeze(new Set([
+  'atun', 'bacalao', 'berberechos', 'bonito', 'calamares', 'corvina', 'dorada', 'gambas', 'mejillones', 'merluza', 'salmon', 'sardinas',
+]));
+
+/** ¿Es un plato de pescado o marisco (por su proteina principal)? */
+export function esPescadoOMarisco(dish) {
+  return ESPECIES_PESCADO_MARISCO.has(proteinaPrincipal(dish));
+}
+
+/**
  * ¿Es un plato compuesto de legumbre (legumbre con verdura, plantilla
  * «legumbre»)? Son los «primeros» de D-116: no van como plato unico. Los
  * platos redactados de legumbre (cocido, fabada...) no lo son.

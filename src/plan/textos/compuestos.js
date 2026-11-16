@@ -300,7 +300,8 @@ export function escribirCompuesto({ tupla, nombre, momento, gramos, ancla = null
   // ── Compra ──
   const shopping = [];
   shopping.push(compraP(P, gP, hueco === 'P' ? notaCompra : null));
-  if (C) shopping.push(`${C.compra} (${gC} g${tmpl === 'legumbre' && C.seco ? ' en seco' : ''}${hueco === 'C' && notaCompra ? `, ${notaCompra}` : ''})`);
+  // El hidrato en seco (arroz, pasta, quinoa) se compra «en seco», igual que dice el texto del plato.
+  if (C) shopping.push(`${C.compra} (${gC} g${C.seco ? ' en seco' : ''}${hueco === 'C' && notaCompra ? `, ${notaCompra}` : ''})`);
   if (V) shopping.push(`${V.compra} (${V.medida(gV).corta}, ${gV} g)`);
   if (V2) shopping.push(`${V2.compra} (${V2.medida(gV2).corta}, ${gV2} g)`);
   if (A) shopping.push(...A.compra);

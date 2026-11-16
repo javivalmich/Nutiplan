@@ -198,7 +198,10 @@ export function runWalk(input) {
   // con el paso 4 de D-024 como antes. Repetir sin segundos pero con los dias
   // sorteados dejaba la legumbre como plato unico esos dias, y la proteina
   // peor que sin la regla (medido: scripts/banco/medicion/estructura-comida-final/variantes-red.md).
-  // Solo si habia algun segundo: sin ellos no hay nada que retirar.
+  // Por D-099.3, solo si habia algun segundo: sin ellos no hay nada que retirar.
+  // Por pool vacio, siempre que la regla estuviera activa, aunque no se hubiera
+  // colocado ningun segundo (decision de Javi del 2026-11-17): la regla cambia
+  // que platos se gastan, y la semana sin ella puede no quedarse sin platos.
   //
   // Orden de las redes. Cada intento, con la regla o sin ella, pasa por la red
   // del filtro de familia (walkConRedDeFamilia): primero con el filtro y, solo
@@ -214,12 +217,19 @@ export function runWalk(input) {
   try {
     resultado = walkConRedDeFamilia(input, { sinRegla: false, intentos });
   } catch (err) {
-    if (!(err && err.poolVacio && err.segundosColocados > 0)) throw err;
-    return repetirSinRegla(input, intentos, {
-      causa: 'regla_legumbre_retirada_pool_vacio',
-      motivo: `con los segundos el walk se quedaba sin platos (${err.message})`,
-      dias: err.diasLegumbre || [],
-    });
+    if (!(err && err.poolVacio && err.reglaActiva)) throw conWalks(err, intentos);
+    try {
+      return repetirSinRegla(input, intentos, {
+        causa: 'regla_legumbre_retirada_pool_vacio',
+        motivo: err.segundosColocados > 0
+          ? `con los segundos el walk se quedaba sin platos (${err.message})`
+          : `con la regla (dias de legumbre sorteados, sin ningun segundo colocado) el walk se quedaba sin platos (${err.message})`,
+        dias: err.diasLegumbre || [],
+      });
+    } catch (err2) {
+      if (err2 && err2.poolVacio) err2.segundosColocadosConLaRegla = err.segundosColocados;
+      throw conWalks(err2, intentos);
+    }
   }
   // Solo con la regla en marcha (dias de legumbre sorteados): sin ella no hay segundos ni red (D-116.9, D-117).
   const sorteo = resultado.decisionLog.find((e) => e.causa === 'dias_legumbre_sorteados');
@@ -237,6 +247,13 @@ export function runWalk(input) {
   });
 }
 
+const describirWalks = (intentos) => intentos.map((x) => `${x.sinRegla ? 'sin' : 'con'} la regla, ${x.sinFamilia ? 'sin' : 'con'} filtro de familia`);
+// El fallo que sale de runWalk lleva los walks que se intentaron (diagnostico; como mucho 4).
+function conWalks(err, intentos) {
+  if (err && typeof err === 'object') err.walks = describirWalks(intentos);
+  return err;
+}
+
 // La repeticion de la red: la semana entera con la regla de D-116 y D-117 apagada.
 function repetirSinRegla(input, intentos, { causa, motivo, dias, extra = {} }) {
   const semana = walkConRedDeFamilia(input, { sinRegla: true, intentos });
@@ -252,7 +269,7 @@ function repetirSinRegla(input, intentos, { causa, motivo, dias, extra = {} }) {
     evento: true,
     diasDescartados: dias,
     ...extra,
-    walks: intentos.map((x) => `${x.sinRegla ? 'sin' : 'con'} la regla, ${x.sinFamilia ? 'sin' : 'con'} filtro de familia`),
+    walks: describirWalks(intentos),
   });
   const quedan = infraccionesD099(input, semana);
   return quedan.length
@@ -550,6 +567,7 @@ function walkUnaVez(input, { sinFamilia, uso, sinRegla }) {
         errPool.poolVacio = true; // lo leen la red del filtro de familia y la de los segundos
         errPool.segundosColocados = [...slots.values()].filter((s) => s.segundo).length;
         errPool.diasLegumbre = legumbre ? [...legumbre.dias] : [];
+        errPool.reglaActiva = !!legumbre; // con la regla apagada (o sin compuestos de legumbre) no hay sorteo
         throw errPool;
       }
 

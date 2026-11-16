@@ -57,6 +57,10 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
 | `f84a70d` | Control de `src/plan` frente al prototipo (`controlComidaDoble.mjs`, `control-src-plan.md`) |
 | `c94c1f4` | Etapa 2, paso 6: la app monta la comida doble (`engine2App.js`); línea base regenerada |
 | `bf7cde7` | Etapa 2, paso 7: alternativas de una comida doble (`regenerarComidaEngine2`) |
+| `aaba881` | `ESTADO.md`: etapa 2, pasos 3 a 7 |
+| `6b07fb9` | Alternativas: una comida doble no se cambia por un compuesto de legumbre (decisión de Javi del 2026-11-16) |
+| `fe7bed9` | Auditoría de los caminos que leen o cambian una comida doble (`auditoriaComidaDoble.test.js`) |
+| el siguiente a `fe7bed9` | Mediciones del aceite, de los primeros repetidos y de la comida doble en día de ancla; `ESTADO.md` |
 
 ## Decisiones de Javi (2026-11-12 y 2026-11-13)
 
@@ -127,12 +131,31 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
     - Línea base del banco regenerada en `c94c1f4`: 528 diferencias, 70 semanas con el texto cambiado; ningún menú ni restricción cambia.
     - Tres semanas en texto: `medicion/estructura-comida-final/semanas-app.md`.
     - Medición: `medirEstructura.mjs --ec=off` mide lo que escribe la app; `--ec=motor` sigue siendo el prototipo (aplica sus raciones sobre `racionesApp.js` de `96a2143`).
-  - **Abierto tras la etapa 2 (decide Javi):**
-    - La alternativa de una comida doble puede ser otra legumbre compuesta, que queda como plato único, en contra de D-116.1. En 169 comidas dobles (20 semanas de 3 perfiles): 43 con «reconfortante», 21 con «sorpréndeme», 1 con «rápido» y 0 con «ligero». El plato único que sale queda corto de proteína en 32 a 77 de los 169 casos, según el deseo. No se ha decidido nada: hoy se hace lo pedido (plato único).
-    - La comida doble escribe dos aceites, cada uno redondeado a 5 ml: las kcal declaradas se apartan de las releídas más de 15 kcal (o un 3 %) en 6 a 17 comidas por perfil en 8 semanas (antes, 0), con un máximo de 25 kcal. Es el redondeo de siempre, dos veces.
-    - Las regeneraciones parciales del motor viejo no conocen el segundo. Sin `_spec`, el recálculo del día (batido) conserva la comida doble; si el motor viejo cambia esa comida, el segundo se pierde y sigue en `platosSemana`. No se toca (motor viejo congelado).
+  - **Decisiones de Javi (2026-11-16):**
+    - La alternativa de una comida doble no puede ser un compuesto de legumbre (implementado en `6b07fb9`: `elegirAlternativa` con `sinLegumbreCompuesta`, causa `alternativa_sin_legumbre_compuesta`; es un veto, no se relaja). En las mismas 169 comidas dobles (20 semanas de 3 perfiles), compuestos de legumbre por deseo antes/después: reconfortante 43/0, ligero 0/0, rápido 1/0, sorpréndeme 21/0. Platos únicos cortos de proteína: 77/45, 32/32, 45/43, 50/31. Siguen saliendo platos redactados de legumbre (D-116.8): 77, 52, 38 y 20 de 169 (fabada, cocido, curry, hummus, falafel, ensalada de lentejas, burrito).
+    - Se acepta el redondeo de los dos aceites de la comida doble: cada aceite se escribe en ml redondeados a 5, así que las kcal declaradas se apartan de las releídas más de 15 kcal (o un 3 %) en 6 a 17 comidas por perfil en 8 semanas (antes, 0), con un máximo de 25 kcal.
+  - **Abierto tras la etapa 2:**
+    - Al cambiar una comida que NO es doble, la alternativa todavía puede ser un compuesto de legumbre como plato único (la decisión de Javi es solo para la comida doble). No se ha medido cuántas veces.
+    - Aceite (`medicion/estructura-comida-final/aceite-primeros.md`, 200 semanas por perfil frente a `ba52d21`): la comida doble lleva 33 ml de media a 2174 kcal (19,8 la legumbre como plato único hoy), y el día con comida doble 51,8 ml. El día medio sube de 37,6 a 44,5 ml a 2174 kcal y de 25,7 a 27,5 a 1434; el día con más aceite pasa de 60 a 75 u 80 ml en los perfiles de 2000 kcal o más. Cada plato lleva su aceite; el primero a la mitad, con un mínimo de 5 ml.
+    - Los primeros de la semana se parecen: en 1447 de 1736 semanas con 2 o más primeros se repite la legumbre, en 1106 el aliño y en 489 la legumbre y el aliño (el mismo guiso con otra verdura). Nunca 3 de la misma legumbre. El más frecuente, lentejas con pimentón y ajo (1816 de 5214).
+    - «Lentejas guisadas con arroz y zanahoria» (compuesto de legumbre con hidrato, el único; del ancla) no nombra el arroz en `p1` ni `p2` ni lo cocina en la receta: solo sale en la compra («Arroz (70 g)», sin «en seco»). Ya pasaba como plato único desde D-108 (`compuestos.js`, plantilla legumbre). Con el ancla de arroz, la receta no dice que se use el arroz ya cocido. Propuesto, sin arreglar: es texto gastronómico. Ejemplo en `medicion/estructura-comida-final/ancla-doble.md`.
+    - En el perfil del banco con ancla (cocina el domingo anterior) solo hay comidas dobles de aprovechar (55 en 200 semanas); el día de cocinar de más se ha visto con el mismo perfil cocinando el miércoles (`anclaDoble.mjs`).
     - A mano, sin hacer: el título largo y las dos partes en `p1` y `p2` en la pantalla del móvil; el panel del nutricionista con una comida doble.
-    - El plan compartido (`cloneAndScalePlan`) no se ha probado con la comida doble.
+  - **Auditoría de los caminos que leen o cambian una comida doble** (`src/plan/tests/auditoriaComidaDoble.test.js`, `fe7bed9`). Ningún arreglo claro en `src/plan`: lo que falla está en la vista o en el motor viejo.
+    - Plan compartido (canjear un código, `cloneAndScalePlan` en `OriginalPlanApp.jsx`): la comida doble se clona bien (mismo título, misma partición de la compra) y escala los gramos de los dos platos, no los ml del aceite. Como en un plato único, no mira rangos ni topes (50 g de legumbre a 2174 kcal pasan a 41 g a 1800) y la nutrición mostrada es la del dueño. Si el amigo activa el batido, el día se vuelve a racionar desde la comida de partida, a sus calorías.
+    - Cambio de calorías o de perfil (check-in, editar el perfil y generar, nueva semana): el plan se genera entero; mismos menús y la comida doble racionada a las calorías nuevas.
+    - Recalcular el día (batido): en planes de engine2 se vuelve a racionar y ON y OFF la dejan igual. En el recálculo del motor viejo (`dayPortionsRegen`), una comida sin `_spec` se conserva intacta.
+    - Lista de la compra (pestaña de la comida; no hay lista semanal): los dos platos seguidos, con líneas repetidas (ajo, cebolla) y dos de aceite.
+    - Panel del nutricionista: el resumen del paciente pinta solo `p1`, así que de la comida doble solo se ve el primero. Si el nutricionista edita la compra de una comida doble, `_doble.corte` deja de cuadrar (la lectura plato a plato se desplaza); volver a racionar parte de `_base` y descarta la edición, igual que en un plato único.
+    - Plan guardado (la base de datos solo guarda los días): la comida doble llega entera; `platosRecientesPara`, recalcular el día y las alternativas funcionan igual.
+    - Regeneración parcial del motor viejo (cuando engine2 no encuentra alternativa y la vista llama a `buildPlan` con `_regenContext`): la comida doble se cambia por un plato del motor viejo, el segundo se pierde y sigue en `platosSemana`; el plato nuevo podría ser legumbre como plato único, en contra de la decisión de hoy. No pasó en las 676 alternativas medidas.
+  - **Propuestas (sin implementar, decide Javi):**
+    - Vista: en el resumen del nutricionista, el título de la comida en lugar de `p1` (o `p1` y `p2`).
+    - Vista: al editar en el panel del nutricionista una comida doble, quitarle `_doble`, `_dishId2` y `_base` (pasa a ser texto libre), o no dejar editar la compra.
+    - Vista: en la receta, las líneas «De primero, …:» y «De segundo, …:» como encabezados, no como pasos numerados.
+    - `src/plan` (`regenerarComida`): si engine2 no encuentra alternativa para una comida doble, no ir al motor viejo y dejarla como está (como ya se hace con las dietas), con un aviso propio.
+    - `compuestos.js`: el arroz del compuesto de legumbre con hidrato, en `p2` («Arroz (… g en seco)»), su paso de receta (o el de aprovechar) y «en seco» en la compra.
+    - Motor viejo (congelado, no se toca): el `platosSemana` de la semana no se actualiza cuando el motor viejo cambia un plato de engine2. Ya pasaba con los platos únicos.
   - **Red de D-116.5 con la regla apagada** (decisión de Javi, implementada en `ff2fa23`): si con los segundos la semana incumple D-099.3 o se queda sin platos, se repite sin días sorteados, sin segundos y con D-024 como antes. El motivo es que la regla no deje la proteína peor que hoy. Cifras en `medicion/estructura-comida-final/variantes-red.md` (200 semanas por perfil; el motor real coincide con la variante medida en memoria en 600 de 600 semanas):
     - Comidas y cenas cortas de proteína por semana, hoy / red anterior / red nueva: sin pescado ni marisco 4,29 / 3,64 / 3,15; gluten y sin pescado 4,03 / 4,71 / 3,92; lactosa, gluten y sin pescado 4,22 / 5,01 / 4,18.
     - Infracciones de D-099.3: 0 / 0 / 2 en el perfil del banco (conejo en las cenas de sábado y domingo en 2 semanas, porque el tope de 2 ya agotó las demás especies); en los dos sintéticos con gluten ya hay 28 hoy y la red nueva deja 25 y 28. Quedan anotadas con `infraccion_d099_regla_retirada`.

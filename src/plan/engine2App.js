@@ -26,7 +26,7 @@ import { animalDeTexto, dietaDe, VETADOS_POR_DIETA } from '../engine2/nutrientes
 import { ponerDesayunos, alternativaDesayuno } from './desayunosApp.js';
 import { conPlatosDieta } from './platosDieta.js';
 import { componerPlato, gramosDeBase } from './textos/componer.js';
-import { componerComidaDoble } from './textos/comidaDoble.js';
+import { componerComidaDoble, esComidaDoble } from './textos/comidaDoble.js';
 import { nombreDeBase } from './textos/compuestos.js';
 import { limpiarComidaLegacy } from './textos/legacy.js';
 import { adaptarSiProcede, conSibo, conDieta } from './adaptar.js';
@@ -422,9 +422,12 @@ export function regenerarComidaEngine2(plan, dayIdx, time, deseo, profile, targe
   const { catalogo } = filtrarCatalogo(opts.catalogo, profile, targetKcal, opts);
   const catalog = aplicarNombresD105(aplicarAjustesD099(catalogo));
   const diaE2 = (d) => DIA_ENGINE2[d.name] || d.name;
-  const semana = plan.days.flatMap((d) => ['Comida', 'Cena'].map((t) => {
+  // D-116: el segundo de una comida doble se come; va en la semana como un plato más de su comida,
+  // para que el tope y la separación por especie, la familia y el aliño lo vean.
+  const semana = plan.days.flatMap((d) => ['Comida', 'Cena'].flatMap((t) => {
     const m = d.meals.find((x) => x && x.time === t);
-    return { day: diaE2(d), momento: MOMENTO_DE[t], dishId: m && m._dishId ? m._dishId : null };
+    const hueco = { day: diaE2(d), momento: MOMENTO_DE[t], dishId: m && m._dishId ? m._dishId : null };
+    return m && esComidaDoble(m) ? [hueco, { ...hueco, dishId: m._dishId2 }] : [hueco];
   }));
   const meta = metaEngine2(plan);
   const causa = actual._causa || (plan.decisionLog || []).filter((e) => e.day === diaE2(day) && e.momento === momento && typeof e.causa === 'string').map((e) => e.causa).pop();
@@ -450,13 +453,19 @@ export function regenerarComidaEngine2(plan, dayIdx, time, deseo, profile, targe
   const ajustado = plan.raciones === 'engine2' || day.raciones ? ajustarDia({ ...day, meals }, profile, targetKcal) : { day: { ...day, meals }, log: [] };
   let days = plan.days.slice();
   days[dayIdx] = ajustado.day;
-  const platosSemana = (meta.platosSemana || []).map((n) => (n === actual.title || n === (actual.title || '').replace(/ \(comida principal\)$/, '') ? dish.nombre : n));
+  // D-116: una comida doble se cambia por un plato único. El plato nuevo ocupa el sitio del primero
+  // en platosSemana y el segundo sale: ya no se come, y la semana siguiente puede llevarlo.
+  const doble = esComidaDoble(actual);
+  const nombreActual = doble ? actual._doble.primero.title : (actual.title || '').replace(/ \(comida principal\)$/, '');
+  const nombreSegundo = doble ? actual._doble.segundo.title : null;
+  const platosSemana = (meta.platosSemana || []).filter((n) => n !== nombreSegundo).map((n) => (n === actual.title || n === nombreActual ? dish.nombre : n));
+  const retirada = doble ? [{ causa: 'alternativa_retira_segundo', day: diaE2(day), momento, plato: actual._dishId2, detalle: `la comida con primero y segundo se cambia por un plato único («${dish.nombre}»): sale el segundo («${nombreSegundo}») de la comida, de la compra y de los platos de la semana` }] : [];
   days = guardarMeta(days, { ...((days[0] && days[0]._engine2) || {}), ancla: meta.ancla, platosSemanaAnterior: meta.platosSemanaAnterior, platosSemana });
   return {
     ...plan,
     days,
     platosSemana,
-    decisionLog: [...(plan.decisionLog || []).filter((e) => !(e.day === day.name && e.causa && String(e.causa).startsWith('raciones'))), ...decisionLog.map((e) => ({ ...e, deseo })), ...ajustado.log],
+    decisionLog: [...(plan.decisionLog || []).filter((e) => !(e.day === day.name && e.causa && String(e.causa).startsWith('raciones'))), ...decisionLog.map((e) => ({ ...e, deseo })), ...retirada.map((e) => ({ ...e, deseo })), ...ajustado.log],
   };
 }
 

@@ -79,6 +79,8 @@ export function huecosSemana(plan, porId) {
   const segundos = new Map();
   for (const e of plan.decisionLog || []) {
     if (e && e.causa === 'segundo_de_legumbre' && DAYS_ORDER.includes(e.day)) segundos.set(DAYS_ORDER.indexOf(e.day), e.plato);
+    // Una alternativa cambió esa comida doble por un plato único: el segundo ya no se sirve.
+    if (e && e.causa === 'alternativa_retira_segundo' && DAYS_ORDER.includes(e.day)) segundos.delete(DAYS_ORDER.indexOf(e.day));
   }
   plan.days.forEach((d, i) => {
     const m = (d.meals || []).find((x) => x && x.time === 'Comida' && !x.sugerencia);

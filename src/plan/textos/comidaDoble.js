@@ -24,9 +24,23 @@ const minuscula = (s) => (s ? s.charAt(0).toLowerCase() + s.slice(1) : s);
 const mitad = (x, min = 0) => Math.max(min, Math.round(x / 2 / 5) * 5);
 const identidad = (plato) => plato;
 
-/** ¿Es una comida con primero y segundo? */
+/**
+ * ¿Es una comida con primero y segundo, con los datos de los dos platos para
+ * volver a escribirlos? (`_dishId2`, y en `_doble` cada plato con su
+ * `_componer` y el corte de la compra.)
+ */
 export function esComidaDoble(meal) {
-  return !!(meal && meal._dishId2 && meal._doble && meal._doble.primero && meal._doble.segundo);
+  const d = meal && meal._dishId2 && meal._doble;
+  return !!(d && d.primero && d.primero._componer && d.segundo && d.segundo._componer && Number.isInteger(d.corte));
+}
+
+/**
+ * Comida que dice tener segundo (`_dishId2`) pero no trae los datos de sus dos
+ * platos completos: un plan guardado a medias, editado a mano o de otra
+ * versión. Se trata como texto libre (revisión independiente, 2026-11-17).
+ */
+export function esComidaDobleIncompleta(meal) {
+  return !!(meal && meal._dishId2) && !esComidaDoble(meal);
 }
 
 /** Título de la comida doble: «Lentejas con zanahoria; de segundo, pechuga de pollo con brócoli». */

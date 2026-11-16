@@ -16,7 +16,7 @@ import { reescribirComida } from './cantidades.js';
 import { adaptarComidaFodmap } from '../engine2/nutrientes/fodmap.js';
 import { recomponer, aplicarAnclaLibre } from './textos/componer.js';
 import { escribirCompuesto, gramosDePartida } from './textos/compuestos.js';
-import { esComidaDoble, recomponerDoble, platosDe } from './textos/comidaDoble.js';
+import { esComidaDoble, esComidaDobleIncompleta, recomponerDoble, platosDe } from './textos/comidaDoble.js';
 import { adaptarSiProcede } from './adaptar.js';
 
 const MOMENTO = Object.freeze({ Desayuno: 'desayuno', Comida: 'comida', Cena: 'cena' });
@@ -223,10 +223,21 @@ export function ajustarDia(day, profile, targetKcal, { composicion = COMPOSICION
   const meals = actuales.map((m) => (m ? baseDe(m) : m));
   const lecturas = meals.map((m) => (m ? leerComida(m) : null));
   const comidas = [];
+  // Una comida con segundo sin los datos de sus dos platos se trata como texto
+  // libre: no se vuelve a racionar (se queda como está), conserva su parte del
+  // día y lo dice el log (revisión independiente, 2026-11-17).
+  const incompletas = new Set();
+  const logPropio = [];
+  meals.forEach((m, i) => {
+    if (m && esComidaDobleIncompleta(m)) {
+      incompletas.add(i);
+      logPropio.push({ causa: 'comida_doble_incompleta_texto_libre', momento: MOMENTO[m.time] || 'tentempie', id: String(i), detalle: `«${m.title || ''}» dice llevar segundo (_dishId2) pero no trae los datos de sus dos platos (_doble): se trata como texto libre y no se vuelve a racionar` });
+    }
+  });
   meals.forEach((m, i) => {
     if (!m) return;
     const lectura = lecturas[i];
-    const libre = lectura.libre || !!(m._spec && m._spec.isFree);
+    const libre = lectura.libre || !!(m._spec && m._spec.isFree) || incompletas.has(i);
     comidas.push({
       id: String(i),
       momento: MOMENTO[m.time] || 'tentempie',
@@ -286,7 +297,7 @@ export function ajustarDia(day, profile, targetKcal, { composicion = COMPOSICION
   });
   return {
     day: { ...day, meals: nuevas, raciones: { kcal: r.total.kcal, proteina: r.total.proteina, objetivoKcal: targetKcal, batido: batido ? true : false } },
-    log: r.log.map((e) => ({ ...e, day: day.name })),
+    log: [...logPropio, ...r.log].map((e) => ({ ...e, day: day.name })),
     sinCambiar,
   };
 }

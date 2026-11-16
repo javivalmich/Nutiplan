@@ -695,6 +695,15 @@ Los dos asientos de la sección 10 y las decisiones abiertas de la sección 11.
 
 ### Etapa 1. Dos platos en una comida, sin cambiar la forma del plan
 
+> **Hecha (2026-11-15 a 2026-11-17).** El motor (`src/engine2`, commits `4378c3a` a `ff2fa23`) y la app (`src/plan`, pasos 1 a 7 de la sección 12, `11b3de4` a `bf7cde7`). Después, con decisiones de Javi del 2026-11-16 y 2026-11-17:
+> - la alternativa de una comida doble no puede ser un compuesto de legumbre (`6b07fb9`);
+> - si engine2 no encuentra alternativa para una comida doble, la comida se queda como está, con un aviso, sin ir al motor viejo (`85854cc`);
+> - aceite 10 + 10 y el segundo que crece antes que el pan (`b9f4de9`, D-116.6);
+> - el primero prefiere legumbre no usada en la semana y aliño no usado por otro primero (`3f3eba2`, D-117.2);
+> - el arroz de «Lentejas guisadas con arroz y zanahoria» y «en seco» en la compra del hidrato (`2fb2af1`, `9c443d8`).
+>
+> Lo escrito abajo es el plan tal como se hizo, con lo que se vio después en cada punto.
+
 Existe, y es lo que hace el prototipo: una sola comida con `time: 'Comida'`, el primero en `p1`, el segundo en `p2`, la compra y la receta de los dos seguidas. La forma visible (`time`, `title`, `p1`, `p2`, `shopping`, `recipe`) no cambia. Los datos internos van en campos con guion bajo, como ya hacen `_componer` y `_base`.
 
 Qué entra:
@@ -709,16 +718,21 @@ Qué entra:
 
 Qué no hace falta tocar: las dos vistas de la UI, la lista de la compra y el plan compartido.
 
-Qué pasa con el plan compartido si no se toca: sigue funcionando. `cloneAndScalePlan` (`OriginalPlanApp.jsx:1961`) copia el plan y multiplica los gramos del texto de `p1`, `p2`, compra y receta por la proporción de calorías. Con la comida doble hace lo mismo que con cualquier otro plato. Lo que no hace, ni hoy ni entonces, es volver a calcular raciones: el amigo recibe la legumbre escalada en proporción, sin el tope ni la media ración. No he mirado el lado del servidor (está vedado); el plan se guarda como los días en JSON y los campos nuevos van dentro de la comida.
+Visto después (auditoría, `src/plan/tests/auditoriaComidaDoble.test.js`): no hizo falta tocarlos, salvo una línea de `OriginalPlanApp.jsx` para enseñar el aviso de la comida doble sin alternativa. La lista de la compra es la de cada comida (no hay lista semanal) y enseña los dos platos seguidos, con líneas repetidas (ajo, cebolla) y dos de aceite.
 
-Riesgos de la etapa 1:
+Qué pasa con el plan compartido si no se toca: sigue funcionando (comprobado en la auditoría, que lee `cloneAndScalePlan` de la vista y la ejecuta sobre un plan con comida doble). `cloneAndScalePlan` (`OriginalPlanApp.jsx:1961`) copia el plan y multiplica los gramos del texto de `p1`, `p2`, compra y receta por la proporción de calorías. Con la comida doble hace lo mismo que con cualquier otro plato. Lo que no hace, ni hoy ni entonces, es volver a calcular raciones: el amigo recibe la legumbre escalada en proporción, sin el tope ni la media ración. No he mirado el lado del servidor (está vedado); el plan se guarda como los días en JSON y los campos nuevos van dentro de la comida.
 
-- El título de la comida es largo («Lentejas con pimentón con zanahoria; de segundo, pechuga de pavo a la plancha con brócoli») y `p1` lleva dos líneas en una. Hay que verlo en el móvil.
-- La receta junta los pasos de dos platos con un rótulo de texto; la UI no sabe que son dos.
-- Los planes ya guardados no cambian hasta la semana siguiente.
-- Las regeneraciones parciales que siguen en el motor viejo (cambiar una comida por la vía antigua) no conocen el segundo y lo perderían.
+Riesgos de la etapa 1, y cómo quedan:
+
+- El título de la comida es largo («Lentejas con pimentón con zanahoria; de segundo, pechuga de pavo a la plancha con brócoli») y `p1` lleva dos líneas en una. Hay que verlo en el móvil. **Sigue pendiente, a mano.**
+- La receta junta los pasos de dos platos con un rótulo de texto; la UI no sabe que son dos. **Sigue así:** la vista numera «De primero, …:» y «De segundo, …:» como pasos (propuesta de vista en `ESTADO.md`).
+- Los planes ya guardados no cambian hasta la semana siguiente. **Sigue así;** un plan guardado con comida doble se carga, se recalcula y se cambia igual que uno recién hecho.
+- Las regeneraciones parciales que siguen en el motor viejo no conocen el segundo y lo perderían. **Cubierto en `85854cc`:** con una comida doble la app ya no va al motor viejo. El recálculo del día del motor viejo (`dayPortionsRegen`) la conserva, porque no lleva `_spec`.
+- Visto después: en el panel del nutricionista, el resumen del paciente pinta solo `p1` (no se ve el segundo) y editar la compra de una comida doble descuadra `_doble.corte`. **Propuestas de vista en `ESTADO.md`, sin implementar.**
 
 ### Etapa 2. Alternativas y edición
+
+Sin empezar. Lo que ya hay: cambiar una comida doble la deja en plato único que no es un compuesto de legumbre (`6b07fb9`), y sin alternativa se queda como está (`85854cc`).
 
 - Alternativa solo del segundo, o de los dos platos.
 - El panel del nutricionista edita `p1` y `p2` como texto libre: habría que decidir si puede tocar una comida doble.
@@ -813,7 +827,7 @@ Límites:
 - Vegetariano y vegano no se han medido.
 - Cada variante es una sola pasada de 200 semanas por perfil. Con 1600 semanas, diferencias de menos de 0,1 platos por semana son ruido.
 
-## 12. Plan de la etapa 2: la comida doble en `src/plan` (2026-11-15; pasos 1 a 7 hechos el 2026-11-16)
+## 12. Plan de la etapa 2: la comida doble en `src/plan` (2026-11-15; hecho entre el 2026-11-15 y el 2026-11-17)
 
 La etapa 1 está en el motor (`src/engine2`, commits `4378c3a` a `2b49d3e`). `materializePlan` pone un `segundo` opcional en la comida, pero `src/plan` lo ignora. El usuario ve la legumbre como plato único, y el segundo no entra ni en la compra ni en las raciones. Esta etapa es la parte de `src/plan` que la sección 9 ponía en la etapa 1. La «etapa 2» de la sección 9 (alternativas de un solo plato y edición) queda para después.
 
@@ -888,7 +902,26 @@ Cada paso es un commit con su test primero (que falle antes del cambio) y la lí
 - Test previo: cambiar una comida doble devuelve un plato único, sin el segundo en la compra ni en `platosSemana`.
 - Las regeneraciones parciales del motor viejo no conocen el segundo y lo pierden (sección 9). No se tocan, por la constitución (motor viejo congelado). Queda como riesgo.
 
-### Paso 8. Documentación [no visible]
+### Paso 8. Documentación [no visible] — hecho el 2026-11-17
+
+- `ESTADO.md`, la sección 9 de este informe y los asientos que dijo Javi: D-116.6 (`54afa6e`) y D-117.2 (`3d6ba6e`).
+- El plan compartido no se ha tocado; la auditoría comprueba que la comida doble se clona y se escala como cualquier otra.
+
+Lo que se hizo después de los pasos 1 a 7, con su test previo y la línea base del banco en el mismo commit:
+
+| Commit | Qué |
+|---|---|
+| `6b07fb9` | La alternativa de una comida doble no puede ser un compuesto de legumbre (`elegirAlternativa`, `sinLegumbreCompuesta`) |
+| `fe7bed9` | Auditoría de los caminos que leen o cambian una comida doble (tests) |
+| `b9f4de9` | Aceite 10 + 10 y el segundo que crece antes que el pan (`racionesApp.js`, `raciones.js`) |
+| `85854cc` | Comida doble sin alternativa de engine2: se queda como está, con aviso |
+| `2fb2af1` | El arroz de «Lentejas guisadas con arroz y zanahoria» (texto, receta y compra) |
+| `3f3eba2` | El primero prefiere legumbre no usada en la semana y aliño no usado por otro primero (`runWalk.js`) |
+| `9c443d8` | «En seco» en la compra del hidrato en todas las plantillas |
+
+Cifras de cierre (200 semanas por perfil, por la entrada de la app), en los 9 perfiles con comida doble: 5240 comidas dobles; 47 fuera de ±5 % de kcal de su comida (33 a 1434 kcal) y 0 cortas de proteína; 0 lecturas distintas juntas frente a plato a plato; aceite de la comida doble 19,7 ml de media y del día 37,8 ml (máximo 60). En los 8 omnívoros, los primeros repiten legumbre en el 63 % de las semanas, aliño en el 52 % y el mismo guiso en el 16 %. Infracciones de D-099.3: 0 en los omnívoros; 2 en sin-pescado-2000, como antes de la regla.
+
+Original del plan:
 
 - `ESTADO.md`, la sección 9 de este informe y el asiento que diga Javi.
 - No se toca el plan compartido: `cloneAndScalePlan` escala el texto de `p1`, `p2`, la compra y la receta, y con la comida doble hace lo mismo (sección 9).

@@ -224,8 +224,10 @@ export function ajustarComida(items, meta, composicion, amplitud = 1, { topeHuev
   // el aceite en su máximo) y aún faltan kcal. Va antes del pan o la fruta, que
   // racionesDia solo añade si después sigue faltando más de un 5 %. Es un orden
   // de prioridades: primero la legumbre, después el segundo, después el pan.
+  // Crece también si estaba en su mínimo (la proteína pedía menos que el mínimo
+  // de su rango); solo no crece si ya está en su máximo.
   let crecido;
-  const crecen = estado.filter((e) => e.crecerSiFalta && e.papel === 'proteico' && e.rango && !e.limitado);
+  const crecen = estado.filter((e) => e.crecerSiFalta && e.papel === 'proteico' && e.rango && e.limitado !== 'maximo');
   if (crecen.length && !estado.some((e) => e.papel === 'energetico' && !e.limitado)) {
     const falta = meta.kcal - suma(estado, composicion, (e) => e.nuevo).kcal;
     if (falta > 0) {

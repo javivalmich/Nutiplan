@@ -715,7 +715,7 @@
    "cantidades": {
     "calculadoAusenteEnCompra": 0,
     "comidasAjustadas": 216,
-    "decididoIgualQueCompra": 558,
+    "decididoIgualQueCompra": 551,
     "dentroDeTolerancia": 133,
     "dentroPorClave": {
      "aceite_semillas": 3,
@@ -724,29 +724,30 @@
      "leche_semi": 11
     },
     "ejemplos": [],
-    "enTechoBase": 57,
+    "enTechoBase": 60,
     "enTechoPorClave": {
+     "alubias_seco": 2,
      "berberecho": 1,
      "boniato": 1,
      "fruta": 12,
      "pan_blanco": 2,
      "pan_integral": 34,
      "patata": 1,
-     "platano": 6
+     "platano": 7
     },
     "frutaAnadida": 6,
     "fueraDeTolerancia": 0,
     "fueraPorClave": {},
     "huevosMaxComida": 3,
     "huevosMaxDia": 4,
-    "ingredientes": 691,
+    "ingredientes": 684,
     "kcalDeclaradaDistintaDeReleida": 0,
     "maximoG": {
-     "alubias_seco": 125,
+     "alubias_seco": 130,
      "arroz_seco": 100,
      "boniato": 350,
      "garbanzos_seco": 120,
-     "lentejas_seco": 120,
+     "lentejas_seco": 125,
      "pan_blanco": 100,
      "pan_integral": 100,
      "pasta_integral_seco": 130,
@@ -755,7 +756,7 @@
     },
     "mayorDiferenciaG": 1.6,
     "mayorDiferenciaKcal": 15,
-    "panAnadido": 38,
+    "panAnadido": 31,
     "principales": 112,
     "replicaDistinta": 0,
     "sobreTechoBase": 0,
@@ -770,7 +771,7 @@
      "salsa_soja": 1,
      "yogur_griego_0": 5
     },
-    "textoIgual": 691,
+    "textoIgual": 684,
     "textoSinCantidad": 288
    },
    "composicion": {
@@ -877,7 +878,7 @@
     "comidasPrincipales": 144,
     "comidasPrincipalesCortas": 1,
     "desvioSemanaMax": 0.3,
-    "desvioSemanaMedio": -1,
+    "desvioSemanaMedio": -0.9,
     "desvioSemanaMin": -4,
     "diasFueraKcal": 0,
     "diasSinProteina": 10,
@@ -914,10 +915,10 @@
     },
     {
      "semana": 61,
-     "huella": "8fb35871bbe18fe6",
+     "huella": "759255c82778c78a",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -1.3,
+     "desvioKcal": 0.2,
      "pescado": 4,
      "legumbre": 3,
      "platos": [
@@ -942,7 +943,7 @@
     },
     {
      "semana": 62,
-     "huella": "1cd02335d8b222de",
+     "huella": "e96f73d9cbf04b40",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -0.9,
@@ -970,10 +971,10 @@
     },
     {
      "semana": 63,
-     "huella": "eb6a14010527a104",
+     "huella": "8e5cbb97b14d8f22",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -0.6,
+     "desvioKcal": -0.8,
      "pescado": 4,
      "legumbre": 3,
      "platos": [
@@ -1054,7 +1055,7 @@
     },
     {
      "semana": 66,
-     "huella": "b7a0dea19097fd9d",
+     "huella": "efa25c7897bd3882",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -4,
@@ -1082,10 +1083,10 @@
     },
     {
      "semana": 67,
-     "huella": "49c0a3fd9a57e04b",
+     "huella": "5d28faec2b62b777",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -0.6,
+     "desvioKcal": -0.7,
      "pescado": 4,
      "legumbre": 3,
      "platos": [
@@ -1121,21 +1122,22 @@
    "cantidades": {
     "calculadoAusenteEnCompra": 0,
     "comidasAjustadas": 160,
-    "decididoIgualQueCompra": 508,
-    "dentroDeTolerancia": 127,
+    "decididoIgualQueCompra": 497,
+    "dentroDeTolerancia": 126,
     "dentroPorClave": {
      "aceite_semillas": 4,
      "aove": 116,
-     "leche_semi": 7
+     "leche_semi": 6
     },
     "ejemplos": [],
-    "enTechoBase": 97,
+    "enTechoBase": 83,
     "enTechoPorClave": {
      "aguacate": 3,
+     "alubias_seco": 1,
      "arroz_seco": 5,
      "berberecho": 1,
      "boniato": 6,
-     "fruta": 60,
+     "fruta": 48,
      "frutos_rojos": 5,
      "muesli": 2,
      "pan_blanco": 5,
@@ -1148,15 +1150,15 @@
      "semillas": 5,
      "yogur_griego_0": 2
     },
-    "frutaAnadida": 43,
+    "frutaAnadida": 31,
     "fueraDeTolerancia": 0,
     "fueraPorClave": {},
     "huevosMaxComida": 3,
     "huevosMaxDia": 4,
-    "ingredientes": 635,
+    "ingredientes": 623,
     "kcalDeclaradaDistintaDeReleida": 0,
     "maximoG": {
-     "alubias_seco": 105,
+     "alubias_seco": 130,
      "arroz_seco": 175,
      "boniato": 410,
      "garbanzos_seco": 120,
@@ -1173,7 +1175,7 @@
     "panAnadido": 66,
     "principales": 112,
     "replicaDistinta": 0,
-    "sobreTechoBase": 90,
+    "sobreTechoBase": 93,
     "textoDistinto": 30,
     "textoDistintoPorClave": {
      "huevo": 4,
@@ -1185,7 +1187,7 @@
      "tomate": 3,
      "tomate_triturado": 4
     },
-    "textoIgual": 700,
+    "textoIgual": 688,
     "textoSinCantidad": 172
    },
    "composicion": {
@@ -1291,9 +1293,9 @@
    "nutricion": {
     "comidasPrincipales": 144,
     "comidasPrincipalesCortas": 0,
-    "desvioSemanaMax": -1.1,
-    "desvioSemanaMedio": -1.8,
-    "desvioSemanaMin": -3.2,
+    "desvioSemanaMax": -1.3,
+    "desvioSemanaMedio": -1.9,
+    "desvioSemanaMin": -2.7,
     "diasFueraKcal": 1,
     "diasSinProteina": 5,
     "semanasFueraDe5": 0
@@ -1301,7 +1303,7 @@
    "planes": [
     {
      "semana": 60,
-     "huella": "a5f53e1e165dbc83",
+     "huella": "5e5dd40d4318cbe3",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -1.7,
@@ -1329,10 +1331,10 @@
     },
     {
      "semana": 61,
-     "huella": "d9956e4a84e79b4c",
+     "huella": "5420ff70c1ed79f5",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -1.1,
+     "desvioKcal": -1.3,
      "pescado": 5,
      "legumbre": 3,
      "platos": [
@@ -1357,10 +1359,10 @@
     },
     {
      "semana": 62,
-     "huella": "b31da66dc1a2a3e3",
+     "huella": "48b5fdbcf5b71a8f",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -1.4,
+     "desvioKcal": -1.6,
      "pescado": 4,
      "legumbre": 3,
      "platos": [
@@ -1385,10 +1387,10 @@
     },
     {
      "semana": 63,
-     "huella": "ae0aa70c25c697b6",
+     "huella": "e6ee7349a1de811f",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -2.1,
+     "desvioKcal": -2.4,
      "pescado": 3,
      "legumbre": 3,
      "platos": [
@@ -1413,10 +1415,10 @@
     },
     {
      "semana": 64,
-     "huella": "fa66c23ee58241a6",
+     "huella": "f71e39f395db435e",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -2.5,
+     "desvioKcal": -2.7,
      "pescado": 4,
      "legumbre": 3,
      "platos": [
@@ -1441,7 +1443,7 @@
     },
     {
      "semana": 65,
-     "huella": "cf054f81684e37ab",
+     "huella": "08e2790429247876",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -1.4,
@@ -1469,10 +1471,10 @@
     },
     {
      "semana": 66,
-     "huella": "acefb6072e459438",
+     "huella": "35d5861e92beac19",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -3.2,
+     "desvioKcal": -2.7,
      "pescado": 3,
      "legumbre": 3,
      "platos": [
@@ -1497,10 +1499,10 @@
     },
     {
      "semana": 67,
-     "huella": "34704a984473ea96",
+     "huella": "d0d98fe91a33142d",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -1.3,
+     "desvioKcal": -1.6,
      "pescado": 4,
      "legumbre": 3,
      "platos": [
@@ -1969,7 +1971,7 @@
    "cantidades": {
     "calculadoAusenteEnCompra": 0,
     "comidasAjustadas": 216,
-    "decididoIgualQueCompra": 573,
+    "decididoIgualQueCompra": 565,
     "dentroDeTolerancia": 124,
     "dentroPorClave": {
      "aove": 117,
@@ -1977,13 +1979,13 @@
      "leche_semi": 4
     },
     "ejemplos": [],
-    "enTechoBase": 124,
+    "enTechoBase": 119,
     "enTechoPorClave": {
      "alubias_seco": 1,
      "atun_conserva": 1,
      "clara": 12,
      "fruta": 74,
-     "pan_sin_gluten": 42,
+     "pan_sin_gluten": 37,
      "patata": 5,
      "platano": 7,
      "quinoa_seco": 2,
@@ -1994,7 +1996,7 @@
     "fueraPorClave": {},
     "huevosMaxComida": 3,
     "huevosMaxDia": 4,
-    "ingredientes": 697,
+    "ingredientes": 689,
     "kcalDeclaradaDistintaDeReleida": 0,
     "maximoG": {
      "alubias_seco": 130,
@@ -2008,7 +2010,7 @@
     },
     "mayorDiferenciaG": 2.4,
     "mayorDiferenciaKcal": 15,
-    "panAnadido": 59,
+    "panAnadido": 51,
     "principales": 112,
     "replicaDistinta": 0,
     "sobreTechoBase": 24,
@@ -2018,7 +2020,7 @@
      "tomate_triturado": 4,
      "yogur_griego_0": 5
     },
-    "textoIgual": 808,
+    "textoIgual": 800,
     "textoSinCantidad": 128
    },
    "composicion": {
@@ -2115,19 +2117,19 @@
     "comidasPrincipales": 144,
     "comidasPrincipalesCortas": 3,
     "desvioSemanaMax": -0.3,
-    "desvioSemanaMedio": -1.5,
-    "desvioSemanaMin": -2.9,
+    "desvioSemanaMedio": -1.4,
+    "desvioSemanaMin": -2.4,
     "diasFueraKcal": 0,
-    "diasSinProteina": 12,
+    "diasSinProteina": 11,
     "semanasFueraDe5": 0
    },
    "planes": [
     {
      "semana": 60,
-     "huella": "07973f2f30e820d7",
+     "huella": "2f94ddbad90cf9be",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -2.9,
+     "desvioKcal": -2.1,
      "pescado": 4,
      "legumbre": 3,
      "platos": [
@@ -2180,10 +2182,10 @@
     },
     {
      "semana": 62,
-     "huella": "0803110b44d71172",
+     "huella": "5a19c482018c7b8c",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -1.9,
+     "desvioKcal": -2,
      "pescado": 5,
      "legumbre": 3,
      "platos": [
@@ -2208,7 +2210,7 @@
     },
     {
      "semana": 63,
-     "huella": "df01f5a109ef488b",
+     "huella": "cba0d927f66a52a4",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -0.3,
@@ -2236,10 +2238,10 @@
     },
     {
      "semana": 64,
-     "huella": "4b86294edb7f4bc4",
+     "huella": "8169c3f4c39063b6",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -2.5,
+     "desvioKcal": -2.4,
      "pescado": 6,
      "legumbre": 3,
      "platos": [
@@ -2292,10 +2294,10 @@
     },
     {
      "semana": 66,
-     "huella": "b5274834b049f3a6",
+     "huella": "ce3a464266f2e338",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -1.1,
+     "desvioKcal": -1.2,
      "pescado": 4,
      "legumbre": 3,
      "platos": [
@@ -2359,7 +2361,7 @@
    "cantidades": {
     "calculadoAusenteEnCompra": 0,
     "comidasAjustadas": 216,
-    "decididoIgualQueCompra": 541,
+    "decididoIgualQueCompra": 539,
     "dentroDeTolerancia": 138,
     "dentroPorClave": {
      "aceite_semillas": 1,
@@ -2368,12 +2370,13 @@
      "leche_semi": 9
     },
     "ejemplos": [],
-    "enTechoBase": 21,
+    "enTechoBase": 24,
     "enTechoPorClave": {
+     "alubias_seco": 2,
      "boniato": 1,
      "fruta": 11,
      "pan_blanco": 1,
-     "pan_integral": 9,
+     "pan_integral": 10,
      "patata": 1,
      "tortitas_arroz": 6
     },
@@ -2382,10 +2385,10 @@
     "fueraPorClave": {},
     "huevosMaxComida": 3,
     "huevosMaxDia": 3,
-    "ingredientes": 679,
+    "ingredientes": 677,
     "kcalDeclaradaDistintaDeReleida": 0,
     "maximoG": {
-     "alubias_seco": 100,
+     "alubias_seco": 130,
      "arroz_seco": 100,
      "boniato": 350,
      "garbanzos_seco": 115,
@@ -2397,7 +2400,7 @@
     },
     "mayorDiferenciaG": 1.6,
     "mayorDiferenciaKcal": 15,
-    "panAnadido": 40,
+    "panAnadido": 38,
     "principales": 112,
     "replicaDistinta": 0,
     "sobreTechoBase": 8,
@@ -2410,7 +2413,7 @@
      "tomate_triturado": 3,
      "yogur_griego_0": 5
     },
-    "textoIgual": 737,
+    "textoIgual": 735,
     "textoSinCantidad": 191
    },
    "composicion": {
@@ -2515,9 +2518,9 @@
    "nutricion": {
     "comidasPrincipales": 144,
     "comidasPrincipalesCortas": 0,
-    "desvioSemanaMax": 0.4,
-    "desvioSemanaMedio": -1.6,
-    "desvioSemanaMin": -2.6,
+    "desvioSemanaMax": 0.6,
+    "desvioSemanaMedio": -1.5,
+    "desvioSemanaMin": -2.2,
     "diasFueraKcal": 0,
     "diasSinProteina": 6,
     "semanasFueraDe5": 0
@@ -2609,10 +2612,10 @@
     },
     {
      "semana": 63,
-     "huella": "7e5c263410ab4b85",
+     "huella": "ec33f1f1c491a561",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": 0.4,
+     "desvioKcal": 0.6,
      "pescado": 5,
      "legumbre": 3,
      "platos": [
@@ -2693,10 +2696,10 @@
     },
     {
      "semana": 66,
-     "huella": "e313ab92a0e4b9a2",
+     "huella": "d1e298abf6172268",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -2.6,
+     "desvioKcal": -2.2,
      "pescado": 4,
      "legumbre": 3,
      "platos": [
@@ -2760,7 +2763,7 @@
    "cantidades": {
     "calculadoAusenteEnCompra": 0,
     "comidasAjustadas": 216,
-    "decididoIgualQueCompra": 540,
+    "decididoIgualQueCompra": 539,
     "dentroDeTolerancia": 133,
     "dentroPorClave": {
      "aceite_semillas": 1,
@@ -2783,7 +2786,7 @@
     "fueraPorClave": {},
     "huevosMaxComida": 3,
     "huevosMaxDia": 3,
-    "ingredientes": 673,
+    "ingredientes": 672,
     "kcalDeclaradaDistintaDeReleida": 0,
     "maximoG": {
      "arroz_seco": 95,
@@ -2799,7 +2802,7 @@
     },
     "mayorDiferenciaG": 1.6,
     "mayorDiferenciaKcal": 15,
-    "panAnadido": 28,
+    "panAnadido": 27,
     "principales": 112,
     "replicaDistinta": 0,
     "sobreTechoBase": 10,
@@ -2813,7 +2816,7 @@
      "tomate_triturado": 3,
      "yogur_griego_0": 2
     },
-    "textoIgual": 691,
+    "textoIgual": 690,
     "textoSinCantidad": 243
    },
    "composicion": {
@@ -3049,10 +3052,10 @@
     },
     {
      "semana": 65,
-     "huella": "16577eebc7aa8e16",
+     "huella": "061ad71b544096d4",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -1.2,
+     "desvioKcal": -1,
      "pescado": 0,
      "legumbre": 4,
      "platos": [
@@ -4222,7 +4225,7 @@
    "cantidades": {
     "calculadoAusenteEnCompra": 0,
     "comidasAjustadas": 216,
-    "decididoIgualQueCompra": 560,
+    "decididoIgualQueCompra": 553,
     "dentroDeTolerancia": 138,
     "dentroPorClave": {
      "aceite_semillas": 4,
@@ -4231,8 +4234,9 @@
      "leche_semi": 19
     },
     "ejemplos": [],
-    "enTechoBase": 53,
+    "enTechoBase": 56,
     "enTechoPorClave": {
+     "alubias_seco": 3,
      "berberecho": 1,
      "clara": 2,
      "fruta": 20,
@@ -4246,14 +4250,14 @@
     "fueraPorClave": {},
     "huevosMaxComida": 3,
     "huevosMaxDia": 4,
-    "ingredientes": 698,
+    "ingredientes": 691,
     "kcalDeclaradaDistintaDeReleida": 0,
     "maximoG": {
-     "alubias_seco": 85,
+     "alubias_seco": 130,
      "arroz_seco": 100,
      "boniato": 240,
      "garbanzos_seco": 120,
-     "lentejas_seco": 120,
+     "lentejas_seco": 125,
      "pan_blanco": 100,
      "pan_integral": 100,
      "pasta_integral_seco": 125,
@@ -4262,7 +4266,7 @@
     },
     "mayorDiferenciaG": 1.6,
     "mayorDiferenciaKcal": 15,
-    "panAnadido": 40,
+    "panAnadido": 33,
     "principales": 112,
     "replicaDistinta": 0,
     "sobreTechoBase": 7,
@@ -4277,7 +4281,7 @@
      "tomate": 3,
      "tomate_triturado": 3
     },
-    "textoIgual": 716,
+    "textoIgual": 709,
     "textoSinCantidad": 244
    },
    "composicion": {
@@ -4385,7 +4389,7 @@
     "comidasPrincipales": 144,
     "comidasPrincipalesCortas": 1,
     "desvioSemanaMax": -0.1,
-    "desvioSemanaMedio": -0.9,
+    "desvioSemanaMedio": -1,
     "desvioSemanaMin": -2.4,
     "diasFueraKcal": 0,
     "diasSinProteina": 8,
@@ -4394,7 +4398,7 @@
    "planes": [
     {
      "semana": 60,
-     "huella": "2ef133d6bd5c24b5",
+     "huella": "5d5ac139da1b51e6",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -0.7,
@@ -4449,10 +4453,10 @@
     },
     {
      "semana": 62,
-     "huella": "cb5d98f00dab150b",
+     "huella": "e3d6aae25ef56cc4",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -1.5,
+     "desvioKcal": -1.6,
      "pescado": 3,
      "legumbre": 3,
      "platos": [
@@ -4477,10 +4481,10 @@
     },
     {
      "semana": 63,
-     "huella": "72b997bb9cbd63f9",
+     "huella": "d0e0c1d0d4e2b979",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -0.2,
+     "desvioKcal": -0.1,
      "pescado": 4,
      "legumbre": 3,
      "platos": [
@@ -4532,7 +4536,7 @@
     },
     {
      "semana": 65,
-     "huella": "d9509dd6690f8675",
+     "huella": "60d0ec79e5fb82ac",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -2.4,
@@ -4559,10 +4563,10 @@
     },
     {
      "semana": 66,
-     "huella": "9580a3355d1f94d1",
+     "huella": "e38572a7fb3acdda",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -0.1,
+     "desvioKcal": -0.2,
      "pescado": 3,
      "legumbre": 3,
      "platos": [
@@ -4587,10 +4591,10 @@
     },
     {
      "semana": 67,
-     "huella": "89cec5809eb604b6",
+     "huella": "574ac86686d0980c",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -1,
+     "desvioKcal": -1.1,
      "pescado": 4,
      "legumbre": 3,
      "platos": [
@@ -4626,7 +4630,7 @@
    "cantidades": {
     "calculadoAusenteEnCompra": 0,
     "comidasAjustadas": 216,
-    "decididoIgualQueCompra": 525,
+    "decididoIgualQueCompra": 524,
     "dentroDeTolerancia": 139,
     "dentroPorClave": {
      "aceite_semillas": 2,
@@ -4634,8 +4638,9 @@
      "leche_semi": 16
     },
     "ejemplos": [],
-    "enTechoBase": 15,
+    "enTechoBase": 16,
     "enTechoPorClave": {
+     "alubias_seco": 1,
      "boniato": 1,
      "fruta": 16,
      "pan_integral": 4,
@@ -4646,10 +4651,10 @@
     "fueraPorClave": {},
     "huevosMaxComida": 3,
     "huevosMaxDia": 3,
-    "ingredientes": 664,
+    "ingredientes": 663,
     "kcalDeclaradaDistintaDeReleida": 0,
     "maximoG": {
-     "alubias_seco": 100,
+     "alubias_seco": 130,
      "arroz_seco": 100,
      "boniato": 350,
      "garbanzos_seco": 120,
@@ -4662,7 +4667,7 @@
     },
     "mayorDiferenciaG": 1.6,
     "mayorDiferenciaKcal": 15,
-    "panAnadido": 26,
+    "panAnadido": 25,
     "principales": 112,
     "replicaDistinta": 0,
     "sobreTechoBase": 12,
@@ -4677,7 +4682,7 @@
      "tomate": 3,
      "tomate_triturado": 5
     },
-    "textoIgual": 701,
+    "textoIgual": 700,
     "textoSinCantidad": 229
    },
    "composicion": {
@@ -4779,7 +4784,7 @@
    "nutricion": {
     "comidasPrincipales": 144,
     "comidasPrincipalesCortas": 0,
-    "desvioSemanaMax": -0.2,
+    "desvioSemanaMax": 0,
     "desvioSemanaMedio": -1.3,
     "desvioSemanaMin": -2.1,
     "diasFueraKcal": 0,
@@ -4817,10 +4822,10 @@
     },
     {
      "semana": 61,
-     "huella": "8a0cceab3a974be4",
+     "huella": "00d82ec62f3a0157",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -1.2,
+     "desvioKcal": -1.3,
      "pescado": 4,
      "legumbre": 4,
      "platos": [
@@ -4902,10 +4907,10 @@
     },
     {
      "semana": 64,
-     "huella": "92cd36b325bc08da",
+     "huella": "0dc83215cd357962",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -0.2,
+     "desvioKcal": 0,
      "pescado": 3,
      "legumbre": 3,
      "platos": [
@@ -4930,10 +4935,10 @@
     },
     {
      "semana": 65,
-     "huella": "a39be0fbaf67ef17",
+     "huella": "e27e3a27ba508970",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -1.6,
+     "desvioKcal": -1.5,
      "pescado": 4,
      "legumbre": 3,
      "platos": [

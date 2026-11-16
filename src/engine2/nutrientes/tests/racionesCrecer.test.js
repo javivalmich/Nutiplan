@@ -38,3 +38,14 @@ describe('ajustarComida: proteico que crece si falta energía', () => {
     expect(r.log.some((e) => e.causa === 'proteico_crece_por_energia' && /pollo_pechuga/.test(e.detalle))).toBe(true);
   });
 });
+
+describe('ajustarComida: el proteico marcado crece también desde su mínimo', () => {
+  it('si la proteína pedía menos que su mínimo y faltan kcal, crece desde el mínimo', () => {
+    // Poca proteína pedida (el proteico se queda en su mínimo de 80 g) y muchas kcal.
+    const r = ajustarComida(items(true), { kcal: 1300, proteina: 20, proteinaMin: 10 }, COMPOSICION, 1);
+    expect(g(r, 'lentejas_seco')).toBe(100);
+    expect(g(r, 'aove')).toBe(20);
+    expect(g(r, 'pollo_pechuga')).toBeGreaterThan(80);
+    expect(r.crecido).toBeTruthy();
+  });
+});

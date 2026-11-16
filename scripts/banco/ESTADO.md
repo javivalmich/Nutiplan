@@ -173,9 +173,9 @@ Pendiente, pero no bloquea `main` (decide Javi cuándo): la masa como unidad (cr
 - **Comprobación independiente del lector:** propuesta, sin implementar (README, «Límites del instrumento»). Necesita la aprobación de Javi.
   - Deuda: el medidor no se ejecuta en la app; el ±5 % solo está garantizado en tests.
 - **Auditoría B (pescado):** informe completo en [`medicion/auditoria-pescado.md`](medicion/auditoria-pescado.md). Javi no ha decidido nada todavía. No proponer techos semanales.
-  - Con el suelo, la verdura y la legumbre desactivados salen 4,40 por semana: es el peso del catálogo.
+  - Peso del catálogo: el azar puro sobre el catálogo da 4,11 platos de pescado por semana (medición del diseño, más abajo). Con el suelo, la verdura y la legumbre desactivados salen 4,40, pero con el tope y la separación por especie todavía activos: no es el peso del catálogo.
   - El 3,54 aparece cuando, sin la verdura, el suelo de legumbre ocupa comidas.
-  - Las reglas juntas añaden unos 0,45 sobre la base del catálogo.
+  - Las reglas juntas añaden unos 0,80 sobre el peso del catálogo (4,91 de la línea actual del diseño frente a 4,11; con la línea de la auditoría, 4,85, serían 0,74).
   - El suelo de pescado solo actúa en la cena.
   - La regla de verdura diaria enriquece de pescado la comida y bloquea el suelo de legumbre (la legumbre se queda en 0,8 por semana).
   - La sugerencia del sábado cuenta para el suelo sin servirse.
@@ -184,7 +184,7 @@ Pendiente, pero no bloquea `main` (decide Javi cuándo): la masa como unidad (cr
 - **Diseño medido de pescado y legumbres** (200 semanas por perfil, en memoria; scripts `contrafactualesDiseno.mjs`, `medirDiseno.mjs`, `resumenDiseno.mjs`, `analisisDiseno.mjs` y `verduraDesconocida.mjs`). Cifras de los 9 perfiles con pescado:
   - Línea actual: 4,91 pescados y 0,97 legumbres por semana. En bloques de 72 semanas va de 4,74 a 5,13: con ese tamaño, menos de 0,3 de diferencia es ruido.
   - Azar puro sobre el catálogo: 4,11. Con el tope y la separación por especie, 4,84: el ave baja de 3,82 a 2,75 platos por semana.
-  - El 4,40 de la auditoría se reproduce (4,41), pero no es el peso del catálogo.
+  - El 4,40 de la auditoría se reproduce (4,41): es la semana con el suelo, la verdura y la legumbre desactivados, no el peso del catálogo (4,11).
   - A: legumbre 2,72, pescado 4,33, ningún día sin verdura fuera del sábado. Con el suelo de legumbre en 2: legumbre 2,02 y pescado 4,70 (A+S).
   - B con la definición del README deja rachas (pescado y marisco se alternan). Con Bm la racha máxima es de 2 días y el pescado baja a 4,42.
   - S: los días sin verdura (0,64 por semana, todos sábados) pasan a 0.

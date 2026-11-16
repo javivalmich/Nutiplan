@@ -27,7 +27,7 @@ node --import ./scripts/banco/resolver.mjs --import ./scripts/banco/medicion/con
 | Suelo de pescado | 4,26 | 31 | 4 |
 | Verdura diaria | 4,67 | 34 | 4 |
 | Suelo y verdura | 3,54 | 20 | 1 |
-| Suelo, verdura y legumbre | 4,40 | 34 | 1 |
+| Suelo, verdura y legumbre | 4,40 (no es el peso del catálogo: el tope y la separación por especie siguen activos; el azar puro da 4,11) | 34 | 1 |
 | Separación por especie | 4,69 | 37 | 7 |
 | Tope por proteína | 4,69 | 39 | 8 |
 | Preferencia A (tipo de plato) | 4,82 | 39 | 8 |
@@ -36,9 +36,9 @@ node --import ./scripts/banco/resolver.mjs --import ./scripts/banco/medicion/con
 ## Hallazgos
 
 1. **Peso del catálogo.**
-   - Con el suelo, la verdura y la legumbre desactivados salen 4,40 platos por semana: es lo que da el catálogo por sí solo.
+   - El catálogo por sí solo (azar puro sobre el catálogo, sin ninguna regla) da 4,11 platos de pescado por semana (medido después, en el diseño de pescado y legumbres: `contrafactualesDiseno.mjs`, `ESTADO.md`). Con el suelo, la verdura y la legumbre desactivados salen 4,40, pero con el tope y la separación por especie activos: no es el peso del catálogo. (Corregido el 2026-11-16; la primera versión decía que el 4,40 era el peso del catálogo.)
    - El 3,54 aparece cuando, sin la verdura, el suelo de legumbre sí ocupa comidas y desplaza pescado.
-   - Las reglas juntas añaden unos 0,45 por semana sobre la base del catálogo (4,85 frente a 4,40).
+   - Las reglas juntas añaden unos 0,80 por semana sobre el peso del catálogo (4,91 de la línea actual del diseño frente a 4,11; con la línea de esta auditoría, 4,85, serían 0,74). La primera versión decía 0,45, contra el 4,40.
    - El 35 % de las comidas y el 27 % de las cenas del catálogo omnívoro filtrado son pescado; con SIBO, el 42 % y el 30 %.
 2. **El suelo semanal solo actúa en la cena.**
    - De los 993 huecos que elige el walk, 494 caen en el nivel de verdura, que se evalúa antes que los suelos y casi siempre gana en la comida, porque el día aún no tiene verdura.

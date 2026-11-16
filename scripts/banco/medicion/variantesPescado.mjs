@@ -8,8 +8,16 @@
 //                     marisco, justo después del tope de 2 por especie (runWalk.js), y el hueco sigue por la cascada
 //                     normal. Si quitar el pescado lo dejara sin candidatos, no se aplica y lo dice el log. El suelo
 //                     de pescado de D-024 (3) no cambia.
+//                     Solo para el motor anterior a b87ccc3: desde entonces el tope está en runWalk.js y el ancla no
+//                     existe (el hook falla).
 //   --legumbre=4      el suelo de legumbre (DEFAULT_WEEKLY_TARGETS.legumbre, contracts/weeklyTargets.js), que con
 //                     D-117.6 es el número de días sorteados, pasa de 3 a 4.
+//   --defecto=N       desde b87ccc3: el valor por defecto del tope (PESCADO_MAX_SEMANA.defecto, contracts/profile.js),
+//                     que se aplica a los perfiles sin pescadoMaxSemana, pasa de 3 a N. --sinTope lo pone en 99.
+//   --perfilesExtra   añade a la lista de perfiles del banco (en memoria) dos perfiles SINTÉTICOS de 2000 kcal,
+//                     como sin-lactosa-2000 sin la lactosa: «sin-carne-ave-2000» (alimentos eliminados: pollo, pavo,
+//                     ternera, cerdo, conejo, jamón, lacón, guanciale: ningún segundo posible) y «un-segundo-2000»
+//                     (pollo, pavo, ternera, cerdo y alcachofa: solo «Conejo al ajillo con espinacas» vale de segundo).
 //
 // Uso (desde la raíz del repo):
 //   node --import ./scripts/banco/resolver.mjs --import ./scripts/banco/medicion/variantesPescado.mjs \
@@ -45,6 +53,22 @@ if (tope != null) {
     '      const base0 = globalThis.__tp.filtrar({ base0: poolTope.length ? poolTope : pool, slots, proteinaCache, day, momento, pushEvent });']);
 }
 if (legumbre) CAMBIOS.push(['/src/engine2/contracts/weeklyTargets.js', '  legumbre: 3,', `  legumbre: ${legumbre},`]);
+const defecto = process.argv.includes('--sinTope') ? 99 : (valor('defecto') ? Number(valor('defecto')) : null);
+if (defecto != null) {
+  process.stderr.write(`[variantesPescado] valor por defecto del tope: ${defecto}\n`);
+  CAMBIOS.push(['/src/engine2/contracts/profile.js', 'export const PESCADO_MAX_SEMANA = Object.freeze({ min: 2, max: 4, defecto: 3 });',
+    `export const PESCADO_MAX_SEMANA = Object.freeze({ min: 2, max: 4, defecto: ${defecto} });`]);
+}
+// --sinFamilia: el walk empieza sin el filtro «familia en días seguidos» (D-115), como su red de seguridad.
+if (process.argv.includes('--sinFamilia')) {
+  process.stderr.write('[variantesPescado] sin el filtro de familia en días seguidos (D-115)\n');
+  CAMBIOS.push(['/src/engine2/walk/runWalk.js', 'return walkUnaVez(input, { sinFamilia: false, uso, sinRegla });', 'return walkUnaVez(input, { sinFamilia: true, uso, sinRegla });']);
+}
+if (process.argv.includes('--perfilesExtra')) {
+  CAMBIOS.push(['/scripts/banco/perfiles.mjs', ']);', `  { id: 'sin-carne-ave-2000', kcal: 2000, perfil: { ...BASE, ...M62, mealsPerDay: 4, eliminatedFoods: ['pollo', 'pavo', 'ternera', 'cerdo', 'conejo', 'jamón', 'lacón', 'guanciale'] } },
+  { id: 'un-segundo-2000', kcal: 2000, perfil: { ...BASE, ...M62, mealsPerDay: 4, eliminatedFoods: ['pollo', 'pavo', 'ternera', 'cerdo', 'alcachofa'] } },
+]);`]);
+}
 
 const hooks = `
 const CAMBIOS = ${JSON.stringify(CAMBIOS)};

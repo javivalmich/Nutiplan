@@ -440,6 +440,8 @@ export function regenerarComidaEngine2(plan, dayIdx, time, deseo, profile, targe
     anclaBase: esAncla ? meta.ancla.base : null,
     dieta: dietaDe(profile),
     seed: `${opts.userId ?? 'anon'}:${opts.weekNumber ?? 0}`,
+    // D-116.1: una comida doble se cambia por un plato único, que no puede ser legumbre compuesta.
+    sinLegumbreCompuesta: esComidaDoble(actual),
   });
 
   const compuesta = componerPlato(dish, momento, targetKcal, { ancla: esAncla && actual._ancla && decisionLog.some((e) => e.causa === 'alternativa_mantiene_ancla') ? actual._ancla : null });

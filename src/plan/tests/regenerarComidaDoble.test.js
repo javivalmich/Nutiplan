@@ -11,7 +11,7 @@ import { medirComida } from '../medidor/medir.js';
 import { catalogoApp } from '../catalogo.js';
 import { aplicarAjustesD099 } from '../../engine2/dishes/ajustesD099.js';
 import { aplicarNombresD105 } from '../../engine2/dishes/alinosD105.js';
-import { proteinaPrincipal } from '../../engine2/dishes/bases.js';
+import { proteinaPrincipal, esCompuestoLegumbre } from '../../engine2/dishes/bases.js';
 import { COMPOSICION } from '../../engine2/nutrientes/composicion.js';
 import { FREEFORM_POOL } from '../../data/freeformPool.js';
 
@@ -69,6 +69,15 @@ describe('alternativas de una comida doble (D-116)', { timeout: 180000 }, () => 
       // Las demás comidas del día y de la semana no cambian de plato.
       n.days.forEach((d, k) => d.meals.forEach((x, j) => { if (x && !(k === i && x.time === 'Comida')) expect(x.title).toBe(plan.days[k].meals[j].title); }));
       expect(segundo).toBeTruthy();
+    }
+  });
+
+  it('la alternativa de una comida doble nunca es un compuesto de legumbre (decisión de Javi, 2026-11-16)', () => {
+    for (const { plan, w, i, deseo } of casos) {
+      const n = regenerarComida(plan, i, 'Comida', deseo, clonar(H74), 2174, optsDe(USER, w));
+      const nueva = comidaDe(n, i);
+      expect([deseo, nueva.title, esCompuestoLegumbre(porId.get(nueva._dishId))]).toEqual([deseo, nueva.title, false]);
+      expect(n.decisionLog.some((e) => e.causa === 'alternativa_sin_legumbre_compuesta' && e.deseo === deseo)).toBe(true);
     }
   });
 

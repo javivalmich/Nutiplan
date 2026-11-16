@@ -175,3 +175,42 @@ describe('elegirAlternativa — no repetir familia proteica en días seguidos', 
   });
 });
 
+
+describe('elegirAlternativa — la comida con primero y segundo (D-116.1)', () => {
+  // Decisión de Javi (2026-11-16): la alternativa de una comida doble no puede ser un plato
+  // compuesto de legumbre, que quedaría como plato único.
+  const esCompuestoLeg = (d) => { try { return resolveDishComposition(d).tupla?.tmpl === 'legumbre'; } catch { return false; } };
+  const compuestos = catalog.filter(esCompuestoLeg);
+
+  it('con sinLegumbreCompuesta no sale ningún compuesto de legumbre, con cualquier deseo', () => {
+    expect(compuestos.length).toBeGreaterThan(0);
+    for (let s = 0; s < 6; s++) {
+      const p = plan(`doble-${s}`);
+      const semana = semanaDe(p);
+      for (const d of p.days) {
+        const comida = d.meals.find((m) => m.momento === 'comida' && !m.libre);
+        if (!comida) continue;
+        for (const deseo of Object.keys(DESEOS)) {
+          const r = elegirAlternativa({ catalog, semana, day: d.day, momento: 'comida', actualId: comida.dish.id, deseo, seed: `doble-${s}`, sinLegumbreCompuesta: true });
+          expect(esCompuestoLeg(r.dish)).toBe(false);
+          expect(r.decisionLog.some((e) => e.causa === 'alternativa_sin_legumbre_compuesta')).toBe(true);
+        }
+      }
+    }
+  });
+
+  it('sin la opción, todo sigue igual (puede salir un compuesto de legumbre con «reconfortante»)', () => {
+    let alguno = false;
+    for (let s = 0; s < 6 && !alguno; s++) {
+      const p = plan(`doble-${s}`);
+      for (const d of p.days) {
+        const comida = d.meals.find((m) => m.momento === 'comida' && !m.libre);
+        if (!comida) continue;
+        const r = elegirAlternativa({ catalog, semana: semanaDe(p), day: d.day, momento: 'comida', actualId: comida.dish.id, deseo: 'comfort', seed: `doble-${s}` });
+        expect(r.decisionLog.some((e) => e.causa === 'alternativa_sin_legumbre_compuesta')).toBe(false);
+        if (esCompuestoLeg(r.dish)) alguno = true;
+      }
+    }
+    expect(alguno).toBe(true);
+  });
+});

@@ -26,6 +26,7 @@ import { animalDeTexto, dietaDe, VETADOS_POR_DIETA } from '../engine2/nutrientes
 import { ponerDesayunos, alternativaDesayuno } from './desayunosApp.js';
 import { conPlatosDieta } from './platosDieta.js';
 import { componerPlato, gramosDeBase } from './textos/componer.js';
+import { componerComidaDoble } from './textos/comidaDoble.js';
 import { nombreDeBase } from './textos/compuestos.js';
 import { limpiarComidaLegacy } from './textos/legacy.js';
 import { adaptarSiProcede, conSibo, conDieta } from './adaptar.js';
@@ -246,11 +247,18 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
     // D-108: comida y cena las escribe engine2 (sin el motor viejo), con la
     // receta del ancla si toca cocinar de una vez o aprovechar.
     const anclaDe = (momento) => anclaDelHueco(resumenAncla, causaDe.get(`${d2.day}|${momento}`));
-    const comida = componerPlato(comida2.dish, 'comida', targetKcal, { ancla: anclaDe('comida') });
+    // D-116: si el motor puso un segundo, la comida lleva los dos platos (primero en p1 y segundo
+    // en p2). Cada plato se adapta al perfil por separado, antes de unirlos. La sugerencia de la
+    // comida libre no lleva segundo (D-114).
+    const segundo = !comida2.libre && comida2.segundo ? comida2.segundo : null;
+    const comida = segundo
+      ? componerComidaDoble(comida2.dish, segundo, targetKcal, { ancla: anclaDe('comida'), porPlato: (plato) => adaptarSiProcede(plato, profile) })
+      : componerPlato(comida2.dish, 'comida', targetKcal, { ancla: anclaDe('comida') });
     const cena = componerPlato(cena2.dish, 'cena', targetKcal, { ancla: anclaDe('cena') });
     const marca = (meal, dish, momento) => {
       const c = causaDe.get(`${d2.day}|${momento}`);
-      return { ...meal, time: momento === 'cena' ? 'Cena' : 'Comida', title: dish.nombre, _motor: 'engine2', _dishId: dish.id, ...(c && c.startsWith('ancla_base') ? { _causa: c } : {}) };
+      // La comida doble ya trae su título («…; de segundo, …») y los ids de sus dos platos.
+      return { ...meal, time: momento === 'cena' ? 'Cena' : 'Comida', title: meal._dishId2 ? meal.title : dish.nombre, _motor: 'engine2', _dishId: dish.id, ...(c && c.startsWith('ancla_base') ? { _causa: c } : {}) };
     };
     // Comida y cena por su posición en el día, no por la etiqueta: el motor
     // viejo a veces etiqueta «Cena» una comida de ficha libre (D-106).
@@ -268,8 +276,8 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
       if (nota) nuevaComida.slotNote = nota;
       platosSemana.push(comida2.dish.nombre);
       // D-116: el segundo de la comida de legumbre se come; cuenta para no repetirlo la semana
-      // siguiente (D-099.3.d). La app todavía no lo escribe en la comida (etapa 2, paso 6).
-      if (comida2.segundo) platosSemana.push(comida2.segundo.nombre);
+      // siguiente (D-099.3.d).
+      if (segundo) platosSemana.push(segundo.nombre);
       memL.push(claveMemoria(proteinaDe(comida2.dish)));
     }
     let nuevaCena = marca(cena, cena2.dish, 'cena');

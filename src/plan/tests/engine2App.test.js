@@ -38,6 +38,9 @@ describe('generarPlanEngine2 — plan completo para la app', () => {
       if (m._spec && m._spec.isFree) continue;
       expect(m._motor).toBe('engine2');
       expect(m._dishId).toBeTruthy();
+      // La comida doble (D-116) no lleva _spec: el motor viejo no sabe recomponer dos platos y, sin
+      // ficha, la conserva tal cual. Lleva los datos de sus dos platos en _doble.
+      if (m._dishId2) { expect(m._spec).toBeUndefined(); expect(m._doble).toBeTruthy(); continue; }
       expect(m._spec).toBeTruthy();
     }
   });

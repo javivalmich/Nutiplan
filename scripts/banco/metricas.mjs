@@ -15,7 +15,8 @@ import { componerPlato, recomponer } from '../../src/plan/textos/componer.js';
 import { racionesDia, rangoDe, papelDe, AMPLITUD_MAX } from '../../src/engine2/nutrientes/raciones.js';
 import { INGREDIENTES } from '../../src/engine2/nutrientes/ingredientes.js';
 import { COMPOSICION } from '../../src/engine2/nutrientes/composicion.js';
-import { objetivoDe, batidoDelDia, vetadosDe } from '../../src/plan/racionesApp.js';
+import { objetivoDe, batidoDelDia, vetadosDe, extraDoble } from '../../src/plan/racionesApp.js';
+import { esComidaDoble } from '../../src/plan/textos/comidaDoble.js';
 import { intoleranciasDe, filtrarCatalogo } from '../../src/plan/engine2App.js';
 import { resolveDishComposition } from '../../src/engine2/dishes/compositionResolver.js';
 import { nombreVisible } from '../../src/engine2/dishes/alinosD105.js';
@@ -204,7 +205,8 @@ export function racionesCalculadas(day, perfil, kcal) {
     const l = lecturas[i];
     comidas.push({
       id: String(i), momento: MOMENTO[m.time] || 'tentempie', libre: l.libre || !!(m._spec && m._spec.isFree),
-      items: l.items.map((it) => ({ clave: it.clave, gramos: it.gramos, unidad: it.como === 'ud' ? 'ud' : 'g', fijo: /estimado/.test(it.como), ...(m.masa ? { masa: true } : {}) })),
+      // D-116: en la comida doble, la legumbre del primero entra con su tope (extraDoble), como en ajustarDia.
+      items: l.items.map((it) => ({ clave: it.clave, gramos: it.gramos, unidad: it.como === 'ud' ? 'ud' : 'g', fijo: /estimado/.test(it.como), ...(m.masa ? { masa: true } : {}), ...(esComidaDoble(m) ? extraDoble(m, it, kcal) : {}) })),
     });
   });
   const batido = batidoDelDia(perfil, day);

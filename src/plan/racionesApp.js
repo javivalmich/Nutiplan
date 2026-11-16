@@ -168,7 +168,7 @@ export function topeLegumbre(tupla, composicion = COMPOSICION) {
  * legumbre del primero lleva su tope como máximo (en lugar del máximo general
  * de la legumbre, que además crece con el objetivo).
  */
-function extraDoble(m, it, targetKcal, composicion) {
+export function extraDoble(m, it, targetKcal, composicion = COMPOSICION) {
   if (it.plato !== 1 || !esLegumbre(it.clave)) return {};
   const rango = rangoDe(it.clave, 'g');
   const tope = topeLegumbre(m._doble.primero._componer.tupla, composicion);

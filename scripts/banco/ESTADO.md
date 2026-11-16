@@ -1,4 +1,4 @@
-# Estado de la rama `motor/i0-banco-cantidades` (traspaso, 2026-11-15)
+# Estado de la rama `motor/i0-banco-cantidades` (traspaso, 2026-11-16)
 
 Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, creada desde `main`
 `19a300c`. Sin merge a `main`. La sesión de auditoría de seguridad trabaja aparte, en
@@ -51,6 +51,12 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
 | `ff2fa23` | D-116.5 (decisión de Javi): la red repite con la regla de legumbre apagada (`regla_legumbre_retirada_d099`, `regla_legumbre_retirada_pool_vacio`, `infraccion_d099_regla_retirada`); línea base regenerada |
 | `ea39547` | `variantes-red.md` medido con el motor real: 600 de 600 semanas iguales a la variante en memoria |
 | `f4002a7` | `DECISIONS.md`: D-116.5 con la red nueva, sus cifras y el pendiente de los perfiles con gluten |
+| `3191a32` | Etapa 2, paso 3: la comida doble como función pura (`src/plan/textos/comidaDoble.js`) |
+| `46319c9` | Etapa 2, paso 4: el lector lee cada aceite de la comida doble en su plato (`leerComida.js`) |
+| `c729407` | Etapa 2, paso 5: raciones de la comida doble, con el tope de la legumbre (`racionesApp.js`) |
+| `f84a70d` | Control de `src/plan` frente al prototipo (`controlComidaDoble.mjs`, `control-src-plan.md`) |
+| `c94c1f4` | Etapa 2, paso 6: la app monta la comida doble (`engine2App.js`); línea base regenerada |
+| `bf7cde7` | Etapa 2, paso 7: alternativas de una comida doble (`regenerarComidaEngine2`) |
 
 ## Decisiones de Javi (2026-11-12 y 2026-11-13)
 
@@ -104,13 +110,29 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
   - Verdura «desconocida»: 63 de 235 platos (16 de ave, los 9 de cereal).
   - Pendiente de decidir: A y el suelo de legumbre (A, sin implementar por decisión de Javi). No proponer techos semanales.
 - **Estructura de la comida y legumbre (D-116 y D-117):** etapa 1 implementada en el MOTOR (`src/engine2`, commits `4378c3a` a `ff2fa23`), sin la opción (c). Plan de la etapa 2 (`src/plan`), por pasos y con su test previo, en la sección 12 del informe. Informe y scripts en [`medicion/estructura-comida.md`](medicion/estructura-comida.md).
-  - **El motor decide los segundos, pero la app todavía no los enseña.** `materializePlan` pone `segundo` en la comida y `src/plan` lo ignora: el usuario ve la legumbre como plato único, sin su segundo, y el segundo no entra en la compra ni en las raciones. Mientras no se haga la parte de `src/plan`, la rama no se debe llevar a `main`.
+  - **La app ya enseña el segundo** (etapa 2, pasos 3 a 7, hechos el 2026-11-16). La comida de legumbre con segundo es una sola comida: el primero en `p1`, el segundo en `p2`, la compra y la receta seguidas, y las raciones de la comida entera. Detalle más abajo, en «Etapa 2, pasos 3 a 7 hechos».
   - Comparación (`medicion/compararMotorHook.mjs`, 200 semanas por perfil, 10 perfiles): el motor da los mismos menús que el prototipo de medición en las 2000 semanas. El prototipo se validó antes contra el hook de `ba52d21` (2000 semanas idénticas). Infracciones de D-099.3: 0. Red de seguridad: 71 de 2000 semanas, todas del perfil sin pescado ni marisco. Legumbre 3,02 y pescado 3,90 por semana (8 perfiles).
   - Diferencias con el hook, aprobadas por Javi: la red solo se repite si había segundos, y una infracción sin segundos tiene causa propia; la repetición vuelve a empezar con el filtro de familia (máximo 4 walks); un perfil sin compuestos de legumbre (SIBO) no sortea días ni apaga el suelo de D-024 (sus 200 semanas, idénticas a `ba52d21`); causa nueva `dias_legumbre_sin_sorteo`. Desde `ff2fa23` la repetición va con la regla apagada, no solo sin segundos.
   - El banco (`metricas.mjs`) cuenta los segundos en familias, especies y D-099.3 desde `3622d54` (del decision log, mientras la app no los escriba en la comida).
-  - Pendiente: la parte de `src/plan` (montar la comida doble, raciones con el tope de la legumbre, textos, `platosSemana`), las alternativas de una comida con dos platos, el domingo como día de legumbre y la legumbre a 4 (AESAN).
+  - Pendiente: el domingo como día de legumbre y la legumbre a 4 (AESAN).
   - Pool vacío por el segundo (el riesgo que también tenía el hook): cubierto en `2b49d3e`. Como la red de D-099, desde `ff2fa23` repite con la regla apagada; como mucho 4 walks por semana. No sale en el banco.
-  - **Etapa 2, pasos 1 y 2 hechos** (`11b3de4`, `3622d54`). El segundo entra en `platosSemana`: `repeticionSegundos.mjs` da 0 de 2210 segundos repetidos de la semana anterior (antes, 435 de 2216). El banco cuenta los segundos en familias, especies y D-099.3, y da 0 infracciones en los perfiles omnívoros. El paso 3 (la comida doble como función pura) no está empezado.
+  - **Etapa 2, pasos 1 y 2 hechos** (`11b3de4`, `3622d54`). El segundo entra en `platosSemana`: `repeticionSegundos.mjs` da 0 de 2210 segundos repetidos de la semana anterior (antes, 435 de 2216). El banco cuenta los segundos en familias, especies y D-099.3, y da 0 infracciones en los perfiles omnívoros.
+  - **Etapa 2, pasos 3 a 7 hechos** (`3191a32` a `bf7cde7`), cada uno con su test previo:
+    - Paso 3, `textos/comidaDoble.js`: `componerComidaDoble`, `recomponerDoble`, `combinarDoble` y `compraPorPlato`. Los datos de cada plato van en `_doble` (`primero`, `segundo` y `corte`, que dice cuántas líneas de la compra son del primero). Mismo texto que `construirPS` en 5796 combinaciones.
+    - Paso 4, `leerComida.js`: en la comida doble, un aceite sin cantidad se busca en el texto de su plato, y cada ingrediente dice de qué plato es (`plato`).
+    - Paso 5, `racionesApp.js`: `topeLegumbre` y `extraDoble`. El tope se calcula con el plato solo en la comida de un día de 2174 kcal de cuatro comidas; da los mismos 14 valores que el prototipo, sin plan de referencia. La comida doble no pasa por `reescribirComida`.
+    - Paso 6, `engine2App.js`: monta la comida doble. La comida doble no lleva `_spec`. `adaptar.js` no la adapta entera: cada plato se adapta por separado.
+    - Paso 7, `regenerarComidaEngine2`: cambiar una comida doble la deja en plato único y quita el segundo de `platosSemana` (causa `alternativa_retira_segundo`); al cambiar otra comida, el segundo cuenta como un plato más de la semana.
+    - Control (`medicion/estructura-comida-final/control-src-plan.md`, 200 semanas por perfil, 10 perfiles): la app escribe el mismo texto que el prototipo en 2000 de 2000 semanas. Comidas dobles fuera de ±5 % de kcal: 134 de 5214 (127 de 4783 en los 8 omnívoros); cortas de proteína: 13; lectura junta distinta de plato a plato: 0. Sin pescado ni marisco: 3,15 comidas y cenas cortas por semana y 102,3 % de la proteína del día, como en `variantes-red.md`.
+    - Línea base del banco regenerada en `c94c1f4`: 528 diferencias, 70 semanas con el texto cambiado; ningún menú ni restricción cambia.
+    - Tres semanas en texto: `medicion/estructura-comida-final/semanas-app.md`.
+    - Medición: `medirEstructura.mjs --ec=off` mide lo que escribe la app; `--ec=motor` sigue siendo el prototipo (aplica sus raciones sobre `racionesApp.js` de `96a2143`).
+  - **Abierto tras la etapa 2 (decide Javi):**
+    - La alternativa de una comida doble puede ser otra legumbre compuesta, que queda como plato único, en contra de D-116.1. En 169 comidas dobles (20 semanas de 3 perfiles): 43 con «reconfortante», 21 con «sorpréndeme», 1 con «rápido» y 0 con «ligero». El plato único que sale queda corto de proteína en 32 a 77 de los 169 casos, según el deseo. No se ha decidido nada: hoy se hace lo pedido (plato único).
+    - La comida doble escribe dos aceites, cada uno redondeado a 5 ml: las kcal declaradas se apartan de las releídas más de 15 kcal (o un 3 %) en 6 a 17 comidas por perfil en 8 semanas (antes, 0), con un máximo de 25 kcal. Es el redondeo de siempre, dos veces.
+    - Las regeneraciones parciales del motor viejo no conocen el segundo. Sin `_spec`, el recálculo del día (batido) conserva la comida doble; si el motor viejo cambia esa comida, el segundo se pierde y sigue en `platosSemana`. No se toca (motor viejo congelado).
+    - A mano, sin hacer: el título largo y las dos partes en `p1` y `p2` en la pantalla del móvil; el panel del nutricionista con una comida doble.
+    - El plan compartido (`cloneAndScalePlan`) no se ha probado con la comida doble.
   - **Red de D-116.5 con la regla apagada** (decisión de Javi, implementada en `ff2fa23`): si con los segundos la semana incumple D-099.3 o se queda sin platos, se repite sin días sorteados, sin segundos y con D-024 como antes. El motivo es que la regla no deje la proteína peor que hoy. Cifras en `medicion/estructura-comida-final/variantes-red.md` (200 semanas por perfil; el motor real coincide con la variante medida en memoria en 600 de 600 semanas):
     - Comidas y cenas cortas de proteína por semana, hoy / red anterior / red nueva: sin pescado ni marisco 4,29 / 3,64 / 3,15; gluten y sin pescado 4,03 / 4,71 / 3,92; lactosa, gluten y sin pescado 4,22 / 5,01 / 4,18.
     - Infracciones de D-099.3: 0 / 0 / 2 en el perfil del banco (conejo en las cenas de sábado y domingo en 2 semanas, porque el tope de 2 ya agotó las demás especies); en los dos sintéticos con gluten ya hay 28 hoy y la red nueva deja 25 y 28. Quedan anotadas con `infraccion_d099_regla_retirada`.
@@ -119,6 +141,7 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
 - **Fichas con una cifra para dos ingredientes** (`medicion/barridoCifraCompartida.mjs`, 183 fichas, solo `p1` y `p2`): queda 1 como los ñoquis, sin corregir: «Crema de calabacín y espinacas con quinoa y semillas» («espinacas y patata (100g)»). Otros 34 tramos nombran dos ingredientes pero la cifra es de uno solo y se reescribe bien.
 - **Perfiles de 2600 y 3714 kcal:** quedan un 2,4 % por debajo de su objetivo de media, con las raciones en el techo. De ahí salen casi todas las semanas fuera de ±5 % (12 de 1800 con Bm). Es anterior a S y a Bm.
 - **Test intermitente** `scripts/fase7/entrega.test.js:639` (tiempo límite de 5 s): ya fallaba en `main` y no se toca.
+- **Suite que no carga en este worktree:** `src/data/__tests__/pdb.characterization.test.js` falla con «supabaseUrl is required» porque aquí no hay `.env.local`. No depende de esta rama.
 - **Lint:** 154 problemas que ya estaban en `main`. Ninguno en los archivos tocados por esta rama.
 
 ## Prohibiciones

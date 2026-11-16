@@ -813,7 +813,7 @@ Límites:
 - Vegetariano y vegano no se han medido.
 - Cada variante es una sola pasada de 200 semanas por perfil. Con 1600 semanas, diferencias de menos de 0,1 platos por semana son ruido.
 
-## 12. Plan de la etapa 2: la comida doble en `src/plan` (2026-11-15, sin implementar)
+## 12. Plan de la etapa 2: la comida doble en `src/plan` (2026-11-15; pasos 1 a 7 hechos el 2026-11-16)
 
 La etapa 1 está en el motor (`src/engine2`, commits `4378c3a` a `2b49d3e`). `materializePlan` pone un `segundo` opcional en la comida, pero `src/plan` lo ignora. El usuario ve la legumbre como plato único, y el segundo no entra ni en la compra ni en las raciones. Esta etapa es la parte de `src/plan` que la sección 9 ponía en la etapa 1. La «etapa 2» de la sección 9 (alternativas de un solo plato y edición) queda para después.
 
@@ -840,7 +840,7 @@ Cada paso es un commit con su test primero (que falle antes del cambio) y la lí
 - Test previo: un plan sintético con un segundo cuenta su especie en el tope, el mismo día y los días seguidos.
 - Cambian las cifras de la línea base, no los menús.
 
-### Paso 3. La comida doble como función pura [no visible]
+### Paso 3. La comida doble como función pura [no visible] — hecho en `3191a32`
 
 - Un módulo nuevo, por ejemplo `src/plan/textos/comidaDoble.js`, que hace lo que `construirPS` del prototipo:
   - el primero a media ración (legumbre a 50 g en seco, verdura y aceite a la mitad);
@@ -849,14 +849,14 @@ Cada paso es un commit con su test primero (que falle antes del cambio) y la lí
 - Todavía no se llama desde la app.
 - Test previo: para los 14 primeros por los 23 segundos, la compra junta se relee igual que la de los dos platos por separado. El título, `p1` y `p2` siguen el formato del prototipo.
 
-### Paso 4. El lector y la comida doble [no visible]
+### Paso 4. El lector y la comida doble [no visible] — hecho en `46319c9`
 
 - `leerComida.js`: un aceite sin cantidad en la compra toma el primer «ml» del texto. En la comida doble sería el del primero aunque la línea sea del segundo.
   - Cada línea de aceite de la comida doble debe llevar su cantidad.
   - Si no, hay que leer la cantidad de cada plato en su parte del texto.
 - Test previo: las 14 × 23 comidas dobles, también con SIBO (aceite aromatizado), se releen con el aceite de cada plato en su sitio.
 
-### Paso 5. Raciones de la comida doble [no visible]
+### Paso 5. Raciones de la comida doble [no visible] — hecho en `c729407`; el tope se calcula con el plato solo a 2174 kcal (`topeLegumbre`)
 
 - `racionesApp.js` (`ajustarDia`): los dos platos se racionan como una sola comida, con el objetivo de siempre.
   - La legumbre del primero tiene el tope de lo que recibe como plato único a 2174 kcal (`itemExtra` del prototipo).
@@ -866,7 +866,7 @@ Cada paso es un commit con su test primero (que falle antes del cambio) y la lí
 - Hay que calcular el tope en algún sitio: hoy lo calcula el medidor de la medición, con un plan de referencia. La forma de calcularlo en la app es una decisión abierta.
 - Test previo: a 1434, 2174 y 3714 kcal, gramos y proteína dentro de lo medido en la sección 4 (legumbre seca, proteico, kcal y proteína frente al objetivo). La legumbre nunca pasa del tope.
 
-### Paso 6. La app monta la comida doble [Visible: el usuario ve el primero y el segundo]
+### Paso 6. La app monta la comida doble [Visible: el usuario ve el primero y el segundo] — hecho en `c94c1f4`; falta la comprobación a mano en el móvil
 
 - `engine2App.js`: si la comida trae `segundo`, se monta con el paso 3 y pasa por las raciones del paso 5.
 - Casos que tiene que cubrir:
@@ -880,7 +880,7 @@ Cada paso es un commit con su test primero (que falle antes del cambio) y la lí
   - Comparación con el prototipo: las 2000 semanas con el mismo texto y las mismas cantidades.
 - A mano: el título largo y las dos partes en `p1`, en la pantalla del móvil (sección 9, riesgos).
 
-### Paso 7. Cambiar una comida doble [Visible: el botón de alternativas]
+### Paso 7. Cambiar una comida doble [Visible: el botón de alternativas] — hecho en `bf7cde7`
 
 - `regenerarComidaEngine2` (`engine2App.js`):
   - la semana que recibe `elegirAlternativa` incluye el segundo, para que el tope y la familia lo vean;

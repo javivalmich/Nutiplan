@@ -18,6 +18,9 @@
 //                          el hueco sin candidatos, con su causa en el log.
 //   --primero=noUsadosPrimeros  igual, pero el aliño se compara solo con los otros primeros de la semana
 //
+//   --crecer=desdeMinimo   el proteico marcado con crecerSiFalta (el segundo de la comida doble) crece también cuando
+//                          está en su mínimo; hoy (raciones.js, ajustarComida) solo crece si no está en ningún límite
+//
 //   --diag-primero=<salida.json>  registra, en cada comida de un día sorteado con nivel de legumbre, qué compuestos de
 //                          legumbre quedan tras cada filtro de runWalk.js (no cambia nada). Se escribe al salir.
 //
@@ -31,6 +34,8 @@ const valor = (n, def) => { const a = process.argv.find((x) => x.startsWith(`--$
 const aceite = valor('aceite', 'actual');
 const primero = valor('primero', 'actual');
 const diag = valor('diag-primero', null);
+const crecer = valor('crecer', 'actual');
+if (!['actual', 'desdeMinimo'].includes(crecer)) throw new Error(`variantesComidaDoble: --crecer=${crecer} desconocido`);
 if (!['actual', 'tope', 'topeSegundo', 'topeSegundo10'].includes(aceite)) throw new Error(`variantesComidaDoble: --aceite=${aceite} desconocido`);
 if (!['actual', 'noUsados', 'noUsadosPrimeros'].includes(primero)) throw new Error(`variantesComidaDoble: --primero=${primero} desconocido`);
 process.stderr.write(`[variantesComidaDoble] aceite ${aceite}, primero ${primero}${diag ? `, diagnóstico en ${diag}` : ''}\n`);
@@ -66,6 +71,10 @@ const RN = '/src/engine2/nutrientes/raciones.js';
 const G = 'globalThis.__vcd';
 const ids = (xs) => `${xs}.filter(esCompuestoLegumbre).map((d) => d.id)`;
 const CAMBIOS = [];
+if (crecer === 'desdeMinimo') {
+  CAMBIOS.push([RN, "const crecen = estado.filter((e) => e.crecerSiFalta && e.papel === 'proteico' && e.rango && !e.limitado);",
+    "const crecen = estado.filter((e) => e.crecerSiFalta && e.papel === 'proteico' && e.rango && e.limitado !== 'maximo');"]);
+}
 if (primero !== 'actual') {
   CAMBIOS.push([RW, '          candidatesA = nivel;',
     `          candidatesA = nivel;\n          candidatesA = ${G}.preferir({ day, candidatesA, slots, catalog, proteinaCache, alinoDe, esCompuestoLegumbre, pushEvent });`]);

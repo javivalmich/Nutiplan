@@ -166,7 +166,10 @@ describe('auditoría de la comida doble: caminos que la leen o la cambian', { ti
   });
 
   describe('7. Regeneración parcial del motor viejo (si engine2 no encuentra alternativa)', () => {
-    it('hoy: la comida doble se cambia por un plato del motor viejo, el segundo se pierde y sigue en platosSemana', () => {
+    // Desde el 2026-11-16, regenerarComida no devuelve null con una comida doble: la deja como está, con un
+    // aviso (regenerarComidaDobleSinAlternativa.test.js), y la vista ya no llega aquí con ella. Este bloque
+    // documenta lo que haría el motor viejo si llegara.
+    it('si llegara: la comida doble se cambiaría por un plato del motor viejo, el segundo se perdería y seguiría en platosSemana', () => {
       // Lo que hace la vista (regenerateMeal) cuando regenerarComida devuelve null.
       const plan = clonar(s61);
       const perfil = { ...clonar(H74), _regenContext: { dayIdx: iDoble, slot: 'Comida', semanticHint: 'diferente', currentPlan: plan, excludeSpec: null } };

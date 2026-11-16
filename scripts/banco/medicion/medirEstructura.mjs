@@ -9,6 +9,9 @@
 // Con --ec=motor mide el walk del motor real (D-116 y D-117 implementadas en src/engine2); la comida doble
 // se sigue montando aquí, en memoria, porque src/plan aún no la escribe. --topes toma de otra medición los
 // topes de la legumbre del primero, para que dos mediciones se puedan comparar gramo a gramo.
+// Con --ec=off se mide lo que hace src/ sin prototipo. Si la app ya escribe la comida doble (etapa 2, paso 6),
+// no se monta nada aquí. Mientras no la escriba, --montar src la monta con las funciones de src/plan
+// (componerComidaDoble y ajustarDia), sin prototipo: es el control anterior al paso 6.
 import fs from 'node:fs';
 import crypto from 'node:crypto';
 
@@ -32,6 +35,7 @@ const { COMPOSICION } = await import(R + 'src/engine2/nutrientes/composicion.js'
 const { INGREDIENTES } = await import(R + 'src/engine2/nutrientes/ingredientes.js');
 const { componerPlato } = await import(R + 'src/plan/textos/componer.js');
 const { instalar, construirPS, esCompuestoLegumbre } = await import(R + 'scripts/banco/medicion/estructuraComidaLogica.mjs');
+const { componerComidaDoble, compraPorPlato, esComidaDoble } = await import(R + 'src/plan/textos/comidaDoble.js');
 
 const args = process.argv.slice(2);
 const salida = args[0];
@@ -40,6 +44,7 @@ const valor = (n) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : 
 const SEMANAS = Number(valor('--semanas') || 200);
 const soloPerfiles = valor('--perfiles') ? valor('--perfiles').split(',') : null;
 const salidaTexto = valor('--texto');
+const MONTAR_SRC = valor('--montar') === 'src';
 const flags = globalThis.__ecFlags || { off: true };
 const silencio = (f) => { const l = console.log, e = console.error, w = console.warn; console.log = console.error = console.warn = () => {}; try { return f(); } finally { console.log = l; console.error = e; console.warn = w; } };
 const MOM = { Desayuno: 'desayuno', Comida: 'comida', Cena: 'cena' };
@@ -78,6 +83,7 @@ if (!flags.off) instalar(flags);
 function aplicarEstructura(plan, p, visible) {
   const segs = (plan.decisionLog || []).filter((e) => e.causa === 'segundo_de_legumbre');
   if (!segs.length) return plan;
+  if (flags.off && !MONTAR_SRC) return plan; // sin prototipo: lo que escriba la app
   const days = plan.days.slice();
   const nombres = [];
   for (const e of segs) {
@@ -86,10 +92,14 @@ function aplicarEstructura(plan, p, visible) {
     const k = day.meals.findIndex((m) => m && m.time === 'Comida');
     const actual = day.meals[k];
     if (!actual || actual._dishId !== e.primero) throw new Error(`aplicarEstructura: la comida del ${e.day} no es el primero esperado`);
+    if (MONTAR_SRC && actual._dishId2) continue; // la app ya la escribe
     const primero = visible.get(e.primero);
     const segundo = visible.get(e.plato);
     const meals = day.meals.slice();
-    meals[k] = construirPS(actual, primero, segundo, p.kcal, topes.get(e.primero) || 0);
+    if (MONTAR_SRC) {
+      const base = actual._base || actual;
+      meals[k] = { ...componerComidaDoble(primero, segundo, p.kcal, { ancla: base._ancla || null }), _motor: 'engine2', ...(actual._causa ? { _causa: actual._causa } : {}), ...(actual.slotNote ? { slotNote: actual.slotNote } : {}) };
+    } else meals[k] = construirPS(actual, primero, segundo, p.kcal, topes.get(e.primero) || 0);
     days[i] = ajustarDia({ ...day, meals }, clonar(p.perfil), p.kcal).day;
     nombres.push(segundo.nombre);
   }
@@ -167,6 +177,17 @@ function fila(plan, p, obj, visible, recientes, s) {
         kcal: n.kcal, oK: n.objetivoKcal, prot: n.proteina, oP: n.objetivoProteina, g: g(() => true), gLeg: g(esLeg), gProt: g(esProteico), extra: (m.acompanamientos || []).join('+'), sorteado: diasSorteados.includes(i) });
     }
   });
+  // Comida doble escrita por src/plan: ¿se lee igual junta que plato a plato?
+  const lecturaDoble = { comidas: 0, distintas: 0 };
+  for (const d of plan.days) {
+    for (const m of (d.meals || []).filter(esComidaDoble)) {
+      const [c1, c2] = compraPorPlato(m);
+      const sueltos = [...leerComida({ p1: m.p1, shopping: c1 }).items, ...leerComida({ p2: m.p2, shopping: c2 }).items];
+      const junto = leerComida(m).items;
+      lecturaDoble.comidas += 1;
+      if (junto.length !== sueltos.length || junto.some((it, k) => it.clave !== sueltos[k].clave || Math.abs(it.gramos - sueltos[k].gramos) > 0.01)) lecturaDoble.distintas += 1;
+    }
+  }
   const sinAplicar = (re, soloSegundo) => log.filter((e) => (soloSegundo ? e.causa === 'segundo_de_legumbre' : e.causa !== 'segundo_de_legumbre' && e.plato) && re.test(e.evidencia || '')).length;
   const causas = cuenta(log.filter((e) => ['segundo_sin_candidato', 'segundo_sin_tope_plato_unico', 'segundos_retirados_d099', 'dia_legumbre_sin_candidato', 'frecuencia_corta_sin_candidato', 'familia_dias_seguidos_retirada', 'repeticion_por_catalogo_corto', 'vecino_de_dia_legumbre', 'infraccion_d099_sin_segundos', 'dias_legumbre_sin_sorteo', 'segundos_retirados_pool_vacio', 'regla_legumbre_retirada_d099', 'regla_legumbre_retirada_pool_vacio', 'infraccion_d099_regla_retirada'].includes(e.causa)), (e) => e.causa);
   const m = medirPlan(plan, { kcal: p.kcal, proteina: obj.proteina, peso: obj.pesoKg }, COMPOSICION);
@@ -189,7 +210,7 @@ function fila(plan, p, obj, visible, recientes, s) {
     d115: { familiaDiasSeguidosSinAncla: familiaSeguidos, porFamilia: seguidosPorFamilia, familiaMismoDia },
     diasSinVerdura,
     desvio: m.desvioSemana, dentro: m.semanaDentro, kcalDia: m.mediaDia.kcal, protDia: m.mediaDia.proteina, objProt: obj.proteina, diasFueraKcal: m.diasFueraKcal, diasSinProteina: m.diasSinProteina, bajoMinimo: m.comidasPrincipalesCortas,
-    cortas, principales, protComidas, objComidas,
+    cortas, principales, protComidas, objComidas, lecturaDoble,
     sinAplicar: { tope: sinAplicar(/tope de proteina sin aplicar/), separada: sinAplicar(/proteina separada sin aplicar/), familia: sinAplicar(/familia en dias seguidos sin aplicar/), alino: sinAplicar(/alino sin aplicar/) },
     sinAplicarSegundo: { tope: sinAplicar(/tope de proteina \(\d\/semana\) sin aplicar/, true), separada: sinAplicar(/proteina separada sin aplicar/, true), familia: sinAplicar(/familia en dias seguidos sin aplicar/, true), alino: sinAplicar(/alino sin aplicar/, true) },
     causas, vetados: x.conVetado, eliminados: x.conEliminado,

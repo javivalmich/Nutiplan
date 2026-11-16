@@ -27,11 +27,17 @@
 // ANTERIOR a la implementación: runWalk.js y materializePlan.js se leen de git (commit BASE_HOOK, o
 // --ec-base=<commit>), no del árbol de trabajo. Así el prototipo sigue siendo reproducible como referencia
 // (compararMotorHook.mjs). El resto de src/ es el del árbol de trabajo.
+//
+// Desde que src/plan raciona y escribe la comida doble (etapa 2, pasos 3 a 5), las raciones del prototipo
+// se aplican sobre racionesApp.js ANTERIOR a esos pasos (commit BASE_RACIONES), también con --ec=motor. Así
+// el prototipo sigue sirviendo de referencia. Para medir lo que hace src/plan, sin prototipo: --ec=off
+// (y, mientras la app no monte la comida doble, medirEstructura.mjs --montar src).
 import { register } from 'node:module';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const BASE_HOOK = 'ba52d21';
+const BASE_RACIONES = '96a2143';
 
 const arg = process.argv.find((a) => a.startsWith('--ec='));
 const partes = arg ? arg.slice('--ec='.length).split(',').filter(Boolean) : ['off'];
@@ -99,6 +105,10 @@ const ANTERIORES = {};
 if (!flags.off && !motor) {
   for (const sufijo of [W, MP]) ANTERIORES[sufijo] = execFileSync('git', ['show', `${base}:${sufijo.slice(1)}`], { cwd: RAIZ, encoding: 'utf8', maxBuffer: 1 << 24 });
   process.stderr.write(`[estructuraComida] runWalk.js y materializePlan.js de ${base} (anteriores a la implementación en el motor)\n`);
+}
+if (!flags.off) {
+  ANTERIORES[RA] = execFileSync('git', ['show', `${BASE_RACIONES}:${RA.slice(1)}`], { cwd: RAIZ, encoding: 'utf8', maxBuffer: 1 << 24 });
+  process.stderr.write(`[estructuraComida] racionesApp.js de ${BASE_RACIONES} (anterior a las raciones de la comida doble en src/plan)` + String.fromCharCode(10));
 }
 
 const hooks = `

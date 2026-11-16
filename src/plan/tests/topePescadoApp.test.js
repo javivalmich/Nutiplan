@@ -23,7 +23,8 @@ function semanas(perfil, userId, n) {
   }
   return out;
 }
-const relajado = (p) => p.decisionLog.some((e) => e.causa === 'tope_pescado_semana_sin_aplicar');
+// El tope no se aplica si dejaría el hueco sin candidatos, y cede si obligaría a una infracción de D-099.3.
+const relajado = (p) => p.decisionLog.some((e) => e.causa === 'tope_pescado_semana_sin_aplicar' || e.causa === 'tope_pescado_semana_cede_d099');
 const fijado = (p) => p.decisionLog.find((e) => e.causa === 'tope_pescado_semana_fijado');
 
 describe('tope de pescado y marisco en la app', { timeout: 300000 }, () => {

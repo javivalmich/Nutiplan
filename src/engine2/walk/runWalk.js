@@ -619,7 +619,22 @@ function walkUnaVez(input, { sinFamilia, uso, sinRegla }) {
         }
         if (servidos >= topePescado) {
           const sinPescado = baseTope.filter((d) => !ESPECIES_PESCADO_MARISCO.has(proteinaCache(d.id)));
-          if (sinPescado.length && sinPescado.length < baseTope.length) {
+          // El tope cede si aplicarlo obligaria a una infraccion de D-099.3
+          // (decision de Javi del 2026-11-16): sin el pescado no quedaria
+          // ningun candidato con una especie que no salga ya ese dia o el de al
+          // lado, y con el si. (Mas de 2 por especie ya lo filtra el tope por
+          // especie de arriba.)
+          const especiesCerca = new Set();
+          for (const s2 of slots.values()) {
+            if (s2.abierto || !s2.dishId || Math.abs(DAYS_ORDER.indexOf(s2.day) - i) > 1) continue;
+            const pr = proteinaCache(s2.dishId);
+            if (pr) especiesCerca.add(pr);
+          }
+          const separadoSin = sinPescado.filter((d) => !especiesCerca.has(proteinaCache(d.id)));
+          const separadoCon = baseTope.filter((d) => !especiesCerca.has(proteinaCache(d.id)));
+          if (sinPescado.length && !separadoSin.length && separadoCon.length) {
+            pushEvent(day, 'tope_pescado_semana_cede_d099', `${momento}: ya salen ${servidos} platos de pescado o marisco (tope ${topePescado}), pero sin el pescado todos los candidatos repetirian una especie que ya sale ese dia o el de al lado (${[...especiesCerca].join(', ')}): el tope cede para no incumplir D-099.3`);
+          } else if (sinPescado.length && sinPescado.length < baseTope.length) {
             pushEvent(day, 'tope_pescado_semana', `${momento}: ya salen ${servidos} platos de pescado o marisco (tope ${topePescado}): fuera ${baseTope.length - sinPescado.length} candidatos`);
             base0 = sinPescado;
           } else if (!sinPescado.length) {

@@ -22,7 +22,7 @@ describe('tope semanal de pescado y marisco', () => {
     it(`${nombre}: ninguna semana pasa del tope, salvo con la causa de vuelta atrás`, () => {
       for (const s of SEEDS) {
         const p = plan(s, extra);
-        const relajado = p.decisionLog.some((e) => e.causa === 'tope_pescado_semana_sin_aplicar');
+        const relajado = p.decisionLog.some((e) => e.causa === 'tope_pescado_semana_sin_aplicar' || e.causa === 'tope_pescado_semana_cede_d099');
         if (!relajado) expect([s, pescados(p) <= tope]).toEqual([s, true]);
       }
     });

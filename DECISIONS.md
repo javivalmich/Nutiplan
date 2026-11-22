@@ -4758,3 +4758,65 @@ Pendiente
 
 Estado resultante
 Implementado en el motor con D-116 (commits en «Decide»).
+
+## D-118 — [2026-11-16] Tope semanal de pescado y marisco, parámetro del perfil
+
+Decide: Javi (2026-11-16; el tope que cede, el 2026-11-16; el perfil sin carne ni ave, el 2026-11-22). Implementado en `b87ccc3` y, el tope que cede, en `0878f81`. Medido antes en memoria (`scripts/banco/medicion/variantesPescado.mjs`, `estructura-comida-final/pescado-topes.md`); después, `estructura-comida-final/tope-pescado-cede.md` y `sin-carne-ave-main-head.md`.
+
+Contexto
+Con D-116 y D-117 el pescado y el marisco salían 3,91 veces por semana en los 8 perfiles omnívoros sin SIBO, con 4 o más en el 72 % de las semanas (282 de 1600 con más de 4), y 5,03 con SIBO. Solo había un tope por especie (2 por semana, `TOPE_PROTEINA_SEMANA`) y un suelo de pescado de 3 (D-024), pero ningún techo para la familia.
+
+Decisión
+1. Pescado y marisco tienen un tope semanal común, `pescadoMaxSemana`, un campo del perfil: un entero de 2 a 4. Si el perfil no lo trae, vale 3. Lo valida `contracts/profile.js`; un valor fuera de rango no se acepta (el motor lanza y la app cae al motor viejo, como con cualquier perfil inválido).
+2. Se cuenta por especie (`ESPECIES_PESCADO_MARISCO` en `bases.js`), así que también cuentan los platos de familia «cereal» con atún o gambas. Los segundos de la comida doble nunca son pescado (D-116.2): no aplica.
+3. En cada hueco del walk, si la semana ya llega al tope con los platos servidos, el pescado y el marisco salen del pool justo después del tope por especie, y el hueco sigue por la cascada normal. Es un filtro con vuelta atrás: si dejaría el hueco sin candidatos, no se aplica.
+4. El suelo de pescado del paso 4 (D-024) es el menor entre 3 y el tope. Con tope de 2, el suelo es 2.
+5. El tope cede si aplicarlo obligaría a una infracción de D-099.3, con el valor por defecto y con el elegido por el usuario: si sin el pescado no quedara ningún candidato con una especie que no salga ya ese día o el de al lado, y con el pescado sí, el tope no se aplica en ese hueco. Más de 2 por especie ya lo filtra el tope por especie, que va antes.
+6. La sugerencia de la comida libre no cuenta para el tope (no se sirve), pero pasa por el filtro: si la semana ya llega al tope, no se sugiere pescado. Se acepta así.
+7. Las alternativas respetan el tope: si el resto de la semana ya llega, el plato nuevo no es pescado ni marisco, con la misma vuelta atrás.
+8. El tope se aplica a todos los perfiles, también a los que casi no tienen otra proteína animal que el pescado (sin carne ni ave). En el perfil sintético sin carne ni ave, la diferencia con no tener tope (4,21 frente a 4,17 comidas y cenas cortas de proteína por semana) se acepta como ruido (Javi, 2026-11-22).
+9. La app pasa el campo al perfil reducido del motor solo si el perfil lo trae. Sin cambios en el cuestionario, la vista ni Supabase.
+10. Causas en el log, sin pesos:
+    - al empezar el walk, `tope_pescado_semana_fijado` (con el tope, de dónde sale y el suelo);
+    - en los huecos, `tope_pescado_semana`, `tope_pescado_semana_sin_aplicar` y `tope_pescado_semana_cede_d099`;
+    - en las alternativas, `alternativa_tope_pescado` y `alternativa_tope_pescado_sin_aplicar`.
+
+Medido
+200 semanas por perfil, por la entrada de la app. El motor real da el mismo menú y el mismo texto que la variante medida en memoria en 1800 de 1800 semanas (tope de 3, 9 perfiles, antes del tope que cede).
+- 8 perfiles omnívoros sin SIBO:
+
+  | | Pescado y marisco/sem | Semanas con 4 o más | Comidas y cenas cortas/sem | Proteína del día | Infracciones de D-099.3 |
+  |---|---|---|---|---|---|
+  | Sin tope | 3,91 | 1158 | 1,84 | 108,4 % | 0 |
+  | Tope de 3 que cede (`0878f81`) | 3,01 | — | 2,03 | 108,1 % | 0 |
+
+  - El tope cede 20 veces en 1600 semanas.
+  - Qué ocupa los huecos, por semana: cerdo +0,30, comidas sin proteína animal +0,17, ave +0,13, carne roja +0,12, conejo +0,11 y huevo +0,08. La legumbre no cambia (3,04 → 3,03).
+- sibo-2000:
+
+  | | Pescado/sem | Veces que cede (en 200 semanas) | Infracciones de D-099.3 | Comidas y cenas cortas/sem | Proteína del día |
+  |---|---|---|---|---|---|
+  | Sin tope | 5,03 | — | 0 | 1,85 | 99,5 % |
+  | Tope de 3, sin ceder | 3,00 | — | 7 | 2,30 | 98,2 % |
+  | Tope de 3 que cede | 3,05 | 10 | 0 | 2,29 | 98,1 % |
+  | Valor por defecto 4 (en memoria, sin implementar) | 4,00 | 2 | 0 | 2,10 | 98,6 % |
+
+  - Las 7 infracciones sin ceder: 5 de especie dos veces el mismo día y 2 en días seguidos, sobre todo conejo en la comida y la cena del domingo. SIBO no tiene legumbre ni la red de D-116.5, y sin pescado su catálogo se queda corto.
+  - Ningún walk falla ni cae al motor viejo.
+- Tope de 2 (medido con el suelo en 3, antes de bajarlo): pescado 2,00 y 2,15 cortas por semana. Infracciones de D-099.3: 0 en los 8 omnívoros y 17 en sibo-2000.
+- Perfil sintético sin carne ni ave (sin ningún segundo posible; con D-117.7 no sortea días):
+  - Con el tope de 3: 4,21 cortas por semana, proteína del día 98,2 % y pescado 6,74 por semana (3,74 platos por encima del tope: cede o no se puede aplicar).
+  - Sin tope: 4,17 cortas y 98,6 %.
+  - En `main` (`19a300c`): 2,94 cortas, 101,1 % y pescado 8,77.
+  - Las cortas de más son legumbre como plato único: se sirven 1,78 → 3,35 por semana y quedan cortas 1,56 → 2,67. Entran donde sale el pescado.
+  - Hacen falta juntos este tope y el filtro de familia de D-115 para esa distancia. Sin uno solo de los dos, 4,17 o 4,29 cortas; sin los dos, 3,04.
+
+Pendiente
+- sibo-2000: sus comidas cortas siguen en 2,29 por semana (1,85 sin tope). Con valor por defecto 4 bajarían a 2,10; está medido y no decidido.
+- El perfil sin carne ni ave queda con 4,21 comidas cortas por semana frente a 2,94 en `main`, por este tope y D-115 juntos.
+- El cuestionario, la vista y dónde se guarda el campo en el perfil.
+- El tope de 2 con el suelo en 2 no se ha medido en 200 semanas (la medición del tope de 2 fue con el suelo en 3).
+- La legumbre a 4 está medida (con el tope de 3: 3,74 por semana; días fijos en L, X, V y D en 1397 de 1600 semanas) y no decidida.
+
+Estado resultante
+Implementado en el motor y en la app: el tope de 3 se aplica a todos los perfiles desde `b87ccc3`, y cede ante D-099.3 desde `0878f81`.

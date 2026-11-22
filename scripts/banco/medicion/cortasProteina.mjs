@@ -7,6 +7,7 @@
 //     sin-carne-ave-2000: alimentos eliminados pollo, pavo, ternera, cerdo, conejo, jamón, lacón y guanciale
 //     un-segundo-2000:    pollo, pavo, ternera, cerdo y alcachofa (solo un plato de conejo vale de segundo)
 //     solo-pollo-2000:    pavo, ternera, cerdo, conejo, jamón, lacón y guanciale (la única carne es el pollo: 8 segundos, todos de pollo)
+//   También vale cualquier perfil del banco (scripts/banco/perfiles.mjs), con sus kcal.
 // Uso: node --import <resolver> scripts/banco/medicion/cortasProteina.mjs <raíz> <salida.json> <perfil> [semanas]
 // Resumen: node scripts/banco/medicion/cortasProteina.mjs --resumen <salida.md> <etiqueta>=<archivo.json> ...
 import fs from 'node:fs';
@@ -18,12 +19,17 @@ if (process.argv[2] === '--resumen') {
   const salida = process.argv[3];
   const L = ['| Medición | Semanas | Comidas y cenas cortas de proteína/sem | Proteína del día (% del objetivo) | Legumbre como plato único/sem | Pescado/sem | Comidas dobles/sem | Semanas con días sorteados | Infracciones de D-099.3 |', '|---|---|---|---|---|---|---|---|---|'];
   const familias = [];
+  const nuevas = ['| Medición | Cortas/sem | Proteína del día | Legumbre/sem | Legumbre como plato único/sem | Comidas dobles/sem | Días sorteados sin legumbre | Días sin segundo posible | Infracciones de D-099.3 | Semanas con la red |', '|---|---|---|---|---|---|---|---|---|---|'];
   for (const arg of process.argv.slice(4)) {
     const [etiqueta, f] = arg.split('=');
     const { semanas } = JSON.parse(fs.readFileSync(f, 'utf8'));
     const m = (k) => semanas.reduce((a, s) => a + s[k], 0) / semanas.length;
     const lu = semanas.every((s) => s.legumbreUnico != null) ? n2(m('legumbreUnico')) : '—';
     L.push(`| ${etiqueta} | ${semanas.length} | ${n2(m('cortas'))} | ${n1(m('protDia'))} % | ${lu} | ${n2(m('pescado'))} | ${n2(m('dobles'))} | ${semanas.filter((s) => s.sorteo).length} | ${semanas.every((s) => s.d099 != null) ? semanas.reduce((a, s) => a + s.d099, 0) : '—'} |`);
+    if (semanas.every((s) => s.diasSorteados != null)) {
+      const tot = (k) => semanas.reduce((a, s) => a + Number(s[k]), 0);
+      nuevas.push(`| ${etiqueta} | ${n2(m('cortas'))} | ${n1(m('protDia'))} % | ${n2(m('legumbre'))} | ${n2(m('legumbreUnico'))} | ${n2(m('dobles'))} | ${tot('sorteadosSinLegumbre')} de ${tot('diasSorteados')} | ${tot('sinSegundoPosible')} | ${tot('d099')} | ${tot('red')} |`);
+    }
     if (semanas.every((s) => s.servidosPor)) familias.push([etiqueta, semanas]);
   }
   // Por familia proteica del plato: servidos y cortos de proteína por semana.
@@ -35,6 +41,7 @@ if (process.argv[2] === '--resumen') {
       L.push(`| ${etiqueta} | ` + claves.map((k) => `${n2(m('servidosPor', k))} / ${n2(m('cortasPor', k))}`).join(' | ') + ' |');
     }
   }
+  if (nuevas.length > 2) L.push('', ...nuevas);
   const texto = L.join('\n');
   console.log(texto);
   if (salida) fs.writeFileSync(salida, `${texto}\n`);
@@ -51,6 +58,7 @@ const { FREEFORM_POOL } = await import(raiz + 'src/data/freeformPool.js');
 const { catalogoApp } = await import(ACT + 'src/plan/catalogo.js');
 const { proteinaPrincipal, familiaProteica, ESPECIES_PESCADO_MARISCO } = await import(ACT + 'src/engine2/dishes/bases.js');
 const { composicionSemana } = await import(ACT + 'scripts/banco/metricas.mjs');
+const { DAYS_ORDER } = await import(ACT + 'src/engine2/skeleton/days.js');
 const { conPlatosDieta } = await import(ACT + 'src/plan/platosDieta.js');
 
 const BASE = { intolerances: [], eliminatedFoods: [], tiempoCocina: 'normal', experiencia: 'intermedio', simpleMode: false, hambre: 'media', kcalAdjust: 0, extras: {} };
@@ -60,18 +68,21 @@ const PERFILES = {
   'un-segundo-2000': { ...BASE, ...M62, mealsPerDay: 4, eliminatedFoods: ['pollo', 'pavo', 'ternera', 'cerdo', 'alcachofa'] },
   'solo-pollo-2000': { ...BASE, ...M62, mealsPerDay: 4, eliminatedFoods: ['pavo', 'ternera', 'cerdo', 'conejo', 'jamón', 'lacón', 'guanciale'] },
 };
-const perfil = PERFILES[perfilId];
+const { PERFILES: BANCO } = await import(ACT + 'scripts/banco/perfiles.mjs');
+const delBanco = BANCO.find((x) => x.id === perfilId);
+const perfil = PERFILES[perfilId] || (delBanco && delBanco.perfil);
+const KCAL = delBanco ? delBanco.kcal : 2000;
 if (!perfil) throw new Error(`cortasProteina: perfil desconocido ${perfilId}`);
 const porId = new Map(catalogoApp().map((d) => [d.id, d]));
 // Infracciones de D-099.3 sobre lo servido, con las métricas del banco (las mismas que medirEstructura.mjs).
 const porIdBanco = new Map(conPlatosDieta(catalogoApp(), perfil, { reserva: true }).map((d) => [d.id, d]));
-const obj = objetivoDe(perfil, 2000);
+const obj = objetivoDe(perfil, KCAL);
 const l = console.log; console.log = console.warn = console.error = () => {};
 const semanas = [];
 let ant = null;
 for (let s = 60; s < 60 + SEM; s++) {
   const recientes = platosRecientesPara(ant, s - 1, s);
-  const plan = generarPlan(JSON.parse(JSON.stringify(perfil)), 2000, { month: 9, pastProteins: {}, freeFormPool: FREEFORM_POOL, weekNumber: s, userId: `banco-${perfilId}`, saveMealMemory: () => {}, platosRecientes: recientes });
+  const plan = generarPlan(JSON.parse(JSON.stringify(perfil)), KCAL, { month: 9, pastProteins: {}, freeFormPool: FREEFORM_POOL, weekNumber: s, userId: `banco-${perfilId}`, saveMealMemory: () => {}, platosRecientes: recientes });
   const c = composicionSemana(plan, porIdBanco, recientes);
   const d099 = c.platoRepetidoEnSemana + c.platoDeSemanaAnterior + c.especieMasDeDosVeces + c.especieMismoDia + c.especieDiasSeguidosSinAncla + c.legumbreEnCena;
   ant = plan;
@@ -91,7 +102,17 @@ for (let s = 60; s < 60 + SEM; s++) {
       for (const id of [m._dishId, m._dishId2].filter(Boolean)) if (porId.has(id) && ESPECIES_PESCADO_MARISCO.has(proteinaPrincipal(porId.get(id)))) pescado += 1;
     }
   }
-  semanas.push({ s, motor: plan.motor, cortas, pescado, dobles, legumbreUnico, servidosPor, cortasPor, d099, protDia: dias ? (100 * prot) / dias / obj.proteina : 0, sorteo: (plan.decisionLog || []).some((e) => e.causa === 'dias_legumbre_sorteados') });
+    const log = plan.decisionLog || [];
+  const sorteo = log.find((e) => e.causa === 'dias_legumbre_sorteados');
+  const diasSorteados = sorteo && Array.isArray(sorteo.dias) ? sorteo.dias : [];
+  const sorteadosSinLegumbre = diasSorteados.filter((dia) => {
+    const d = plan.days[DAYS_ORDER.indexOf(dia)];
+    const m = d && d.meals.find((x) => x && x.time === 'Comida' && !x.sugerencia);
+    return !(m && porId.has(m._dishId) && familiaProteica(porId.get(m._dishId)) === 'legumbre');
+  }).length;
+  const red = log.some((e) => e.causa === 'regla_legumbre_retirada_d099' || e.causa === 'regla_legumbre_retirada_pool_vacio');
+  const sinSegundoPosible = log.filter((e) => e.causa === 'dia_legumbre_sin_segundo_posible').length;
+  semanas.push({ s, motor: plan.motor, cortas, pescado, dobles, legumbreUnico, servidosPor, cortasPor, d099, legumbre: servidosPor.legumbre || 0, diasSorteados: diasSorteados.length, sorteadosSinLegumbre, red, sinSegundoPosible, protDia: dias ? (100 * prot) / dias / obj.proteina : 0, sorteo: (plan.decisionLog || []).some((e) => e.causa === 'dias_legumbre_sorteados') });
 }
 fs.writeFileSync(salidaArg, JSON.stringify({ perfil: perfilId, semanas }));
 l(`${semanas.length} semanas → ${salidaArg} (motores: ${[...new Set(semanas.map((x) => x.motor))].join(', ')})`);

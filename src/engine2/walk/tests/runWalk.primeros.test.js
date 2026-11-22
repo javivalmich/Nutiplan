@@ -7,7 +7,7 @@
 import { describe, it, expect } from 'vitest';
 import { materializePlan } from '../../materializePlan.js';
 import { loadCatalog } from '../../dishes/loadCatalog.js';
-import { proteinaPrincipal } from '../../dishes/bases.js';
+import { proteinaPrincipal, familiaProteica } from '../../dishes/bases.js';
 import { alinoDe } from '../../dishes/alinosD105.js';
 
 const catalog = loadCatalog();
@@ -31,6 +31,17 @@ describe('runWalk: el primero prefiere legumbre y aliño no usados (D-117.2)', (
     for (const { e, k, log } of eventos('primero_legumbre_no_usada')) {
       const plato = porId.get(elegido(log, k).plato);
       expect(lista(e.evidencia)).not.toContain(proteinaPrincipal(plato));
+    }
+  });
+
+  // Segunda revisión, B1 (2026-11-22): la evidencia lista solo legumbres (antes, todas las proteínas servidas).
+  it('la evidencia de la legumbre no usada lista solo legumbres', () => {
+    const legumbres = new Set(catalog.filter((d) => familiaProteica(d) === 'legumbre').map(proteinaPrincipal));
+    const casos = eventos('primero_legumbre_no_usada');
+    expect(casos.length).toBeGreaterThan(0);
+    for (const { e } of casos) {
+      expect(lista(e.evidencia).length).toBeGreaterThan(0);
+      expect(lista(e.evidencia).filter((x) => !legumbres.has(x))).toEqual([]);
     }
   });
 

@@ -415,7 +415,9 @@ function walkUnaVez(input, { sinFamilia, uso, sinRegla }) {
     const legUsadas = new Set(servidos.map((s2) => proteinaCache(s2.dishId)).filter(Boolean));
     const sinLeg = c.filter((d) => !legUsadas.has(proteinaCache(d.id)));
     if (sinLeg.length && sinLeg.length < c.length) {
-      pushEvent(day, 'primero_legumbre_no_usada', `primero: descarta ${c.length - sinLeg.length} de ${c.length} candidatos de legumbre que ya salen esta semana (${[...legUsadas].join(', ')})`);
+      // La evidencia nombra solo las legumbres de los candidatos descartados (segunda revisión, B1).
+      const yaSalen = [...new Set(c.map((d) => proteinaCache(d.id)).filter((p) => legUsadas.has(p)))];
+      pushEvent(day, 'primero_legumbre_no_usada', `primero: descarta ${c.length - sinLeg.length} de ${c.length} candidatos de legumbre que ya salen esta semana (${yaSalen.join(', ')})`);
       c = sinLeg;
     } else if (!sinLeg.length) {
       pushEvent(day, 'primero_legumbre_no_usada_sin_aplicar', 'primero: todas las legumbres candidatas ya salen esta semana; no se aplica');

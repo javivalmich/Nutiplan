@@ -4813,7 +4813,7 @@ Medido
 
 Pendiente
 - sibo-2000: sus comidas cortas siguen en 2,29 por semana (1,85 sin tope). Con valor por defecto 4 bajarían a 2,10; está medido y no decidido.
-- El perfil sin carne ni ave queda con 4,21 comidas cortas por semana frente a 2,94 en `main`, por este tope y D-115 juntos.
+- Perfil sin carne ni ave (Javi, 2026-11-22: no se toca). Con el tope de 3 queda en 4,21 comidas y cenas cortas de proteína por semana, frente a 2,94 en `main`. Con tope de 4 (y sin D-115) baja a 3,96 (`scripts/banco/medicion/estructura-comida-final/sin-d115-y-un-segundo.md`). Se resolverá con la pregunta del cuestionario.
 - El cuestionario, la vista y dónde se guarda el campo en el perfil.
 - El tope de 2 con el suelo en 2 no se ha medido en 200 semanas (la medición del tope de 2 fue con el suelo en 3).
 - La legumbre a 4 está medida (con el tope de 3: 3,74 por semana; días fijos en L, X, V y D en 1397 de 1600 semanas) y no decidida.

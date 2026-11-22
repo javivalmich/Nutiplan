@@ -110,7 +110,10 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
 | `8c8d9b1` | `ESTADO.md` al día |
 | `8ad62d4` | Medición: el nivel de legumbre del día sorteado solo con segundo posible (`variantesNivelSegundo.mjs`, `nivel-con-segundo.md`); no se implementa |
 | `fd17943` | `DECISIONS.md`: D-118, pendiente del perfil sin carne ni ave |
-| el siguiente a `fd17943` | `ESTADO.md` al día |
+| `7fe9bc2` | `ESTADO.md` al día |
+| `fc1b85b` | Medición: perfiles con un solo segundo, reparto de `main` → HEAD entre el tope de pescado y lo demás (`un-segundo-reparto.md`) |
+| `7e8b095` | `DECISIONS.md`: SIBO mantiene el tope de 3 (D-118); perfiles con un solo segundo en los pendientes de D-116 |
+| el siguiente a `7e8b095` | `ESTADO.md` al día |
 
 ## Dónde se para esta sesión (2026-11-22)
 
@@ -143,7 +146,7 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
     - por encima del 105 %, 33 → 41 (todas de omni-1434);
     - por debajo del 95 %, 0 → 1 (omni-3714, semana 85: la legumbre en su tope, el segundo en su máximo y pan, 1404 de 1486 kcal);
     - proteína del día, 108,0 → 106,7 %.
-- **SIBO (Javi, 2026-11-22):** sibo-2000 mantiene el tope por defecto en 3. Está decidido; falta anotarlo en D-118 de `DECISIONS.md`, que solo está autorizado para lo implementado y aún lo da como «no decidido».
+- **SIBO (Javi, 2026-11-22):** sibo-2000 mantiene el tope por defecto en 3. Anotado en D-118 (`7e8b095`): el 4 queda descartado por ahora.
 - **D-115 en perfiles sin ningún segundo posible: no se implementa** (`medicion/estructura-comida-final/sin-d115-y-un-segundo.md`, 200 semanas, perfil sin carne ni ave). La condición de Javi era llegar a 3,3 comidas cortas por semana o menos:
 
   | | Comidas cortas/sem | Proteína del día | Legumbre como plato único/sem | Pescado/sem | Infracciones de D-099.3 |
@@ -170,8 +173,18 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
   | omni-2174-ancla | HEAD 1,98 → variante 2,08 (+0,10) | no empeorar más de 0,05 frente a HEAD |
 
   Los días sin segundo posible, la cascada normal sigue eligiendo legumbre, que va como plato único. Infracciones de D-099.3, las mismas que en HEAD.
+- **Perfiles con un solo segundo posible, reparto de `main` → HEAD** (`medicion/estructura-comida-final/un-segundo-reparto.md`, 200 semanas). Comidas cortas por semana:
+
+  | | `main` | HEAD | HEAD sin tope | HEAD sin tope ni D-115 |
+  |---|---|---|---|---|
+  | solo-pollo-2000 | 2,50 | 3,46 | 3,42 | 2,60 |
+  | un-segundo-2000 | 3,00 | 4,36 | 4,18 | 3,73 |
+
+  - El tope de pescado pone +0,04 y +0,18; D-115, +0,82 y +0,45; la regla de la legumbre con lo demás de la rama, +0,10 y +0,73.
+  - El reparto depende del orden en que se quitan las reglas.
+  - Anotado en los pendientes de D-116 (`7e8b095`).
 - **Abierto, decide Javi:**
-  - los perfiles con un solo segundo posible, que quedan peor que en `main`;
+  - los perfiles con un solo segundo posible, que quedan peor que en `main` (pendiente de D-116);
   - la lista «Antes de llevar la rama a `main`».
 
 ## Antes de llevar la rama a `main` (en orden)

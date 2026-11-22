@@ -469,20 +469,20 @@
    "nutricion": {
     "comidasPrincipales": 144,
     "comidasPrincipalesCortas": 3,
-    "desvioSemanaMax": -0.2,
-    "desvioSemanaMedio": -1.1,
+    "desvioSemanaMax": -0.1,
+    "desvioSemanaMedio": -1.2,
     "desvioSemanaMin": -2.2,
     "diasFueraKcal": 0,
-    "diasSinProteina": 18,
+    "diasSinProteina": 20,
     "semanasFueraDe5": 0
    },
    "planes": [
     {
      "semana": 60,
-     "huella": "37d3d9a7b1db6ded",
+     "huella": "8f128a71f1878001",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -0.2,
+     "desvioKcal": -0.1,
      "pescado": 3,
      "legumbre": 3,
      "platos": [
@@ -507,10 +507,10 @@
     },
     {
      "semana": 61,
-     "huella": "996e99795b67aa73",
+     "huella": "7996ada602a41160",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -1.5,
+     "desvioKcal": -1.2,
      "pescado": 3,
      "legumbre": 3,
      "platos": [
@@ -535,7 +535,7 @@
     },
     {
      "semana": 62,
-     "huella": "86eec5f27c15bb6d",
+     "huella": "e4547d030f91a6fe",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -2.2,
@@ -563,10 +563,10 @@
     },
     {
      "semana": 63,
-     "huella": "2a8bca36cb2bfe8d",
+     "huella": "092d159c3d250e62",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -0.8,
+     "desvioKcal": -1.7,
      "pescado": 3,
      "legumbre": 4,
      "platos": [
@@ -648,7 +648,7 @@
     },
     {
      "semana": 66,
-     "huella": "2f12e0a98446066a",
+     "huella": "c628c4b10e760f44",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -0.9,
@@ -676,10 +676,10 @@
     },
     {
      "semana": 67,
-     "huella": "d4864d014bd11421",
+     "huella": "4ae2259cb38a660d",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -0.7,
+     "desvioKcal": -0.8,
      "pescado": 3,
      "legumbre": 3,
      "platos": [
@@ -1281,8 +1281,8 @@
     "comidasPrincipales": 144,
     "comidasPrincipalesCortas": 0,
     "desvioSemanaMax": -0.5,
-    "desvioSemanaMedio": -2.1,
-    "desvioSemanaMin": -4.3,
+    "desvioSemanaMedio": -2,
+    "desvioSemanaMin": -4.1,
     "diasFueraKcal": 0,
     "diasSinProteina": 5,
     "semanasFueraDe5": 0
@@ -1374,10 +1374,10 @@
     },
     {
      "semana": 63,
-     "huella": "4ce6c22e8ff88630",
+     "huella": "f6732c81e480bd10",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -4.3,
+     "desvioKcal": -4.1,
      "pescado": 3,
      "legumbre": 3,
      "platos": [
@@ -1402,10 +1402,10 @@
     },
     {
      "semana": 64,
-     "huella": "806aaf5525f13175",
+     "huella": "c3e0a3c586953432",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -2.8,
+     "desvioKcal": -2.6,
      "pescado": 3,
      "legumbre": 3,
      "platos": [
@@ -1486,10 +1486,10 @@
     },
     {
      "semana": 67,
-     "huella": "0776150bfd2d2f00",
+     "huella": "1a864949cdad5d8d",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -1.9,
+     "desvioKcal": -1.6,
      "pescado": 3,
      "legumbre": 3,
      "platos": [
@@ -2353,12 +2353,12 @@
      "leche_semi": 9
     },
     "ejemplos": [],
-    "enTechoBase": 26,
+    "enTechoBase": 25,
     "enTechoPorClave": {
      "alubias_seco": 2,
      "boniato": 1,
      "fruta": 14,
-     "pan_integral": 10,
+     "pan_integral": 9,
      "patata": 1,
      "tortitas_arroz": 6
     },
@@ -2648,10 +2648,10 @@
     },
     {
      "semana": 65,
-     "huella": "0cf65874b0e567fc",
+     "huella": "caa0ccdc3a9d63c6",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": -0.4,
+     "desvioKcal": -0.6,
      "pescado": 3,
      "legumbre": 3,
      "platos": [

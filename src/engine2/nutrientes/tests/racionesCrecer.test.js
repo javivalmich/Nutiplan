@@ -25,7 +25,7 @@ describe('ajustarComida: proteico que crece si falta energía', () => {
     expect(g(r, 'aove')).toBe(20);
     expect(g(r, 'pollo_pechuga')).toBeGreaterThan(200);
     expect(g(r, 'pollo_pechuga')).toBeLessThanOrEqual(300);
-    expect(r.crecido).toEqual([{ clave: 'pollo_pechuga', antes: expect.any(Number), despues: g(r, 'pollo_pechuga') }]);
+    expect(r.crecido).toEqual({ cambios: [{ clave: 'pollo_pechuga', papel: 'segundo', antes: expect.any(Number), despues: g(r, 'pollo_pechuga') }], legumbreEnTope: true, aceiteEnMaximo: true });
   });
 
   it('si aún queda un energético libre, el proteico no crece', () => {

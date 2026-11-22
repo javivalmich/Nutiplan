@@ -218,7 +218,7 @@ describe('aceite de la comida doble y segundo que crece (D-116.6, modificado)', 
   it('a 3714 kcal el segundo crece dentro de su rango y lo dice el log; la legumbre no pasa de su tope', () => {
     const crece = planes[3714].flatMap((p) => p.decisionLog.filter((e) => e.causa === 'proteico_crece_por_energia'));
     expect(crece.length).toBeGreaterThan(0);
-    for (const e of crece) expect(e.detalle).toMatch(/legumbre y aceite en su máximo/);
+    for (const e of crece) expect(e.detalle).toMatch(/crece el segundo .*legumbre en su tope, aceite en su máximo/);
     for (const m of dobles(3714)) {
       const items = leerComida(m).items;
       const segundo = items.filter((it) => it.plato === 2 && esProteico(it.clave)).reduce((a, it) => a + it.gramos, 0);
@@ -289,5 +289,42 @@ describe('límite de la comida doble frente al objetivo de su comida', { timeout
       expect(f.kcal).toBeLessThanOrEqual(1.05 * f.sinReparto);
     }
     expect(encima.some((f) => f.id === 'omni-1434' && [84, 88, 118].includes(f.w) && f.dia === 'Domingo')).toBe(true);
+  });
+});
+
+// Segunda revisión, M1 (2026-11-22): el segundo solo crece cuando la legumbre del primero ya no puede crecer más
+// (está en su tope); si la legumbre está en su mínimo, crece antes la legumbre. El log dice lo que de verdad pasó:
+// el estado de la legumbre y del aceite, y cuánto crece cada uno (después > antes).
+// Caso conocido antes del arreglo: omni-1434, semanas 60 a 67, el segundo crecía con la legumbre a 50 g (tope 120).
+describe('M1: la legumbre crece antes que el segundo', { timeout: 300000 }, () => {
+  const entradas = [];
+  let ant = null;
+  for (let w = 60; w < 68; w++) {
+    const plan = generarPlan(clonar(PERFILES[1434]), 1434, { month: 9, pastProteins: {}, freeFormPool: FREEFORM_POOL, weekNumber: w, userId: 'banco-omni-1434', saveMealMemory: () => {}, platosRecientes: platosRecientesPara(ant, w - 1, w) });
+    ant = plan;
+    for (const e of plan.decisionLog.filter((x) => x.causa === 'proteico_crece_por_energia' || x.causa === 'legumbre_crece_por_energia')) {
+      const m = plan.days.find((d) => d.name === e.day).meals.find((x) => x && x._dishId2);
+      if (!m) continue;
+      const leg = leerComida(m).items.filter((it) => it.plato === 1 && esLegumbre(it.clave)).reduce((a, it) => a + it.gramos, 0);
+      entradas.push({ w, e, leg, tope: topeLegumbre(tuplaDe(m._dishId)) });
+    }
+  }
+
+  it('cuando crece el segundo, la legumbre del primero está en su tope', () => {
+    const conSegundo = entradas.filter((x) => x.e.causa === 'proteico_crece_por_energia');
+    expect(conSegundo.map((x) => `${x.w} ${x.e.day}: legumbre ${x.leg} de ${x.tope}`).filter((t, k) => conSegundo[k].leg < conSegundo[k].tope)).toEqual([]);
+  });
+
+  it('hay casos en que crece antes la legumbre, y el log lo dice', () => {
+    const conLegumbre = entradas.filter((x) => /crece la legumbre/.test(x.e.detalle));
+    expect(conLegumbre.length).toBeGreaterThan(0);
+    for (const x of conLegumbre) expect(x.leg).toBeGreaterThan(50);
+  });
+
+  it('el log no dice «en su tope» ni «en su máximo» si no es verdad, y cada «antes → después» crece', () => {
+    for (const x of entradas) {
+      if (/legumbre en su tope/.test(x.e.detalle)) expect(x.leg).toBe(x.tope);
+      for (const [, a, d] of x.e.detalle.matchAll(/(\d+(?:[.,]\d+)?) → (\d+(?:[.,]\d+)?) g/g)) expect(Number(d)).toBeGreaterThan(Number(a));
+    }
   });
 });

@@ -226,19 +226,33 @@ export function ajustarComida(items, meta, composicion, amplitud = 1, { topeHuev
   // de prioridades: primero la legumbre, después el segundo, después el pan.
   // Crece también si estaba en su mínimo (la proteína pedía menos que el mínimo
   // de su rango); solo no crece si ya está en su máximo.
+  // Segunda revisión, M1 (2026-11-22): el proteico solo crece cuando la
+  // legumbre ya no puede crecer más (está en su tope). Si la legumbre se quedó
+  // en su mínimo (en una vuelta anterior, cuando aún faltaba poco), crece
+  // antes ella, hasta su tope.
   let crecido;
   const crecen = estado.filter((e) => e.crecerSiFalta && e.papel === 'proteico' && e.rango && e.limitado !== 'maximo');
-  if (crecen.length && !estado.some((e) => e.papel === 'energetico' && !e.limitado)) {
-    const falta = meta.kcal - suma(estado, composicion, (e) => e.nuevo).kcal;
-    if (falta > 0) {
-      crecido = [];
-      for (const e of crecen) {
-        const antes = e.nuevo;
-        const g = e.nuevo + (falta * 100) / composicion[e.clave].kcal / crecen.length;
-        if (g >= e.rango[1]) { e.nuevo = e.rango[1]; e.limitado = 'maximo'; } else e.nuevo = g;
-        crecido.push({ clave: e.clave, antes: Math.round(antes), despues: null });
-      }
+  const energeticos = estado.filter((e) => e.papel === 'energetico');
+  const esLegumbre = (e) => INGREDIENTES[e.clave] && INGREDIENTES[e.clave].grupo === 'legumbre';
+  const faltaKcal = () => meta.kcal - suma(estado, composicion, (e) => e.nuevo).kcal;
+  if (crecen.length && !energeticos.some((e) => !e.limitado) && faltaKcal() > 0) {
+    const cambios = [];
+    const crecer = (e, falta, papel) => {
+      const antes = e.nuevo;
+      const g = e.nuevo + (falta * 100) / composicion[e.clave].kcal;
+      if (g >= e.rango[1]) { e.nuevo = e.rango[1]; e.limitado = 'maximo'; } else { e.nuevo = g; e.limitado = null; }
+      cambios.push({ e, papel, antes });
+    };
+    for (const e of energeticos.filter((x) => esLegumbre(x) && x.limitado === 'minimo')) {
+      const falta = faltaKcal();
+      if (falta > 0) crecer(e, falta, 'legumbre');
     }
+    const legumbreEnTope = energeticos.filter(esLegumbre).every((e) => e.limitado === 'maximo');
+    if (legumbreEnTope && faltaKcal() > 0) {
+      const falta = faltaKcal();
+      for (const e of crecen) crecer(e, falta / crecen.length, 'segundo');
+    }
+    if (cambios.length) crecido = { cambios, legumbreEnTope: energeticos.filter(esLegumbre).every((e) => e.limitado === 'maximo') };
   }
 
   // Medidas de casa.
@@ -248,7 +262,15 @@ export function ajustarComida(items, meta, composicion, amplitud = 1, { topeHuev
     e.nuevo = Math.min(max, Math.max(min, Math.round(e.nuevo / paso) * paso));
   }
   const total = suma(estado, composicion, (e) => e.nuevo);
-  if (crecido) for (const c of crecido) c.despues = r1(estado.find((e) => e.clave === c.clave && e.crecerSiFalta).nuevo);
+  if (crecido) {
+    // Antes y después en medidas de casa, y solo lo que de verdad crece (el redondeo puede comerse el cambio).
+    const enCasa = (e, g) => { const [min, max, paso] = e.rango; return Math.min(max, Math.max(min, Math.round(g / paso) * paso)); };
+    const cambios = crecido.cambios
+      .map(({ e, papel, antes }) => ({ clave: e.clave, papel, antes: r1(enCasa(e, antes)), despues: r1(e.nuevo) }))
+      .filter((c) => c.despues > c.antes);
+    const aceiteEnMaximo = estado.filter((e) => e.papel === 'energetico' && ACEITES.has(e.clave)).every((e) => e.limitado === 'maximo');
+    crecido = cambios.length ? { cambios, legumbreEnTope: crecido.legumbreEnTope, aceiteEnMaximo } : undefined;
+  }
   return {
     ...(crecido ? { crecido } : {}),
     items: estado.map((e) => ({ clave: e.clave, unidad: e.unidad, antes: e.gramos, gramos: r1(e.nuevo), papel: e.papel, limitado: e.limitado, ...(e.anadido ? { anadido: true } : {}), ...(e.fijoPorFicha ? { fijoPorFicha: e.fijoPorFicha } : {}) })),
@@ -387,7 +409,13 @@ export function racionesDia({ comidas, aparte = [], objetivo, composicion, vetad
       detalle: `objetivo ${Math.round(r.meta.kcal)} kcal y ${Math.round(r.meta.proteina)} g de proteína → ${r.kcal} kcal y ${r.proteina} g${limitados.length ? `; en su límite: ${limitados.join(', ')}` : ''}`,
     });
     if (r.crecido) {
-      log.push({ causa: 'proteico_crece_por_energia', momento: c.momento, id: c.id, detalle: `legumbre y aceite en su máximo y aún faltaban kcal: crece ${r.crecido.map((x) => `${x.clave} ${x.antes} → ${x.despues} g`).join(', ')}, dentro de su rango, antes de añadir pan o fruta (D-116.6)` });
+      const { cambios, legumbreEnTope, aceiteEnMaximo } = r.crecido;
+      const segundo = cambios.filter((x) => x.papel === 'segundo');
+      const texto = (x) => `${x.papel === 'legumbre' ? 'crece la legumbre' : 'crece el segundo'} (${x.clave} ${x.antes} → ${x.despues} g)`;
+      log.push({
+        causa: segundo.length ? 'proteico_crece_por_energia' : 'legumbre_crece_por_energia', momento: c.momento, id: c.id,
+        detalle: `faltaban kcal: ${cambios.map(texto).join('; ')}; legumbre ${legumbreEnTope ? 'en su tope' : 'por debajo de su tope'}, aceite ${aceiteEnMaximo ? 'en su máximo' : 'por debajo de su máximo'}; dentro de su rango, antes de añadir pan o fruta (D-116.6)`,
+      });
     }
     const deFicha = r.items.filter((i) => i.fijoPorFicha);
     if (deFicha.length) {

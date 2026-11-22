@@ -12,7 +12,7 @@ import { buildWeekArc } from '../../skeleton/buildWeekArc.js';
 import { loadCatalog } from '../../dishes/loadCatalog.js';
 import { aplicarAjustesD099 } from '../../dishes/ajustesD099.js';
 import { resolveDishComposition } from '../../dishes/compositionResolver.js';
-import { familiaProteica, esCompuestoLegumbre } from '../../dishes/bases.js';
+import { familiaProteica, esCompuestoLegumbre, esSegundoDeLegumbre, proteinaPrincipal } from '../../dishes/bases.js';
 import { DAYS_ORDER } from '../../skeleton/days.js';
 import { MOMENTOS } from '../../dishes/schema.js';
 
@@ -52,6 +52,10 @@ const carbonara = de('comida', porNombre('Pasta carbonara'));
 const aveComida = de('comida', real.find((d) => d.momento.includes('comida') && tipo(d) === 'ave' && conVerdura(d)
   && d.tempFeel !== lentejas.tempFeel && d.plateType !== lentejas.plateType));
 const cenas = ['ave', 'carne', 'pescado', 'huevo'].map((t) => de('cena', real.find((d) => d.momento.includes('cena') && tipo(d) === t)));
+// Un plato que vale de segundo (D-116.2): sin ninguno no se sortean dias de legumbre (A1, 2026-11-22). De una
+// especie que no esta en el resto del catalogo del test, para no provocar una infraccion de D-099.3 (y la red).
+const especiesFijas = new Set([aveComida, ...cenas].map((d) => proteinaPrincipal(d)));
+const SEGUNDO = de('cena', real.find((d) => esSegundoDeLegumbre(d) && !especiesFijas.has(proteinaPrincipal(d))));
 
 const comida = (r, day) => r.slots.find((s) => s.day === day && s.momento === 'comida').dishId;
 const entrada = (r, day) => r.decisionLog.find((e) => e.day === day && e.momento === 'comida');
@@ -71,7 +75,7 @@ describe('runWalk: el dia de legumbre va antes que A, B y la verdura (D-117)', (
   it('antes que la preferencia B: con dos comidas previas «muy caliente», el guiso de legumbre sale igual', () => {
     const { anchors, dishes } = anchorEverythingExcept(MIERCOLES, (day, momento) => (
       momento === 'comida' && (day === 'Lunes' || day === 'Martes') ? { tempFeel: lentejas.tempFeel } : {}));
-    const catalog = [...dishes, lentejas, aveComida, ...cenas];
+    const catalog = [SEGUNDO, ...dishes, lentejas, aveComida, ...cenas];
     for (let seed = 0; seed < SEEDS; seed++) {
       const r = runWalk({ weekArc: { beats: beats7(), anchors }, catalog, seed: `nivel-B-${seed}` });
       expect(sorteados(r)).toEqual(['Miercoles']);
@@ -84,7 +88,7 @@ describe('runWalk: el dia de legumbre va antes que A, B y la verdura (D-117)', (
   it('antes que la preferencia A: aunque ayer se comio el mismo tipo de plato', () => {
     const { anchors, dishes } = anchorEverythingExcept(MIERCOLES, (day, momento) => (
       momento === 'comida' && day === 'Martes' ? { plateType: lentejas.plateType } : {}));
-    const catalog = [...dishes, lentejas, aveComida, ...cenas];
+    const catalog = [SEGUNDO, ...dishes, lentejas, aveComida, ...cenas];
     for (let seed = 0; seed < SEEDS; seed++) {
       const r = runWalk({ weekArc: { beats: beats7(), anchors }, catalog, seed: `nivel-A-${seed}` });
       expect(comida(r, 'Miercoles')).toBe(lentejas.id);
@@ -96,7 +100,7 @@ describe('runWalk: el dia de legumbre va antes que A, B y la verdura (D-117)', (
     const tibia = { ...garbanzos, tempFeel: 'caliente' };
     const { anchors, dishes } = anchorEverythingExcept(MIERCOLES, (day, momento) => (
       momento === 'comida' && (day === 'Lunes' || day === 'Martes') ? { tempFeel: lentejas.tempFeel } : {}));
-    const catalog = [...dishes, lentejas, tibia, aveComida, ...cenas];
+    const catalog = [SEGUNDO, ...dishes, lentejas, tibia, aveComida, ...cenas];
     for (let seed = 0; seed < SEEDS; seed++) {
       const r = runWalk({ weekArc: { beats: beats7(), anchors }, catalog, seed: `nivel-dentro-${seed}` });
       expect(comida(r, 'Miercoles')).toBe(tibia.id);
@@ -106,7 +110,7 @@ describe('runWalk: el dia de legumbre va antes que A, B y la verdura (D-117)', (
 
   it('el nivel son los compuestos de legumbre: un plato redactado (fabada) no entra en el', () => {
     const { anchors, dishes } = anchorEverythingExcept(MIERCOLES);
-    const catalog = [...dishes, lentejas, fabada, aveComida, ...cenas];
+    const catalog = [SEGUNDO, ...dishes, lentejas, fabada, aveComida, ...cenas];
     for (let seed = 0; seed < SEEDS; seed++) {
       const r = runWalk({ weekArc: { beats: beats7(), anchors }, catalog, seed: `nivel-redactado-${seed}` });
       expect(comida(r, 'Miercoles')).toBe(lentejas.id);
@@ -116,7 +120,7 @@ describe('runWalk: el dia de legumbre va antes que A, B y la verdura (D-117)', (
   it('sin candidato de legumbre el hueco sigue como siempre y el log lo dice', () => {
     const { anchors, dishes } = anchorEverythingExcept(MIERCOLES);
     // La unica legumbre compuesta solo vale para la cena (y D-099 no se aplica aqui): hay regla, pero no candidato.
-    const catalog = [...dishes, de('cena', lentejas), aveComida, ...cenas];
+    const catalog = [SEGUNDO, ...dishes, de('cena', lentejas), aveComida, ...cenas];
     const r = runWalk({ weekArc: { beats: beats7(), anchors }, catalog, seed: 'nivel-sin-candidato' });
     expect(sorteados(r)).toEqual(['Miercoles']);
     expect(comida(r, 'Miercoles')).toBe(aveComida.id);
@@ -128,7 +132,7 @@ describe('runWalk: el dia de legumbre va antes que A, B y la verdura (D-117)', (
   it('fuera de los dias sorteados el suelo semanal de legumbre no actua', () => {
     // Viernes/comida abierto y su cena anclada: el viernes no es elegible y no hay dias sorteados.
     const { anchors, dishes } = anchorEverythingExcept([{ day: 'Viernes', momento: 'comida' }]);
-    const catalog = [...dishes, de('cena', lentejas), fabada, carbonara];
+    const catalog = [SEGUNDO, ...dishes, de('cena', lentejas), fabada, carbonara];
     const vistos = new Set();
     for (let seed = 0; seed < 32; seed++) {
       const r = runWalk({ weekArc: { beats: beats7(), anchors }, catalog, seed: `nivel-suelo-${seed}` });
@@ -143,7 +147,7 @@ describe('runWalk: el dia de legumbre va antes que A, B y la verdura (D-117)', (
   it('el dia de al lado de uno sorteado no lleva legumbre a la comida si quedan otros candidatos', () => {
     const abiertos = [...MIERCOLES, { day: 'Jueves', momento: 'comida' }, { day: 'Jueves', momento: 'cena' }];
     const { anchors, dishes } = anchorEverythingExcept(abiertos);
-    const catalog = [...dishes, lentejas, garbanzos, aveComida, ...cenas];
+    const catalog = [SEGUNDO, ...dishes, lentejas, garbanzos, aveComida, ...cenas];
     let conVecinoAntes = 0;
     for (let seed = 0; seed < 48; seed++) {
       const r = runWalk({ weekArc: { beats: beats7(), anchors }, catalog, seed: `nivel-vecino-${seed}` });
@@ -164,7 +168,7 @@ describe('runWalk: el dia de legumbre va antes que A, B y la verdura (D-117)', (
   it('si en el dia de al lado solo hay legumbre, sale legumbre', () => {
     const abiertos = [...MIERCOLES, { day: 'Jueves', momento: 'comida' }, { day: 'Jueves', momento: 'cena' }];
     const { anchors, dishes } = anchorEverythingExcept(abiertos);
-    const catalog = [...dishes, lentejas, garbanzos, ...cenas];
+    const catalog = [SEGUNDO, ...dishes, lentejas, garbanzos, ...cenas];
     for (let seed = 0; seed < SEEDS; seed++) {
       const r = runWalk({ weekArc: { beats: beats7(), anchors }, catalog, seed: `nivel-vecino-solo-${seed}` });
       expect(r.slots.every((s) => !s.abierto && s.dishId)).toBe(true);
@@ -195,7 +199,7 @@ describe('runWalk: el dia de legumbre va antes que A, B y la verdura (D-117)', (
 
   it('con dieta vegetariana el paso 4 sigue como en D-024', () => {
     const { anchors, dishes } = anchorEverythingExcept([{ day: 'Viernes', momento: 'comida' }]);
-    const catalog = [...dishes, de('cena', lentejas), fabada, carbonara];
+    const catalog = [SEGUNDO, ...dishes, de('cena', lentejas), fabada, carbonara];
     for (let seed = 0; seed < SEEDS; seed++) {
       const r = runWalk({ weekArc: { beats: beats7(), anchors }, catalog, seed: `nivel-veg-${seed}`, profile: { dieta: 'vegetariana' } });
       expect(comida(r, 'Viernes')).toBe(fabada.id);

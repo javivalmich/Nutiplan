@@ -13,7 +13,7 @@ import { DAYS_ORDER } from '../skeleton/days.js';
 import { mulberry32, seedFromString } from '../skeleton/rng.js';
 import { DEFAULT_WEEKLY_TARGETS } from '../contracts/weeklyTargets.js';
 import {
-  familiaProteica, proteinaPrincipal, esCompuestoLegumbre, TOPE_PROTEINA_SEMANA,
+  familiaProteica, proteinaPrincipal, esCompuestoLegumbre, esSegundoDeLegumbre, TOPE_PROTEINA_SEMANA,
 } from '../dishes/bases.js';
 
 /** La regla es solo de dietas omnivoras (D-116.9, D-117.8). */
@@ -52,6 +52,16 @@ export function sortearDiasLegumbre({ p1aSlots, catalog, vetoedIds, seed, regist
   if (!hayPrimeros) {
     registrar('dias_legumbre_sin_sorteo',
       'el catalogo del perfil no tiene ningun plato compuesto de legumbre: no se sortean dias de legumbre y el paso 4 sigue como en D-024');
+    return null;
+  }
+  // Sin ningun segundo posible (un omnivoro sin carne ni ave, p. ej.), los dias
+  // sorteados dejarian la legumbre como plato unico (D-116.1): no se sortea y
+  // D-024 sigue como antes (segunda revision, A1, 2026-11-16).
+  const haySegundos = catalog.some((d) => d.rol === 'rotativo' && !vetoedIds.has(d.id) && esSegundoDeLegumbre(d));
+  if (!haySegundos) {
+    registrar('dias_legumbre_sin_sorteo',
+      'el catalogo del perfil no tiene ningun plato que valga de segundo (ave o carne con verdura, sin cereal): no se sortean dias de legumbre y el paso 4 sigue como en D-024',
+      { motivo: 'sin_segundo_posible' });
     return null;
   }
   const suelo = DEFAULT_WEEKLY_TARGETS.legumbre;

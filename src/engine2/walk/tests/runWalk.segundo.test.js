@@ -93,18 +93,21 @@ describe('runWalk: segundo plato tras un primero de legumbre (D-116)', () => {
     }
   });
 
-  it('nunca pescado ni huevo de segundo; sin ningun segundo posible, plato unico y el log lo dice', () => {
+  it('nunca pescado ni huevo de segundo; sin ningun segundo posible no se sortean dias (A1) y el log lo dice', () => {
     let { anchors, dishes } = anchorEverythingExcept(MIERCOLES);
     for (let seed = 0; seed < SEEDS; seed++) {
       const r = runWalk({ weekArc: arco(anchors), catalog: [...dishes, lentejas, pescadoClasico, huevoClasico, pollos[0], huevoCena], seed: `seg-fam-${seed}` });
       expect(r.segundos.map((s) => s.dishId)).toEqual([pollos[0].id]);
     }
+    // Segunda revisión, A1 (2026-11-22): sin ningún plato que valga de segundo, no hay días sorteados y D-024
+    // sigue como antes; la legumbre del miércoles sale por la cascada de siempre, como plato único.
     ({ anchors, dishes } = anchorEverythingExcept(MIERCOLES));
     const r = runWalk({ weekArc: arco(anchors), catalog: [...dishes, lentejas, pescadoClasico, huevoClasico], seed: 'seg-ninguno' });
-    expect(dishAt(r, 'Miercoles', 'comida')).toBe(lentejas.id);
     expect(r.segundos).toEqual([]);
-    expect(causas(r, 'segundo_sin_candidato')).toHaveLength(1);
-    expect(causas(r, 'segundo_sin_candidato')[0].day).toBe('Miercoles');
+    expect(causas(r, 'dias_legumbre_sorteados')).toEqual([]);
+    expect(causas(r, 'dias_legumbre_sin_sorteo')).toHaveLength(1);
+    expect(causas(r, 'dias_legumbre_sin_sorteo')[0].motivo).toBe('sin_segundo_posible');
+    expect(causas(r, 'segundo_sin_candidato')).toEqual([]);
   });
 
   it('(b) si ningun segundo cumple el tope de 2 por especie, la legumbre va como plato unico', () => {

@@ -443,7 +443,8 @@ export function regenerarComidaEngine2(plan, dayIdx, time, deseo, profile, targe
   const semana = plan.days.flatMap((d) => ['Comida', 'Cena'].flatMap((t) => {
     const m = d.meals.find((x) => x && x.time === t);
     const hueco = { day: diaE2(d), momento: MOMENTO_DE[t], dishId: m && m._dishId ? m._dishId : null };
-    return m && esComidaDoble(m) ? [hueco, { ...hueco, dishId: m._dishId2 }] : [hueco];
+    // Una comida doble incompleta (M2) también lleva su segundo: el plan dice que se come.
+    return m && m._dishId2 ? [hueco, { ...hueco, dishId: m._dishId2 }] : [hueco];
   }));
   const meta = metaEngine2(plan);
   const causa = actual._causa || (plan.decisionLog || []).filter((e) => e.day === diaE2(day) && e.momento === momento && typeof e.causa === 'string').map((e) => e.causa).pop();
@@ -459,7 +460,7 @@ export function regenerarComidaEngine2(plan, dayIdx, time, deseo, profile, targe
     // D-116.1: un compuesto de legumbre no se sirve como plato único. En un perfil con sorteo de días de
     // legumbre (omnívoro, con compuestos de legumbre en su catálogo), ninguna alternativa puede serlo, sea doble
     // o no la comida que se cambia (decisión de Javi del 2026-11-17).
-    sinLegumbreCompuesta: esComidaDoble(actual) || (reglaLegumbreActiva({ dieta: dietaDe(profile) }) && catalog.some((d) => d.rol === 'rotativo' && esCompuestoLegumbre(d))),
+    sinLegumbreCompuesta: !!actual._dishId2 || (reglaLegumbreActiva({ dieta: dietaDe(profile) }) && catalog.some((d) => d.rol === 'rotativo' && esCompuestoLegumbre(d))),
     // El tope semanal de pescado y marisco del perfil (o 3), como en la semana.
     topePescado: pescadoMaxSemanaDe(conTopePescado(profile)),
   });
@@ -477,11 +478,19 @@ export function regenerarComidaEngine2(plan, dayIdx, time, deseo, profile, targe
   days[dayIdx] = ajustado.day;
   // D-116: una comida doble se cambia por un plato único. El plato nuevo ocupa el sitio del primero
   // en platosSemana y el segundo sale: ya no se come, y la semana siguiente puede llevarlo.
+  // Segunda revisión, M2 (2026-11-22): una comida doble incompleta (`_dishId2` sin los datos de sus dos
+  // platos) también pierde el primero y el segundo en platosSemana; sus nombres salen del catálogo.
   const doble = esComidaDoble(actual);
-  const nombreActual = doble ? actual._doble.primero.title : (actual.title || '').replace(/ \(comida principal\)$/, '');
-  const nombreSegundo = doble ? actual._doble.segundo.title : null;
-  const platosSemana = (meta.platosSemana || []).filter((n) => n !== nombreSegundo).map((n) => (n === actual.title || n === nombreActual ? dish.nombre : n));
-  const retirada = doble ? [{ causa: 'alternativa_retira_segundo', day: diaE2(day), momento, plato: actual._dishId2, detalle: `la comida con primero y segundo se cambia por un plato único («${dish.nombre}»): sale el segundo («${nombreSegundo}») de la comida, de la compra y de los platos de la semana` }] : [];
+  const incompleta = !doble && !!actual._dishId2;
+  const nombreCatalogo = (id) => { const d = catalog.find((x) => x.id === id); return d ? d.nombre : null; };
+  const nombreActual = doble ? actual._doble.primero.title : incompleta ? nombreCatalogo(actual._dishId) : (actual.title || '').replace(/ \(comida principal\)$/, '');
+  const nombreSegundo = doble ? actual._doble.segundo.title : incompleta ? nombreCatalogo(actual._dishId2) : null;
+  const platosSemana = (meta.platosSemana || []).filter((n) => !nombreSegundo || n !== nombreSegundo).map((n) => (n === actual.title || n === nombreActual ? dish.nombre : n));
+  const retirada = doble
+    ? [{ causa: 'alternativa_retira_segundo', day: diaE2(day), momento, plato: actual._dishId2, detalle: `la comida con primero y segundo se cambia por un plato único («${dish.nombre}»): sale el segundo («${nombreSegundo}») de la comida, de la compra y de los platos de la semana` }]
+    : incompleta
+      ? [{ causa: 'alternativa_retira_comida_doble_incompleta', day: diaE2(day), momento, plato: actual._dishId2, detalle: `la comida con primero y segundo llegaba sin los datos de sus dos platos; se cambia por un plato único («${dish.nombre}»): salen el primero («${nombreActual || actual._dishId}») y el segundo («${nombreSegundo || actual._dishId2}») de los platos de la semana` }]
+      : [];
   days = guardarMeta(days, { ...((days[0] && days[0]._engine2) || {}), ancla: meta.ancla, platosSemanaAnterior: meta.platosSemanaAnterior, platosSemana });
   return {
     ...plan,

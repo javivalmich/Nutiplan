@@ -17,7 +17,6 @@ import { buildPlan } from '../engine/buildPlan.js';
 import { generarPlanEngine2, regenerarComidaEngine2, regenerarDesayunoEngine2, metaEngine2 } from './engine2App.js';
 import { catalogoApp } from './catalogo.js';
 import { ajustarDia } from './racionesApp.js';
-import { esComidaDoble } from './textos/comidaDoble.js';
 
 export const AVISO_COMIDA_DOBLE_SIN_ALTERNATIVA = 'No hay otro plato que encaje con el menú de esta semana para cambiar esta comida de primero y segundo; se queda como está.';
 
@@ -150,7 +149,8 @@ export function regenerarComida(plan, dayIdx, time, deseo, profile, targetKcal, 
     console.error('[regenerarComida] engine2 falló', err);
     // Comida con primero y segundo (D-116): el motor viejo perdería el segundo y podría servir legumbre
     // como plato único (D-116.1). Se queda como está, con un aviso (decisión de Javi del 2026-11-16).
-    if (esComidaDoble(meal)) {
+    // También si está incompleta (`_dishId2` sin los datos de sus dos platos; B5 de la segunda revisión).
+    if (meal._dishId2) {
       return {
         ...plan,
         alternativaSinCambio: true,

@@ -101,57 +101,47 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
 | `3883a3a` | Segunda revisión, B2: tiempo límite explícito en los tests lentos de alternativa, diasLegumbre y redSegundos |
 | `1308046` | Segunda revisión, B4 y M4: fechas (todo lo anterior es del 2026-11-16), `VERSION_MOTOR` 2026-11-22 y la edición de la compra en el panel |
 | `43a07d6` | `DECISIONS.md`: D-117.7 (sin segundo posible no hay sorteo) y D-116.6 (el orden corregido) |
-| el siguiente a `43a07d6` | `ESTADO.md` al día |
+| `6a3864c` | `ESTADO.md` al día |
+| `9b3da71` | `DECISIONS.md`: causas nuevas en D-116.10 y fechas de D-116 y D-117 |
+| `4ead8bb` | Medición: perfil sin carne ni ave, `main` frente a HEAD (`cortasProteina.mjs`, `sin-carne-ave-main-head.md`) |
+| `b4c90a6` | `DECISIONS.md`: D-118 cerrado |
+| el siguiente a `b4c90a6` | `ESTADO.md` al día |
 
 ## Dónde se para esta sesión (2026-11-22)
 
-- **Hechos:** los puntos 0 y 1 (2026-11-16: el peso del catálogo, `10adbb7`; el tope que cede, `0878f81`) y, de la segunda revisión, A1 (`1c23a97`), M1 (`9f708e5`, con su control en `55f78c0`), M2 y B5 (`10a823d`), M3 y B3 (`b4b92bb`), B1 (`ed5196b`), B2 (`3883a3a`), B4 y M4 (`1308046`) y `DECISIONS.md` (`43a07d6`). El stash de A1 ya no existe: A1 está en `1c23a97`.
-- **Parado en el punto 2 de la segunda revisión** (tope de 3 en el perfil sin carne ni ave): el tope empeora la proteína frente a no tener tope (comidas y cenas cortas 4,21 frente a 4,17 por semana; proteína del día 98,2 % frente a 98,6 %). Por la regla de Javi, el tope no se cierra: decide Javi. Cifras en `medicion/estructura-comida-final/tope-pescado-cede.md`.
-- **A1 no cumple su criterio frente a `main`:** en el perfil sin carne ni ave las comidas cortas bajan de 4,64 a 4,21 por semana con A1, pero en `main` son 2,94. La distancia la hacen juntos el tope de pescado y el filtro de familia en días seguidos (D-115): sin los dos, 3,04. Un perfil con un solo segundo posible no lo cubre A1 (3,00 en `main`, 4,36 aquí).
-- **Control de M1** (`medicion/estructura-comida-final/control-m1.md`, 200 semanas por perfil, antes → después): solo cambia la mediana del segundo en omni-1434 (100 → 95 g). Frente al control de `0820950`, por cambios anteriores a M1 (tope de pescado, primeros, A1): por encima del 105 % 33 → 41 (todas de omni-1434); por debajo del 95 % 0 → 1 (omni-3714, semana 85: la legumbre en su tope, el segundo en su máximo y pan, 1404 de 1486 kcal); proteína del día 108,0 → 106,7 %.
-- **Sin cerrar en `DECISIONS.md`:** la lista de causas de D-116.10 no recoge todavía `legumbre_crece_por_energia` ni `alternativa_retira_comida_doble_incompleta`, y quedan fechas adelantadas (2026-11-17) en D-116 y D-117 fuera de los asientos autorizados. No se tocan sin autorización.
+- **Hechos:**
+  - 2026-11-16: los puntos 0 y 1 (el peso del catálogo, `10adbb7`; el tope que cede, `0878f81`, medido en `197108f`).
+  - 2026-11-22, la segunda revisión entera:
+    - A1 (`1c23a97`);
+    - M1 (`9f708e5`, con su control en `55f78c0`);
+    - M2 y B5 (`10a823d`);
+    - M3 y B3 (`b4b92bb`);
+    - B1 (`ed5196b`);
+    - B2 (`3883a3a`);
+    - B4 y M4 (`1308046`);
+    - `DECISIONS.md` (`43a07d6` y `9b3da71`).
+  - **D-118 cerrado** en `DECISIONS.md` (`b4c90a6`). Javi decidió el 2026-11-22 que el tope se aplica también al perfil sin carne ni ave, y que su diferencia con no tener tope (4,21 frente a 4,17 comidas cortas por semana) es ruido.
+- **Perfil sin carne ni ave frente a `main`** (`medicion/estructura-comida-final/sin-carne-ave-main-head.md`, 200 semanas, mismo medidor):
+  - **A1 no le devuelve lo de `main`:**
 
-## Borrador de asiento: D-118 (no está en `DECISIONS.md`; lo escribe Javi si lo aprueba)
+    | | Comidas y cenas cortas/sem | Proteína del día | Legumbre como plato único/sem | Pescado/sem |
+    |---|---|---|---|---|
+    | `main` | 2,94 | 101,1 % | 1,78 | 8,77 |
+    | HEAD | 4,21 | 98,2 % | 3,35 | 6,74 |
 
-**D-118 — [2026-11-16] Tope semanal de pescado y marisco, parámetro del perfil**
-
-Decide: Javi. Implementado en `b87ccc3`; el tope que cede, en `0878f81`. Medido antes en memoria (`scripts/banco/medicion/variantesPescado.mjs`, `estructura-comida-final/pescado-topes.md`).
-
-Contexto
-Con D-116 y D-117 el pescado y el marisco salían 3,91 veces por semana en los 8 perfiles omnívoros sin SIBO, con 4 o más en el 72 % de las semanas (282 de 1600 con más de 4), y 5,03 con SIBO. Solo había un tope por especie (2 por semana, `TOPE_PROTEINA_SEMANA`) y un suelo de pescado de 3 (D-024), pero ningún techo para la familia.
-
-Decisión
-1. Pescado y marisco tienen un tope semanal común, `pescadoMaxSemana`, un campo del perfil: un entero de 2 a 4. Si el perfil no lo trae, vale 3. Lo valida `contracts/profile.js`; un valor fuera de rango no se acepta (el motor lanza y la app cae al motor viejo, como con cualquier perfil inválido).
-2. Se cuenta por especie (`ESPECIES_PESCADO_MARISCO` en `bases.js`), así que también cuentan los platos de familia «cereal» con atún o gambas. Los segundos de la comida doble nunca son pescado (D-116.2): no aplica.
-3. En cada hueco del walk, si la semana ya llega al tope con los platos servidos, el pescado y el marisco salen del pool justo después del tope por especie, y el hueco sigue por la cascada normal. Es un filtro con vuelta atrás: si dejaría el hueco sin candidatos, no se aplica. La sugerencia de la comida libre no cuenta (no se sirve), pero sí pasa por el filtro: si la semana ya llega al tope, no se sugiere pescado.
-4. El suelo de pescado del paso 4 (D-024) es el menor entre 3 y el tope. Con tope de 2, el suelo es 2.
-4b. El tope cede si aplicarlo obligaría a una infracción de D-099.3 (decisión de Javi del 2026-11-16, para el valor por defecto y para el elegido por el usuario): si sin el pescado no quedara ningún candidato con una especie que no salga ya ese día o el de al lado, y con el pescado sí, el tope no se aplica en ese hueco. Más de 2 por especie ya lo filtra el tope por especie, que va antes. Causa: `tope_pescado_semana_cede_d099`.
-4c. La sugerencia de la comida libre filtrada por el tope se acepta (Javi, 2026-11-16).
-5. Las alternativas respetan el tope: si el resto de la semana ya llega, el plato nuevo no es pescado ni marisco, con la misma vuelta atrás.
-6. La app pasa el campo al perfil reducido del motor solo si el perfil lo trae. Sin cambios en el cuestionario, la vista ni Supabase.
-7. Causas en el log: `tope_pescado_semana_fijado` (al empezar el walk, con el tope, de dónde sale y el suelo), `tope_pescado_semana`, `tope_pescado_semana_sin_aplicar` y `tope_pescado_semana_cede_d099` (en los huecos), y `alternativa_tope_pescado` y `alternativa_tope_pescado_sin_aplicar`. Sin pesos.
-
-Medido
-200 semanas por perfil, por la entrada de la app. El motor real da el mismo menú y el mismo texto que la variante medida en memoria en 1800 de 1800 semanas (tope de 3, 9 perfiles). En los 8 perfiles omnívoros sin SIBO, sin tope → tope de 3:
-- Pescado y marisco 3,91 → 3,00 por semana; semanas con 4 o más, 1158 → 0.
-- Qué ocupa los huecos: cerdo +0,30 por semana, comidas sin proteína animal +0,17, ave +0,13, carne roja +0,12, conejo +0,11 y huevo +0,08. La legumbre no cambia (3,04 → 3,03).
-- Comidas y cenas cortas de proteína 1,84 → 2,03 por semana; proteína del día 108,4 → 108,0 %; infracciones de D-099.3, 0 → 0. El filtro se aplica 7763 veces y no se relaja ninguna.
-- sibo-2000: pescado 5,03 → 3,00; cortas 1,85 → 2,30 por semana; **infracciones de D-099.3, 0 → 7 en 200 semanas** (5 especie dos veces el mismo día y 2 en días seguidos; sobre todo conejo en la comida y la cena del domingo). SIBO no tiene legumbre ni la red de D-116.5, y sin pescado su catálogo se queda corto. Ningún walk falla ni cae al motor viejo.
-- Con tope de 2 (medido con el suelo en 3, antes de bajarlo): pescado 2,00, cortas 2,15 por semana, D-099.3 0 en los 8 omnívoros y 17 en sibo-2000.
-- **Con el tope que cede** (`0878f81`, `medicion/estructura-comida-final/tope-pescado-cede.md`): en los 8 omnívoros, pescado 3,01 por semana, cede 20 veces en 1600 semanas, D-099.3 0, cortas 2,03, proteína del día 108,1 %. En sibo-2000, pescado 3,05, cede 10 veces, **D-099.3 7 → 0**, cortas 2,29, proteína del día 98,1 %.
-- sibo-2000 con valor por defecto 4 (medido en memoria, sin implementar): pescado 4,00, cede 2 veces, D-099.3 0, cortas 2,10, proteína del día 98,6 %.
-- Perfil sintético sin carne ni ave (ningún segundo posible; con A1, `1c23a97`, no sortea días): con el tope de 3, cortas 4,21 por semana y proteína del día 98,2 %; sin tope, 4,17 y 98,6 %: **el tope empeora la proteína** (la sesión se para aquí, sin cerrar el tope). Sirve 6,74 platos de pescado por semana: el tope cede casi siempre. En `main`, 2,94 cortas y 8,77 de pescado.
-- Después de M1 (`9f708e5`) el control de 200 semanas de los 9 perfiles con comida doble no cambia en pescado ni en proteína (`control-m1.md`).
-
-Pendiente
-- Resuelto el 2026-11-16: el tope cede ante D-099.3 (punto 4b); sibo-2000 queda en 0 infracciones. Sus comidas cortas siguen en 2,29 por semana (1,85 sin tope); con valor por defecto 4, 2,10.
-- Perfiles con muy poca proteína animal distinta del pescado (sin carne ni ave): el tope empeora la proteína y casi siempre cede. Decidir si el tope se aplica a esos perfiles.
-- El cuestionario, la vista y dónde se guarda el campo en el perfil.
-- El tope de 2 con el suelo en 2 no se ha medido en 200 semanas (la medición del tope de 2 fue con el suelo en 3).
-- La legumbre a 4 está medida (con el tope de 3: 3,74 por semana; días fijos en L, X, V y D en 1397 de 1600 semanas) y no decidida.
-
-Estado resultante
-El tope de 3 se aplica a todos los perfiles desde `b87ccc3`.
+  - Las comidas cortas de más son legumbre como plato único (cortas 1,56 → 2,67), que entra donde sale el pescado.
+  - La distancia la hacen juntos el tope de D-118 y el filtro de familia de D-115: sin uno solo de los dos, 4,17 o 4,29 cortas; sin los dos, 3,04.
+  - Queda como pendiente de D-118; no se ha decidido nada sobre él.
+- **Control de M1** (`medicion/estructura-comida-final/control-m1.md`):
+  - Antes y después de M1, solo cambia la mediana del segundo en omni-1434 (100 → 95 g).
+  - Frente al control de `0820950`, por cambios anteriores a M1 (tope de pescado, primeros, A1):
+    - por encima del 105 %, 33 → 41 (todas de omni-1434);
+    - por debajo del 95 %, 0 → 1 (omni-3714, semana 85: la legumbre en su tope, el segundo en su máximo y pan, 1404 de 1486 kcal);
+    - proteína del día, 108,0 → 106,7 %.
+- **Abierto, decide Javi:**
+  - el valor por defecto 4 para SIBO (medido: 2,10 comidas cortas frente a 2,29);
+  - el perfil con un solo segundo posible (A1 no lo cubre: 3,00 en `main`, 4,36 aquí);
+  - la lista «Antes de llevar la rama a `main`».
 
 ## Antes de llevar la rama a `main` (en orden)
 

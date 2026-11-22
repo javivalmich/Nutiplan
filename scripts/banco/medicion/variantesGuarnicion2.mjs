@@ -20,13 +20,25 @@
 //
 // Uso (desde la raíz del repo, con el árbol de HEAD):
 //   node --import ./scripts/banco/resolver.mjs --import ./scripts/banco/medicion/variantesGuarnicion2.mjs \
-//     scripts/banco/medicion/cortasProteina.mjs <raíz> <salida.json> <perfil> [semanas] [--compuestosSoloSinOtro]
+//     scripts/banco/medicion/cortasProteina.mjs <raíz> <salida.json> <perfil> [semanas] [--compuestosSoloSinOtro] [--soloOmnivora]
+//     [--sueloGuarnicion] [--baseGuarnicion=N]
+//   --soloOmnivora: la (b) no se aplica a dietas vegetariana ni vegana (como D-116.9).
+//   --sueloGuarnicion: suelo de 2 legumbres por semana que actúa solo por la guarnición: desde el jueves, si la semana va
+//     corta, el siguiente hueco que admite guarnición la lleva sin el paso de la mitad (con vuelta atrás y causa).
+//   --baseGuarnicion=N: gramos de partida de la guarnición (150 por defecto; rango 80-240).
 import fs from 'node:fs';
 import { register } from 'node:module';
 
 const RAIZ = new URL('../../../', import.meta.url);
 const SUB_B = process.argv.includes('--compuestosSoloSinOtro');
-process.stderr.write(`[variantesGuarnicion2] guarnición en el walk; subvariante ${SUB_B ? 'b (compuestos de legumbre solo sin otro candidato)' : 'a'}\n`);
+// Cambios de Javi del 2026-11-23 sobre la (b): solo en dietas omnívoras; suelo de 2 por la guarnición; ración de partida.
+const SUB_B_OMNI = process.argv.includes('--soloOmnivora');
+const SUELO_G = process.argv.includes('--sueloGuarnicion');
+const baseArg = process.argv.find((a) => a.startsWith('--baseGuarnicion='));
+const BASE_GUARNICION = baseArg ? Number(baseArg.split('=')[1]) : 150;
+const DIA_MITAD = 3; // jueves (índice en DAYS_ORDER): desde aquí, el suelo de 2 mira si la semana va corta
+const SUELO_LEGUMBRES = 2;
+process.stderr.write(`[variantesGuarnicion2] guarnición en el walk; subvariante ${SUB_B ? 'b' : 'a'}${SUB_B_OMNI ? ', b solo omnívora' : ''}${SUELO_G ? ', suelo de 2 por la guarnición' : ''}; ración de partida ${BASE_GUARNICION} g\n`);
 
 // ─── Inventario (hidratos-legumbre.csv) ─────────────────────────────────────────────────────────────────────────────
 function leerCsv(texto) {
@@ -65,7 +77,6 @@ const LEG = {
 };
 const VERDES = new Set(['guisantes', 'habitas']);
 const RANGO_GUARNICION = [80, 240, 10];
-const BASE_GUARNICION = 150;
 const TOPE_LEGUMBRES = 3;
 const claveH = (leg, frio) => `g_${leg.replace(/ /g, '_')}${frio ? '_frio' : ''}`;
 const hidratosNuevos = [];
@@ -138,14 +149,14 @@ globalThis.__g2 = {
       const sin = out.filter((d) => familiaCache(d.id) !== 'legumbre');
       if (sin.length && sin.length < out.length) { anota('legumbre_tope_semana', `${day}/${momento}: la semana ya lleva ${total} legumbres (tope ${TOPE_LEGUMBRES}): fuera ${out.length - sin.length} platos de legumbre`); out = sin; } else if (!sin.length) anota('legumbre_tope_semana_sin_aplicar', `${day}/${momento}: solo quedan platos de legumbre; no se aplica el tope`);
     }
-    if (SUB_B) {
+    if (SUB_B && !(SUB_B_OMNI && ['vegetariana', 'vegana'].includes(globalThis.__g2.dieta))) {
       const sin = out.filter((d) => !esCompuestoLegumbre(d));
       if (sin.length && sin.length < out.length) { anota('legumbre_compuesta_fuera_hay_otro', `${day}/${momento}: fuera ${out.length - sin.length} compuestos de legumbre como plato único; quedan ${sin.length} candidatos`); out = sin; } else if (!sin.length) anota('legumbre_compuesta_sin_otro_candidato', `${day}/${momento}: solo quedan compuestos de legumbre; se admiten`);
     }
     return out;
   },
   /** Después de elegir el plato de un hueco: ¿hidrato original o legumbre? */
-  decidir(g, { day, momento, dish, freqState, decisionLog, slots, familiaCache, proteinaCache }) {
+  decidir(g, { day, i, momento, dish, freqState, decisionLog, slots, familiaCache, proteinaCache }) {
     if (momento !== 'comida') return;
     const lista = INVENTARIO.get(dish.id);
     if (!lista) return;
@@ -161,14 +172,18 @@ globalThis.__g2 = {
     }
     const total = platos + g.guarniciones.length;
     if (total >= TOPE_LEGUMBRES) { anota('guarnicion_legumbre_tope', `la semana ya lleva ${total} legumbres (tope ${TOPE_LEGUMBRES}): se queda el hidrato original`); return; }
+    // Suelo de 2 por la guarnición (--sueloGuarnicion): desde la mitad de la semana, si va corta, este hueco la lleva
+    // sin el paso de la mitad. Nunca fuerza un plato de legumbre suelto: solo actúa aquí, en un hueco que admite guarnición.
+    const porSuelo = SUELO_G && i >= DIA_MITAD && total < SUELO_LEGUMBRES;
+    if (porSuelo) anota('guarnicion_suelo_semana', `${day}: la semana va corta (${total} de ${SUELO_LEGUMBRES} legumbres desde el jueves): este hueco lleva legumbre de guarnición sin el paso de la mitad`);
     // Paso 1: hidrato original o legumbre, uniforme entre las dos.
-    const u1 = g.rng();
+    const u1 = porSuelo ? 1 : g.rng();
     if (u1 < 0.5) { anota('guarnicion_hidrato_original', `RNG «::guarnicion» -> «hidrato original» (de: hidrato original, legumbre)`); return; }
     // Paso 2: cuál, con las reglas de la semana.
     let opciones = validas;
     const verdes = g.guarniciones.filter((x) => VERDES.has(x.legumbre)).length;
     if (verdes >= 1) { const sin = opciones.filter((x) => !VERDES.has(x)); if (sin.length < opciones.length) anota('guarnicion_guisantes_habitas', 'guisantes y habitas ya salen 1 vez esta semana: fuera de las opciones'); opciones = sin; }
-    if (!opciones.length) { anota('guarnicion_sin_legumbre_valida', 'salía legumbre, pero ninguna de la lista es válida esta semana: se queda el hidrato original'); return; }
+    if (!opciones.length) { anota(porSuelo ? 'guarnicion_suelo_sin_legumbre_valida' : 'guarnicion_sin_legumbre_valida', `${porSuelo ? 'el suelo pedía legumbre' : 'salía legumbre'}, pero ninguna de la lista es válida esta semana: se queda el hidrato original`); return; }
     const nuevas = opciones.filter((x) => !usadas.has(x));
     if (nuevas.length && nuevas.length < opciones.length) { anota('guarnicion_legumbre_no_repetida', `fuera ${opciones.filter((x) => usadas.has(x)).join(', ')}: ya salen esta semana`); opciones = nuevas; } else if (!nuevas.length) anota('guarnicion_legumbre_no_repetida_sin_aplicar', 'todas las legumbres válidas ya salen esta semana; no se aplica');
     const k = Math.floor(g.rng() * opciones.length);
@@ -210,9 +225,9 @@ const CAMBIOS = [
   ['/src/engine2/walk/runWalk.js', '      // Prototipo (visor): tope de proteina principal por semana. Si dejaria el',
     '      pool = globalThis.__g2.filtrarPool(__g, { pool, day, momento, decisionLog, esCompuestoLegumbre, slots, familiaCache });\n      // Prototipo (visor): tope de proteina principal por semana. Si dejaria el'],
   ['/src/engine2/walk/runWalk.js', '      if (!esSugerencia) registerConsumption(freqState, chosen, day, undefined, fuenteEditorial);',
-    '      if (!esSugerencia) registerConsumption(freqState, chosen, day, undefined, fuenteEditorial);\n      if (!esSugerencia) globalThis.__g2.decidir(__g, { day, momento, dish: chosen, freqState, decisionLog, slots, familiaCache, proteinaCache });'],
+    '      if (!esSugerencia) registerConsumption(freqState, chosen, day, undefined, fuenteEditorial);\n      if (!esSugerencia) globalThis.__g2.decidir(__g, { day, i, momento, dish: chosen, freqState, decisionLog, slots, familiaCache, proteinaCache });'],
   ['/src/plan/engine2App.js', '  const e2 = materializePlan({',
-    '  globalThis.__g2.posibles = new Set([...legumbresDelPerfilApp(profile)].filter(([, m]) => !m).map(([id]) => id));\n  const e2 = materializePlan({'],
+    '  globalThis.__g2.posibles = new Set([...legumbresDelPerfilApp(profile)].filter(([, m]) => !m).map(([id]) => id));\n  globalThis.__g2.dieta = dietaDe(profile);\n  const e2 = materializePlan({'],
   ['/src/plan/engine2App.js', '  const log = e2.decisionLog;',
     '  globalThis.__g2.aplicar(e2, { bases: globalThis.__guarnBases, tuplaDe: globalThis.__guarnTuplaDe });\n  const log = e2.decisionLog;'],
   ['/src/plan/engine2App.js', 'export function generarPlanEngine2(profile, targetKcal, opts = {}) {',

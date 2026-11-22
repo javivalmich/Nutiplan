@@ -79,7 +79,7 @@ const { objetivoDe } = await import(raiz + 'src/plan/racionesApp.js');
 const { FREEFORM_POOL } = await import(raiz + 'src/data/freeformPool.js');
 const { catalogoApp } = await import(ACT + 'src/plan/catalogo.js');
 const { proteinaPrincipal, familiaProteica, ESPECIES_PESCADO_MARISCO } = await import(ACT + 'src/engine2/dishes/bases.js');
-const { composicionSemana } = await import(ACT + 'scripts/banco/metricas.mjs');
+const { composicionSemana, huecosSemana } = await import(ACT + 'scripts/banco/metricas.mjs');
 const { DAYS_ORDER } = await import(ACT + 'src/engine2/skeleton/days.js');
 const { leerComida } = await import(ACT + 'src/plan/medidor/leerComida.js');
 const { INGREDIENTES } = await import(ACT + 'src/engine2/nutrientes/ingredientes.js');
@@ -117,6 +117,9 @@ for (let s = 60; s < 60 + SEM; s++) {
   const plan = generarPlan(JSON.parse(JSON.stringify(perfil)), KCAL, { month: 9, pastProteins: {}, freeFormPool: FREEFORM_POOL, weekNumber: s, userId: `banco-${perfilId}`, saveMealMemory: () => {}, platosRecientes: recientes });
   const c = composicionSemana(plan, porIdBanco, recientes);
   const d099 = c.platoRepetidoEnSemana + c.platoDeSemanaAnterior + c.especieMasDeDosVeces + c.especieMismoDia + c.especieDiasSeguidosSinAncla + c.legumbreEnCena;
+  // Tipo de cada infracción de D-099.3 y, si la hay, el menú servido de la semana (día, momento, especie, plato).
+  const d099det = { repetido: c.platoRepetidoEnSemana, anterior: c.platoDeSemanaAnterior, masDeDos: c.especieMasDeDosVeces, mismoDia: c.especieMismoDia, seguidos: c.especieDiasSeguidosSinAncla, legCena: c.legumbreEnCena };
+  const menuD099 = d099 ? huecosSemana(plan, porIdBanco).filter((h) => !h.libre).map((h) => [h.dia, h.momento, h.rol || '', h.especie, h.titulo]) : null;
   ant = plan;
   let cortas = 0; let pescado = 0; let dobles = 0; let prot = 0; let dias = 0; let legumbreUnico = 0;
   const servidosPor = {}; const cortasPor = {}; const platosPor = {}; let fueraKcal = 0; let principales = 0; const mlDias = [];
@@ -164,13 +167,18 @@ for (let s = 60; s < 60 + SEM; s++) {
     return !(m && porId.has(m._dishId) && familiaProteica(porId.get(m._dishId)) === 'legumbre');
   }).length;
   let hidratoSeguidos = 0;
-  for (let k = 0; k + 1 < hidratosDia.length; k++) if ([...hidratosDia[k]].some((x) => hidratosDia[k + 1].has(x))) hidratoSeguidos += 1;
+  const hidratoSeguidosPor = {};
+  for (let k = 0; k + 1 < hidratosDia.length; k++) {
+    const comunes = [...hidratosDia[k]].filter((x) => hidratosDia[k + 1].has(x));
+    if (comunes.length) hidratoSeguidos += 1;
+    for (const x of comunes) hidratoSeguidosPor[x] = (hidratoSeguidosPor[x] || 0) + 1;
+  }
   const g = (c) => log.filter((e) => e.causa === c).length;
-  const guarn = { suelo: g('guarnicion_legumbre_suelo'), tope: g('guarnicion_legumbre_tope'), cena: g('guarnicion_legumbre_cena'), verdes: g('guarnicion_guisantes_habitas'), repetidaEvitada: g('guarnicion_legumbre_no_repetida'), repetidaSinAplicar: g('guarnicion_legumbre_no_repetida_sin_aplicar'), sinHueco: g('guarnicion_suelo_sin_hueco'), sinLegumbre: g('guarnicion_suelo_sin_legumbre_posible') };
+  const guarn = { sueloSemana: g('guarnicion_suelo_semana'), sueloSinValida: g('guarnicion_suelo_sin_legumbre_valida'), compuestaFuera: g('legumbre_compuesta_fuera_hay_otro'), compuestaSinOtro: g('legumbre_compuesta_sin_otro_candidato'), topePool: g('legumbre_tope_semana'), suelo: g('guarnicion_legumbre_suelo'),tope: g('guarnicion_legumbre_tope'), cena: g('guarnicion_legumbre_cena'), verdes: g('guarnicion_guisantes_habitas'), repetidaEvitada: g('guarnicion_legumbre_no_repetida'), repetidaSinAplicar: g('guarnicion_legumbre_no_repetida_sin_aplicar'), sinHueco: g('guarnicion_suelo_sin_hueco'), sinLegumbre: g('guarnicion_suelo_sin_legumbre_posible') };
   const legRepetida = Object.values(legPor).some((n) => n >= 2);
   const red = log.some((e) => e.causa === 'regla_legumbre_retirada_d099' || e.causa === 'regla_legumbre_retirada_pool_vacio');
   const sinSegundoPosible = log.filter((e) => e.causa === 'dia_legumbre_sin_segundo_posible').length;
-  semanas.push({ s, motor: plan.motor, cortas, pescado, dobles, legumbreUnico, servidosPor, cortasPor, d099, legGuarnicion, legPlato, legPor, legRepetida, guarnConPan, panGuarn, hidratoPor, hidratoSeguidos, guarn, platosPor, fueraKcal, principales, mlDia: mlDias.length ? mlDias.reduce((a, x) => a + x, 0) / mlDias.length : 0, mlMax: Math.max(0, ...mlDias), legumbre: servidosPor.legumbre || 0, diasSorteados: diasSorteados.length, sorteadosSinLegumbre, red, sinSegundoPosible, protDia: dias ? (100 * prot) / dias / obj.proteina : 0, sorteo: (plan.decisionLog || []).some((e) => e.causa === 'dias_legumbre_sorteados') });
+  semanas.push({ s, motor: plan.motor, cortas, pescado, dobles, legumbreUnico, servidosPor, cortasPor, d099, legGuarnicion, legPlato, legPor, legRepetida, guarnConPan, panGuarn, d099det, menuD099, hidratoSeguidosPor, diasConHidrato: hidratosDia.filter((h) => h.size).length, hidratoPor, hidratoSeguidos, guarn, platosPor, fueraKcal, principales, mlDia: mlDias.length ? mlDias.reduce((a, x) => a + x, 0) / mlDias.length : 0, mlMax: Math.max(0, ...mlDias), legumbre: servidosPor.legumbre || 0, diasSorteados: diasSorteados.length, sorteadosSinLegumbre, red, sinSegundoPosible, protDia: dias ? (100 * prot) / dias / obj.proteina : 0, sorteo: (plan.decisionLog || []).some((e) => e.causa === 'dias_legumbre_sorteados') });
 }
 fs.writeFileSync(salidaArg, JSON.stringify({ perfil: perfilId, semanas }));
 l(`${semanas.length} semanas → ${salidaArg} (motores: ${[...new Set(semanas.map((x) => x.motor))].join(', ')})`);

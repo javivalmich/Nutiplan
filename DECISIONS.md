@@ -4717,6 +4717,17 @@ Pendiente
 - Alternativas de una comida con dos platos: resuelto en el punto 11 (sale un plato único).
 - La preferencia A sigue mirando la sugerencia del sábado (D-114).
 - La sopa de primero: no hay en el catálogo sopas ni cremas sin proteína.
+- Perfiles con un solo segundo posible (2026-11-22, `scripts/banco/medicion/estructura-comida-final/un-segundo-reparto.md`, 200 semanas, perfiles sintéticos). `solo-pollo-2000` tiene el pollo como única carne: 8 segundos, todos de pollo. `un-segundo-2000` tiene un solo plato que vale de segundo. Hay sorteo de días de legumbre, pero se colocan pocos segundos (1,17 y 0,46 comidas dobles por semana): los demás días sorteados la legumbre va como plato único. D-117.7 no los cubre, porque tienen un segundo posible. Comidas y cenas cortas de proteína por semana; entre paréntesis, la proteína del día:
+
+  | | `main` | HEAD | HEAD sin tope de pescado | HEAD sin tope ni D-115 |
+  |---|---|---|---|---|
+  | solo-pollo-2000 | 2,50 (102,6 %) | 3,46 (102,2 %) | 3,42 (102,5 %) | 2,60 (104,8 %) |
+  | un-segundo-2000 | 3,00 (100,8 %) | 4,36 (99,0 %) | 4,18 (99,5 %) | 3,73 (100,5 %) |
+
+  - Legumbre como plato único por semana, de `main` a HEAD: 1,43 → 2,08 y 1,40 → 2,69.
+  - De la diferencia de `main` a HEAD (+0,96 y +1,36), el tope de pescado de D-118 pone +0,04 y +0,18, y el filtro de familia de D-115, +0,82 y +0,45. La regla de la legumbre, con lo demás de la rama, pone +0,10 y +0,73. El reparto depende del orden en que se quitan las reglas.
+  - Medido y descartado: que un día sorteado solo fije el nivel de legumbre si hay un segundo posible (`nivel-con-segundo.md`). Esos días la cascada normal sigue eligiendo legumbre, y deja 3,46 y 4,08 comidas cortas por semana.
+  - Sin decidir.
 - El banco no tiene ningún perfil con gluten y sin pescado ni marisco. Esos perfiles ya incumplen D-099.3 hoy, sin la regla (28 casos en 200 semanas en los dos sintéticos medidos: especie en días seguidos, el mismo día o más de 2 veces), porque el catálogo les deja pocas especies; con la red, la regla se apaga en 192 a 195 de cada 200 semanas.
 
 Estado resultante
@@ -4774,7 +4785,7 @@ Decisión
 5. El tope cede si aplicarlo obligaría a una infracción de D-099.3, con el valor por defecto y con el elegido por el usuario: si sin el pescado no quedara ningún candidato con una especie que no salga ya ese día o el de al lado, y con el pescado sí, el tope no se aplica en ese hueco. Más de 2 por especie ya lo filtra el tope por especie, que va antes.
 6. La sugerencia de la comida libre no cuenta para el tope (no se sirve), pero pasa por el filtro: si la semana ya llega al tope, no se sugiere pescado. Se acepta así.
 7. Las alternativas respetan el tope: si el resto de la semana ya llega, el plato nuevo no es pescado ni marisco, con la misma vuelta atrás.
-8. El tope se aplica a todos los perfiles, también a los que casi no tienen otra proteína animal que el pescado (sin carne ni ave). En el perfil sintético sin carne ni ave, la diferencia con no tener tope (4,21 frente a 4,17 comidas y cenas cortas de proteína por semana) se acepta como ruido (Javi, 2026-11-22).
+8. El tope se aplica a todos los perfiles, también a los que casi no tienen otra proteína animal que el pescado (sin carne ni ave). En el perfil sintético sin carne ni ave, la diferencia con no tener tope (4,21 frente a 4,17 comidas y cenas cortas de proteína por semana) se acepta como ruido (Javi, 2026-11-22). SIBO mantiene el valor por defecto de 3 (Javi, 2026-11-22): el 4 queda descartado por ahora.
 9. La app pasa el campo al perfil reducido del motor solo si el perfil lo trae. Sin cambios en el cuestionario, la vista ni Supabase.
 10. Causas en el log, sin pesos:
     - al empezar el walk, `tope_pescado_semana_fijado` (con el tope, de dónde sale y el suelo);
@@ -4812,7 +4823,7 @@ Medido
   - Hacen falta juntos este tope y el filtro de familia de D-115 para esa distancia. Sin uno solo de los dos, 4,17 o 4,29 cortas; sin los dos, 3,04.
 
 Pendiente
-- sibo-2000: sus comidas cortas siguen en 2,29 por semana (1,85 sin tope). Con valor por defecto 4 bajarían a 2,10; está medido y no decidido.
+- sibo-2000: mantiene el tope por defecto de 3, decidido el 2026-11-22. Sus comidas cortas siguen en 2,29 por semana (1,85 sin tope). Con el 4 bajarían a 2,10; queda descartado por ahora.
 - Perfil sin carne ni ave (Javi, 2026-11-22: no se toca). Con el tope de 3 queda en 4,21 comidas y cenas cortas de proteína por semana, frente a 2,94 en `main`. Con tope de 4 (y sin D-115) baja a 3,96 (`scripts/banco/medicion/estructura-comida-final/sin-d115-y-un-segundo.md`). Se resolverá con la pregunta del cuestionario.
 - El cuestionario, la vista y dónde se guarda el campo en el perfil.
 - El tope de 2 con el suelo en 2 no se ha medido en 200 semanas (la medición del tope de 2 fue con el suelo en 3).

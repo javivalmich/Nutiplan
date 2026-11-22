@@ -107,7 +107,10 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
 | `b4c90a6` | `DECISIONS.md`: D-118 cerrado |
 | `0e2d6d8` | `ESTADO.md` al día |
 | `b91e6f1` | Medición: sin D-115 en el perfil sin carne ni ave, y perfiles con un solo segundo (`cortasProteina.mjs`, `sin-d115-y-un-segundo.md`); no se implementa |
-| el siguiente a `b91e6f1` | `ESTADO.md` al día |
+| `8c8d9b1` | `ESTADO.md` al día |
+| `8ad62d4` | Medición: el nivel de legumbre del día sorteado solo con segundo posible (`variantesNivelSegundo.mjs`, `nivel-con-segundo.md`); no se implementa |
+| `fd17943` | `DECISIONS.md`: D-118, pendiente del perfil sin carne ni ave |
+| el siguiente a `fd17943` | `ESTADO.md` al día |
 
 ## Dónde se para esta sesión (2026-11-22)
 
@@ -156,8 +159,19 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
   - un-segundo-2000: un solo plato de segundo. Comidas cortas 3,00 → 4,36 por semana; proteína del día 100,8 → 99,0 %.
   - Hay sorteo de días de legumbre, pero pocos segundos colocados (1,17 y 0,46 comidas dobles por semana): la legumbre va como plato único los demás días sorteados.
   - D-099.3: 0 en los dos.
+- **Perfil sin carne ni ave (Javi, 2026-11-22): no se toca.** Con tope 3 queda en 4,21 comidas cortas por semana, frente a 2,94 en `main`. Con tope 4 (y sin D-115) baja a 3,96. Se resolverá con la pregunta del cuestionario. Anotado en los pendientes de D-118 (`fd17943`).
+- **Nivel de legumbre solo con segundo posible: medido y no implementado** (`medicion/estructura-comida-final/nivel-con-segundo.md`, 200 semanas, 11 perfiles). No cumple el criterio de Javi:
+
+  | Perfil | Comidas cortas/sem, `main` → HEAD → variante | Criterio |
+  |---|---|---|
+  | solo-pollo-2000 | 2,50 → 3,46 → 3,46 | a 0,3 o menos de `main` |
+  | un-segundo-2000 | 3,00 → 4,36 → 4,08 | a 0,3 o menos de `main` |
+  | sin-lactosa-2000 | HEAD 1,58 → variante 1,71 (+0,13) | no empeorar más de 0,05 frente a HEAD |
+  | omni-2174-ancla | HEAD 1,98 → variante 2,08 (+0,10) | no empeorar más de 0,05 frente a HEAD |
+
+  Los días sin segundo posible, la cascada normal sigue eligiendo legumbre, que va como plato único. Infracciones de D-099.3, las mismas que en HEAD.
 - **Abierto, decide Javi:**
-  - qué hacer con los perfiles sin carne ni ave y con un solo segundo posible, que quedan peor que en `main`;
+  - los perfiles con un solo segundo posible, que quedan peor que en `main`;
   - la lista «Antes de llevar la rama a `main`».
 
 ## Antes de llevar la rama a `main` (en orden)

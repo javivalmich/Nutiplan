@@ -18,7 +18,8 @@ import { aplicarNombresD105 } from '../../engine2/dishes/alinosD105.js';
 import { esCompuestoLegumbre, esSegundoDeLegumbre } from '../../engine2/dishes/bases.js';
 import { COMPOSICION } from '../../engine2/nutrientes/composicion.js';
 import { INGREDIENTES } from '../../engine2/nutrientes/ingredientes.js';
-import { papelDe } from '../../engine2/nutrientes/raciones.js';
+import { papelDe, REPARTO } from '../../engine2/nutrientes/raciones.js';
+import { PERFILES as BANCO } from '../../../scripts/banco/perfiles.mjs';
 import { tuplaDe } from '../textos/componer.js';
 import { FREEFORM_POOL } from '../../data/freeformPool.js';
 
@@ -239,31 +240,29 @@ describe('aceite de la comida doble y segundo que crece (D-116.6, modificado)', 
 });
 
 // Límite de las comidas dobles frente al objetivo de su comida (2026-11-17, scripts/banco/medicion/
-// estructura-comida-final/fuera-comida-doble.md): (a) ninguna por debajo del 95 %; (b) ninguna por encima del
-// 105 %, salvo en un día en que el reparto del resto le bajó el objetivo (otras comidas del día no bajan de sus
-// mínimos), y entonces nunca por encima del 105 % de su objetivo sin el reparto. Caso conocido de (b): omni-1434,
-// domingos con crepes de avena en el desayuno (semanas 84, 88 y 118: la comida doble en su suelo, +2,8 % como
-// mucho sobre su objetivo sin el reparto). Casos conocidos de (a) antes del arreglo: omni-2174 semana 159 y
-// sin-lactosa-2000 semana 97 (el proteico del segundo en su mínimo, sin crecer).
-describe('límite de la comida doble frente al objetivo de su comida', { timeout: 300000 }, () => {
-  const M62 = { ...BASE, gender: 'female', age: 34, weight: 62, height: 165, activity: 'moderate', goal: 'maintain', mealsPerDay: 4, trainingDays: ['Martes'], intolerances: ['lactosa'] };
-  const CASOS = [
-    { id: 'omni-1434', perfil: PERFILES[1434], kcal: 1434, hasta: 120 },
-    { id: 'omni-2174', perfil: PERFILES[2174], kcal: 2174, hasta: 160 },
-    { id: 'sin-lactosa-2000', perfil: M62, kcal: 2000, hasta: 100 },
-  ];
-  const PARTE = { Desayuno: 0.225, Comida: 0.375, Cena: 0.275 };
+// estructura-comida-final/fuera-comida-doble.md; segunda revisión, M3 y B3, 2026-11-22): (a) ninguna por debajo
+// del 95 % (omni-1434, omni-2174 y sin-lactosa-2000); (b) en todos los perfiles del banco, ninguna por encima del
+// 105 %, salvo el caso con nombre: omni-1434, en un día en que el reparto del resto le bajó el objetivo (otras
+// comidas del día no bajan de sus mínimos), y entonces nunca por encima del 105 % de su objetivo sin el reparto
+// (domingos con crepes de avena en el desayuno; semana 118, entre otras). Casos conocidos de (a) antes del
+// arreglo: omni-2174 semana 159 y sin-lactosa-2000 semana 97 (el proteico del segundo en su mínimo, sin crecer).
+// El objetivo sin el reparto se calcula con el reparto del día de raciones.js (REPARTO), no con una copia.
+describe('límite de la comida doble frente al objetivo de su comida', { timeout: 600000 }, () => {
+  const CASO_CON_NOMBRE = 'omni-1434';
+  const CON_BAJO_95 = new Set(['omni-1434', 'omni-2174', 'sin-lactosa-2000']);
+  const hasta = (id) => (id === CASO_CON_NOMBRE ? 120 : id === 'omni-2174' ? 160 : 100);
+  const MOMENTO = { Desayuno: 'desayuno', Comida: 'comida', Cena: 'cena' };
   /** Objetivo de la comida antes del reparto del resto: su parte del día (la misma cuenta que racionesDia). */
   const objetivoSinReparto = (day, kcal) => {
     const meals = day.meals.filter(Boolean);
-    const tentempies = meals.filter((m) => !PARTE[m.time]).length;
-    const total = meals.reduce((a, m) => a + (PARTE[m.time] || 0.125 / tentempies), 0);
-    return (kcal * PARTE.Comida) / total;
+    const tentempies = meals.filter((m) => !MOMENTO[m.time]).length || 1;
+    const total = meals.reduce((a, m) => a + (MOMENTO[m.time] ? REPARTO[MOMENTO[m.time]] : REPARTO.tentempie / tentempies), 0);
+    return (kcal * REPARTO.comida) / total;
   };
   const filas = [];
-  for (const c of CASOS) {
+  for (const c of BANCO) {
     let ant = null;
-    for (let w = 60; w <= c.hasta; w++) {
+    for (let w = 60; w <= hasta(c.id); w++) {
       const plan = generarPlan(clonar(c.perfil), c.kcal, { month: 9, pastProteins: {}, freeFormPool: FREEFORM_POOL, weekNumber: w, userId: `banco-${c.id}`, saveMealMemory: () => {}, platosRecientes: platosRecientesPara(ant, w - 1, w) });
       ant = plan;
       for (const day of plan.days) {
@@ -276,19 +275,26 @@ describe('límite de la comida doble frente al objetivo de su comida', { timeout
     }
   }
 
-  it('ninguna comida doble por debajo del 95 % de su objetivo', () => {
-    expect(filas.length).toBeGreaterThan(200);
-    expect(filas.filter((f) => f.kcal < 0.95 * f.objetivo).map((f) => `${f.id} ${f.w} ${f.dia}: ${f.kcal} de ${f.objetivo}`)).toEqual([]);
+  it('hay comidas dobles en los perfiles del banco que las llevan', () => {
+    const conDobles = new Set(filas.map((f) => f.id));
+    for (const id of ['omni-1434', 'omni-2174', 'omni-2600-3comidas', 'omni-3714', 'celiaco-2400', 'sin-lactosa-2000', 'sin-pescado-2000', 'omni-2174-ancla', 'omni-2000-sin-atun']) expect(conDobles.has(id)).toBe(true);
   });
 
-  it('por encima del 105 % solo si el reparto del resto le bajó el objetivo, y nunca por encima del 105 % de su objetivo sin el reparto', () => {
+  it('ninguna comida doble por debajo del 95 % de su objetivo', () => {
+    const f95 = filas.filter((f) => CON_BAJO_95.has(f.id));
+    expect(f95.length).toBeGreaterThan(200);
+    expect(f95.filter((f) => f.kcal < 0.95 * f.objetivo).map((f) => `${f.id} ${f.w} ${f.dia}: ${f.kcal} de ${f.objetivo}`)).toEqual([]);
+  });
+
+  it('ninguna comida doble por encima del 105 % en ningún perfil, salvo el caso con nombre de omni-1434', () => {
     const encima = filas.filter((f) => f.kcal > 1.05 * f.objetivo);
-    expect(encima.length).toBeGreaterThan(0); // el caso conocido existe (omni-1434, domingos con crepes)
+    expect(encima.filter((f) => f.id !== CASO_CON_NOMBRE).map((f) => `${f.id} ${f.w} ${f.dia}: ${f.kcal} de ${f.objetivo}`)).toEqual([]);
+    expect(encima.length).toBeGreaterThan(0); // el caso con nombre existe (omni-1434, domingos con crepes)
     for (const f of encima) {
-      expect([f.id, f.w, f.dia, f.resto < 0]).toEqual([f.id, f.w, f.dia, true]);
+      expect([f.id, f.w, f.dia, f.resto < 0]).toEqual([CASO_CON_NOMBRE, f.w, f.dia, true]);
       expect(f.kcal).toBeLessThanOrEqual(1.05 * f.sinReparto);
     }
-    expect(encima.some((f) => f.id === 'omni-1434' && [84, 88, 118].includes(f.w) && f.dia === 'Domingo')).toBe(true);
+    expect(encima.some((f) => f.w === 118 && f.dia === 'Domingo')).toBe(true);
   });
 });
 

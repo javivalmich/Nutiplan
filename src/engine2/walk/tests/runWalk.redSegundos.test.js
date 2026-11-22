@@ -47,7 +47,8 @@ const sinArreglo = (r) => r.decisionLog.filter((e) => e.causa === 'infraccion_d0
 const trasRetirar = (r) => r.decisionLog.filter((e) => e.causa === 'infraccion_d099_regla_retirada');
 const conRegla = (r) => r.decisionLog.some((e) => e.causa === 'dias_legumbre_sorteados');
 
-describe('runWalk: red de seguridad de los segundos (D-116.5)', () => {
+// Tiempo límite explícito (segunda revisión, B2): solos tardan hasta 1,7 s; con la batería en paralelo se acercan a los 5 s por defecto.
+describe('runWalk: red de seguridad de los segundos (D-116.5)', { timeout: 30000 }, () => {
   // El miercoles solo hay pollo para el segundo y para la cena: con segundo, pollo dos veces el mismo dia.
   const { anchors, dishes } = anchorEverythingExcept(MIERCOLES);
   const corto = { weekArc: { beats: beats7(), anchors }, catalog: [...dishes, lentejas, ...pollos], seed: 'red-segundos' };

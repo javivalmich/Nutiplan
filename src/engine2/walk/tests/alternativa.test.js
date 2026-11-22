@@ -15,7 +15,8 @@ const esLegumbre = (d) => { try { const v = resolveDishComposition(d); return ['
 const casos = [];
 for (let s = 0; s < 12; s++) for (const [day, momento] of [['Martes', 'cena'], ['Jueves', 'comida']]) casos.push({ seed: 81000 + s, day, momento });
 
-describe('elegirAlternativa — reglas del menú', () => {
+// Tiempo límite explícito (segunda revisión, B2): solos tardan hasta 1,7 s; con la batería en paralelo se acercan a los 5 s por defecto.
+describe('elegirAlternativa — reglas del menú', { timeout: 30000 }, () => {
   it('nunca repite un plato de la semana ni el que se quita, y respeta el momento', () => {
     for (const { seed, day, momento } of casos) {
       const semana = semanaDe(plan(seed));
@@ -70,7 +71,7 @@ describe('elegirAlternativa — reglas del menú', () => {
   });
 });
 
-describe('elegirAlternativa — el deseo del usuario', () => {
+describe('elegirAlternativa — el deseo del usuario', { timeout: 30000 }, () => {
   it('cumple el deseo o dice por qué lo relaja', () => {
     for (const { seed, day, momento } of casos) {
       const semana = semanaDe(plan(seed));
@@ -118,7 +119,7 @@ describe('elegirAlternativa — el deseo del usuario', () => {
 
 // Familia en dias seguidos (decision de Javi, 2026-11-13; extiende D-099.3.e):
 // la alternativa sigue la misma regla que el menu de la semana.
-describe('elegirAlternativa — no repetir familia proteica en días seguidos', () => {
+describe('elegirAlternativa — no repetir familia proteica en días seguidos', { timeout: 30000 }, () => {
   const vecinas = (semana, day, momento) => {
     const i = DAYS_ORDER.indexOf(day);
     return new Set(semana.filter((s) => !(s.day === day && s.momento === momento) && Math.abs(DAYS_ORDER.indexOf(s.day) - i) === 1)
@@ -176,7 +177,7 @@ describe('elegirAlternativa — no repetir familia proteica en días seguidos', 
 });
 
 
-describe('elegirAlternativa — la comida con primero y segundo (D-116.1)', () => {
+describe('elegirAlternativa — la comida con primero y segundo (D-116.1)', { timeout: 30000 }, () => {
   // Decisión de Javi (2026-11-16): la alternativa de una comida doble no puede ser un plato
   // compuesto de legumbre, que quedaría como plato único.
   const esCompuestoLeg = (d) => { try { return resolveDishComposition(d).tupla?.tmpl === 'legumbre'; } catch { return false; } };

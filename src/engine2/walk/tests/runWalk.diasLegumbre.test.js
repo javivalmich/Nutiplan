@@ -20,7 +20,8 @@ const semana = (seed, extra = {}) => buildWeekArc({ profile: { trainingDays: [] 
 const sorteo = (log) => log.filter((e) => e.causa === 'dias_legumbre_sorteados');
 const idx = (d) => DAYS_ORDER.indexOf(d);
 
-describe('runWalk: sorteo de los dias de legumbre (D-117)', () => {
+// Tiempo límite explícito (segunda revisión, B2): solos tardan hasta 1,7 s; con la batería en paralelo se acercan a los 5 s por defecto.
+describe('runWalk: sorteo de los dias de legumbre (D-117)', { timeout: 30000 }, () => {
   it('el catalogo real tiene platos compuestos de legumbre', () => {
     expect(catalog.filter((d) => d.rol === 'rotativo' && esCompuestoLegumbre(d)).length).toBeGreaterThan(5);
     expect(sinLegumbre.some(esCompuestoLegumbre)).toBe(false);

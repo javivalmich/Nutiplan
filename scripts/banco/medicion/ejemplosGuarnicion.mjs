@@ -2,7 +2,8 @@
 // Escribe, para cada semana pedida, la comida y la cena de cada día (título, preparación, compra y receta) y las causas
 // de la guarnición del log. Las semanas se generan seguidas desde la 60 (cada una con los platos de la anterior).
 // Uso: node --import ./scripts/banco/resolver.mjs --import ./scripts/banco/medicion/variantesGuarnicion.mjs \
-//        scripts/banco/medicion/ejemplosGuarnicion.mjs <raíz> <salida.md> <perfil del banco> <semana> [<semana> …]
+//        scripts/banco/medicion/ejemplosGuarnicion.mjs <raíz> <salida.md> <perfil del banco> <semana> [<semana> …] [--opciones del hook]
+// También vale con variantesGuarnicion2.mjs (y --compuestosSoloSinOtro).
 import fs from 'node:fs';
 import { pathToFileURL } from 'node:url';
 
@@ -13,7 +14,7 @@ const { FREEFORM_POOL } = await import(raiz + 'src/data/freeformPool.js');
 const { PERFILES } = await import(raiz + 'scripts/banco/perfiles.mjs');
 const p = PERFILES.find((x) => x.id === perfilId);
 if (!p) throw new Error(`ejemplosGuarnicion: perfil desconocido ${perfilId}`);
-const pedidas = new Set(semanasArg.map(Number));
+const pedidas = new Set(semanasArg.filter((a) => !a.startsWith('--')).map(Number));
 const hasta = Math.max(...pedidas);
 const l = console.log; console.log = console.warn = console.error = () => {};
 const L = [];

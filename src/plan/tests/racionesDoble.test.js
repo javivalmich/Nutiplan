@@ -239,7 +239,7 @@ describe('aceite de la comida doble y segundo que crece (D-116.6, modificado)', 
   });
 });
 
-// Límite de las comidas dobles frente al objetivo de su comida (2026-11-17, scripts/banco/medicion/
+// Límite de las comidas dobles frente al objetivo de su comida (2026-11-16, scripts/banco/medicion/
 // estructura-comida-final/fuera-comida-doble.md; segunda revisión, M3 y B3, 2026-11-22): (a) ninguna por debajo
 // del 95 % (omni-1434, omni-2174 y sin-lactosa-2000); (b) en todos los perfiles del banco, ninguna por encima del
 // 105 %, salvo el caso con nombre: omni-1434, en un día en que el reparto del resto le bajó el objetivo (otras

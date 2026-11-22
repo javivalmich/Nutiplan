@@ -301,7 +301,7 @@ export function initFrequencyState(p1aSlots, getVista, fuenteEditorial) {
  * dias el suelo semanal de legumbre no actua (ni corto ni «sin candidato»).
  * suelos: los suelos semanales de la semana (por defecto, los de D-024). El
  * walk baja el de pescado al tope semanal de pescado del perfil si es menor
- * (2026-11-18): un suelo por encima del tope no se podria cumplir.
+ * (2026-11-16): un suelo por encima del tope no se podria cumplir.
  * @param {{day: string, candidatesB: object[], state: object, getVista?: (dish: object) => object, fuenteEditorial?: {version: number, confirmed: object}, suelosInactivos?: string[], suelos?: {pescado: number, legumbre: number}}} input
  * @returns {{nivel: object[], causa: string|null, evidencia: string|null}}
  */

@@ -145,7 +145,7 @@ En cada hueco, si la semana ya llega al tope, se quitan del pool los platos de p
 | Tope de 2 | 2,00 | 3,75 | 1,48 | 2,65 | 0,72 | 1,93 | 3,13 | 0,46 | 0,47 | 0 | 2,31 | 107,7 % | 0 | 1600 / 0 | 2,5 | 0 |
 | Tope de 3 y legumbre a 4 | 2,98 | 3,71 | 1,43 | 2,19 | 0,54 | 1,83 | 3,87 | 0,33 | 0,34 | 0 | 2,04 | 109,5 % | 0 | 554 / 0 | 13,5 | 0 |
 
-## Lectura (2026-11-18)
+## Lectura (2026-11-16)
 
 - **Hoy:** 3,91 platos de pescado y marisco por semana en los 8 omnívoros, y el 72 % de las semanas con 4 o más (282 de 1600 con más de 4). Con SIBO, 5,03 (sin legumbre: su hueco lo ocupa el pescado). Ave 3,51, cerdo 1,84, huevo 1,76, carne roja 1,27, conejo 0,52; legumbre 3,04 (primeros de la comida doble).
 - **Tope de 4:** quita poco (3,91 → 3,73): solo recorta las semanas de 5 o más. Lo que se quita lo ocupan cerdo y otros platos.

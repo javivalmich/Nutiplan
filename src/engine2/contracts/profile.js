@@ -67,7 +67,7 @@ export function validateProfile(profile) {
 }
 
 /**
- * Tope semanal de platos de pescado y marisco (decision de Javi, 2026-11-18):
+ * Tope semanal de platos de pescado y marisco (decision de Javi, 2026-11-16):
  * campo opcional del perfil, un entero de 2 a 4. Si el perfil no lo trae, vale
  * 3. Primer consumidor: runWalk (filtro del pool y suelo de pescado del paso 4)
  * y elegirAlternativa.

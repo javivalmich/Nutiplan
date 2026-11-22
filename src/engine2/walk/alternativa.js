@@ -10,11 +10,11 @@
 //      legumbre, que quedaría como plato único (D-116.1). Lo pide la app al
 //      cambiar una comida con primero y segundo (decisión de Javi del
 //      2026-11-16) y, en un perfil con sorteo de días de legumbre, al cambiar
-//      cualquier comida (2026-11-17). Es un veto: no se relaja.
+//      cualquier comida (2026-11-16). Es un veto: no se relaja.
 //   2. Tope de proteína principal por semana y proteína separada (no el mismo
 //      día ni el de al lado). Si dejarían sin candidatos, no se aplican y se
 //      dice. Tras el tope por especie, el tope semanal de pescado y marisco
-//      (topePescado, el del perfil; 2026-11-18): si el resto de la semana ya
+//      (topePescado, el del perfil; 2026-11-16): si el resto de la semana ya
 //      llega, el plato nuevo no es pescado ni marisco, con la misma vuelta atrás.
 //   2a. Familia en días seguidos (decisión de Javi, 2026-11-13; extiende
 //      D-099.3.e): no una familia proteica que ya sale el día anterior o el

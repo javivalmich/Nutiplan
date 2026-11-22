@@ -1,4 +1,4 @@
-// Tope semanal de pescado y marisco en la app (2026-11-18): engine2App pasa pescadoMaxSemana al perfil reducido
+// Tope semanal de pescado y marisco en la app (2026-11-16): engine2App pasa pescadoMaxSemana al perfil reducido
 // solo si el perfil lo trae; sin él, el motor usa 3. Las alternativas lo respetan. SIBO incluido.
 import { describe, it, expect } from 'vitest';
 import { generarPlan, platosRecientesPara, regenerarComida } from '../generarPlan.js';

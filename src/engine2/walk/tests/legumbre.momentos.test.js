@@ -1,4 +1,4 @@
-// Revisión independiente, arreglo 5 (2026-11-17): los segundos de la comida de legumbre son platos que el catálogo
+// Revisión independiente, arreglo 5 (2026-11-16): los segundos de la comida de legumbre son platos que el catálogo
 // marca solo como de cena (D-116.2), y los primeros, solo como de comida. Si el catálogo cambia y un segundo pasa a
 // valer también para la comida (o un primero para la cena), este test avisa: el walk los podría servir dos veces de
 // formas distintas (de segundo y como comida, o de primero y como cena).

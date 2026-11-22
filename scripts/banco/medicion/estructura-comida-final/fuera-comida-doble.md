@@ -2,12 +2,12 @@
 
 Salida de `fueraComidaDoble.mjs`. 200 semanas seguidas por perfil, por la entrada de la app (`generarPlan`), con el motor de hoy. Desviación = (kcal de la comida − objetivo de la comida) / objetivo. Los ingredientes en su mínimo o su máximo salen de la réplica de las raciones del banco (`metricas.mjs`, `racionesCalculadas`); «réplica igual» dice si da las mismas kcal que la app.
 
-## Lectura (2026-11-17)
+## Lectura (2026-11-16)
 
 La desviación máxima es del 32,3 %, por encima del 10 %. Son dos casos distintos, y ninguno es un error de la comida doble en sí:
 
 1. **Por encima (33, todas en omni-1434, casi todas en domingo).** En los 33 días el reparto del resto bajó el objetivo de la comida (de 538 a 394–496 kcal) porque otras comidas del día no bajaban de sus mínimos: el desayuno «Crepes de avena con queso fresco batido y fruta» (405 de 323 kcal, con la avena, el huevo, la leche y el skyr en su mínimo) y el tentempié (229 de 179). La comida doble ya estaba en su suelo: legumbre a 50 g en seco y los dos aceites a 5 ml en 28 de las 33. Frente a su objetivo antes del reparto (538 kcal), ninguna pasa del +2,8 % (553 kcal como mucho). El que se pasa es el día: de 1441 a 1635 kcal para 1434. Es el pendiente de la masa como unidad (las crepes), no de la comida doble.
-2. **Por debajo (14, en 5 perfiles de 2000 a 2400 kcal).** Las 14 tienen la legumbre en su tope, los dos aceites en su máximo y el proteico del segundo en su **mínimo**. Ese proteico no crece porque `ajustarComida` (`raciones.js`, paso de D-116.6) solo hace crecer un proteico que no esté en ningún límite, y este está en el suyo de abajo. Es un fallo de la implementación del 2026-11-17 (estaba igual en la variante medida, `variantesComidaDoble.mjs`).
+2. **Por debajo (14, en 5 perfiles de 2000 a 2400 kcal).** Las 14 tienen la legumbre en su tope, los dos aceites en su máximo y el proteico del segundo en su **mínimo**. Ese proteico no crece porque `ajustarComida` (`raciones.js`, paso de D-116.6) solo hace crecer un proteico que no esté en ningún límite, y este está en el suyo de abajo. Es un fallo de la implementación del 2026-11-16 (estaba igual en la variante medida, `variantesComidaDoble.mjs`).
 
 **Con el proteico creciendo también desde su mínimo** (`variantesComidaDoble.mjs --crecer=desdeMinimo`, en memoria), las 14 de por debajo desaparecen y, fuera de omni-1434, ninguna comida doble se aparta más de un 5 %:
 

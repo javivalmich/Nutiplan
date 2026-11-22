@@ -37,7 +37,7 @@ export function esComidaDoble(meal) {
 /**
  * Comida que dice tener segundo (`_dishId2`) pero no trae los datos de sus dos
  * platos completos: un plan guardado a medias, editado a mano o de otra
- * versión. Se trata como texto libre (revisión independiente, 2026-11-17).
+ * versión. Se trata como texto libre (revisión independiente, 2026-11-16).
  */
 export function esComidaDobleIncompleta(meal) {
   return !!(meal && meal._dishId2) && !esComidaDoble(meal);

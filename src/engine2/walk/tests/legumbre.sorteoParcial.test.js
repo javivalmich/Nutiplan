@@ -1,4 +1,4 @@
-// Revisión independiente, arreglo 3 (2026-11-17): si no caben 3 días de legumbre (el ancla ocupa días, sin dos
+// Revisión independiente, arreglo 3 (2026-11-16): si no caben 3 días de legumbre (el ancla ocupa días, sin dos
 // seguidos), se sortean 2 o 1, y la evidencia del log dice los días realmente sorteados, no los pedidos.
 import { describe, it, expect } from 'vitest';
 import { sortearDiasLegumbre } from '../legumbre.js';

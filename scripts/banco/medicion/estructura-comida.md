@@ -695,7 +695,7 @@ Los dos asientos de la sección 10 y las decisiones abiertas de la sección 11.
 
 ### Etapa 1. Dos platos en una comida, sin cambiar la forma del plan
 
-> **Hecha (2026-11-15 a 2026-11-17).** El motor (`src/engine2`, commits `4378c3a` a `ff2fa23`) y la app (`src/plan`, pasos 1 a 7 de la sección 12, `11b3de4` a `bf7cde7`). Después, con decisiones de Javi del 2026-11-16 y 2026-11-17:
+> **Hecha (2026-11-15 a 2026-11-16).** El motor (`src/engine2`, commits `4378c3a` a `ff2fa23`) y la app (`src/plan`, pasos 1 a 7 de la sección 12, `11b3de4` a `bf7cde7`). Después, con decisiones de Javi del 2026-11-16 y 2026-11-16:
 > - la alternativa de una comida doble no puede ser un compuesto de legumbre (`6b07fb9`);
 > - si engine2 no encuentra alternativa para una comida doble, la comida se queda como está, con un aviso, sin ir al motor viejo (`85854cc`);
 > - aceite 10 + 10 y el segundo que crece antes que el pan (`b9f4de9`, D-116.6);
@@ -827,7 +827,7 @@ Límites:
 - Vegetariano y vegano no se han medido.
 - Cada variante es una sola pasada de 200 semanas por perfil. Con 1600 semanas, diferencias de menos de 0,1 platos por semana son ruido.
 
-## 12. Plan de la etapa 2: la comida doble en `src/plan` (2026-11-15; hecho entre el 2026-11-15 y el 2026-11-17)
+## 12. Plan de la etapa 2: la comida doble en `src/plan` (2026-11-15; hecho entre el 2026-11-15 y el 2026-11-16)
 
 La etapa 1 está en el motor (`src/engine2`, commits `4378c3a` a `2b49d3e`). `materializePlan` pone un `segundo` opcional en la comida, pero `src/plan` lo ignora. El usuario ve la legumbre como plato único, y el segundo no entra ni en la compra ni en las raciones. Esta etapa es la parte de `src/plan` que la sección 9 ponía en la etapa 1. La «etapa 2» de la sección 9 (alternativas de un solo plato y edición) queda para después.
 
@@ -902,7 +902,7 @@ Cada paso es un commit con su test primero (que falle antes del cambio) y la lí
 - Test previo: cambiar una comida doble devuelve un plato único, sin el segundo en la compra ni en `platosSemana`.
 - Las regeneraciones parciales del motor viejo no conocen el segundo y lo pierden (sección 9). No se tocan, por la constitución (motor viejo congelado). Queda como riesgo.
 
-### Paso 8. Documentación [no visible] — hecho el 2026-11-17
+### Paso 8. Documentación [no visible] — hecho el 2026-11-16
 
 - `ESTADO.md`, la sección 9 de este informe y los asientos que dijo Javi: D-116.6 (`54afa6e`) y D-117.2 (`3d6ba6e`).
 - El plan compartido no se ha tocado; la auditoría comprueba que la comida doble se clona y se escala como cualquier otra.

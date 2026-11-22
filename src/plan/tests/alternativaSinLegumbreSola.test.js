@@ -1,4 +1,4 @@
-// Revisión independiente, arreglo 1 (Javi, 2026-11-17): en perfiles con sorteo de días de legumbre (omnívoros con
+// Revisión independiente, arreglo 1 (Javi, 2026-11-16): en perfiles con sorteo de días de legumbre (omnívoros con
 // compuestos de legumbre en el catálogo), ninguna alternativa de una comida puede ser un compuesto de legumbre como
 // plato único (D-116.1), sea doble o no la comida que se cambia. En vegetariana y vegana la regla no se aplica.
 import { describe, it, expect } from 'vitest';

@@ -225,7 +225,7 @@ export function ajustarDia(day, profile, targetKcal, { composicion = COMPOSICION
   const comidas = [];
   // Una comida con segundo sin los datos de sus dos platos se trata como texto
   // libre: no se vuelve a racionar (se queda como está), conserva su parte del
-  // día y lo dice el log (revisión independiente, 2026-11-17).
+  // día y lo dice el log (revisión independiente, 2026-11-16).
   const incompletas = new Set();
   const logPropio = [];
   meals.forEach((m, i) => {

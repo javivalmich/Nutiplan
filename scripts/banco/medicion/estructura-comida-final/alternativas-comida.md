@@ -1,6 +1,6 @@
 # Alternativas de la comida: sin compuesto de legumbre como plato único
 
-Salida de `alternativasComida.mjs`. 20 semanas de omni-2174, omni-1434 y sin-pescado-2000; para cada comida servida, la alternativa con cada deseo. Antes → después del arreglo 1 de la revisión (2026-11-17: en un perfil con sorteo de días, ninguna alternativa es un compuesto de legumbre como plato único).
+Salida de `alternativasComida.mjs`. 20 semanas de omni-2174, omni-1434 y sin-pescado-2000; para cada comida servida, la alternativa con cada deseo. Antes → después del arreglo 1 de la revisión (2026-11-16: en un perfil con sorteo de días, ninguna alternativa es un compuesto de legumbre como plato único).
 
 | Comida que se cambia | Deseo | Alternativas | Sin candidato | Con el deseo relajado | Compuesto de legumbre |
 |---|---|---|---|---|---|

@@ -94,7 +94,7 @@ describe('validateProfile — f16: intolerances (D-022, primer consumidor P2), e
   });
 });
 
-describe('validateProfile — pescadoMaxSemana (tope semanal de pescado y marisco, 2026-11-18)', () => {
+describe('validateProfile — pescadoMaxSemana (tope semanal de pescado y marisco, 2026-11-16)', () => {
   it('acepta un entero de 2 a 4, y el campo es opcional', () => {
     for (const n of [2, 3, 4]) expect(validateProfile({ trainingDays: [], pescadoMaxSemana: n })).toBe(true);
     expect(validateProfile({ trainingDays: [] })).toBe(true);

@@ -1,4 +1,4 @@
-// Tope semanal de pescado y marisco (perfil pescadoMaxSemana, de 2 a 4; 3 si no viene; 2026-11-18). Pescado y
+// Tope semanal de pescado y marisco (perfil pescadoMaxSemana, de 2 a 4; 3 si no viene; 2026-11-16). Pescado y
 // marisco como una familia, por especie (también los platos de cereal con atún o gambas). En cada hueco, si la
 // semana ya llega al tope, el pescado sale del pool justo después del tope por especie, con vuelta atrás si dejaría
 // el hueco sin candidatos; las dos cosas dejan su causa en el log. El suelo de pescado del paso 4 es el menor entre

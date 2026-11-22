@@ -35,7 +35,7 @@ import { reglaLegumbreActiva } from '../engine2/walk/legumbre.js';
 import { esCompuestoLegumbre } from '../engine2/dishes/bases.js';
 import { pescadoMaxSemanaDe } from '../engine2/contracts/profile.js';
 
-// Tope semanal de pescado y marisco (2026-11-18): el perfil reducido del motor
+// Tope semanal de pescado y marisco (2026-11-16): el perfil reducido del motor
 // solo lleva pescadoMaxSemana si el perfil de la app lo trae; si no, el motor
 // usa su valor por defecto (3).
 const conTopePescado = (profile) => (profile && profile.pescadoMaxSemana != null ? { pescadoMaxSemana: profile.pescadoMaxSemana } : {});
@@ -44,9 +44,11 @@ import { aplicarNombresD105, nombreVisible } from '../engine2/dishes/alinosD105.
 // Versión del motor que generó la semana, en la meta del primer día
 // (days[0]._engine2.version). La base de datos solo guarda los días: sirve para
 // reconocer más adelante un plan guardado antes de esta versión (comida doble de
-// D-116 y D-117, aceite 10 + 10, primeros nuevos). De momento solo se escribe:
-// nada la lee. Se cambia a mano cuando cambie lo que el plan guardado lleva.
-export const VERSION_MOTOR = '2026-11-17';
+// D-116 y D-117, aceite 10 + 10, primeros nuevos; desde 2026-11-22, el tope de
+// pescado que cede, sin sorteo de días sin segundo posible y la legumbre que crece
+// antes que el segundo). De momento solo se escribe: nada la lee. Se cambia a mano
+// cuando cambie lo que el plan guardado lleva (fecha del día del cambio).
+export const VERSION_MOTOR = '2026-11-22';
 
 export const DIA_ENGINE2 = Object.freeze({
   Lunes: 'Lunes', Martes: 'Martes', 'Miércoles': 'Miercoles', Jueves: 'Jueves',
@@ -459,7 +461,7 @@ export function regenerarComidaEngine2(plan, dayIdx, time, deseo, profile, targe
     seed: `${opts.userId ?? 'anon'}:${opts.weekNumber ?? 0}`,
     // D-116.1: un compuesto de legumbre no se sirve como plato único. En un perfil con sorteo de días de
     // legumbre (omnívoro, con compuestos de legumbre en su catálogo), ninguna alternativa puede serlo, sea doble
-    // o no la comida que se cambia (decisión de Javi del 2026-11-17).
+    // o no la comida que se cambia (decisión de Javi del 2026-11-16).
     sinLegumbreCompuesta: !!actual._dishId2 || (reglaLegumbreActiva({ dieta: dietaDe(profile) }) && catalog.some((d) => d.rol === 'rotativo' && esCompuestoLegumbre(d))),
     // El tope semanal de pescado y marisco del perfil (o 3), como en la semana.
     topePescado: pescadoMaxSemanaDe(conTopePescado(profile)),

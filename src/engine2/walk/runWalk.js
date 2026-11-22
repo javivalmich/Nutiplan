@@ -202,7 +202,7 @@ export function runWalk(input) {
   // peor que sin la regla (medido: scripts/banco/medicion/estructura-comida-final/variantes-red.md).
   // Por D-099.3, solo si habia algun segundo: sin ellos no hay nada que retirar.
   // Por pool vacio, siempre que la regla estuviera activa, aunque no se hubiera
-  // colocado ningun segundo (decision de Javi del 2026-11-17): la regla cambia
+  // colocado ningun segundo (decision de Javi del 2026-11-16): la regla cambia
   // que platos se gastan, y la semana sin ella puede no quedarse sin platos.
   //
   // Orden de las redes. Cada intento, con la regla o sin ella, pasa por la red
@@ -377,7 +377,7 @@ function walkUnaVez(input, { sinFamilia, uso, sinRegla }) {
   // coloco (ancla + sobras tambien son consumo, asiento 5).
   const freqState = initFrequencyState(p1aSlots, undefined, fuenteEditorial);
 
-  // Tope semanal de pescado y marisco (decision de Javi, 2026-11-18): el del
+  // Tope semanal de pescado y marisco (decision de Javi, 2026-11-16): el del
   // perfil (pescadoMaxSemana, de 2 a 4) o 3 si no lo trae. Pescado y marisco
   // como una sola familia, contados por especie. El suelo de pescado del paso 4
   // (D-024) es el menor entre el suyo y el tope.
@@ -402,7 +402,7 @@ function walkUnaVez(input, { sinFamilia, uso, sinRegla }) {
     });
   }
 
-  // D-117.2, modificado (decision de Javi del 2026-11-17): dentro del nivel de
+  // D-117.2, modificado (decision de Javi del 2026-11-16): dentro del nivel de
   // legumbre de un dia sorteado, y antes de las preferencias A y B, se prefiere
   // un primero cuya legumbre no salga ya en la semana (en ningun plato servido,
   // los del ancla incluidos) y, despues, uno cuyo aliño no lleve ya otro primero
@@ -608,7 +608,7 @@ function walkUnaVez(input, { sinFamilia, uso, sinRegla }) {
       // queda ningun candidato, no se aplica y se dice en la evidencia.
       const baseTope = poolTope.length ? poolTope : pool;
 
-      // Tope semanal de pescado y marisco (2026-11-18): si la semana ya llega,
+      // Tope semanal de pescado y marisco (2026-11-16): si la semana ya llega,
       // el pescado sale del pool del hueco y el hueco sigue por la cascada
       // normal. Con vuelta atras: si dejaria el hueco sin candidatos, no se
       // aplica. Cuenta los platos servidos (no la sugerencia de la comida libre).

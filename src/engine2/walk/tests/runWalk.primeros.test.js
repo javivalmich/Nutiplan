@@ -1,4 +1,4 @@
-// runWalk - eleccion del primero en un dia de legumbre (D-117.2, modificado el 2026-11-17).
+// runWalk - eleccion del primero en un dia de legumbre (D-117.2, modificado el 2026-11-16).
 // Dentro del nivel de legumbre, antes de las preferencias A y B, se prefiere un primero cuya legumbre no
 // salga ya en la semana (en ningun plato servido) y, despues, uno cuyo aliño no lleve ya otro primero de la
 // semana. Cada preferencia se relaja si dejaria el hueco sin candidatos, y las dos dejan su causa en el log.

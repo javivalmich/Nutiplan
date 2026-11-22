@@ -1,4 +1,4 @@
-// Revisión independiente, arreglo 4 (2026-11-17): una comida con _dishId2 pero sin los datos de sus dos platos
+// Revisión independiente, arreglo 4 (2026-11-16): una comida con _dishId2 pero sin los datos de sus dos platos
 // (_doble ausente o incompleto: un plan guardado a medias, editado a mano o de otra versión) se trata como texto
 // libre: no se vuelve a racionar (se queda como está) y deja su causa en el log. Las demás comidas del día sí.
 import { describe, it, expect } from 'vitest';

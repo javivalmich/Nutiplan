@@ -1,4 +1,4 @@
-// La versión del motor en la meta de la semana (days[0]._engine2.version), escrita al generar (2026-11-17). Sirve
+// La versión del motor en la meta de la semana (days[0]._engine2.version), escrita al generar (2026-11-16). Sirve
 // para reconocer más adelante un plan guardado antes de esta versión (la base de datos solo guarda los días). De
 // momento solo se escribe: nada la lee.
 import { describe, it, expect } from 'vitest';

@@ -101,7 +101,7 @@ export const TOPE_PROTEINA_SEMANA = 2;
 
 /**
  * Especies de pescado y marisco (proteina principal del catalogo). Para el
- * tope semanal de pescado y marisco (perfil pescadoMaxSemana, 2026-11-18) se
+ * tope semanal de pescado y marisco (perfil pescadoMaxSemana, 2026-11-16) se
  * cuentan como una sola familia y por especie, asi que tambien cuentan los
  * platos de familia «cereal» con atun o gambas.
  */

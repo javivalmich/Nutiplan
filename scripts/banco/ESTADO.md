@@ -105,7 +105,9 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
 | `9b3da71` | `DECISIONS.md`: causas nuevas en D-116.10 y fechas de D-116 y D-117 |
 | `4ead8bb` | Medición: perfil sin carne ni ave, `main` frente a HEAD (`cortasProteina.mjs`, `sin-carne-ave-main-head.md`) |
 | `b4c90a6` | `DECISIONS.md`: D-118 cerrado |
-| el siguiente a `b4c90a6` | `ESTADO.md` al día |
+| `0e2d6d8` | `ESTADO.md` al día |
+| `b91e6f1` | Medición: sin D-115 en el perfil sin carne ni ave, y perfiles con un solo segundo (`cortasProteina.mjs`, `sin-d115-y-un-segundo.md`); no se implementa |
+| el siguiente a `b91e6f1` | `ESTADO.md` al día |
 
 ## Dónde se para esta sesión (2026-11-22)
 
@@ -138,9 +140,24 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
     - por encima del 105 %, 33 → 41 (todas de omni-1434);
     - por debajo del 95 %, 0 → 1 (omni-3714, semana 85: la legumbre en su tope, el segundo en su máximo y pan, 1404 de 1486 kcal);
     - proteína del día, 108,0 → 106,7 %.
+- **SIBO (Javi, 2026-11-22):** sibo-2000 mantiene el tope por defecto en 3. Está decidido; falta anotarlo en D-118 de `DECISIONS.md`, que solo está autorizado para lo implementado y aún lo da como «no decidido».
+- **D-115 en perfiles sin ningún segundo posible: no se implementa** (`medicion/estructura-comida-final/sin-d115-y-un-segundo.md`, 200 semanas, perfil sin carne ni ave). La condición de Javi era llegar a 3,3 comidas cortas por semana o menos:
+
+  | | Comidas cortas/sem | Proteína del día | Legumbre como plato único/sem | Pescado/sem | Infracciones de D-099.3 |
+  |---|---|---|---|---|---|
+  | `main` | 2,94 | 101,1 % | 1,78 | 8,77 | 0 |
+  | HEAD | 4,21 | 98,2 % | 3,35 | 6,74 | 0 |
+  | (a) sin D-115, tope 3 | 4,29 | 98,3 % | 3,42 | 6,91 | 0 |
+  | (b) sin D-115, tope 4 | 3,96 | 99,0 % | 3,09 | 7,26 | 0 |
+
+  Ninguna llega. Solo se acerca a `main` sin tope y sin D-115 a la vez: 3,04.
+- **Perfiles con un solo segundo posible, `main` → HEAD:**
+  - solo-pollo-2000: 8 segundos, todos de pollo. Comidas cortas 2,50 → 3,46 por semana; proteína del día 102,6 → 102,2 %.
+  - un-segundo-2000: un solo plato de segundo. Comidas cortas 3,00 → 4,36 por semana; proteína del día 100,8 → 99,0 %.
+  - Hay sorteo de días de legumbre, pero pocos segundos colocados (1,17 y 0,46 comidas dobles por semana): la legumbre va como plato único los demás días sorteados.
+  - D-099.3: 0 en los dos.
 - **Abierto, decide Javi:**
-  - el valor por defecto 4 para SIBO (medido: 2,10 comidas cortas frente a 2,29);
-  - el perfil con un solo segundo posible (A1 no lo cubre: 3,00 en `main`, 4,36 aquí);
+  - qué hacer con los perfiles sin carne ni ave y con un solo segundo posible, que quedan peor que en `main`;
   - la lista «Antes de llevar la rama a `main`».
 
 ## Antes de llevar la rama a `main` (en orden)

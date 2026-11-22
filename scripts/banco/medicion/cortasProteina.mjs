@@ -19,6 +19,7 @@ if (process.argv[2] === '--resumen') {
   const salida = process.argv[3];
   const L = ['| Medición | Semanas | Comidas y cenas cortas de proteína/sem | Proteína del día (% del objetivo) | Legumbre como plato único/sem | Pescado/sem | Comidas dobles/sem | Semanas con días sorteados | Infracciones de D-099.3 |', '|---|---|---|---|---|---|---|---|---|'];
   const familias = [];
+  const comparativa = ['| Medición | Cortas/sem | Proteína del día | Legumbre/sem | Pescado/sem | Carne roja/sem | Cerdo/sem | Ave/sem | Huevo/sem | Comidas y cenas fuera de ±5 % kcal | Aceite por día, ml (máx.) | Infracciones de D-099.3 |', '|---|---|---|---|---|---|---|---|---|---|---|---|'];
   const nuevas = ['| Medición | Cortas/sem | Proteína del día | Legumbre/sem | Legumbre como plato único/sem | Comidas dobles/sem | Días sorteados sin legumbre | Días sin segundo posible | Infracciones de D-099.3 | Semanas con la red |', '|---|---|---|---|---|---|---|---|---|---|'];
   for (const arg of process.argv.slice(4)) {
     const [etiqueta, f] = arg.split('=');
@@ -26,6 +27,11 @@ if (process.argv[2] === '--resumen') {
     const m = (k) => semanas.reduce((a, s) => a + s[k], 0) / semanas.length;
     const lu = semanas.every((s) => s.legumbreUnico != null) ? n2(m('legumbreUnico')) : '—';
     L.push(`| ${etiqueta} | ${semanas.length} | ${n2(m('cortas'))} | ${n1(m('protDia'))} % | ${lu} | ${n2(m('pescado'))} | ${n2(m('dobles'))} | ${semanas.filter((s) => s.sorteo).length} | ${semanas.every((s) => s.d099 != null) ? semanas.reduce((a, s) => a + s.d099, 0) : '—'} |`);
+    if (semanas.every((s) => s.platosPor)) {
+      const g = (k) => n2(semanas.reduce((a, s) => a + (s.platosPor[k] || 0), 0) / semanas.length);
+      const fuera = semanas.reduce((a, s) => a + s.fueraKcal, 0); const princ = semanas.reduce((a, s) => a + s.principales, 0);
+      comparativa.push(`| ${etiqueta} | ${n2(m('cortas'))} | ${n1(m('protDia'))} % | ${n2(m('legumbre'))} | ${n2(m('pescado'))} | ${g('carneRoja')} | ${g('cerdo')} | ${g('ave')} | ${g('huevo')} | ${fuera} de ${princ} (${n1((100 * fuera) / princ)} %) | ${n1(m('mlDia'))} (${Math.round(Math.max(...semanas.map((s) => s.mlMax)))}) | ${semanas.reduce((a, s) => a + s.d099, 0)} |`);
+    }
     if (semanas.every((s) => s.diasSorteados != null)) {
       const tot = (k) => semanas.reduce((a, s) => a + Number(s[k]), 0);
       nuevas.push(`| ${etiqueta} | ${n2(m('cortas'))} | ${n1(m('protDia'))} % | ${n2(m('legumbre'))} | ${n2(m('legumbreUnico'))} | ${n2(m('dobles'))} | ${tot('sorteadosSinLegumbre')} de ${tot('diasSorteados')} | ${tot('sinSegundoPosible')} | ${tot('d099')} | ${tot('red')} |`);
@@ -42,6 +48,7 @@ if (process.argv[2] === '--resumen') {
     }
   }
   if (nuevas.length > 2) L.push('', ...nuevas);
+  if (comparativa.length > 2) L.push('', ...comparativa);
   const texto = L.join('\n');
   console.log(texto);
   if (salida) fs.writeFileSync(salida, `${texto}\n`);
@@ -59,6 +66,12 @@ const { catalogoApp } = await import(ACT + 'src/plan/catalogo.js');
 const { proteinaPrincipal, familiaProteica, ESPECIES_PESCADO_MARISCO } = await import(ACT + 'src/engine2/dishes/bases.js');
 const { composicionSemana } = await import(ACT + 'scripts/banco/metricas.mjs');
 const { DAYS_ORDER } = await import(ACT + 'src/engine2/skeleton/days.js');
+const { leerComida } = await import(ACT + 'src/plan/medidor/leerComida.js');
+const { INGREDIENTES } = await import(ACT + 'src/engine2/nutrientes/ingredientes.js');
+// ml de aceite de una comida (AOVE y aceite de semillas de la compra), como medirEstructura.mjs.
+const mlAceite = (m) => leerComida(m).items.filter((it) => it.clave === 'aove' || it.clave === 'aceite_semillas').reduce((a, it) => a + it.gramos / (INGREDIENTES[it.clave].gMl || 0.92), 0);
+// Reparto por proteína de cada plato servido (comida, segundo y cena), por especie.
+const GRUPO = { ternera: 'carneRoja', cerdo: 'cerdo', jamon: 'cerdo', lacon: 'cerdo', guanciale: 'cerdo', pollo: 'ave', pavo: 'ave', huevo: 'huevo', conejo: 'conejo' };
 const { conPlatosDieta } = await import(ACT + 'src/plan/platosDieta.js');
 
 const BASE = { intolerances: [], eliminatedFoods: [], tiempoCocina: 'normal', experiencia: 'intermedio', simpleMode: false, hambre: 'media', kcalAdjust: 0, extras: {} };
@@ -87,10 +100,11 @@ for (let s = 60; s < 60 + SEM; s++) {
   const d099 = c.platoRepetidoEnSemana + c.platoDeSemanaAnterior + c.especieMasDeDosVeces + c.especieMismoDia + c.especieDiasSeguidosSinAncla + c.legumbreEnCena;
   ant = plan;
   let cortas = 0; let pescado = 0; let dobles = 0; let prot = 0; let dias = 0; let legumbreUnico = 0;
-  const servidosPor = {}; const cortasPor = {};
+  const servidosPor = {}; const cortasPor = {}; const platosPor = {}; let fueraKcal = 0; let principales = 0; const mlDias = [];
   for (const d of plan.days) {
     const meals = d.meals.filter(Boolean);
     if (!meals.some((m) => m.sugerencia) && d.raciones) { prot += d.raciones.proteina; dias += 1; }
+    if (!meals.some((m) => m.sugerencia)) mlDias.push(meals.reduce((a, m) => a + mlAceite(m), 0));
     for (const m of meals) {
       if ((m.time !== 'Comida' && m.time !== 'Cena') || m.sugerencia) continue;
       const fam = (porId.has(m._dishId) && familiaProteica(porId.get(m._dishId))) || 'sin familia';
@@ -99,7 +113,13 @@ for (let s = 60; s < 60 + SEM; s++) {
       if (corta) { cortas += 1; cortasPor[fam] = (cortasPor[fam] || 0) + 1; }
       if (fam === 'legumbre' && !m._dishId2) legumbreUnico += 1;
       if (m._dishId2) dobles += 1;
-      for (const id of [m._dishId, m._dishId2].filter(Boolean)) if (porId.has(id) && ESPECIES_PESCADO_MARISCO.has(proteinaPrincipal(porId.get(id)))) pescado += 1;
+      principales += 1;
+      if (m.nutricion && Math.abs(m.nutricion.kcal - m.nutricion.objetivoKcal) > 0.05 * m.nutricion.objetivoKcal) fueraKcal += 1;
+      for (const id of [m._dishId, m._dishId2].filter(Boolean)) {
+        if (porId.has(id) && ESPECIES_PESCADO_MARISCO.has(proteinaPrincipal(porId.get(id)))) pescado += 1;
+        const g = porId.has(id) ? GRUPO[proteinaPrincipal(porId.get(id))] : null;
+        if (g) platosPor[g] = (platosPor[g] || 0) + 1;
+      }
     }
   }
     const log = plan.decisionLog || [];
@@ -112,7 +132,7 @@ for (let s = 60; s < 60 + SEM; s++) {
   }).length;
   const red = log.some((e) => e.causa === 'regla_legumbre_retirada_d099' || e.causa === 'regla_legumbre_retirada_pool_vacio');
   const sinSegundoPosible = log.filter((e) => e.causa === 'dia_legumbre_sin_segundo_posible').length;
-  semanas.push({ s, motor: plan.motor, cortas, pescado, dobles, legumbreUnico, servidosPor, cortasPor, d099, legumbre: servidosPor.legumbre || 0, diasSorteados: diasSorteados.length, sorteadosSinLegumbre, red, sinSegundoPosible, protDia: dias ? (100 * prot) / dias / obj.proteina : 0, sorteo: (plan.decisionLog || []).some((e) => e.causa === 'dias_legumbre_sorteados') });
+  semanas.push({ s, motor: plan.motor, cortas, pescado, dobles, legumbreUnico, servidosPor, cortasPor, d099, platosPor, fueraKcal, principales, mlDia: mlDias.length ? mlDias.reduce((a, x) => a + x, 0) / mlDias.length : 0, mlMax: Math.max(0, ...mlDias), legumbre: servidosPor.legumbre || 0, diasSorteados: diasSorteados.length, sorteadosSinLegumbre, red, sinSegundoPosible, protDia: dias ? (100 * prot) / dias / obj.proteina : 0, sorteo: (plan.decisionLog || []).some((e) => e.causa === 'dias_legumbre_sorteados') });
 }
 fs.writeFileSync(salidaArg, JSON.stringify({ perfil: perfilId, semanas }));
 l(`${semanas.length} semanas → ${salidaArg} (motores: ${[...new Set(semanas.map((x) => x.motor))].join(', ')})`);

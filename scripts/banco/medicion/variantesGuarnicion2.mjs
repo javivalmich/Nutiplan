@@ -47,6 +47,9 @@ const SUB_B_OMNI = process.argv.includes('--soloOmnivora');
 const SUELO_G = process.argv.includes('--sueloGuarnicion');
 const baseArg = process.argv.find((a) => a.startsWith('--baseGuarnicion='));
 // Ajuste de la ración (Javi, 2026-11-23): rango 100-160 g, salida 130 g y orden de crecimiento proteico → legumbre → pan.
+// --topeEscalado: por encima de 2200 kcal, el tope de plato escala con la amplitud del objetivo, como el hidrato y el
+//   aceite (raciones.js:311, hasta ×1,4).
+const TOPE_ESCALADO = process.argv.includes('--topeEscalado');
 const RACION3 = process.argv.includes('--racionGuarnicion3'); // topes de plato y crecimiento por proteína (Javi, 2026-11-23)
 const RACION2 = RACION3 || process.argv.includes('--racionGuarnicion2');
 const BASE_GUARNICION = baseArg ? Number(baseArg.split('=')[1]) : RACION2 ? 130 : 150;
@@ -159,9 +162,11 @@ globalThis.__g2 = {
   RANGO: RANGO_GUARNICION,
   RACION2,
   /** --racionGuarnicion3: tope de plato del proteico (ave y carne, pescado y marisco) en una comida con guarnición. */
-  rangoTope(it, rango, items) {
+  rangoTope(it, rango, items, amplitud = 1) {
     if (!RACION3 || !rango || !items.some((x) => x.guarnicionLeg)) return rango;
-    const tope = topePlato(it.clave);
+    const t0 = topePlato(it.clave);
+    // Mismo escalado que los energéticos en ajustarComida (paso del rango del proteico).
+    const tope = t0 && TOPE_ESCALADO && amplitud > 1 ? Math.max(t0, Math.floor((t0 * amplitud) / rango[2]) * rango[2]) : t0;
     return tope ? [Math.min(rango[0], tope), Math.min(rango[1], tope), rango[2]] : rango;
   },
   /**
@@ -380,7 +385,7 @@ const CAMBIOS = [
   ['/src/engine2/nutrientes/raciones.js', '      rango = [Math.min(rango[0], tope), Math.min(rango[1], tope), rango[2]];\n    }',
     '      rango = [Math.min(rango[0], tope), Math.min(rango[1], tope), rango[2]];\n    }\n    if (rango && it.rangoPropio) rango = it.rangoPropio;'],
   ['/src/engine2/nutrientes/raciones.js', "    return { ...it, papel: rango ? papel : 'fijo', rango, nuevo: it.gramos, limitado: null, fijoPorFicha };",
-    "    if (rango && it.rangoPropio && globalThis.__g2.RACION2) rango = it.rangoPropio;\n    rango = globalThis.__g2.rangoTope(it, rango, items);\n    return { ...it, papel: rango ? papel : 'fijo', rango, nuevo: it.gramos, limitado: null, fijoPorFicha };"],
+    "    if (rango && it.rangoPropio && globalThis.__g2.RACION2) rango = it.rangoPropio;\n    rango = globalThis.__g2.rangoTope(it, rango, items, amplitud);\n    return { ...it, papel: rango ? papel : 'fijo', rango, nuevo: it.gramos, limitado: null, fijoPorFicha };"],
   ['/src/engine2/nutrientes/raciones.js', '      const [min, max] = e.rango;', '      const [min, max] = globalThis.__g2.rangoVuelta(e, estado);'],
   ['/src/engine2/nutrientes/raciones.js', '  // Medidas de casa.', '  const crecidoGuarnicion = globalThis.__g2.crecerGuarnicion(estado, faltaKcal, composicion);\n  // Medidas de casa.'],
   ['/src/engine2/nutrientes/raciones.js', '    ...(crecido ? { crecido } : {}),', '    ...(crecido ? { crecido } : {}),\n    ...(crecidoGuarnicion ? { crecidoGuarnicion } : {}),'],

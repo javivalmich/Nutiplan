@@ -57,7 +57,7 @@ export const TEXTO_INTOLERANCIA = Object.freeze({
   mariscos: /gamba|calamar|marisco|mejill[oó]n|berberecho|pulpo|langostino|sepia|almeja|fideu[aá]|paella de gambas/i,
   cerdo: /cerdo|lomo|jam[oó]n|bacon|beicon|guanciale|chorizo|lac[oó]n|morcilla|panceta|salchich|carbonara|cocido|fabada/i,
   huevo: /huevo|tortilla|revuelto|shakshuka|carbonara|ensaladilla|mayonesa|claras/i,
-  legumbres: /lenteja|garbanzo|alubia|jud[ií]as? (blanca|pinta|roja|negra)|frijol|hab(as?|itas?)\b|hummus|falafel|fabada|cocido|edamame|soja|tofu|guisante/i,
+  legumbres: /lenteja|garbanzo|alubia|jud[ií]as? (blanca|pinta|roja|negra)|frijol|habichuela|hab(as?|itas?)\b|hummus|falafel|fabada|cocido|edamame|soja|tofu|guisante/i,
   frutos_secos: /nuez|nueces|almendra|pistacho|cacahuete|anacardo|avellana|frutos secos|pi[ñn]ones|sésamo|tahini/i,
 });
 const PROTEINA_INTOLERANCIA = Object.freeze({

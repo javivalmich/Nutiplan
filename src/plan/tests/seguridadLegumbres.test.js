@@ -12,7 +12,7 @@ import { catalogoApp } from '../catalogo.js';
 const BASE = { intolerances: [], eliminatedFoods: [], tiempoCocina: 'normal', experiencia: 'intermedio', simpleMode: false, hambre: 'media', kcalAdjust: 0, extras: {}, gender: 'male', age: 36, weight: 74, height: 178, activity: 'moderate', goal: 'maintain', mealsPerDay: 4, trainingDays: ['Lunes'] };
 const comida = (texto) => ({ time: 'Comida', title: `Pechuga de pollo a la plancha con ${texto}`, p1: 'Pechuga de pollo (150 g) a la plancha', p2: `${texto} (150 g) · AOVE (10 ml)`, shopping: ['Pechuga de pollo (150 g)', `${texto} (150 g)`, 'AOVE (10 ml)'] });
 
-const LEGUMBRES = ['Habas', 'Habitas', 'Frijoles', 'Frijoles negros', 'Alubias blancas cocidas', 'Alubias rojas cocidas', 'Alubias pintas cocidas', 'Alubias negras cocidas', 'Judías rojas', 'Judías negras', 'Judías pintas', 'Judías blancas', 'Garbanzos cocidos', 'Lentejas pardinas cocidas', 'Lentejas beluga cocidas', 'Guisantes', 'Edamame'];
+const LEGUMBRES = ['Habas', 'Habitas', 'Habichuelas', 'Frijoles', 'Frijoles negros', 'Alubias blancas cocidas', 'Alubias rojas cocidas', 'Alubias pintas cocidas', 'Alubias negras cocidas', 'Judías rojas', 'Judías negras', 'Judías pintas', 'Judías blancas', 'Garbanzos cocidos', 'Lentejas pardinas cocidas', 'Lentejas beluga cocidas', 'Guisantes', 'Edamame'];
 
 describe('intolerancia a legumbres', () => {
   for (const t of LEGUMBRES) {
@@ -24,7 +24,7 @@ describe('intolerancia a legumbres', () => {
     expect(intoleranciasDe(comida('Judías verdes al vapor'), { ...BASE, intolerances: ['legumbres'] })).toEqual([]);
   });
   // La regla «por si acaso» del catálogo, por texto (engine2App.js), cubre lo mismo.
-  for (const t of ['Habas', 'Habitas', 'Frijoles', 'Judías rojas', 'Judías negras', 'Judías pintas', 'Edamame', 'Salsa de soja']) {
+  for (const t of ['Habas', 'Habitas', 'Habichuelas', 'Frijoles', 'Judías rojas', 'Judías negras', 'Judías pintas', 'Edamame', 'Salsa de soja']) {
     it(`la regla por texto del catálogo quita «${t}»`, () => {
       expect(TEXTO_INTOLERANCIA.legumbres.test(t.toLowerCase())).toBe(true);
     });
@@ -42,6 +42,9 @@ describe('SIBO', () => {
     expect(!!fodmapRestante('Habitas (150 g)')).toBe(true);
     expect(intoleranciasDe(comida('Habitas'), { ...BASE, intolerances: ['sibo'] })).toContain('sibo');
   });
+  it('quita las habichuelas', () => {
+    expect(!!fodmapRestante('Habichuelas (150 g)')).toBe(true);
+  });
   it('sigue quitando las habas', () => {
     expect(!!fodmapRestante('Habas (150 g)')).toBe(true);
   });
@@ -52,6 +55,9 @@ describe('alimentos eliminados: sinónimos', () => {
     ['frijoles', ['Alubias negras cocidas', 'Alubias rojas cocidas', 'Alubias blancas cocidas', 'Judías pintas', 'Frijoles']],
     ['judías', ['Alubias negras cocidas', 'Alubias blancas cocidas', 'Frijoles', 'Judías verdes']],
     ['alubias', ['Frijoles negros', 'Judías rojas', 'Judías blancas', 'Alubias pintas cocidas']],
+    ['habichuelas', ['Alubias blancas cocidas', 'Alubias rojas cocidas', 'Frijoles', 'Judías pintas', 'Habichuelas']],
+    ['habichuela', ['Alubias negras cocidas', 'Habichuelas']],
+    ['alubias', ['Habichuelas']],
     ['habas', ['Habitas', 'Habas']],
     ['soja', ['Edamame', 'Tofu firme', 'Tempeh', 'Salsa de soja']],
     ['legumbres', LEGUMBRES],

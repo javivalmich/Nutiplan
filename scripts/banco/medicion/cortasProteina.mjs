@@ -123,7 +123,7 @@ for (let s = 60; s < 60 + SEM; s++) {
   ant = plan;
   let cortas = 0; let pescado = 0; let dobles = 0; let prot = 0; let dias = 0; let legumbreUnico = 0;
   const servidosPor = {}; const cortasPor = {}; const platosPor = {}; let fueraKcal = 0; let principales = 0; const mlDias = [];
-  const legPor = {}; const hidratoPor = {}; let legGuarnicion = 0; let legPlato = 0; const hidratosDia = [];
+  const legPor = {}; const hidratoPor = {}; let legGuarnicion = 0; let legPlato = 0; const hidratosDia = []; const legDia = []; const guarnDia = [];
   let guarnConPan = 0; let panGuarn = 0;
   for (const d of plan.days) {
     const meals = d.meals.filter(Boolean);
@@ -131,6 +131,8 @@ for (let s = 60; s < 60 + SEM; s++) {
     if (!meals.some((m) => m.sugerencia) && d.raciones) { prot += d.raciones.proteina; dias += 1; }
     if (!meals.some((m) => m.sugerencia)) mlDias.push(meals.reduce((a, m) => a + mlAceite(m), 0));
     hidratosDia.push(hoy);
+    legDia.push(meals.some((m) => (m.time === 'Comida' || m.time === 'Cena') && !m.sugerencia && (m._guarnicion || (porId.has(m._dishId) && familiaProteica(porId.get(m._dishId)) === 'legumbre'))));
+    guarnDia.push(meals.some((m) => m._guarnicion && !m.sugerencia));
     for (const m of meals) {
       if ((m.time !== 'Comida' && m.time !== 'Cena') || m.sugerencia) continue;
       const fam = (porId.has(m._dishId) && familiaProteica(porId.get(m._dishId))) || 'sin familia';
@@ -174,11 +176,14 @@ for (let s = 60; s < 60 + SEM; s++) {
     for (const x of comunes) hidratoSeguidosPor[x] = (hidratoSeguidosPor[x] || 0) + 1;
   }
   const g = (c) => log.filter((e) => e.causa === c).length;
-  const guarn = { sueloSemana: g('guarnicion_suelo_semana'), sueloSinValida: g('guarnicion_suelo_sin_legumbre_valida'), compuestaFuera: g('legumbre_compuesta_fuera_hay_otro'), compuestaSinOtro: g('legumbre_compuesta_sin_otro_candidato'), topePool: g('legumbre_tope_semana'), suelo: g('guarnicion_legumbre_suelo'),tope: g('guarnicion_legumbre_tope'), cena: g('guarnicion_legumbre_cena'), verdes: g('guarnicion_guisantes_habitas'), repetidaEvitada: g('guarnicion_legumbre_no_repetida'), repetidaSinAplicar: g('guarnicion_legumbre_no_repetida_sin_aplicar'), sinHueco: g('guarnicion_suelo_sin_hueco'), sinLegumbre: g('guarnicion_suelo_sin_legumbre_posible') };
+  // Legumbre (guarnición o plato) y guarnición de legumbre en días seguidos: pares de días por semana.
+  const pares = (xs) => xs.slice(1).filter((x, k) => x && xs[k]).length;
+  const legSeguidos = pares(legDia); const guarnSeguidos = pares(guarnDia);
+  const guarn = { sueloSemana: g('guarnicion_suelo_semana'), sueloSinValida: g('guarnicion_suelo_sin_legumbre_valida'), compuestaFuera: g('legumbre_compuesta_fuera_hay_otro'), compuestaSinOtro: g('legumbre_compuesta_sin_otro_candidato'), topePool: g('legumbre_tope_semana'), suelo: g('guarnicion_legumbre_suelo'),tope: g('guarnicion_legumbre_tope'), cena: g('guarnicion_legumbre_cena'), verdes: g('guarnicion_guisantes_habitas'), repetidaEvitada: g('guarnicion_legumbre_no_repetida'), repetidaSinAplicar: g('guarnicion_legumbre_no_repetida_sin_aplicar'), sinHueco: g('guarnicion_suelo_sin_hueco'), sinLegumbre: g('guarnicion_suelo_sin_legumbre_posible'), red: g('guarnicion_red_d099_sin_b'), redSigue: g('infraccion_d099_guarnicion_red_sin_b'), sinExclusion: g('infraccion_d099_guarnicion_sin_exclusion'), hidratoEvitado: g('hidrato_dias_seguidos_evitado'), hidratoSinAplicar: g('hidrato_dias_seguidos_sin_aplicar'), guarnSeguidaEvitada: g('guarnicion_dias_seguidos_evitada'), guarnSeguidaSinAplicar: g('guarnicion_dias_seguidos_sin_aplicar') };
   const legRepetida = Object.values(legPor).some((n) => n >= 2);
   const red = log.some((e) => e.causa === 'regla_legumbre_retirada_d099' || e.causa === 'regla_legumbre_retirada_pool_vacio');
   const sinSegundoPosible = log.filter((e) => e.causa === 'dia_legumbre_sin_segundo_posible').length;
-  semanas.push({ s, motor: plan.motor, cortas, pescado, dobles, legumbreUnico, servidosPor, cortasPor, d099, legGuarnicion, legPlato, legPor, legRepetida, guarnConPan, panGuarn, d099det, menuD099, hidratoSeguidosPor, diasConHidrato: hidratosDia.filter((h) => h.size).length, hidratoPor, hidratoSeguidos, guarn, platosPor, fueraKcal, principales, mlDia: mlDias.length ? mlDias.reduce((a, x) => a + x, 0) / mlDias.length : 0, mlMax: Math.max(0, ...mlDias), legumbre: servidosPor.legumbre || 0, diasSorteados: diasSorteados.length, sorteadosSinLegumbre, red, sinSegundoPosible, protDia: dias ? (100 * prot) / dias / obj.proteina : 0, sorteo: (plan.decisionLog || []).some((e) => e.causa === 'dias_legumbre_sorteados') });
+  semanas.push({ s, motor: plan.motor, cortas, pescado, dobles, legumbreUnico, servidosPor, cortasPor, d099, legGuarnicion, legPlato, legPor, legRepetida, guarnConPan, panGuarn, d099det, menuD099, hidratoSeguidosPor, legSeguidos, guarnSeguidos, diasConHidrato: hidratosDia.filter((h) => h.size).length, hidratoPor, hidratoSeguidos, guarn, platosPor, fueraKcal, principales, mlDia: mlDias.length ? mlDias.reduce((a, x) => a + x, 0) / mlDias.length : 0, mlMax: Math.max(0, ...mlDias), legumbre: servidosPor.legumbre || 0, diasSorteados: diasSorteados.length, sorteadosSinLegumbre, red, sinSegundoPosible, protDia: dias ? (100 * prot) / dias / obj.proteina : 0, sorteo: (plan.decisionLog || []).some((e) => e.causa === 'dias_legumbre_sorteados') });
 }
 fs.writeFileSync(salidaArg, JSON.stringify({ perfil: perfilId, semanas }));
 l(`${semanas.length} semanas → ${salidaArg} (motores: ${[...new Set(semanas.map((x) => x.motor))].join(', ')})`);

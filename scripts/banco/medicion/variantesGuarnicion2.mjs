@@ -26,6 +26,11 @@
 //   --sueloGuarnicion: suelo de 2 legumbres por semana que actúa solo por la guarnición: desde el jueves, si la semana va
 //     corta, el siguiente hueco que admite guarnición la lleva sin el paso de la mitad (con vuelta atrás y causa).
 //   --baseGuarnicion=N: gramos de partida de la guarnición (150 por defecto; rango 80-240).
+//   --redD099: si la semana acaba con infracción de D-099.3 y la (b) había sacado compuestos de legumbre del pool, se
+//     repite el walk entero con la misma semilla sin esa exclusión (causa en el log); si sigue con infracción, se anota
+//     con causa propia.
+//   --hidratoSeguidos: preferencias con vuelta atrás: no repetir el mismo hidrato de plantilla en días seguidos (filtro
+//     del pool, antes de las preferencias A y B) y no poner guarnición de legumbre en días seguidos, aunque sea de otra.
 import fs from 'node:fs';
 import { register } from 'node:module';
 
@@ -38,7 +43,14 @@ const baseArg = process.argv.find((a) => a.startsWith('--baseGuarnicion='));
 const BASE_GUARNICION = baseArg ? Number(baseArg.split('=')[1]) : 150;
 const DIA_MITAD = 3; // jueves (índice en DAYS_ORDER): desde aquí, el suelo de 2 mira si la semana va corta
 const SUELO_LEGUMBRES = 2;
-process.stderr.write(`[variantesGuarnicion2] guarnición en el walk; subvariante ${SUB_B ? 'b' : 'a'}${SUB_B_OMNI ? ', b solo omnívora' : ''}${SUELO_G ? ', suelo de 2 por la guarnición' : ''}; ración de partida ${BASE_GUARNICION} g\n`);
+// Última ronda (Javi, 2026-11-23): red de D-099.3 para la (b) y preferencias de hidrato y legumbre en días seguidos.
+const RED_D099 = process.argv.includes('--redD099');
+const PREF_SEGUIDOS = process.argv.includes('--hidratoSeguidos');
+const DIAS = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo']; // DAYS_ORDER
+// Hidrato de plantilla de un plato: la C de su tupla (como lo cuenta el medidor); los redactados no tienen.
+const hidratoDe = (id) => { try { const t = JSON.parse(id); return Array.isArray(t) ? t[2] || null : null; } catch { return null; } };
+const huecoDe = (slots, day, momento) => [...slots.values()].find((x) => x.day === day && x.momento === momento);
+process.stderr.write(`[variantesGuarnicion2] guarnición en el walk; subvariante ${SUB_B ? 'b' : 'a'}${SUB_B_OMNI ? ', b solo omnívora' : ''}${SUELO_G ? ', suelo de 2 por la guarnición' : ''}${RED_D099 ? ', red de D-099.3' : ''}${PREF_SEGUIDOS ? ', sin hidrato ni guarnición en días seguidos' : ''}; ración de partida ${BASE_GUARNICION} g\n`);
 
 // ─── Inventario (hidratos-legumbre.csv) ─────────────────────────────────────────────────────────────────────────────
 function leerCsv(texto) {
@@ -149,11 +161,58 @@ globalThis.__g2 = {
       const sin = out.filter((d) => familiaCache(d.id) !== 'legumbre');
       if (sin.length && sin.length < out.length) { anota('legumbre_tope_semana', `${day}/${momento}: la semana ya lleva ${total} legumbres (tope ${TOPE_LEGUMBRES}): fuera ${out.length - sin.length} platos de legumbre`); out = sin; } else if (!sin.length) anota('legumbre_tope_semana_sin_aplicar', `${day}/${momento}: solo quedan platos de legumbre; no se aplica el tope`);
     }
-    if (SUB_B && !(SUB_B_OMNI && ['vegetariana', 'vegana'].includes(globalThis.__g2.dieta))) {
+    if (SUB_B && !globalThis.__g2.sinB && !(SUB_B_OMNI && ['vegetariana', 'vegana'].includes(globalThis.__g2.dieta))) {
       const sin = out.filter((d) => !esCompuestoLegumbre(d));
       if (sin.length && sin.length < out.length) { anota('legumbre_compuesta_fuera_hay_otro', `${day}/${momento}: fuera ${out.length - sin.length} compuestos de legumbre como plato único; quedan ${sin.length} candidatos`); out = sin; } else if (!sin.length) anota('legumbre_compuesta_sin_otro_candidato', `${day}/${momento}: solo quedan compuestos de legumbre; se admiten`);
     }
     return out;
+  },
+  /** Hidratos servidos un día (la comida con guarnición cuenta como «legumbre», como en el medidor). */
+  hidratosDelDia(g, slots, day) {
+    const out = new Set();
+    if (!day) return out;
+    for (const s of slots.values()) {
+      if (s.day !== day || s.abierto || !s.dishId || (s.fixedRole === 'libre' && s.momento === 'comida')) continue;
+      const h = s.momento === 'comida' && g.guarniciones.some((x) => x.day === day) ? 'legumbre' : hidratoDe(s.dishId);
+      if (h) out.add(h);
+    }
+    return out;
+  },
+  /**
+   * --hidratoSeguidos: preferencia, con vuelta atrás, de no repetir el hidrato de plantilla del día anterior ni del
+   * siguiente (si ya está decidido). Va después de los filtros de la semana y antes de las preferencias A y B.
+   */
+  hidratoPool(g, { pool, day, i, momento, decisionLog, slots }) {
+    if (!PREF_SEGUIDOS) return pool;
+    const cerca = new Set([...this.hidratosDelDia(g, slots, DIAS[i - 1]), ...this.hidratosDelDia(g, slots, DIAS[i + 1])]);
+    if (!cerca.size) return pool;
+    const sin = pool.filter((d) => !cerca.has(hidratoDe(d.id)));
+    if (sin.length === pool.length) return pool;
+    const anota = (causa, evidencia) => decisionLog.push({ decisionId: `guarnicion-${decisionLog.length}`, day, momentoGuarnicion: momento, causa, evidencia, evento: true });
+    if (sin.length) { anota('hidrato_dias_seguidos_evitado', `${day}/${momento}: fuera ${pool.length - sin.length} candidatos con ${[...cerca].join(', ')}, el hidrato del día de al lado; quedan ${sin.length}`); return sin; }
+    anota('hidrato_dias_seguidos_sin_aplicar', `${day}/${momento}: todos los candidatos llevan ${[...cerca].join(', ')}, el hidrato del día de al lado; no se aplica`);
+    return pool;
+  },
+  /**
+   * --redD099: red de D-099.3 de la (b). Si la semana acaba con infracción y la (b) había sacado algún compuesto de
+   * legumbre del pool, se repite el walk entero con la misma semilla sin esa exclusión; si sigue, se anota.
+   */
+  redD099(input, resultado, { repetir, infraccionesD099, anotarInfraccion }) {
+    if (!RED_D099) return resultado;
+    const inf = infraccionesD099(input, resultado);
+    if (!inf.length) return resultado;
+    if (!resultado.decisionLog.some((e) => e.causa === 'legumbre_compuesta_fuera_hay_otro')) {
+      return anotarInfraccion(resultado, inf, 'infraccion_d099_guarnicion_sin_exclusion', 'y la (b) no había sacado ningún compuesto de legumbre del pool: la red de la (b) no repite');
+    }
+    this.sinB = true;
+    let otra;
+    try { otra = repetir(); } finally { this.sinB = false; }
+    otra.decisionLog.push({ decisionId: `walk-select-${otra.decisionLog.length}`, day: undefined, momento: undefined, plato: undefined,
+      causa: 'guarnicion_red_d099_sin_b',
+      evidencia: `con la (b) la semana incumplía D-099.3 (${inf.join('; ')}); se repite el walk entero con la misma semilla sin sacar los compuestos de legumbre del pool (guarnición, suelo y topes siguen)`,
+      alternativasDescartadas: [], evento: true, infracciones: inf });
+    const quedan = infraccionesD099(input, otra);
+    return quedan.length ? anotarInfraccion(otra, quedan, 'infraccion_d099_guarnicion_red_sin_b', 'también sin la exclusión de compuestos de la (b): la red ya no repite más') : otra;
   },
   /** Después de elegir el plato de un hueco: ¿hidrato original o legumbre? */
   decidir(g, { day, i, momento, dish, freqState, decisionLog, slots, familiaCache, proteinaCache }) {
@@ -175,6 +234,16 @@ globalThis.__g2 = {
     // Suelo de 2 por la guarnición (--sueloGuarnicion): desde la mitad de la semana, si va corta, este hueco la lleva
     // sin el paso de la mitad. Nunca fuerza un plato de legumbre suelto: solo actúa aquí, en un hueco que admite guarnición.
     const porSuelo = SUELO_G && i >= DIA_MITAD && total < SUELO_LEGUMBRES;
+    // --hidratoSeguidos: ninguna guarnición de legumbre el día de al lado de otra, aunque sea de otra legumbre. Con el
+    // suelo pendiente, la vuelta atrás: cede solo si no queda ninguna comida servida más en la semana.
+    if (PREF_SEGUIDOS) {
+      const cerca = g.guarniciones.find((x) => x.day === DIAS[i - 1] || x.day === DIAS[i + 1]);
+      if (cerca) {
+        const quedan = DIAS.slice(i + 1).filter((dd) => { const s = huecoDe(slots, dd, 'comida'); return s && s.abierto && s.fixedRole !== 'libre'; }).length;
+        if (!porSuelo || quedan > 0) { anota('guarnicion_dias_seguidos_evitada', `${day}: el ${cerca.day} ya lleva guarnición de legumbre (${cerca.legumbre}): se queda el hidrato original${porSuelo ? `; el suelo espera a otra comida (quedan ${quedan})` : ''}`); return; }
+        anota('guarnicion_dias_seguidos_sin_aplicar', `${day}: el ${cerca.day} ya lleva guarnición de legumbre, pero el suelo de ${SUELO_LEGUMBRES} no tiene otra comida en la semana: no se aplica`);
+      }
+    }
     if (porSuelo) anota('guarnicion_suelo_semana', `${day}: la semana va corta (${total} de ${SUELO_LEGUMBRES} legumbres desde el jueves): este hueco lleva legumbre de guarnición sin el paso de la mitad`);
     // Paso 1: hidrato original o legumbre, uniforme entre las dos.
     const u1 = porSuelo ? 1 : g.rng();
@@ -219,7 +288,10 @@ const COMPOSICION_NUEVA = `  "alubias_blancas_cocidas": { "kcal": 93.1, "protein
   "habitas": { "kcal": 57.2, "proteina": 4.6, "hidratos": 8.6, "grasa": 0.4, "fibra": 4.2, "agua": 82.2, "fuente": { "bedca": "2194", "nombre": "Haba, fresca" } },
 `;
 const CAMBIOS = [
-  ['/src/engine2/walk/runWalk.js', '    resultado = walkConRedDeFamilia(input, { sinRegla: false, intentos });', '    resultado = walkConRedDeFamilia(input, { sinRegla: true, intentos });'],
+  ['/src/engine2/walk/runWalk.js', '    resultado = walkConRedDeFamilia(input, { sinRegla: false, intentos });',
+    '    resultado = walkConRedDeFamilia(input, { sinRegla: true, intentos });\n    resultado = globalThis.__g2.redD099(input, resultado, { repetir: () => walkConRedDeFamilia(input, { sinRegla: true, intentos }), infraccionesD099, anotarInfraccion });'],
+  ['/src/engine2/walk/runWalk.js', '      let candidatesA = poolAlino.length ? poolAlino : base1;',
+    '      let candidatesA = globalThis.__g2.hidratoPool(__g, { pool: poolAlino.length ? poolAlino : base1, day, i, momento, decisionLog, slots });'],
   ['/src/engine2/walk/runWalk.js', '  const recientes = new Set(platosRecientes.map((id) => nombrePorId.get(id) ?? id));',
     '  const recientes = new Set(platosRecientes.map((id) => nombrePorId.get(id) ?? id));\n  const __g = globalThis.__g2.inicio(seed);'],
   ['/src/engine2/walk/runWalk.js', '      // Prototipo (visor): tope de proteina principal por semana. Si dejaria el',

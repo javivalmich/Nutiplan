@@ -32,6 +32,9 @@
 //   --racionGuarnicion2: ración de la guarnición de 100-160 g escurridos con salida en 130 g (sin crecer con la
 //     amplitud del objetivo). Si faltan kcal, crece primero el proteico del plato dentro de su rango, después la legumbre
 //     hasta su máximo y por último el pan (como crecerSiFalta en la comida doble); causa en el log de raciones.
+//   --racionGuarnicion3: en las comidas con guarnición, topes de plato (ave y carne 200 g, pescado y marisco 220 g) y
+//     legumbre de 100-220 g con salida en 130 g. El proteico se dimensiona por la proteína de la comida, hasta su tope;
+//     con la proteína cubierta, si faltan kcal crece la legumbre hasta su tope y después el pan (causa en el log).
 //   --hidratoSeguidos: preferencias con vuelta atrás: no repetir el mismo hidrato de plantilla en días seguidos (filtro
 //     del pool, antes de las preferencias A y B) y no poner guarnición de legumbre en días seguidos, aunque sea de otra.
 import fs from 'node:fs';
@@ -44,8 +47,14 @@ const SUB_B_OMNI = process.argv.includes('--soloOmnivora');
 const SUELO_G = process.argv.includes('--sueloGuarnicion');
 const baseArg = process.argv.find((a) => a.startsWith('--baseGuarnicion='));
 // Ajuste de la ración (Javi, 2026-11-23): rango 100-160 g, salida 130 g y orden de crecimiento proteico → legumbre → pan.
-const RACION2 = process.argv.includes('--racionGuarnicion2');
+const RACION3 = process.argv.includes('--racionGuarnicion3'); // topes de plato y crecimiento por proteína (Javi, 2026-11-23)
+const RACION2 = RACION3 || process.argv.includes('--racionGuarnicion2');
 const BASE_GUARNICION = baseArg ? Number(baseArg.split('=')[1]) : RACION2 ? 130 : 150;
+const TOPE_PESCADO_PLATO = 220;
+const TOPE_CARNE_PLATO = 200;
+const PESCADO_ING = new Set(['salmon', 'salmon_ahumado', 'merluza', 'bacalao', 'dorada', 'corvina', 'sardina', 'bonito', 'atun_conserva', 'gambas', 'calamar', 'mejillon', 'berberecho']);
+const CARNE_ING = new Set(['pollo_pechuga', 'pollo_muslo', 'pollo_picado', 'pollo_cocido', 'pavo_pechuga', 'pavo_picado', 'ternera_magra', 'ternera_picada', 'cerdo_lomo', 'conejo']);
+const topePlato = (clave) => (PESCADO_ING.has(clave) ? TOPE_PESCADO_PLATO : CARNE_ING.has(clave) ? TOPE_CARNE_PLATO : null);
 const DIA_MITAD = 3; // jueves (índice en DAYS_ORDER): desde aquí, el suelo de 2 mira si la semana va corta
 const SUELO_LEGUMBRES = 2;
 // Última ronda (Javi, 2026-11-23): red de D-099.3 para la (b) y preferencias de hidrato y legumbre en días seguidos.
@@ -55,7 +64,7 @@ const DIAS = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Do
 // Hidrato de plantilla de un plato: la C de su tupla (como lo cuenta el medidor); los redactados no tienen.
 const hidratoDe = (id) => { try { const t = JSON.parse(id); return Array.isArray(t) ? t[2] || null : null; } catch { return null; } };
 const huecoDe = (slots, day, momento) => [...slots.values()].find((x) => x.day === day && x.momento === momento);
-process.stderr.write(`[variantesGuarnicion2] guarnición en el walk; subvariante ${SUB_B ? 'b' : 'a'}${SUB_B_OMNI ? ', b solo omnívora' : ''}${SUELO_G ? ', suelo de 2 por la guarnición' : ''}${RED_D099 ? ', red de D-099.3' : ''}${PREF_SEGUIDOS ? ', sin hidrato ni guarnición en días seguidos' : ''}${RACION2 ? ', ración 100-160 g y crece proteico → legumbre → pan' : ''}; ración de partida ${BASE_GUARNICION} g\n`);
+process.stderr.write(`[variantesGuarnicion2] guarnición en el walk; subvariante ${SUB_B ? 'b' : 'a'}${SUB_B_OMNI ? ', b solo omnívora' : ''}${SUELO_G ? ', suelo de 2 por la guarnición' : ''}${RED_D099 ? ', red de D-099.3' : ''}${PREF_SEGUIDOS ? ', sin hidrato ni guarnición en días seguidos' : ''}${RACION3 ? ', ración 100-220 g, topes de plato 200/220 g y crece por proteína; legumbre → pan por kcal' : RACION2 ? ', ración 100-160 g y crece proteico → legumbre → pan' : ''}; ración de partida ${BASE_GUARNICION} g\n`);
 
 // ─── Inventario (hidratos-legumbre.csv) ─────────────────────────────────────────────────────────────────────────────
 function leerCsv(texto) {
@@ -93,7 +102,7 @@ const LEG = {
   edamame: { nombre: 'edamame', compra: 'Edamame', el: 'el edamame', g: 'm', pron: 'lo', clave: 'edamame', sin: ['edamame', 'soja'] },
 };
 const VERDES = new Set(['guisantes', 'habitas']);
-const RANGO_GUARNICION = RACION2 ? [100, 160, 10] : [80, 240, 10];
+const RANGO_GUARNICION = RACION3 ? [100, 220, 10] : RACION2 ? [100, 160, 10] : [80, 240, 10];
 const TOPE_LEGUMBRES = 3;
 const claveH = (leg, frio) => `g_${leg.replace(/ /g, '_')}${frio ? '_frio' : ''}`;
 const hidratosNuevos = [];
@@ -149,6 +158,12 @@ const USADA_POR_ESPECIE = { garbanzos: ['garbanzos'], lentejas: ['lentejas pardi
 globalThis.__g2 = {
   RANGO: RANGO_GUARNICION,
   RACION2,
+  /** --racionGuarnicion3: tope de plato del proteico (ave y carne, pescado y marisco) en una comida con guarnición. */
+  rangoTope(it, rango, items) {
+    if (!RACION3 || !rango || !items.some((x) => x.guarnicionLeg)) return rango;
+    const tope = topePlato(it.clave);
+    return tope ? [Math.min(rango[0], tope), Math.min(rango[1], tope), rango[2]] : rango;
+  },
   /**
    * --racionGuarnicion2, en el reparto de ajustarComida: la legumbre de la guarnición no pasa de su salida y el pan se
    * queda en su mínimo; lo que falte lo reparte después crecerGuarnicion, por orden.
@@ -172,14 +187,25 @@ globalThis.__g2 = {
       if (g >= e.rango[1]) { e.nuevo = e.rango[1]; e.limitado = 'maximo'; } else { e.nuevo = g; e.limitado = null; }
       if (e.nuevo > antes) cambios.push({ clave: e.clave, papel, antes, despues: e.nuevo });
     };
-    // Los proteicos que van en unidades (huevo, con su tope de D-111) no crecen aquí.
-    for (const e of estado.filter((x) => x.papel === 'proteico' && x.rango && x.limitado !== 'maximo' && (!x.unidad || x.unidad === 'g'))) crecer(e, 'proteico');
+    if (RACION3) {
+      // El proteico ya va por la proteína de la comida (el reparto de ajustarComida), hasta su tope de plato; aquí no
+      // crece por kcal. Se anota cómo queda, para la causa.
+      for (const e of estado.filter((x) => x.papel === 'proteico' && topePlato(x.clave) && x.rango)) cambios.push({ clave: e.clave, papel: 'proteina', despues: e.nuevo, tope: e.rango[1], enTope: e.limitado === 'maximo' });
+    } else {
+      // Los proteicos que van en unidades (el huevo, con su tope de D-111) no crecen aquí.
+      for (const e of estado.filter((x) => x.papel === 'proteico' && x.rango && x.limitado !== 'maximo' && (!x.unidad || x.unidad === 'g'))) crecer(e, 'proteico');
+    }
     for (const e of estado.filter((x) => x.guarnicionLeg)) crecer(e, 'legumbre');
     for (const e of estado.filter((x) => x.papel !== 'fijo' && String(x.clave).startsWith('pan_'))) crecer(e, 'pan');
-    return cambios.length ? cambios : null;
+    return cambios.some((x) => x.papel !== 'proteina') || (RACION3 && cambios.length) ? cambios : null;
   },
   textoCrecido(cambios) {
     const papel = { proteico: 'el proteico', legumbre: 'la legumbre', pan: 'el pan' };
+    if (RACION3) {
+      const prot = cambios.filter((x) => x.papel === 'proteina').map((x) => `${x.clave} ${Math.round(x.despues)} g por la proteína de la comida${x.enTope ? ` (en su tope de plato, ${x.tope} g: la proteína pedía más)` : ` (tope ${x.tope} g)`}`);
+      const kc = cambios.filter((x) => x.papel !== 'proteina');
+      return `comida con guarnición: ${prot.join('; ') || 'sin proteico con tope'}${kc.length ? `; con la proteína ${cambios.some((x) => x.enTope) ? 'hasta el tope' : 'cubierta'}, faltaban kcal: crece ${kc.map((x) => `${papel[x.papel]} (${x.clave} ${Math.round(x.antes)} → ${Math.round(x.despues)} g)`).join('; después ')}` : ''}`;
+    }
     return `faltaban kcal en la comida con guarnición: crece ${cambios.map((x) => `${papel[x.papel]} (${x.clave} ${Math.round(x.antes)} → ${Math.round(x.despues)} g)`).join('; después ')}, por este orden y dentro de su rango`;
   },
   posibles: new Set(),
@@ -354,7 +380,7 @@ const CAMBIOS = [
   ['/src/engine2/nutrientes/raciones.js', '      rango = [Math.min(rango[0], tope), Math.min(rango[1], tope), rango[2]];\n    }',
     '      rango = [Math.min(rango[0], tope), Math.min(rango[1], tope), rango[2]];\n    }\n    if (rango && it.rangoPropio) rango = it.rangoPropio;'],
   ['/src/engine2/nutrientes/raciones.js', "    return { ...it, papel: rango ? papel : 'fijo', rango, nuevo: it.gramos, limitado: null, fijoPorFicha };",
-    "    if (rango && it.rangoPropio && globalThis.__g2.RACION2) rango = it.rangoPropio;\n    return { ...it, papel: rango ? papel : 'fijo', rango, nuevo: it.gramos, limitado: null, fijoPorFicha };"],
+    "    if (rango && it.rangoPropio && globalThis.__g2.RACION2) rango = it.rangoPropio;\n    rango = globalThis.__g2.rangoTope(it, rango, items);\n    return { ...it, papel: rango ? papel : 'fijo', rango, nuevo: it.gramos, limitado: null, fijoPorFicha };"],
   ['/src/engine2/nutrientes/raciones.js', '      const [min, max] = e.rango;', '      const [min, max] = globalThis.__g2.rangoVuelta(e, estado);'],
   ['/src/engine2/nutrientes/raciones.js', '  // Medidas de casa.', '  const crecidoGuarnicion = globalThis.__g2.crecerGuarnicion(estado, faltaKcal, composicion);\n  // Medidas de casa.'],
   ['/src/engine2/nutrientes/raciones.js', '    ...(crecido ? { crecido } : {}),', '    ...(crecido ? { crecido } : {}),\n    ...(crecidoGuarnicion ? { crecidoGuarnicion } : {}),'],

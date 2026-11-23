@@ -101,7 +101,8 @@ const PERFILES = {
   'sin-legumbres-2000': { ...BASE, ...M62, mealsPerDay: 4, intolerances: ['legumbres'] },
 };
 const { PERFILES: BANCO } = await import(ACT + 'scripts/banco/perfiles.mjs');
-const delBanco = BANCO.find((x) => x.id === perfilId);
+const { PERFILES_EXTRA } = await import(ACT + 'scripts/banco/medicion/perfilesExtra.mjs');
+const delBanco = BANCO.find((x) => x.id === perfilId) || PERFILES_EXTRA.find((x) => x.id === perfilId);
 const perfil = PERFILES[perfilId] || (delBanco && delBanco.perfil);
 const KCAL = delBanco ? delBanco.kcal : 2000;
 if (!perfil) throw new Error(`cortasProteina: perfil desconocido ${perfilId}`);

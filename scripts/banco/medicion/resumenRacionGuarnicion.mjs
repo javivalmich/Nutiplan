@@ -1,6 +1,6 @@
 // Resumen del ajuste de la ración de guarnición: MEDICIÓN. Por medición (sufijos de g-<perfil>-<sufijo>.json, de
 // cortasProteina.mjs): comidas cortas, proteína del día, fuera de ±5 % de kcal (por encima / por debajo), gramos del
-// proteico y de la legumbre en las comidas con guarnición (mediana y mínimo), % de esas comidas con pan, legumbres/sem e
+// proteico y de la legumbre en las comidas con guarnición (mediana y máximo), % de esas comidas con pan, legumbres/sem e
 // infracciones de D-099.3. Agregado de los 9 omnívoros y tabla por perfil.
 // Uso: node scripts/banco/medicion/resumenRacionGuarnicion.mjs <dir> <salida.md> --var=sufijo:etiqueta,… <perfil> [<perfil> …]
 import fs from 'node:fs';
@@ -15,14 +15,14 @@ const n2 = (x) => x.toFixed(2).replace('.', ',');
 const n1 = (x) => x.toFixed(1).replace('.', ',');
 const su = (ss, f) => ss.reduce((a, s) => a + f(s), 0);
 const mediana = (xs) => { const o = [...xs].sort((a, b) => a - b); return o.length ? o[Math.floor(o.length / 2)] : null; };
-const g = (ss, k) => { const xs = ss.flatMap((s) => s.guarnG || []).map((x) => x[k]); return xs.length ? `${Math.round(mediana(xs))} (${Math.round(Math.min(...xs))})` : '—'; };
+const g = (ss, k) => { const xs = ss.flatMap((s) => s.guarnG || []).map((x) => x[k]); return xs.length ? `${Math.round(mediana(xs))} (${Math.round(Math.max(...xs))})` : '—'; };
 const FILAS = {
   'Comidas y cenas cortas/sem': (ss) => n2(su(ss, (s) => s.cortas) / ss.length),
   'Proteína del día': (ss) => `${n1(su(ss, (s) => s.protDia) / ss.length)} %`,
   'Fuera de ±5 % de kcal (por encima / por debajo)': (ss) => `${n1((100 * su(ss, (s) => s.fueraKcal)) / su(ss, (s) => s.principales))} % (${su(ss, (s) => s.fueraEncima)} / ${su(ss, (s) => s.fueraDebajo)})`,
   'Comidas con guarnición': (ss) => String(su(ss, (s) => s.legGuarnicion)),
-  'Proteico en ellas, g: mediana (mínimo)': (ss) => g(ss, 0),
-  'Legumbre en ellas, g: mediana (mínimo)': (ss) => g(ss, 1),
+  'Proteico en ellas, g: mediana (máximo)': (ss) => g(ss, 0),
+  'Legumbre en ellas, g: mediana (máximo)': (ss) => g(ss, 1),
   'De ellas, con pan': (ss) => { const n = su(ss, (s) => s.legGuarnicion); return n ? `${n1((100 * su(ss, (s) => s.guarnConPan)) / n)} %` : '—'; },
   'Legumbres/sem (guarnición + plato)': (ss) => n2(su(ss, (s) => s.legGuarnicion + s.legPlato) / ss.length),
   'Infracciones de D-099.3': (ss) => String(su(ss, (s) => s.d099)),

@@ -1,7 +1,7 @@
-# Estado de la rama `motor/i0-banco-cantidades` (traspaso, 2026-11-22)
+# Estado de la rama `motor/i0-banco-cantidades` (traspaso, 2026-11-23)
 
 Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, creada desde `main`
-`19a300c`. Sin merge a `main`. La sesión de auditoría de seguridad trabaja aparte, en
+`19a300c`. Lleva mergeado `main` `9522e92` (PR #27, seguridad de las legumbres) en `ce21c11`. Sin merge a `main`. La sesión de auditoría de seguridad trabaja aparte, en
 `C:\Users\javiv\app-comida` (rama `fix/autorizacion-rpc`): no se toca.
 
 ## Commits (de más antiguo a más nuevo)
@@ -113,9 +113,34 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
 | `7fe9bc2` | `ESTADO.md` al día |
 | `fc1b85b` | Medición: perfiles con un solo segundo, reparto de `main` → HEAD entre el tope de pescado y lo demás (`un-segundo-reparto.md`) |
 | `7e8b095` | `DECISIONS.md`: SIBO mantiene el tope de 3 (D-118); perfiles con un solo segundo en los pendientes de D-116 |
-| el siguiente a `7e8b095` | `ESTADO.md` al día |
+| `62dae22` | `ESTADO.md` al día |
+| `9c0a7a1`, `03278db` | Inventario de hidrato o legumbre de guarnición (`medicion/inventario/hidratos-legumbre.csv` y `.md`), revisado |
+| `6f334f8` | Medición: rama sin comida doble (D-116 y D-117 apagadas), frente a `main` y HEAD |
+| `c6e2156`, `5bd8c9b`, `a22edee` | Medición: prototipos 1 y 2 de la legumbre como guarnición y subvariantes (a) y (b) |
+| `b92773f` | Medición: ronda final del prototipo 2 (red de D-099.3, sin hidrato ni guarnición en días seguidos) y comidas fuera de ±5 % |
+| `105cad5`, `878d1e7`, `7a7f518` | Medición: ración de guarnición 100–160 g, topes de plato, crecimiento por proteína, perfiles con batido y volumen, tope escalado |
+| `71c1925` | Diseño: `medicion/guarnicion/plan-implementacion.md` (aprobado por Javi el 2026-11-23) |
+| `ce21c11` | Merge de `main` (PR #27: paso 1, seguridad de las legumbres). Sin conflictos; banco sin diferencias |
+| `6297fec` | Paso 2: legumbres nuevas (alubias blancas, rojas y pintas, lentejas pardina y beluga, habitas) y `alubias_cocidas` → `alubias_negras_cocidas`; `composicion.js` regenerado (test `legumbresNuevas.test.js`) |
+| `aeea294` | `DECISIONS.md`: ampliación de D-100 (paso 2) |
+| `f3a94ec` | Paso 3: legumbres válidas por plato (`src/engine2/dishes/guarnicionLegumbre.js`, generado desde el `.csv` con `medicion/inventario/guarnicionLegumbre.mjs`; test `guarnicionLegumbre.test.js`) |
+| el siguiente a `f3a94ec` | `ESTADO.md` al día |
 
-## Dónde se para esta sesión (2026-11-22)
+## Legumbre como guarnición: dónde se para (2026-11-23)
+
+Plan: `medicion/guarnicion/plan-implementacion.md`, aprobado por Javi el 2026-11-23 con el orden 1–3, después 8, después 6 y 9, y después 4, 5 y 7.
+
+- **Paso 1 (seguridad): en `main`** por el PR #27 (`9522e92`), traído a esta rama en `ce21c11`.
+- **Paso 2 (ingredientes): hecho** (`6297fec`, D-100 en `aeea294`).
+  - Siete claves: `alubias_blancas_cocidas` (BEDCA 898), `alubias_rojas_cocidas` y `alubias_pintas_cocidas` (900, aproximación con la alubia negra), `alubias_negras_cocidas` (el renombre de `alubias_cocidas`, 900), `lentejas_pardinas_cocidas` y `lentejas_beluga_cocidas` (1126, como `lentejas_cocidas`) y `habitas` (2194).
+  - `composicion.js` regenerado desde la misma descarga de BEDCA (mismo sha256): de 136 a 142 ingredientes. Redondea las kcal: blancas 93 y habitas 57, donde el prototipo usaba 93,1 y 57,2.
+  - El único texto del catálogo que cambia de clave es «Lentejas pardinas cocidas» de un plato libre (`FREEFORM_COMBOS.js:3679`), con la misma composición y el mismo rango.
+- **Paso 3 (lista por plato): hecho** (`f3a94ec`). 61 platos, en el orden del `.csv`, como claves del medidor. Va en un módulo de `src/engine2/dishes/` y no colgado del plato en `catalogoApp()`: el paso 4 lo leerá desde el walk (engine2), que no importa `src/plan`, y así el objeto del plato no cambia.
+- **En cada paso:** test previo que fallaba, batería completa (1520 tests; solo no carga `src/data/__tests__/pdb.characterization.test.js`, sin `.env.local`) y banco sin diferencias con la línea base. Ningún menú cambia.
+- **Los prototipos `medicion/variantesGuarnicion.mjs` y `variantesGuarnicion2.mjs` ya no corren sobre HEAD:** sus anclas nombran `alubias_cocidas` y añaden en memoria ingredientes que ahora existen. Se reproducen en sus commits (`7a7f518` el último).
+- **Siguiente, cuando lo pida Javi:** el paso 8 (apagar D-116 y D-117 con el interruptor; línea base nueva).
+
+## Dónde se para la sesión anterior (2026-11-22)
 
 - **Hechos:**
   - 2026-11-16: los puntos 0 y 1 (el peso del catálogo, `10adbb7`; el tope que cede, `0878f81`, medido en `197108f`).

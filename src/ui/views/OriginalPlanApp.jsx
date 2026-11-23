@@ -6,6 +6,7 @@ import { GOAL_ADJ, computeTrend, getNutricionistaFeedback, adherenciaPct, calcTD
   from "../../engine/index.js";
 import { SDB } from "../../data/sdb.js";
 import { generarPlan, platosRecientesPara, recalcularDia, regenerarComida, usaRaciones } from "../../plan/generarPlan.js";
+import { comprobarRegeneracionViejo } from "../../plan/regeneracionSegura.js";
 import { __PERF, __TRACE, getWeekNumber } from "../../data/runtime.js";
 import { trackUserAction, traceSetPlan, _checkPostActionOverwrite } from "../../data/echoGuard";
 import { PDB, loadData, saveData, clearData, loadMealMemory, saveMealMemory, loadProgress,
@@ -768,6 +769,9 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
       // Plan de engine2: la comida nueva llega con cantidades del motor viejo; se recalcula el día.
       newPlan.days[dayIdx]=recalcularDia(newPlan, newPlan.days[dayIdx], profile, targetKcal);
     }
+    // D-103: lo que trae el motor viejo se comprueba con las intolerancias y los alimentos eliminados antes de aceptarlo.
+    const comprobado=comprobarRegeneracionViejo(plan, newPlan, dayIdx, mealSlot, profile);
+    if(comprobado.alternativaSinCambio){ console.warn("[regenerateMeal]", comprobado.decisionLog[comprobado.decisionLog.length-1]); alert("No hay otra opción que encaje con lo que no puedes comer para esta comida."); return; }
     __TRACE.event("plan", "regenerateMeal", plan, newPlan);
     // source="user" → siempre aceptado
     traceSetPlan("user", plan, newPlan);

@@ -29,6 +29,9 @@
 //   --redD099: si la semana acaba con infracción de D-099.3 y la (b) había sacado compuestos de legumbre del pool, se
 //     repite el walk entero con la misma semilla sin esa exclusión (causa en el log); si sigue con infracción, se anota
 //     con causa propia.
+//   --racionGuarnicion2: ración de la guarnición de 100-160 g escurridos con salida en 130 g (sin crecer con la
+//     amplitud del objetivo). Si faltan kcal, crece primero el proteico del plato dentro de su rango, después la legumbre
+//     hasta su máximo y por último el pan (como crecerSiFalta en la comida doble); causa en el log de raciones.
 //   --hidratoSeguidos: preferencias con vuelta atrás: no repetir el mismo hidrato de plantilla en días seguidos (filtro
 //     del pool, antes de las preferencias A y B) y no poner guarnición de legumbre en días seguidos, aunque sea de otra.
 import fs from 'node:fs';
@@ -40,7 +43,9 @@ const SUB_B = process.argv.includes('--compuestosSoloSinOtro');
 const SUB_B_OMNI = process.argv.includes('--soloOmnivora');
 const SUELO_G = process.argv.includes('--sueloGuarnicion');
 const baseArg = process.argv.find((a) => a.startsWith('--baseGuarnicion='));
-const BASE_GUARNICION = baseArg ? Number(baseArg.split('=')[1]) : 150;
+// Ajuste de la ración (Javi, 2026-11-23): rango 100-160 g, salida 130 g y orden de crecimiento proteico → legumbre → pan.
+const RACION2 = process.argv.includes('--racionGuarnicion2');
+const BASE_GUARNICION = baseArg ? Number(baseArg.split('=')[1]) : RACION2 ? 130 : 150;
 const DIA_MITAD = 3; // jueves (índice en DAYS_ORDER): desde aquí, el suelo de 2 mira si la semana va corta
 const SUELO_LEGUMBRES = 2;
 // Última ronda (Javi, 2026-11-23): red de D-099.3 para la (b) y preferencias de hidrato y legumbre en días seguidos.
@@ -50,7 +55,7 @@ const DIAS = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Do
 // Hidrato de plantilla de un plato: la C de su tupla (como lo cuenta el medidor); los redactados no tienen.
 const hidratoDe = (id) => { try { const t = JSON.parse(id); return Array.isArray(t) ? t[2] || null : null; } catch { return null; } };
 const huecoDe = (slots, day, momento) => [...slots.values()].find((x) => x.day === day && x.momento === momento);
-process.stderr.write(`[variantesGuarnicion2] guarnición en el walk; subvariante ${SUB_B ? 'b' : 'a'}${SUB_B_OMNI ? ', b solo omnívora' : ''}${SUELO_G ? ', suelo de 2 por la guarnición' : ''}${RED_D099 ? ', red de D-099.3' : ''}${PREF_SEGUIDOS ? ', sin hidrato ni guarnición en días seguidos' : ''}; ración de partida ${BASE_GUARNICION} g\n`);
+process.stderr.write(`[variantesGuarnicion2] guarnición en el walk; subvariante ${SUB_B ? 'b' : 'a'}${SUB_B_OMNI ? ', b solo omnívora' : ''}${SUELO_G ? ', suelo de 2 por la guarnición' : ''}${RED_D099 ? ', red de D-099.3' : ''}${PREF_SEGUIDOS ? ', sin hidrato ni guarnición en días seguidos' : ''}${RACION2 ? ', ración 100-160 g y crece proteico → legumbre → pan' : ''}; ración de partida ${BASE_GUARNICION} g\n`);
 
 // ─── Inventario (hidratos-legumbre.csv) ─────────────────────────────────────────────────────────────────────────────
 function leerCsv(texto) {
@@ -88,7 +93,7 @@ const LEG = {
   edamame: { nombre: 'edamame', compra: 'Edamame', el: 'el edamame', g: 'm', pron: 'lo', clave: 'edamame', sin: ['edamame', 'soja'] },
 };
 const VERDES = new Set(['guisantes', 'habitas']);
-const RANGO_GUARNICION = [80, 240, 10];
+const RANGO_GUARNICION = RACION2 ? [100, 160, 10] : [80, 240, 10];
 const TOPE_LEGUMBRES = 3;
 const claveH = (leg, frio) => `g_${leg.replace(/ /g, '_')}${frio ? '_frio' : ''}`;
 const hidratosNuevos = [];
@@ -143,6 +148,40 @@ const USADA_POR_ESPECIE = { garbanzos: ['garbanzos'], lentejas: ['lentejas pardi
 // ─── Lógica dentro del walk ─────────────────────────────────────────────────────────────────────────────────────────
 globalThis.__g2 = {
   RANGO: RANGO_GUARNICION,
+  RACION2,
+  /**
+   * --racionGuarnicion2, en el reparto de ajustarComida: la legumbre de la guarnición no pasa de su salida y el pan se
+   * queda en su mínimo; lo que falte lo reparte después crecerGuarnicion, por orden.
+   */
+  rangoVuelta(e, estado) {
+    if (!RACION2 || !e.rango) return e.rango;
+    if (e.guarnicionLeg) return [e.rango[0], Math.min(e.rango[1], BASE_GUARNICION)];
+    if (String(e.clave).startsWith('pan_') && estado.some((x) => x.guarnicionLeg)) return [e.rango[0], e.rango[0]];
+    return e.rango;
+  },
+  /** Si faltan kcal en una comida con guarnición: crece el proteico, después la legumbre hasta su máximo y después el pan. */
+  crecerGuarnicion(estado, faltaKcal, composicion) {
+    if (!RACION2 || !estado.some((e) => e.guarnicionLeg)) return null;
+    const cambios = [];
+    const crecer = (e, papel) => {
+      const falta = faltaKcal();
+      const comp = composicion[e.clave];
+      if (falta <= 0 || !e.rango || !comp || !comp.kcal) return;
+      const antes = e.nuevo;
+      const g = e.nuevo + (falta * 100) / comp.kcal;
+      if (g >= e.rango[1]) { e.nuevo = e.rango[1]; e.limitado = 'maximo'; } else { e.nuevo = g; e.limitado = null; }
+      if (e.nuevo > antes) cambios.push({ clave: e.clave, papel, antes, despues: e.nuevo });
+    };
+    // Los proteicos que van en unidades (huevo, con su tope de D-111) no crecen aquí.
+    for (const e of estado.filter((x) => x.papel === 'proteico' && x.rango && x.limitado !== 'maximo' && (!x.unidad || x.unidad === 'g'))) crecer(e, 'proteico');
+    for (const e of estado.filter((x) => x.guarnicionLeg)) crecer(e, 'legumbre');
+    for (const e of estado.filter((x) => x.papel !== 'fijo' && String(x.clave).startsWith('pan_'))) crecer(e, 'pan');
+    return cambios.length ? cambios : null;
+  },
+  textoCrecido(cambios) {
+    const papel = { proteico: 'el proteico', legumbre: 'la legumbre', pan: 'el pan' };
+    return `faltaban kcal en la comida con guarnición: crece ${cambios.map((x) => `${papel[x.papel]} (${x.clave} ${Math.round(x.antes)} → ${Math.round(x.despues)} g)`).join('; después ')}, por este orden y dentro de su rango`;
+  },
   posibles: new Set(),
   /** Estado de la guarnición de un walk (se crea al empezar cada walk, también en sus repeticiones). */
   inicio(seed) { return { rng: rngDe(`${seed}::guarnicion`), guarniciones: [] }; },
@@ -314,10 +353,17 @@ const CAMBIOS = [
   ['/src/engine2/nutrientes/raciones.js', 'alubias_cocidas: [120, 400, 10],', 'alubias_cocidas: [120, 400, 10], alubias_blancas_cocidas: [120, 400, 10], alubias_rojas_cocidas: [120, 400, 10], alubias_pintas_cocidas: [120, 400, 10], habitas: [50, 200, 10],'],
   ['/src/engine2/nutrientes/raciones.js', '      rango = [Math.min(rango[0], tope), Math.min(rango[1], tope), rango[2]];\n    }',
     '      rango = [Math.min(rango[0], tope), Math.min(rango[1], tope), rango[2]];\n    }\n    if (rango && it.rangoPropio) rango = it.rangoPropio;'],
+  ['/src/engine2/nutrientes/raciones.js', "    return { ...it, papel: rango ? papel : 'fijo', rango, nuevo: it.gramos, limitado: null, fijoPorFicha };",
+    "    if (rango && it.rangoPropio && globalThis.__g2.RACION2) rango = it.rangoPropio;\n    return { ...it, papel: rango ? papel : 'fijo', rango, nuevo: it.gramos, limitado: null, fijoPorFicha };"],
+  ['/src/engine2/nutrientes/raciones.js', '      const [min, max] = e.rango;', '      const [min, max] = globalThis.__g2.rangoVuelta(e, estado);'],
+  ['/src/engine2/nutrientes/raciones.js', '  // Medidas de casa.', '  const crecidoGuarnicion = globalThis.__g2.crecerGuarnicion(estado, faltaKcal, composicion);\n  // Medidas de casa.'],
+  ['/src/engine2/nutrientes/raciones.js', '    ...(crecido ? { crecido } : {}),', '    ...(crecido ? { crecido } : {}),\n    ...(crecidoGuarnicion ? { crecidoGuarnicion } : {}),'],
+  ['/src/engine2/nutrientes/raciones.js', '    const deFicha = r.items.filter((i) => i.fijoPorFicha);',
+    "    if (r.crecidoGuarnicion) log.push({ causa: 'guarnicion_crece_por_energia', momento: c.momento, id: c.id, detalle: globalThis.__g2.textoCrecido(r.crecidoGuarnicion) });\n    const deFicha = r.items.filter((i) => i.fijoPorFicha);"],
   ['/src/plan/medidor/leerComida.js', "  [/alubias negras cocidas/, 'alubias_cocidas'],",
     "  [/alubias blancas cocidas/, 'alubias_blancas_cocidas'],\n  [/alubias rojas cocidas/, 'alubias_rojas_cocidas'],\n  [/alubias pintas cocidas/, 'alubias_pintas_cocidas'],\n  [/habitas/, 'habitas'],\n  [/alubias negras cocidas/, 'alubias_cocidas'],"],
   ['/src/plan/racionesApp.js', '...(esComidaDoble(m) ? extraDoble(m, it, targetKcal, composicion) : {}) })),',
-    '...(esComidaDoble(m) ? extraDoble(m, it, targetKcal, composicion) : {}), ...(m._guarnicion && it.clave === m._guarnicion.clave ? { rangoPropio: globalThis.__g2.RANGO } : {}) })),'],
+    '...(esComidaDoble(m) ? extraDoble(m, it, targetKcal, composicion) : {}), ...(m._guarnicion && it.clave === m._guarnicion.clave ? { rangoPropio: globalThis.__g2.RANGO, guarnicionLeg: true } : {}) })),'],
 ];
 
 const hooks = `

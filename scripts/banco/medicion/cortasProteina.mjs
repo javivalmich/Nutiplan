@@ -124,7 +124,7 @@ for (let s = 60; s < 60 + SEM; s++) {
   let cortas = 0; let pescado = 0; let dobles = 0; let prot = 0; let dias = 0; let legumbreUnico = 0;
   const servidosPor = {}; const cortasPor = {}; const platosPor = {}; let fueraKcal = 0; let principales = 0; const mlDias = [];
   const legPor = {}; const hidratoPor = {}; let legGuarnicion = 0; let legPlato = 0; const hidratosDia = []; const legDia = []; const guarnDia = [];
-  let guarnConPan = 0; let panGuarn = 0;
+  let guarnConPan = 0; let panGuarn = 0; const guarnG = []; let fueraEncima = 0; let fueraDebajo = 0;
   for (const d of plan.days) {
     const meals = d.meals.filter(Boolean);
     const hoy = new Set();
@@ -147,12 +147,15 @@ for (let s = 60; s < 60 + SEM; s++) {
         legGuarnicion += 1; legPor[m._guarnicion.legumbre] = (legPor[m._guarnicion.legumbre] || 0) + 1;
         const pan = leerComida(m).items.filter((it) => String(it.clave).startsWith('pan')).reduce((a, it) => a + it.gramos, 0);
         if (pan > 0) { guarnConPan += 1; panGuarn += pan; }
+        // Gramos del proteico (grupo proteína) y de la legumbre de la guarnición en esa comida.
+        const its = leerComida(m).items;
+        guarnG.push([its.filter((it) => INGREDIENTES[it.clave] && INGREDIENTES[it.clave].grupo === 'proteina').reduce((a, it) => a + it.gramos, 0), its.filter((it) => it.clave === m._guarnicion.clave).reduce((a, it) => a + it.gramos, 0)]);
       }
       else if (fam === 'legumbre') { legPlato += 1; const e = NOMBRE_LEG[proteinaPrincipal(porId.get(m._dishId))] || proteinaPrincipal(porId.get(m._dishId)); legPor[e] = (legPor[e] || 0) + 1; }
       let C = null; try { const t = JSON.parse(m._dishId); if (Array.isArray(t)) C = t[2]; } catch { C = null; }
       const h = m._guarnicion ? 'legumbre' : C;
       if (h) { hidratoPor[h] = (hidratoPor[h] || 0) + 1; hoy.add(h); }
-      if (m.nutricion && Math.abs(m.nutricion.kcal - m.nutricion.objetivoKcal) > 0.05 * m.nutricion.objetivoKcal) fueraKcal += 1;
+      if (m.nutricion && Math.abs(m.nutricion.kcal - m.nutricion.objetivoKcal) > 0.05 * m.nutricion.objetivoKcal) { fueraKcal += 1; if (m.nutricion.kcal > m.nutricion.objetivoKcal) fueraEncima += 1; else fueraDebajo += 1; }
       for (const id of [m._dishId, m._dishId2].filter(Boolean)) {
         if (porId.has(id) && ESPECIES_PESCADO_MARISCO.has(proteinaPrincipal(porId.get(id)))) pescado += 1;
         const g = porId.has(id) ? GRUPO[proteinaPrincipal(porId.get(id))] : null;
@@ -183,7 +186,7 @@ for (let s = 60; s < 60 + SEM; s++) {
   const legRepetida = Object.values(legPor).some((n) => n >= 2);
   const red = log.some((e) => e.causa === 'regla_legumbre_retirada_d099' || e.causa === 'regla_legumbre_retirada_pool_vacio');
   const sinSegundoPosible = log.filter((e) => e.causa === 'dia_legumbre_sin_segundo_posible').length;
-  semanas.push({ s, motor: plan.motor, cortas, pescado, dobles, legumbreUnico, servidosPor, cortasPor, d099, legGuarnicion, legPlato, legPor, legRepetida, guarnConPan, panGuarn, d099det, menuD099, hidratoSeguidosPor, legSeguidos, guarnSeguidos, diasConHidrato: hidratosDia.filter((h) => h.size).length, hidratoPor, hidratoSeguidos, guarn, platosPor, fueraKcal, principales, mlDia: mlDias.length ? mlDias.reduce((a, x) => a + x, 0) / mlDias.length : 0, mlMax: Math.max(0, ...mlDias), legumbre: servidosPor.legumbre || 0, diasSorteados: diasSorteados.length, sorteadosSinLegumbre, red, sinSegundoPosible, protDia: dias ? (100 * prot) / dias / obj.proteina : 0, sorteo: (plan.decisionLog || []).some((e) => e.causa === 'dias_legumbre_sorteados') });
+  semanas.push({ s, motor: plan.motor, cortas, pescado, dobles, legumbreUnico, servidosPor, cortasPor, d099, legGuarnicion, legPlato, legPor, legRepetida, guarnConPan, panGuarn, d099det, menuD099, hidratoSeguidosPor, guarnG, fueraEncima, fueraDebajo, legSeguidos, guarnSeguidos, diasConHidrato: hidratosDia.filter((h) => h.size).length, hidratoPor, hidratoSeguidos, guarn, platosPor, fueraKcal, principales, mlDia: mlDias.length ? mlDias.reduce((a, x) => a + x, 0) / mlDias.length : 0, mlMax: Math.max(0, ...mlDias), legumbre: servidosPor.legumbre || 0, diasSorteados: diasSorteados.length, sorteadosSinLegumbre, red, sinSegundoPosible, protDia: dias ? (100 * prot) / dias / obj.proteina : 0, sorteo: (plan.decisionLog || []).some((e) => e.causa === 'dias_legumbre_sorteados') });
 }
 fs.writeFileSync(salidaArg, JSON.stringify({ perfil: perfilId, semanas }));
 l(`${semanas.length} semanas → ${salidaArg} (motores: ${[...new Set(semanas.map((x) => x.motor))].join(', ')})`);

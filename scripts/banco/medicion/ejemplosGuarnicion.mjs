@@ -39,7 +39,7 @@ for (let s = 60; s <= hasta; s++) {
     }
   }
   const causas = (plan.decisionLog || []).filter((e) => typeof e.causa === 'string' && /^(guarnicion_|hidrato_dias|infraccion_d099)/.test(e.causa));
-  L.push('Causas de la guarnición, del hidrato y de la red en el log:', '', ...causas.map((e) => `- ${e.day ? `${e.day}, ${e.momentoGuarnicion}: ` : ''}\`${e.causa}\` — ${e.evidencia}`), '');
+  L.push('Causas de la guarnición, del hidrato y de la red en el log:', '', ...causas.map((e) => `- ${e.day ? `${e.day}, ${e.momentoGuarnicion || e.momento}: ` : ''}\`${e.causa}\` — ${e.evidencia || e.detalle}`), '');
 }
 console.log = l;
 fs.writeFileSync(salida, L.join('\n'));

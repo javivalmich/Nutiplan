@@ -29,7 +29,7 @@ export function tuplaDe(dishId) {
 // Clave del medidor de cada ingrediente base del ancla, en platos libres.
 const CLAVES_BASE = Object.freeze({
   pollo: ['pollo_pechuga', 'pollo_muslo', 'pollo_cocido'], pavo: ['pavo_pechuga'], ternera: ['ternera_magra', 'ternera_picada'],
-  cerdo: ['cerdo_lomo'], garbanzos: ['garbanzos_seco', 'garbanzos_cocidos', 'hummus'], alubias: ['alubias_seco', 'alubias_cocidas'],
+  cerdo: ['cerdo_lomo'], garbanzos: ['garbanzos_seco', 'garbanzos_cocidos', 'hummus'], alubias: ['alubias_seco', 'alubias_negras_cocidas'],
   arroz: ['arroz_seco', 'arroz_integral_cocido'], quinoa: ['quinoa_seco'],
 });
 

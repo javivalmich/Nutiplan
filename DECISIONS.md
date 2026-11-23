@@ -4320,6 +4320,22 @@ Cambiar un desayuno desde «Alternativas» sigue yendo al motor viejo sin este c
 Estado resultante
 Las 10 intolerancias de la app se respetan en comidas, cenas, desayunos, tentempiés, acompañamientos y alternativas de engine2.
 
+Ampliación — [2026-11-23] Legumbres y alimentos eliminados (paso 1 de la legumbre como guarnición)
+Decide: Javi (plan aprobado el 2026-11-23). Commit: `6263e76`, rama `motor/guarnicion-1-seguridad` desde `main` `19a300c`.
+Contexto: la legumbre de bote como guarnición traerá habitas, alubias rojas, pintas y negras y otras legumbres que hoy casi no salen en el catálogo. Una comprobación de los filtros (`scripts/banco/medicion/guarnicion/seguridad-legumbres.md`, rama `motor/i0-banco-cantidades`) encontró estos huecos:
+- con intolerancia a legumbres, nada quitaba las habitas («habas?» no las cubre), ni las judías rojas o negras;
+- los alimentos eliminados eran una búsqueda literal: quien escribía «frijoles», «judías» o «legumbres» seguía recibiendo alubias, garbanzos o lentejas.
+Decisión:
+5. Intolerancia a legumbres: `alergenos.js` añade habitas y judías rojas y negras (ya tenía blancas y pintas). La regla «por si acaso» por texto del catálogo (`TEXTO_INTOLERANCIA` en `engine2App.js`) añade frijoles, habas, habitas y judías de color. Edamame, soja y tofu ya estaban en las dos.
+6. Alimentos eliminados (`src/plan/eliminados.js`, en el catálogo de engine2 y en los desayunos y tentempiés): la búsqueda literal se hace sin acentos, y algunas palabras tienen sinónimos. Criterio conservador, como el punto 1.
+   - «alubias», «judías» y «frijoles»: todas las alubias (blancas, rojas, pintas y negras), frijoles, fabes y fabada. Quien escribe «judías» sigue perdiendo también las judías verdes, por la búsqueda literal; Javi lo decide así.
+   - «habas»: también las habitas.
+   - «soja»: también edamame, tofu, tempeh y miso.
+   - «legumbres»: lo mismo que la intolerancia a legumbres, con sus excepciones (judías verdes, brotes de soja).
+7. Test de seguridad: `src/plan/tests/seguridadLegumbres.test.js`, con un caso por legumbre y por sinónimo. Usa los platos de main que los llevan (el burrito de alubias negras, el bowl de salmón con edamame, la sopa de miso con tofu, los de garbanzos, lentejas y alubias blancas). Para lo que ningún plato de main lleva aún (habas, habitas, guisantes, frijoles), usa comidas sintéticas.
+Efecto: con los 12 perfiles del banco y con intolerancia a legumbres o SIBO, los menús de 8 semanas son idénticos a los de `19a300c`. Solo cambian para quien escribe «frijoles», «judías» o «legumbres» en sus alimentos eliminados: se le quitan esos platos.
+Pendiente: el motor viejo (congelado) mantiene la búsqueda literal; las regeneraciones que vayan por él no tienen los sinónimos.
+
 ## D-104 — [2026-10-12] SIBO: platos adaptados a bajo en FODMAP
 
 Decide: Javi. HEAD: `3128b52` (rama `intolerancias`, D-103).

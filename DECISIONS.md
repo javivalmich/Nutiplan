@@ -4265,6 +4265,19 @@ Hora del entreno en el perfil (producto) para colocar bien el batido post-entren
 Estado resultante
 engine2 decide qué se come y cuánto. El motor viejo sigue componiendo el texto de cada plato y queda como reserva.
 
+Ampliación — [2026-11-23] Legumbres nuevas (paso 2 de la legumbre como guarnición)
+Decide: Javi (plan aprobado el 2026-11-23; aproximaciones decididas en el diseño de la guarnición). Commit: `6297fec`, rama `motor/i0-banco-cantidades`.
+Contexto: la guarnición de legumbre de bote necesita legumbres que el medidor no tenía. `composicion.js` se regenera con `scripts/medidor/composicion.mjs` desde la misma descarga de BEDCA del 2026-10-11 (mismo sha256), no a mano; pasa de 136 a 142 ingredientes (seis nuevos y uno renombrado).
+Decisión:
+6. Ingredientes nuevos, todos cocidos o de bote salvo las habitas, con el rango de las legumbres cocidas de hoy (120–400 g; las habitas, 50–200 g, como guisantes y edamame) y su texto de compra en `leerComida.js`:
+   - `alubias_blancas_cocidas`: BEDCA 898, alubia blanca en conserva.
+   - `alubias_rojas_cocidas` y `alubias_pintas_cocidas`: BEDCA 900, alubia negra hervida. Aproximación decidida por Javi: BEDCA no tiene alubia roja, y la pinta solo en seco.
+   - `lentejas_pardinas_cocidas` y `lentejas_beluga_cocidas`: BEDCA 1126, la misma lenteja en conserva que `lentejas_cocidas`. Aproximación: BEDCA no las distingue.
+   - `habitas`: BEDCA 2194, haba fresca.
+7. `alubias_cocidas` pasa a llamarse `alubias_negras_cocidas`: su fuente ya era la alubia negra (BEDCA 900). No cambia ningún texto: el plan dice «Alubias negras cocidas» y se lee igual.
+8. El aviso de la alubia negra (92 kcal frente a 108 por sus macros) lo heredan las rojas y las pintas. Se deja, como el resto de avisos: no se corrige.
+Efecto: ninguno en los menús. Nadie usa aún estos ingredientes; el único texto del catálogo que cambia de clave es «Lentejas pardinas cocidas» de un plato libre, que pasa de `lentejas_cocidas` a `lentejas_pardinas_cocidas` con la misma composición y el mismo rango. El banco no tiene diferencias con la línea base. Test: `src/plan/medidor/tests/legumbresNuevas.test.js`.
+
 ## D-101 — [2026-10-11] Alternativas de comida elegidas por engine2
 
 Decide: Javi. HEAD: `64e63e8`.

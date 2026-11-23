@@ -124,7 +124,7 @@ export function adaptarCompraFodmap(lineas) {
   return out;
 }
 
-const RESTANTE = /lenteja|garbanzo|alubia|jud[ií]as? (blanca|pinta)|fabes|frijol|guisante|hummus|falafel|\bhabas?\b|edamame|cusc[uú]s|bulgur|seit[aá]n|centeno|cebada|coliflor|champi[ñn]ones(?! en conserva)|champi[ñn][oó]n\b|\bsetas?\b|shiitake|esp[aá]rrago|alcachofa|aguacate|guacamole|anacardo|pistacho|manzana|\bperas?\b|mango|sand[ií]a|melocot[oó]n|ciruela|cereza|\bajo\b|ajillo|\bcebolla\b|sopa de cebolla|crema de puerro|inulina|agave/i;
+const RESTANTE = /lenteja|garbanzo|alubia|jud[ií]as? (blanca|pinta|roja|negra)|fabes|frijol|guisante|hummus|falafel|\bhab(as?|itas?)\b|edamame|cusc[uú]s|bulgur|seit[aá]n|centeno|cebada|coliflor|champi[ñn]ones(?! en conserva)|champi[ñn][oó]n\b|\bsetas?\b|shiitake|esp[aá]rrago|alcachofa|aguacate|guacamole|anacardo|pistacho|manzana|\bperas?\b|mango|sand[ií]a|melocot[oó]n|ciruela|cereza|\bajo\b|ajillo|\bcebolla\b|sopa de cebolla|crema de puerro|inulina|agave/i;
 
 /** Lo alto en FODMAP que queda tras adaptar (null si nada). */
 export function fodmapRestante(texto) {

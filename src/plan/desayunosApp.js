@@ -13,6 +13,7 @@ import { papelDe } from '../engine2/nutrientes/raciones.js';
 import { COMPOSICION } from '../engine2/nutrientes/composicion.js';
 import { adaptarSiProcede } from './adaptar.js';
 import { intoleranciasDe } from './engine2App.js';
+import { eliminadoEn } from './eliminados.js';
 import { leerComida } from './medidor/leerComida.js';
 
 export const HUECOS_DESAYUNO = Object.freeze(['Desayuno', 'Almuerzo', 'Merienda']);
@@ -52,7 +53,7 @@ export function catalogoDesayunos(profile) {
     const meal = adaptada(item, profile);
     if (intoleranciasDe(meal, profile).length) continue;
     const texto = textoDe(meal);
-    if (eliminados.some((e) => texto.includes(e))) continue;
+    if (eliminados.some((e) => eliminadoEn(texto, e))) continue;
     const grupo = item.tipo === 'desayuno' && !tieneProteinaAjustable(meal) ? 1 : 0;
     out.push({ id: item.id, tipo: item.tipo, grupo, ficha: item.ficha, meal });
   }

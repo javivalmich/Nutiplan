@@ -4320,6 +4320,23 @@ Cambiar un desayuno desde «Alternativas» sigue yendo al motor viejo sin este c
 Estado resultante
 Las 10 intolerancias de la app se respetan en comidas, cenas, desayunos, tentempiés, acompañamientos y alternativas de engine2.
 
+Ampliación — [2026-11-23] Legumbres y alimentos eliminados (paso 1 de la legumbre como guarnición)
+Decide: Javi (plan aprobado el 2026-11-23). Commits: `6263e76`, `8e3eb23` y `8ff0bc4`, rama `motor/guarnicion-1-seguridad` desde `main` `19a300c`.
+Contexto: la legumbre de bote como guarnición traerá habitas, alubias rojas, pintas y negras y otras legumbres que hoy casi no salen en el catálogo. Una comprobación de los filtros (`scripts/banco/medicion/guarnicion/seguridad-legumbres.md`, rama `motor/i0-banco-cantidades`) encontró estos huecos:
+- con intolerancia a legumbres, nada quitaba las habitas («habas?» no las cubre), ni las judías rojas o negras;
+- los alimentos eliminados eran una búsqueda literal: quien escribía «frijoles», «judías» o «legumbres» seguía recibiendo alubias, garbanzos o lentejas.
+Decisión:
+5. Intolerancia a legumbres: `alergenos.js` añade habitas, habichuelas y judías rojas y negras (ya tenía blancas y pintas). La regla «por si acaso» por texto del catálogo (`TEXTO_INTOLERANCIA` en `engine2App.js`) añade frijoles, habichuelas, habas, habitas y judías de color. Edamame, soja y tofu ya estaban en las dos.
+6. Alimentos eliminados (`src/plan/eliminados.js`, en el catálogo de engine2 y en los desayunos y tentempiés): la búsqueda literal se hace sin acentos, y algunas palabras tienen sinónimos. Criterio conservador, como el punto 1.
+   - «alubias», «judías», «frijoles» y «habichuelas»: todas las alubias (blancas, rojas, pintas y negras), frijoles, habichuelas, fabes y fabada. Quien escribe «judías» sigue perdiendo también las judías verdes, por la búsqueda literal; Javi lo decide así.
+   - «habas»: también las habitas.
+   - «soja»: también edamame, tofu, tempeh y miso.
+   - «legumbres»: lo mismo que la intolerancia a legumbres, con sus excepciones (judías verdes, brotes de soja).
+7. Test de seguridad: `src/plan/tests/seguridadLegumbres.test.js`, con un caso por legumbre y por sinónimo. Usa los platos de main que los llevan (el burrito de alubias negras, el bowl de salmón con edamame, la sopa de miso con tofu, los de garbanzos, lentejas y alubias blancas). Para lo que ningún plato de main lleva aún (habas, habitas, guisantes, frijoles), usa comidas sintéticas.
+Efecto: con los 12 perfiles del banco y con intolerancia a legumbres o SIBO, los menús de 8 semanas son idénticos a los de `19a300c`. Solo cambian para quien escribe «frijoles», «judías» o «legumbres» en sus alimentos eliminados: se le quitan esos platos.
+8. Cambiar una comida por el motor viejo (cuando `regenerarComida` devuelve null y la app usa `buildPlan`, `OriginalPlanApp.jsx`): el motor viejo está congelado y solo compara su proteína y su hidrato con los alimentos eliminados (`buildPlan.js:843-845`), así que con «frijoles» eliminado dejaría pasar el burrito de alubias negras. Antes de aceptar la comida que trae, `src/plan/regeneracionSegura.js` la comprueba con las mismas reglas que engine2: intolerancias, SIBO y dieta (`intoleranciasDe`) y alimentos eliminados con sus sinónimos. Si lleva algo que el perfil no puede comer, la comida se queda como estaba y la app avisa, como cuando engine2 no tiene alternativa. La comprobación devuelve el plan de antes con la causa `alternativa_motor_viejo_rechazada` y la vista la escribe en la consola; no se guarda en el plan, porque al rechazar no se guarda nada (Javi, 2026-11-23). El motor viejo no se toca. La vista (`OriginalPlanApp.jsx`, `regenerateMeal`) solo añade la llamada antes de guardar: es la única forma de comprobarlo, porque esa regeneración la hace la vista con `buildPlan`, sin pasar por `src/plan`. Con esto queda cerrado el hueco del cambio de una comida. Test: `src/plan/tests/regeneracionSegura.test.js`.
+Pendiente: los planes que genera entero el motor viejo (reserva si engine2 falla, `VITE_MOTOR_PLAN=legacy`) siguen con su búsqueda literal; esto solo cubre el cambio de una comida.
+
 ## D-104 — [2026-10-12] SIBO: platos adaptados a bajo en FODMAP
 
 Decide: Javi. HEAD: `3128b52` (rama `intolerancias`, D-103).
@@ -4344,6 +4361,11 @@ La adaptación es por ingrediente, no por cantidad: no aplica los umbrales por r
 
 Estado resultante
 Con SIBO la semana sale entera con engine2 y ninguna comida conserva ajo, cebolla, trigo, lactosa ni otros alimentos altos en FODMAP sin adaptar.
+
+Ampliación — [2026-11-23] Habitas y judías de color (paso 1 de la legumbre como guarnición)
+Decide: Javi (plan aprobado el 2026-11-23). Commit: `6263e76`, rama `motor/guarnicion-1-seguridad` desde `main` `19a300c`.
+5. Lo que queda alto en FODMAP sin sustituto (`RESTANTE` en `fodmap.js`, punto 3) añade las habitas y las judías rojas y negras. Antes cubría «habas» y las judías blancas y pintas, pero no «habitas», que traerá la legumbre como guarnición. Test: `src/plan/tests/seguridadLegumbres.test.js`, sección «SIBO».
+Efecto: ningún plato de main lleva habitas ni judías rojas o negras. Con SIBO, los menús de 8 semanas del banco son idénticos a los de `19a300c`.
 
 ## D-105 — [2026-10-12] Aliños: nombres sin ajo y reglas de aliño del menú
 

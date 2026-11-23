@@ -48,7 +48,7 @@ export const ALERGENOS = Object.freeze({
     no: R('jam[oó]n de pavo|bacon de pavo|chorizo vegetal|pechuga de pavo'),
   },
   legumbres: {
-    si: R('lenteja|garbanzo|alubia|jud[ií]as? blanca|jud[ií]as? pinta|frijol|fabes|fabada|habas?\\b|guisante|soja|tofu|edamame|hummus|falafel|cocido (madrile|gallego|monta|lebaniego|express)|azuki|altramuz|miso|tempeh'),
+    si: R('lenteja|garbanzo|alubia|jud[ií]as? (blanca|pinta|roja|negra)|frijol|habichuela|fabes|fabada|hab(as?|itas?)\\b|guisante|soja|tofu|edamame|hummus|falafel|cocido (madrile|gallego|monta|lebaniego|express)|azuki|altramuz|miso|tempeh'),
     no: R('jud[ií]as? verdes?|brotes de soja'),
   },
   picante: {

@@ -25,6 +25,7 @@ import { fodmapRestante, protagonistaFodmap } from '../engine2/nutrientes/fodmap
 import { animalDeTexto, dietaDe, VETADOS_POR_DIETA } from '../engine2/nutrientes/dietas.js';
 import { ponerDesayunos, alternativaDesayuno } from './desayunosApp.js';
 import { conPlatosDieta } from './platosDieta.js';
+import { eliminadoEn } from './eliminados.js';
 import { componerPlato, gramosDeBase } from './textos/componer.js';
 import { nombreDeBase } from './textos/compuestos.js';
 import { limpiarComidaLegacy } from './textos/legacy.js';
@@ -51,12 +52,12 @@ function opcionesLegacy(opts) {
 
 // ─── Filtro de seguridad del catálogo ───────────────────────────────────────
 
-const TEXTO_INTOLERANCIA = Object.freeze({
+export const TEXTO_INTOLERANCIA = Object.freeze({
   pescado: /salm[oó]n|merluza|bacalao|dorada|sardina|at[uú]n|bonito|pescado|corvina|anchoa|boquer[oó]n|caballa|lubina/i,
   mariscos: /gamba|calamar|marisco|mejill[oó]n|berberecho|pulpo|langostino|sepia|almeja|fideu[aá]|paella de gambas/i,
   cerdo: /cerdo|lomo|jam[oó]n|bacon|beicon|guanciale|chorizo|lac[oó]n|morcilla|panceta|salchich|carbonara|cocido|fabada/i,
   huevo: /huevo|tortilla|revuelto|shakshuka|carbonara|ensaladilla|mayonesa|claras/i,
-  legumbres: /lenteja|garbanzo|alubia|jud[ií]a blanca|hummus|falafel|fabada|cocido|edamame|soja|tofu|guisante/i,
+  legumbres: /lenteja|garbanzo|alubia|jud[ií]as? (blanca|pinta|roja|negra)|frijol|habichuela|hab(as?|itas?)\b|hummus|falafel|fabada|cocido|edamame|soja|tofu|guisante/i,
   frutos_secos: /nuez|nueces|almendra|pistacho|cacahuete|anacardo|avellana|frutos secos|pi[ñn]ones|sésamo|tahini/i,
 });
 const PROTEINA_INTOLERANCIA = Object.freeze({
@@ -142,7 +143,7 @@ export function filtrarCatalogo(catalogBase, profile, targetKcal, opts) {
     const motivo = porIngrediente || porFicha
       || intol.find((i) => (PROTEINA_INTOLERANCIA[i] && PROTEINA_INTOLERANCIA[i].has(prot))
       || (TEXTO_INTOLERANCIA[i] && TEXTO_INTOLERANCIA[i].test(texto)))
-      || eliminados.find((e) => texto.includes(e) || (prot && prot.includes(e)));
+      || eliminados.find((e) => eliminadoEn(texto, e) || (prot && prot.includes(e)));
     if (motivo) quitados.push({ id: d.id, nombre: d.nombre, motivo });
     return !motivo;
   });

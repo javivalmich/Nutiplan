@@ -4361,6 +4361,11 @@ La adaptación es por ingrediente, no por cantidad: no aplica los umbrales por r
 Estado resultante
 Con SIBO la semana sale entera con engine2 y ninguna comida conserva ajo, cebolla, trigo, lactosa ni otros alimentos altos en FODMAP sin adaptar.
 
+Ampliación — [2026-11-23] Habitas y judías de color (paso 1 de la legumbre como guarnición)
+Decide: Javi (plan aprobado el 2026-11-23). Commit: `6263e76`, rama `motor/guarnicion-1-seguridad` desde `main` `19a300c`.
+5. Lo que queda alto en FODMAP sin sustituto (`RESTANTE` en `fodmap.js`, punto 3) añade las habitas y las judías rojas y negras. Antes cubría «habas» y las judías blancas y pintas, pero no «habitas», que traerá la legumbre como guarnición. Test: `src/plan/tests/seguridadLegumbres.test.js`, sección «SIBO».
+Efecto: ningún plato de main lleva habitas ni judías rojas o negras. Con SIBO, los menús de 8 semanas del banco son idénticos a los de `19a300c`.
+
 ## D-105 — [2026-10-12] Aliños: nombres sin ajo y reglas de aliño del menú
 
 Decide: Javi. HEAD: `aded1ae`.

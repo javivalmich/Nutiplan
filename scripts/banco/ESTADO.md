@@ -1,4 +1,4 @@
-# Estado de la rama `motor/i0-banco-cantidades` (traspaso, 2026-11-23)
+# Estado de la rama `motor/i0-banco-cantidades` (traspaso, 2026-11-24)
 
 Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, creada desde `main`
 `19a300c`. Lleva mergeado `main` `9522e92` (PR #27, seguridad de las legumbres) en `ce21c11`. Sin merge a `main`. La sesión de auditoría de seguridad trabaja aparte, en
@@ -124,7 +124,12 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
 | `6297fec` | Paso 2: legumbres nuevas (alubias blancas, rojas y pintas, lentejas pardina y beluga, habitas) y `alubias_cocidas` → `alubias_negras_cocidas`; `composicion.js` regenerado (test `legumbresNuevas.test.js`) |
 | `aeea294` | `DECISIONS.md`: ampliación de D-100 (paso 2) |
 | `f3a94ec` | Paso 3: legumbres válidas por plato (`src/engine2/dishes/guarnicionLegumbre.js`, generado desde el `.csv` con `medicion/inventario/guarnicionLegumbre.mjs`; test `guarnicionLegumbre.test.js`) |
-| el siguiente a `f3a94ec` | `ESTADO.md` al día |
+| `224f8cd` | `ESTADO.md` al día |
+| `bb1f9c8` | Paso 8: D-116 y D-117 apagadas con el interruptor `reglaLegumbre` (apagado por defecto); los 17 tests de D-116 y D-117 la encienden; `VERSION_MOTOR` 2026-11-24; línea base regenerada (test `interruptorLegumbre.test.js`) |
+| `a2578bf` | `DECISIONS.md`: D-116 y D-117, apagadas por interruptor |
+| `e74e471` | Pasos 6 y 9, sin actuar: raciones de la guarnición (`raciones.js`, `racionesApp.js`), texto, compra y receta (`textos/guarnicion.js`, `compuestos.js`, `componer.js`) y alternativas que no van al motor viejo (test `guarnicionPlato.test.js`) |
+| `ded044d` | `DECISIONS.md`: D-120 (raciones de la guarnición) |
+| el siguiente a `ded044d` | `ESTADO.md` al día |
 
 ## Legumbre como guarnición: dónde se para (2026-11-23)
 
@@ -138,7 +143,14 @@ Plan: `medicion/guarnicion/plan-implementacion.md`, aprobado por Javi el 2026-11
 - **Paso 3 (lista por plato): hecho** (`f3a94ec`). 61 platos, en el orden del `.csv`, como claves del medidor. Va en un módulo de `src/engine2/dishes/` y no colgado del plato en `catalogoApp()`: el paso 4 lo leerá desde el walk (engine2), que no importa `src/plan`, y así el objeto del plato no cambia.
 - **En cada paso:** test previo que fallaba, batería completa (1520 tests; solo no carga `src/data/__tests__/pdb.characterization.test.js`, sin `.env.local`) y banco sin diferencias con la línea base. Ningún menú cambia.
 - **Los prototipos `medicion/variantesGuarnicion.mjs` y `variantesGuarnicion2.mjs` ya no corren sobre HEAD:** sus anclas nombran `alubias_cocidas` y añaden en memoria ingredientes que ahora existen. Se reproducen en sus commits (`7a7f518` el último).
-- **Siguiente, cuando lo pida Javi:** el paso 8 (apagar D-116 y D-117 con el interruptor; línea base nueva).
+- **Paso 8 (interruptor): hecho** (`bb1f9c8`, D-116 y D-117 en `a2578bf`).
+  - `reglaLegumbre` en `runWalk`, `materializePlan` y las opciones de `generarPlan` y `regenerarComida`; apagado por defecto. Apagado: sin sorteo, sin segundos, sin la red de D-116.5, D-024 como antes y `regla_legumbre_apagada` en el log al empezar el walk.
+  - Las alternativas leen el mismo interruptor. Una comida doble guardada (`_dishId2`) se sigue leyendo, racionando y regenerando igual.
+  - Los 17 archivos de test de D-116 y D-117 encienden la regla con un envoltorio de una línea sobre la función que importan; ningún test se ha borrado ni cambiado de expectativa.
+  - Banco: cambian 72 de 96 semanas (las 8 de los 9 perfiles omnívoros sin SIBO); SIBO, vegetariana y vegana, iguales. D-099.3: ninguna infracción nueva; sin-pescado-2000 pasa de 1 a 0 y vegana-1400 mantiene las suyas (15 especies más de 2 veces y 2 en días seguidos, sin la regla).
+- **Pasos 6 y 9 (raciones y texto): en el código, sin actuar** (`e74e471`, D-120 en `ded044d`). Ningún plato lleva guarnición hasta el paso 4; el banco no cambia. Los tests fuerzan la guarnición en platos reales del catálogo.
+  - Abierto: el edamame se escribe «de bote», como en el prototipo (en España se vende sobre todo congelado).
+- **Siguiente, cuando lo pida Javi:** los pasos 4, 5 y 7 juntos (D-119; línea base nueva y `VERSION_MOTOR` nueva).
 
 ## Dónde se para la sesión anterior (2026-11-22)
 

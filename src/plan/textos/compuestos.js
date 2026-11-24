@@ -56,7 +56,38 @@ const TIEMPO = {
 
 // ─── Hidratos ───────────────────────────────────────────────────────────────
 
+// Legumbre como guarnición (paso 9; D-120): la legumbre de bote, escurrida,
+// ocupa el hueco del hidrato del plato. clave: ingrediente del medidor (las de
+// src/engine2/dishes/guarnicionLegumbre.js); nombre: cómo va en el título; el y
+// pron: con artículo y pronombre, para la receta.
+export const LEGUMBRES_GUARNICION = Object.freeze({
+  garbanzos_cocidos: { nombre: 'garbanzos', compra: 'Garbanzos cocidos de bote', el: 'los garbanzos', g: 'm', pron: 'los' },
+  alubias_blancas_cocidas: { nombre: 'alubias blancas', compra: 'Alubias blancas cocidas de bote', el: 'las alubias blancas', g: 'f', pron: 'las' },
+  alubias_rojas_cocidas: { nombre: 'alubias rojas', compra: 'Alubias rojas cocidas de bote', el: 'las alubias rojas', g: 'f', pron: 'las' },
+  alubias_pintas_cocidas: { nombre: 'alubias pintas', compra: 'Alubias pintas cocidas de bote', el: 'las alubias pintas', g: 'f', pron: 'las' },
+  alubias_negras_cocidas: { nombre: 'alubias negras', compra: 'Alubias negras cocidas de bote', el: 'las alubias negras', g: 'f', pron: 'las' },
+  lentejas_pardinas_cocidas: { nombre: 'lentejas pardinas', compra: 'Lentejas pardinas cocidas de bote', el: 'las lentejas pardinas', g: 'f', pron: 'las' },
+  lentejas_beluga_cocidas: { nombre: 'lentejas beluga', compra: 'Lentejas beluga cocidas de bote', el: 'las lentejas beluga', g: 'f', pron: 'las' },
+  habitas: { nombre: 'habitas', compra: 'Habitas de bote', el: 'las habitas', g: 'f', pron: 'las' },
+  guisantes: { nombre: 'guisantes', compra: 'Guisantes de bote', el: 'los guisantes', g: 'm', pron: 'los' },
+  edamame: { nombre: 'edamame', compra: 'Edamame de bote', el: 'el edamame', g: 'm', pron: 'lo' },
+});
+/** Clave del hueco de hidrato de una legumbre de guarnición (fría en ensaladas y platos crudos). */
+export const claveHidratoGuarnicion = (clave, frio) => `g_${clave}${frio ? '_frio' : ''}`;
+const hidratosGuarnicion = {};
+for (const [clave, l] of Object.entries(LEGUMBRES_GUARNICION)) {
+  // base: gramos de partida; las raciones los ajustan (D-120: 100-220 g, salida 130 g).
+  const base = { compra: l.compra, el: l.el, g: l.g, base: 130, escurrido: true, clave };
+  hidratosGuarnicion[claveHidratoGuarnicion(clave, false)] = {
+    ...base,
+    receta: `Escurre y enjuaga ${l.el} de bote; caliénta${l.pron} 2-3 min en una sartén con un poco del aceite y sal.`,
+    recetaHorno: `Escurre y enjuaga ${l.el} de bote, séca${l.pron}, alíña${l.pron} con un poco del aceite y sal y ása${l.pron} en la misma bandeja los últimos 15 min.`,
+  };
+  hidratosGuarnicion[claveHidratoGuarnicion(clave, true)] = { ...base, receta: `Escurre y enjuaga ${l.el} de bote.` };
+}
+
 export const HIDRATOS = Object.freeze({
+  ...hidratosGuarnicion,
   arroz: { compra: 'Arroz', el: 'el arroz', g: 'm', base: 70, seco: true, clave: 'arroz_seco', receta: 'Cuece el arroz en agua con sal 15-18 min y escúrrelo.' },
   pasta: { compra: 'Pasta integral', el: 'la pasta', g: 'f', base: 80, seco: true, clave: 'pasta_integral_seco', receta: 'Cuece la pasta en agua con sal hasta que esté al dente (unos 10 min) y escúrrela.' },
   patata: { compra: 'Patata', el: 'la patata', g: 'f', base: 200, clave: 'patata', receta: 'Cuece la patata con piel en agua con sal 20-25 min (o 8 min tapada en el microondas) y córtala en rodajas.', recetaHorno: 'Corta la patata en gajos, alíñala con un poco del aceite y sal y ásala a 200 °C 30-35 min.' },
@@ -271,7 +302,7 @@ export function escribirCompuesto({ tupla, nombre, momento, gramos, ancla = null
   const conA = A ? ` con ${A.texto}` : '';
   let p1;
   let p2;
-  const carbTxt = C ? `${C.compra} (${gC} g${C.seco ? ' en seco' : ''})` : null;
+  const carbTxt = C ? `${C.compra} (${gC} g${C.seco ? ' en seco' : ''}${C.escurrido ? ' escurridos' : ''})` : null;
   const aceite = `AOVE (${aove} ml)`;
   const verdurasCon = (hint) => [V && verduraTexto(V, gV, hint ? V.p2 : ''), V2 && verduraTexto(V2, gV2, hint ? V2.p2 : '')].filter(Boolean);
 
@@ -301,7 +332,7 @@ export function escribirCompuesto({ tupla, nombre, momento, gramos, ancla = null
   const shopping = [];
   shopping.push(compraP(P, gP, hueco === 'P' ? notaCompra : null));
   // El hidrato en seco (arroz, pasta, quinoa) se compra «en seco», igual que dice el texto del plato.
-  if (C) shopping.push(`${C.compra} (${gC} g${C.seco ? ' en seco' : ''}${hueco === 'C' && notaCompra ? `, ${notaCompra}` : ''})`);
+  if (C) shopping.push(`${C.compra} (${gC} g${C.seco ? ' en seco' : ''}${C.escurrido ? ' escurridos' : ''}${hueco === 'C' && notaCompra ? `, ${notaCompra}` : ''})`);
   if (V) shopping.push(`${V.compra} (${V.medida(gV).corta}, ${gV} g)`);
   if (V2) shopping.push(`${V2.compra} (${V2.medida(gV2).corta}, ${gV2} g)`);
   if (A) shopping.push(...A.compra);
@@ -357,7 +388,7 @@ export function escribirCompuesto({ tupla, nombre, momento, gramos, ancla = null
     }
     const crudas = tmpl === 'ensalada';
     for (const v of [V, V2].filter(Boolean)) recipe.push(crudas && v.crudo ? v.crudo : v.receta);
-    if (tmpl === 'ensalada') recipe.push(`Mezcla todo${C ? ` con ${C.el} ya templad${C.g === 'f' ? 'a' : 'o'}` : ''} y aliña con el aceite${A ? ` y ${A.el || A.texto}` : ', vinagre y sal'}.`);
+    if (tmpl === 'ensalada') recipe.push(`Mezcla todo${C ? ` con ${C.el}${C.escurrido ? '' : ` ya templad${C.g === 'f' ? 'a' : 'o'}`}` : ''} y aliña con el aceite${A ? ` y ${A.el || A.texto}` : ', vinagre y sal'}.`);
     else if (tmpl === 'bowl') recipe.push(`Monta el bol: ${C ? `${C.el} de base, ` : ''}${P.corto} encima y la verdura al lado; un hilo del aceite por encima.`);
     else if (tmpl === 'pasta') recipe.push(`Mezcla la pasta con ${P.corto} y la verdura${A && !A.tomate ? ` y ${A.texto}` : ''}; termina con queso rallado al gusto.`);
     else recipe.push(`Sirve ${P.corto} con ${[V && V.el, V2 && V2.el, C && C.el].filter(Boolean).join(', ').replace(/, ([^,]*)$/, ' y $1')}${C || V ? '' : ''}.`);

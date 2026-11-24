@@ -242,7 +242,7 @@ export function ajustarDia(day, profile, targetKcal, { composicion = COMPOSICION
       id: String(i),
       momento: MOMENTO[m.time] || 'tentempie',
       libre,
-      items: lectura.items.map((it) => ({ ...itemDe(it), ...(m.masa ? { masa: true } : {}), ...(esComidaDoble(m) ? extraDoble(m, it, targetKcal, composicion) : {}) })),
+      items: lectura.items.map((it) => ({ ...itemDe(it), ...(m.masa ? { masa: true } : {}), ...(esComidaDoble(m) ? extraDoble(m, it, targetKcal, composicion) : {}), ...(m._guarnicion && it.clave === m._guarnicion.clave ? { guarnicionLeg: true } : {}) })),
     });
   });
   const batido = batidoDelDia(profile, day);

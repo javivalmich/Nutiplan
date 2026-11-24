@@ -18,6 +18,8 @@ import { generarPlanEngine2, regenerarComidaEngine2, regenerarDesayunoEngine2, m
 import { catalogoApp } from './catalogo.js';
 import { ajustarDia } from './racionesApp.js';
 
+// Paso 9 (D-120): una comida con guarnición de legumbre tampoco va al motor viejo (perdería la guarnición).
+export const AVISO_GUARNICION_SIN_ALTERNATIVA = 'No hay otro plato que encaje con el menú de esta semana para cambiar esta comida; se queda como está.';
 export const AVISO_COMIDA_DOBLE_SIN_ALTERNATIVA = 'No hay otro plato que encaje con el menú de esta semana para cambiar esta comida de primero y segundo; se queda como está.';
 
 function motorPorDefecto() {
@@ -150,6 +152,14 @@ export function regenerarComida(plan, dayIdx, time, deseo, profile, targetKcal, 
     // Comida con primero y segundo (D-116): el motor viejo perdería el segundo y podría servir legumbre
     // como plato único (D-116.1). Se queda como está, con un aviso (decisión de Javi del 2026-11-16).
     // También si está incompleta (`_dishId2` sin los datos de sus dos platos; B5 de la segunda revisión).
+    if (meal._guarnicion && !meal._dishId2) {
+      return {
+        ...plan,
+        alternativaSinCambio: true,
+        alternativaAviso: AVISO_GUARNICION_SIN_ALTERNATIVA,
+        decisionLog: [...(plan.decisionLog || []), { causa: 'alternativa_sin_candidato_guarnicion', day: plan.days[dayIdx].name, momento: time, deseo, plato: meal._dishId, detalle: `engine2 no encuentra alternativa (${String(err && err.message ? err.message : err)}); la comida con guarnición de legumbre (${meal._guarnicion.clave}) se queda como está, sin ir al motor viejo` }],
+      };
+    }
     if (meal._dishId2) {
       return {
         ...plan,

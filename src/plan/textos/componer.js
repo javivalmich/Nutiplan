@@ -64,7 +64,8 @@ export function aplicarAnclaLibre(meal) {
  */
 export function componerPlato(dish, momento, targetKcal, { ancla = null } = {}) {
   const time = momento === 'cena' ? 'Cena' : 'Comida';
-  const tupla = tuplaDe(dish.id);
+  // Paso 9 (D-120): un plato con guarnición de legumbre lleva su tupla con la legumbre en el hueco del hidrato (guarnicion.js).
+  const tupla = dish._tuplaGuarnicion || tuplaDe(dish.id);
   if (tupla) {
     const gramos = gramosDePartida(tupla, targetKcal);
     const componer = { tupla, nombre: dish.nombre, momento, batchable: !!dish.batchable, shelfLifeDays: dish.shelfLifeDays || 0, gramos };
@@ -77,6 +78,7 @@ export function componerPlato(dish, momento, targetKcal, { ancla = null } = {}) 
       _spec: { ...tupla, slot: time, plateType: dish.plateType, title: dish.nombre },
       _componer: componer,
       ...(anclaPlato ? { _ancla: anclaPlato } : {}),
+      ...(dish._guarnicion ? { _guarnicion: dish._guarnicion } : {}),
     };
   }
   const ficha = libres.get(dish.id);

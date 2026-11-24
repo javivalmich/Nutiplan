@@ -87,6 +87,30 @@ export const TOPE_HUEVOS_COMIDA = 3;
 export const TOPE_HUEVOS_DIA = 4;
 export const KCAL_RACION_NORMAL = 2200;
 export const AMPLITUD_MAX = 1.4;
+
+// D-120 (paso 6 de la legumbre como guarnición; decisión de Javi del
+// 2026-11-23): raciones de una comida cuya legumbre va de guarnición, en lugar
+// del hidrato del plato. La legumbre lleva la marca guarnicionLeg (la pone
+// racionesApp.js). Sin ninguna marca, nada de esto actúa.
+//   - La legumbre va de 100 a 220 g (de bote, escurrida) y no crece con la
+//     amplitud del objetivo; en el reparto sale como mucho con 130 g.
+//   - Tope de plato del proteico: 200 g de ave o carne y 220 g de pescado o
+//     marisco; por encima de 2200 kcal escala con la amplitud, como el máximo
+//     de los energéticos.
+//   - El pan que ya lleva la comida se queda en su mínimo en el reparto.
+//   - Si faltan kcal: el proteico solo va por la proteína (hasta su tope);
+//     después crece la legumbre hasta 220 g y después el pan, por este orden.
+export const RANGO_GUARNICION = Object.freeze([100, 220, 10]);
+export const SALIDA_GUARNICION = 130;
+export const TOPE_PLATO_CARNE = 200;
+export const TOPE_PLATO_PESCADO = 220;
+const PESCADO_PLATO = new Set(['salmon', 'salmon_ahumado', 'merluza', 'bacalao', 'dorada', 'corvina', 'sardina', 'bonito', 'atun_conserva', 'gambas', 'calamar', 'mejillon', 'berberecho']);
+const CARNE_PLATO = new Set(['pollo_pechuga', 'pollo_muslo', 'pollo_picado', 'pollo_cocido', 'pavo_pechuga', 'pavo_picado', 'ternera_magra', 'ternera_picada', 'cerdo_lomo', 'conejo']);
+/** Tope de plato del proteico en una comida con guarnición (sin escalar), o null. */
+export function topePlato(clave) {
+  return PESCADO_PLATO.has(clave) ? TOPE_PLATO_PESCADO : CARNE_PLATO.has(clave) ? TOPE_PLATO_CARNE : null;
+}
+const esPan = (clave) => String(clave).startsWith('pan_');
 const PAN = { clave: 'pan_integral', gramos: 60, unidad: 'g', nombre: 'pan para acompañar' };
 // D-110: con celiaquía o SIBO no se añade pan integral; en su lugar, pan sin
 // gluten (la app lo veta para el resto de perfiles).
@@ -153,6 +177,7 @@ function suma(items, composicion, gramosDe) {
  * @param {number} [amplitud] factor (≥ 1) para el máximo de los energéticos
  */
 export function ajustarComida(items, meta, composicion, amplitud = 1, { topeHuevos = null } = {}) {
+  const conGuarnicion = items.some((it) => it.guarnicionLeg);
   const estado = items.map((it) => {
     const comp = composicion[it.clave];
     const papel = comp && !it.fijo ? papelDe(it.clave, comp) : 'fijo';
@@ -185,6 +210,14 @@ export function ajustarComida(items, meta, composicion, amplitud = 1, { topeHuev
       const [a, b, p] = rango;
       rango = [a, Math.max(b, Math.floor((b * amplitud) / p) * p), p];
     }
+    // D-120: la legumbre de la guarnición, con su rango propio (sin amplitud).
+    if (rango && it.guarnicionLeg) rango = [...RANGO_GUARNICION];
+    // D-120: tope de plato del proteico, escalado con la amplitud por encima de 2200 kcal.
+    const t0 = conGuarnicion && rango ? topePlato(it.clave) : null;
+    if (t0) {
+      const tope = amplitud > 1 ? Math.max(t0, Math.floor((t0 * amplitud) / rango[2]) * rango[2]) : t0;
+      rango = [Math.min(rango[0], tope), Math.min(rango[1], tope), rango[2]];
+    }
     return { ...it, papel: rango ? papel : 'fijo', rango, nuevo: it.gramos, limitado: null, fijoPorFicha };
   });
   const libres = () => estado.filter((e) => e.papel !== 'fijo' && !e.limitado);
@@ -214,7 +247,11 @@ export function ajustarComida(items, meta, composicion, amplitud = 1, { topeHuev
     for (const e of libres()) {
       const fx = e.papel === 'proteico' ? fP : fE;
       const g = e.gramos * fx;
-      const [min, max] = e.rango;
+      // D-120: en el reparto, la legumbre de la guarnición sale como mucho con
+      // SALIDA_GUARNICION y el pan se queda en su mínimo; lo que falte lo reparte
+      // después crecerGuarnicion, por orden.
+      const [min, max] = e.guarnicionLeg ? [e.rango[0], Math.min(e.rango[1], SALIDA_GUARNICION)]
+        : conGuarnicion && esPan(e.clave) ? [e.rango[0], e.rango[0]] : e.rango;
       if (g < min) { e.nuevo = min; e.limitado = 'minimo'; cambio = true; } else if (g > max) { e.nuevo = max; e.limitado = 'maximo'; cambio = true; } else e.nuevo = g;
     }
     if (!cambio) break;
@@ -257,6 +294,7 @@ export function ajustarComida(items, meta, composicion, amplitud = 1, { topeHuev
     if (cambios.length) crecido = { cambios, legumbreEnTope: energeticos.filter(esLegumbre).every((e) => e.limitado === 'maximo') };
   }
 
+  const crecidoGuarnicion = conGuarnicion ? crecerGuarnicion(estado, faltaKcal, composicion) : null;
   // Medidas de casa.
   for (const e of estado) {
     if (e.papel === 'fijo') continue;
@@ -275,10 +313,44 @@ export function ajustarComida(items, meta, composicion, amplitud = 1, { topeHuev
   }
   return {
     ...(crecido ? { crecido } : {}),
+    ...(crecidoGuarnicion ? { crecidoGuarnicion } : {}),
     items: estado.map((e) => ({ clave: e.clave, unidad: e.unidad, antes: e.gramos, gramos: r1(e.nuevo), papel: e.papel, limitado: e.limitado, ...(e.anadido ? { anadido: true } : {}), ...(e.fijoPorFicha ? { fijoPorFicha: e.fijoPorFicha } : {}) })),
     kcal: Math.round(total.kcal),
     proteina: Math.round(total.proteina),
   };
+}
+
+/**
+ * D-120: si a una comida con guarnición le faltan kcal, crece la legumbre hasta
+ * su máximo y después el pan, por este orden y dentro de su rango. El proteico
+ * no crece por kcal: va por la proteína de la comida, hasta su tope de plato;
+ * se anota cómo queda, para la causa. Devuelve lo que cambió, o null.
+ */
+function crecerGuarnicion(estado, faltaKcal, composicion) {
+  const cambios = [];
+  for (const e of estado.filter((x) => x.papel === 'proteico' && x.rango && topePlato(x.clave))) {
+    cambios.push({ clave: e.clave, papel: 'proteina', despues: e.nuevo, tope: e.rango[1], enTope: e.limitado === 'maximo' });
+  }
+  const crecer = (e, papel) => {
+    const falta = faltaKcal();
+    const comp = composicion[e.clave];
+    if (falta <= 0 || !e.rango || !comp || !comp.kcal) return;
+    const antes = e.nuevo;
+    const g = e.nuevo + (falta * 100) / comp.kcal;
+    if (g >= e.rango[1]) { e.nuevo = e.rango[1]; e.limitado = 'maximo'; } else { e.nuevo = g; e.limitado = null; }
+    if (e.nuevo > antes) cambios.push({ clave: e.clave, papel, antes, despues: e.nuevo });
+  };
+  for (const e of estado.filter((x) => x.guarnicionLeg)) crecer(e, 'legumbre');
+  for (const e of estado.filter((x) => x.papel !== 'fijo' && esPan(x.clave))) crecer(e, 'pan');
+  return cambios.length ? cambios : null;
+}
+
+/** Texto de la causa guarnicion_crece_por_energia (D-120). */
+export function textoCrecidoGuarnicion(cambios) {
+  const papel = { legumbre: 'la legumbre', pan: 'el pan' };
+  const prot = cambios.filter((x) => x.papel === 'proteina').map((x) => `${x.clave} ${Math.round(x.despues)} g por la proteína de la comida${x.enTope ? ` (en su tope de plato, ${x.tope} g: la proteína pedía más)` : ` (tope ${x.tope} g)`}`);
+  const kc = cambios.filter((x) => x.papel !== 'proteina');
+  return `comida con guarnición: ${prot.join('; ') || 'sin proteico con tope'}${kc.length ? `; con la proteína ${cambios.some((x) => x.enTope) ? 'hasta el tope' : 'cubierta'}, faltaban kcal: crece ${kc.map((x) => `${papel[x.papel]} (${x.clave} ${Math.round(x.antes)} → ${Math.round(x.despues)} g)`).join('; después ')}` : ''}`;
 }
 
 /**
@@ -419,6 +491,7 @@ export function racionesDia({ comidas, aparte = [], objetivo, composicion, vetad
         detalle: `faltaban kcal: ${cambios.map(texto).join('; ')}; legumbre ${legumbreEnTope ? 'en su tope' : 'por debajo de su tope'}, aceite ${aceiteEnMaximo ? 'en su máximo' : 'por debajo de su máximo'}; dentro de su rango, antes de añadir pan o fruta (D-116.6)`,
       });
     }
+    if (r.crecidoGuarnicion) log.push({ causa: 'guarnicion_crece_por_energia', momento: c.momento, id: c.id, detalle: textoCrecidoGuarnicion(r.crecidoGuarnicion) });
     const deFicha = r.items.filter((i) => i.fijoPorFicha);
     if (deFicha.length) {
       log.push({ causa: 'cantidad_de_la_ficha', momento: c.momento, id: c.id, detalle: `fijo en lo que pide la ficha, por debajo del mínimo de su rango: ${deFicha.map((i) => `${i.clave} ${i.fijoPorFicha.ficha} g (mínimo ${i.fijoPorFicha.minimo} g)`).join(', ')}` });

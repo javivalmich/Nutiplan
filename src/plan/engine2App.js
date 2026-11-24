@@ -489,7 +489,8 @@ export function regenerarComidaEngine2(plan, dayIdx, time, deseo, profile, targe
   const doble = esComidaDoble(actual);
   const incompleta = !doble && !!actual._dishId2;
   const nombreCatalogo = (id) => { const d = catalog.find((x) => x.id === id); return d ? d.nombre : null; };
-  const nombreActual = doble ? actual._doble.primero.title : incompleta ? nombreCatalogo(actual._dishId) : (actual.title || '').replace(/ \(comida principal\)$/, '');
+  // Paso 9 (D-120): una comida con guarnición está en platosSemana con el nombre del plato sin la guarnición.
+  const nombreActual = doble ? actual._doble.primero.title : incompleta ? nombreCatalogo(actual._dishId) : actual._guarnicion ? actual._guarnicion.nombreOriginal : (actual.title || '').replace(/ \(comida principal\)$/, '');
   const nombreSegundo = doble ? actual._doble.segundo.title : incompleta ? nombreCatalogo(actual._dishId2) : null;
   const platosSemana = (meta.platosSemana || []).filter((n) => !nombreSegundo || n !== nombreSegundo).map((n) => (n === actual.title || n === nombreActual ? dish.nombre : n));
   const retirada = doble

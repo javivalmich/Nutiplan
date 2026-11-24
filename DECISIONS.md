@@ -4885,3 +4885,34 @@ Pendiente
 
 Estado resultante
 Implementado en el motor y en la app: el tope de 3 se aplica a todos los perfiles desde `b87ccc3`, y cede ante D-099.3 desde `0878f81`.
+
+## D-120 — [2026-11-24] Raciones de la comida con guarnición de legumbre
+
+Decide: Javi (diseño cerrado el 2026-11-23 con `prototipo6.md` y `prototipo7.md`; plan aprobado el mismo día). Implementado el 2026-11-24, sin actuar todavía: `e74e471`, rama `motor/i0-banco-cantidades`. D-119 queda para el paso 4 (la elección del hidrato en dos pasos).
+
+Contexto
+La legumbre de bote puede ir de guarnición en lugar del hidrato de un plato de plantilla (`src/engine2/dishes/guarnicionLegumbre.js`, paso 3). Con el rango general de la legumbre cocida (120–400 g, que además crece con la amplitud) la guarnición salía como un plato de legumbre, y el proteico crecía sin tope para cubrir las calorías de quien come mucho. Medido en memoria (`scripts/banco/medicion/variantesGuarnicion2.mjs`, opciones `--racionGuarnicion3 --topeEscalado`, y `scripts/banco/medicion/guarnicion/prototipo6.md` y `prototipo7.md`): en omni-3714, 3,44 comidas cortas por semana, frente a 4,37 en `main`; la diferencia con el criterio de 3,42 se acepta como ruido (Javi, 2026-11-23).
+
+Decisión
+1. La legumbre de la guarnición la marca la app (`guarnicionLeg`, en `src/plan/racionesApp.js`, por la clave de `_guarnicion`). Sin ninguna marca no cambia nada.
+2. Va de 100 a 220 g escurridos, en pasos de 10, y no crece con la amplitud del objetivo. En el reparto de la comida sale como mucho con 130 g (`SALIDA_GUARNICION`).
+3. Tope de plato del proteico en una comida con guarnición: 200 g de ave o carne y 220 g de pescado o marisco (`topePlato`). Por encima de 2200 kcal escala con la amplitud, como el máximo de los energéticos (D-100.2), en pasos del rango del proteico.
+4. El pan que la comida ya lleva se queda en su mínimo en el reparto.
+5. Orden de prioridades, sin pesos: primero la proteína (el proteico se dimensiona por la proteína de la comida, hasta su tope de plato; no crece por calorías). Si después faltan kcal, crece la legumbre hasta 220 g y, solo después, el pan, dentro de su rango. Si aún falta más de un 5 %, se añade el acompañamiento de siempre (D-100.2).
+6. La causa es `guarnicion_crece_por_energia`: cuánto lleva el proteico y si está en su tope, y qué ha crecido y cuánto.
+7. Relación con D-116.6: `crecerSiFalta` (el segundo de la comida doble) no se toca; las dos reglas no coinciden en una comida, porque la guarnición no va en la comida doble (D-116 y D-117 apagadas, D-116.12).
+8. Alternativas (decisión de Javi del 2026-11-23): cambiar una comida con guarnición nunca va al motor viejo, que perdería la guarnición. Si engine2 no tiene alternativa, la comida se queda como está, con aviso y la causa `alternativa_sin_candidato_guarnicion`, como la comida doble (`src/plan/generarPlan.js`).
+
+Texto del plato (paso 9, en el mismo commit; sin asiento propio)
+- `src/plan/textos/guarnicion.js` pone la legumbre en el hueco del hidrato y cambia el nombre («Conejo al horno con espinacas y patata» → «Conejo al horno con espinacas y garbanzos»). Solo vale una legumbre de la lista del plato.
+- La compra dice la legumbre de bote escurrida («Garbanzos cocidos de bote (130 g escurridos)»). La receta tiene el paso de calentarla en la sartén, asarla en la bandeja (al horno) o solo escurrirla (en frío).
+
+Efecto
+Ninguno todavía: ningún plato lleva guarnición hasta el paso 4. Test: `src/plan/tests/guarnicionPlato.test.js` (16 casos, con la guarnición forzada en platos reales del catálogo). El banco no tiene diferencias con la línea base.
+
+Pendiente
+- El edamame se escribe «de bote», como en el prototipo; en España se vende sobre todo congelado. Sin decidir.
+- Lo que decida el paso 4 (D-119).
+
+Estado resultante
+En el código, sin actuar.

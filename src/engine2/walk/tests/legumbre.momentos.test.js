@@ -4,8 +4,11 @@
 // formas distintas (de segundo y como comida, o de primero y como cena).
 import { describe, it, expect } from 'vitest';
 import { loadCatalog } from '../../dishes/loadCatalog.js';
-import { materializePlan } from '../../materializePlan.js';
+import { materializePlan as materializePlanSinInterruptor } from '../../materializePlan.js';
 import { esCompuestoLegumbre, esSegundoDeLegumbre } from '../../dishes/bases.js';
+// Paso 8: la regla de D-116 y D-117 está apagada por defecto (interruptor reglaLegumbre).
+// Estos tests prueban su código, así que la encienden.
+const materializePlan = (input) => materializePlanSinInterruptor({ reglaLegumbre: true, ...input });
 
 const catalog = loadCatalog();
 const porId = new Map(catalog.map((d) => [d.id, d]));

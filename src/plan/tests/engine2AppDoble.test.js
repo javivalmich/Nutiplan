@@ -4,7 +4,7 @@
 // los dos platos y las raciones de la comida entera.
 
 import { describe, it, expect } from 'vitest';
-import { generarPlan, platosRecientesPara, recalcularDia } from '../generarPlan.js';
+import { generarPlan as generarPlanSinInterruptor, platosRecientesPara, recalcularDia } from '../generarPlan.js';
 import { metaEngine2, adaptarSiProcede } from '../engine2App.js';
 import { esComidaDoble, compraPorPlato, componerComidaDoble, tituloDoble } from '../textos/comidaDoble.js';
 import { ajustarDia } from '../racionesApp.js';
@@ -16,6 +16,9 @@ import { aplicarNombresD105 } from '../../engine2/dishes/alinosD105.js';
 import { esCompuestoLegumbre, esSegundoDeLegumbre } from '../../engine2/dishes/bases.js';
 import { COMPOSICION } from '../../engine2/nutrientes/composicion.js';
 import { FREEFORM_POOL } from '../../data/freeformPool.js';
+// Paso 8: la regla de D-116 y D-117 está apagada por defecto (interruptor reglaLegumbre).
+// Estos tests prueban su código, así que la encienden.
+const generarPlan = (a0, a1, opts = {}) => generarPlanSinInterruptor(a0, a1, { reglaLegumbre: true, ...opts });
 
 const BASE = { intolerances: [], eliminatedFoods: [], tiempoCocina: 'normal', experiencia: 'intermedio', simpleMode: false, hambre: 'media', kcalAdjust: 0, extras: {} };
 const H74 = { ...BASE, gender: 'male', age: 36, weight: 74, height: 178, activity: 'moderate', goal: 'maintain', mealsPerDay: 4, trainingDays: ['Lunes', 'Miércoles', 'Viernes'] };

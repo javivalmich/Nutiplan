@@ -5,9 +5,12 @@
 // El segundo salió la semana anterior (platosRecientes): hay un segundo posible, así que la regla actúa (sin
 // ninguno no se sortean días, A1), pero no se coloca ninguno.
 import { describe, it, expect } from 'vitest';
-import { materializePlan } from '../../materializePlan.js';
+import { materializePlan as materializePlanSinInterruptor } from '../../materializePlan.js';
 import { loadCatalog } from '../../dishes/loadCatalog.js';
 import { esCompuestoLegumbre, esSegundoDeLegumbre } from '../../dishes/bases.js';
+// Paso 8: la regla de D-116 y D-117 está apagada por defecto (interruptor reglaLegumbre).
+// Estos tests prueban su código, así que la encienden.
+const materializePlan = (input) => materializePlanSinInterruptor({ reglaLegumbre: true, ...input });
 
 const cat = loadCatalog();
 const segundo = cat.find((d) => d.rol === 'rotativo' && esSegundoDeLegumbre(d));

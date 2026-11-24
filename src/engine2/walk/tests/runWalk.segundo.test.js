@@ -8,13 +8,17 @@
 // y los platos redactados de legumbre no llevan segundo. Solo omnivoros.
 
 import { describe, it, expect } from 'vitest';
-import { runWalk } from '../runWalk.js';
-import { materializePlan } from '../../materializePlan.js';
+import { runWalk as runWalkSinInterruptor } from '../runWalk.js';
+import { materializePlan as materializePlanSinInterruptor } from '../../materializePlan.js';
 import { loadCatalog } from '../../dishes/loadCatalog.js';
 import { resolveDishComposition } from '../../dishes/compositionResolver.js';
 import { proteinaPrincipal, familiaProteica, esCompuestoLegumbre, esSegundoDeLegumbre } from '../../dishes/bases.js';
 import { DAYS_ORDER } from '../../skeleton/days.js';
 import { MOMENTOS } from '../../dishes/schema.js';
+// Paso 8: la regla de D-116 y D-117 está apagada por defecto (interruptor reglaLegumbre).
+// Estos tests prueban su código, así que la encienden.
+const runWalk = (input) => runWalkSinInterruptor({ reglaLegumbre: true, ...input });
+const materializePlan = (input) => materializePlanSinInterruptor({ reglaLegumbre: true, ...input });
 
 const SEEDS = 16;
 

@@ -2,9 +2,13 @@
 // compuestos de legumbre en el catálogo), ninguna alternativa de una comida puede ser un compuesto de legumbre como
 // plato único (D-116.1), sea doble o no la comida que se cambia. En vegetariana y vegana la regla no se aplica.
 import { describe, it, expect } from 'vitest';
-import { generarPlan, platosRecientesPara, regenerarComida } from '../generarPlan.js';
+import { generarPlan as generarPlanSinInterruptor, platosRecientesPara, regenerarComida as regenerarComidaSinInterruptor } from '../generarPlan.js';
 import { esCompuestoLegumbre } from '../../engine2/dishes/bases.js';
 import { FREEFORM_POOL } from '../../data/freeformPool.js';
+// Paso 8: la regla de D-116 y D-117 está apagada por defecto (interruptor reglaLegumbre).
+// Estos tests prueban su código, así que la encienden.
+const generarPlan = (a0, a1, opts = {}) => generarPlanSinInterruptor(a0, a1, { reglaLegumbre: true, ...opts });
+const regenerarComida = (a0, a1, a2, a3, a4, a5, opts = {}) => regenerarComidaSinInterruptor(a0, a1, a2, a3, a4, a5, { reglaLegumbre: true, ...opts });
 
 const BASE = { intolerances: [], eliminatedFoods: [], tiempoCocina: 'normal', experiencia: 'intermedio', simpleMode: false, hambre: 'media', kcalAdjust: 0, extras: {} };
 const H74 = { ...BASE, gender: 'male', age: 36, weight: 74, height: 178, activity: 'moderate', goal: 'maintain', mealsPerDay: 4, trainingDays: ['Lunes', 'Miércoles', 'Viernes'] };

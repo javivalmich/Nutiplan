@@ -191,6 +191,19 @@ function reshapeP1aEntry(entry) {
  * @returns {{slots: object[], segundos: {day: string, momento: 'comida', dishId: string, primero: string}[], decisionLog: object[]}}
  */
 export function runWalk(input) {
+  // Interruptor de la regla de legumbre (paso 8 de la legumbre como guarnicion;
+  // decision de Javi del 2026-11-24). Apagado por defecto: sin sorteo de dias
+  // (D-117), sin segundos (D-116), con el paso 4 de D-024 como en main y sin
+  // la red de D-116.5, que solo existe para retirar la regla. El codigo de la
+  // regla se queda: input.reglaLegumbre === true la enciende tal cual.
+  if (input.reglaLegumbre !== true) {
+    const intentos = [];
+    try {
+      return walkConRedDeFamilia(input, { sinRegla: true, intentos, apagadaPorInterruptor: true });
+    } catch (err) {
+      throw conWalks(err, intentos);
+    }
+  }
   // Red de seguridad de la regla de legumbre (D-116.5; decision de Javi del
   // 2026-11-15). El segundo añade apariciones de proteina a la semana; en un
   // catalogo con pocas especies puede dejarla con alguna infraccion de
@@ -297,7 +310,7 @@ function anotarInfraccion(resultado, infracciones, causa, detalle) {
   return resultado;
 }
 
-function walkConRedDeFamilia(input, { sinRegla, intentos = [] }) {
+function walkConRedDeFamilia(input, { sinRegla, intentos = [], apagadaPorInterruptor = false }) {
   // Red de seguridad del filtro de familia (decision de Javi, 2026-11-13).
   // Ese filtro mira un hueco cada vez: en un catalogo muy corto puede gastar
   // antes de tiempo los platos que valian para un hueco posterior y dejarlo
@@ -307,11 +320,11 @@ function walkConRedDeFamilia(input, { sinRegla, intentos = [] }) {
   const uso = { familiaDescarto: false };
   try {
     intentos.push({ sinRegla, sinFamilia: false });
-    return walkUnaVez(input, { sinFamilia: false, uso, sinRegla });
+    return walkUnaVez(input, { sinFamilia: false, uso, sinRegla, apagadaPorInterruptor });
   } catch (err) {
     if (!(err && err.poolVacio) || !uso.familiaDescarto) throw err;
     intentos.push({ sinRegla, sinFamilia: true });
-    const resultado = walkUnaVez(input, { sinFamilia: true, uso: { familiaDescarto: false }, sinRegla });
+    const resultado = walkUnaVez(input, { sinFamilia: true, uso: { familiaDescarto: false }, sinRegla, apagadaPorInterruptor });
     resultado.decisionLog.push({
       decisionId: `walk-select-${resultado.decisionLog.length}`,
       day: undefined,
@@ -327,7 +340,7 @@ function walkConRedDeFamilia(input, { sinRegla, intentos = [] }) {
   }
 }
 
-function walkUnaVez(input, { sinFamilia, uso, sinRegla }) {
+function walkUnaVez(input, { sinFamilia, uso, sinRegla, apagadaPorInterruptor = false }) {
   // input.memoryStore se recibe por inyeccion y NUNCA se lee ni se invoca aqui (D-019, v13):
   // no se desestructura para que quede estructuralmente imposible tocarlo por accidente.
   const {
@@ -355,6 +368,15 @@ function walkUnaVez(input, { sinFamilia, uso, sinRegla }) {
   }
 
   const decisionLog = p1aRawLog.map(reshapeP1aEntry);
+  if (apagadaPorInterruptor) {
+    decisionLog.push({
+      decisionId: `walk-select-${decisionLog.length}`, day: undefined, momento: undefined, plato: undefined,
+      causa: 'regla_legumbre_apagada',
+      evidencia: 'la regla de legumbre de D-116 y D-117 esta apagada (interruptor reglaLegumbre, apagado por defecto): '
+        + 'sin dias de legumbre sorteados, sin segundos y con el paso 4 de D-024 como antes',
+      alternativasDescartadas: [], evento: true,
+    });
+  }
   const rng = selectRng(seed);
 
   const intolerancias = profile?.intolerances ?? [];

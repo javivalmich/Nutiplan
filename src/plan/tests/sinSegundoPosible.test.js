@@ -2,13 +2,16 @@
 // ni ave), no se sortean días de legumbre y D-024 sigue como antes, con su causa en el log. Sin segundo, los días
 // sorteados dejaban la legumbre como plato único, con menos proteína.
 import { describe, it, expect } from 'vitest';
-import { generarPlan, platosRecientesPara } from '../generarPlan.js';
+import { generarPlan as generarPlanSinInterruptor, platosRecientesPara } from '../generarPlan.js';
 import { sortearDiasLegumbre } from '../../engine2/walk/legumbre.js';
 import { loadCatalog } from '../../engine2/dishes/loadCatalog.js';
 import { esSegundoDeLegumbre } from '../../engine2/dishes/bases.js';
 import { DAYS_ORDER } from '../../engine2/skeleton/days.js';
 import { MOMENTOS } from '../../engine2/dishes/schema.js';
 import { FREEFORM_POOL } from '../../data/freeformPool.js';
+// Paso 8: la regla de D-116 y D-117 está apagada por defecto (interruptor reglaLegumbre).
+// Estos tests prueban su código, así que la encienden.
+const generarPlan = (a0, a1, opts = {}) => generarPlanSinInterruptor(a0, a1, { reglaLegumbre: true, ...opts });
 
 const BASE = { intolerances: [], eliminatedFoods: [], tiempoCocina: 'normal', experiencia: 'intermedio', simpleMode: false, hambre: 'media', kcalAdjust: 0, extras: {} };
 const M62 = { ...BASE, gender: 'female', age: 34, weight: 62, height: 165, activity: 'moderate', goal: 'maintain', mealsPerDay: 4, trainingDays: ['Martes'] };

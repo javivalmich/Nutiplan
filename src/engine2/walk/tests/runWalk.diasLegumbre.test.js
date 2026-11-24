@@ -6,13 +6,16 @@
 // legumbre (SIBO) no sortea ningun dia.
 
 import { describe, it, expect } from 'vitest';
-import { runWalk } from '../runWalk.js';
+import { runWalk as runWalkSinInterruptor } from '../runWalk.js';
 import { expandWeekArc } from '../expandWeekArc.js';
 import { buildWeekArc } from '../../skeleton/buildWeekArc.js';
 import { loadCatalog } from '../../dishes/loadCatalog.js';
 import { aplicarAjustesD099 } from '../../dishes/ajustesD099.js';
 import { familiaProteica, esCompuestoLegumbre } from '../../dishes/bases.js';
 import { DAYS_ORDER } from '../../skeleton/days.js';
+// Paso 8: la regla de D-116 y D-117 está apagada por defecto (interruptor reglaLegumbre).
+// Estos tests prueban su código, así que la encienden.
+const runWalk = (input) => runWalkSinInterruptor({ reglaLegumbre: true, ...input });
 
 const catalog = aplicarAjustesD099(loadCatalog());
 const sinLegumbre = catalog.filter((d) => familiaProteica(d) !== 'legumbre');

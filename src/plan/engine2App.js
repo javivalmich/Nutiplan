@@ -49,7 +49,7 @@ import { aplicarNombresD105, nombreVisible } from '../engine2/dishes/alinosD105.
 // pescado que cede, sin sorteo de días sin segundo posible y la legumbre que crece
 // antes que el segundo). De momento solo se escribe: nada la lee. Se cambia a mano
 // cuando cambie lo que el plan guardado lleva (fecha del día del cambio).
-export const VERSION_MOTOR = '2026-11-22';
+export const VERSION_MOTOR = '2026-11-24';
 
 export const DIA_ENGINE2 = Object.freeze({
   Lunes: 'Lunes', Martes: 'Martes', 'Miércoles': 'Miercoles', Jueves: 'Jueves',
@@ -237,6 +237,8 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
     platosRecientes: opts.platosRecientes || [],
     cocinarEnCantidad: profile.cocinarEnCantidad,
     maxRepeticiones: opts.maxRepeticiones,
+    // Paso 8: la regla de D-116 y D-117, apagada salvo opts.reglaLegumbre === true.
+    reglaLegumbre: opts.reglaLegumbre === true,
   });
 
   // Ancla de la semana (si la hay), para las notas del día.
@@ -463,7 +465,8 @@ export function regenerarComidaEngine2(plan, dayIdx, time, deseo, profile, targe
     // D-116.1: un compuesto de legumbre no se sirve como plato único. En un perfil con sorteo de días de
     // legumbre (omnívoro, con compuestos de legumbre en su catálogo), ninguna alternativa puede serlo, sea doble
     // o no la comida que se cambia (decisión de Javi del 2026-11-16).
-    sinLegumbreCompuesta: !!actual._dishId2 || (reglaLegumbreActiva({ dieta: dietaDe(profile) }) && catalog.some((d) => d.rol === 'rotativo' && esCompuestoLegumbre(d))),
+    // Paso 8: con la regla apagada (por defecto) solo vale lo de la comida doble guardada.
+    sinLegumbreCompuesta: !!actual._dishId2 || (opts.reglaLegumbre === true && reglaLegumbreActiva({ dieta: dietaDe(profile) }) && catalog.some((d) => d.rol === 'rotativo' && esCompuestoLegumbre(d))),
     // El tope semanal de pescado y marisco del perfil (o 3), como en la semana.
     topePescado: pescadoMaxSemanaDe(conTopePescado(profile)),
   });

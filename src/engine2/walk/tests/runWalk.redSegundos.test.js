@@ -9,7 +9,7 @@
 // regla_legumbre_retirada_d099 y la lista de infracciones.
 
 import { describe, it, expect } from 'vitest';
-import { runWalk } from '../runWalk.js';
+import { runWalk as runWalkSinInterruptor } from '../runWalk.js';
 import { infraccionesD099 } from '../legumbre.js';
 import { buildWeekArc } from '../../skeleton/buildWeekArc.js';
 import { loadCatalog } from '../../dishes/loadCatalog.js';
@@ -17,6 +17,9 @@ import { aplicarAjustesD099 } from '../../dishes/ajustesD099.js';
 import { proteinaPrincipal, familiaProteica, esSegundoDeLegumbre } from '../../dishes/bases.js';
 import { DAYS_ORDER } from '../../skeleton/days.js';
 import { MOMENTOS } from '../../dishes/schema.js';
+// Paso 8: la regla de D-116 y D-117 está apagada por defecto (interruptor reglaLegumbre).
+// Estos tests prueban su código, así que la encienden.
+const runWalk = (input) => runWalkSinInterruptor({ reglaLegumbre: true, ...input });
 
 function beats7() {
   return DAYS_ORDER.map((day) => ({ day, density: 'medio', slotRole: 'rotativo', ...(day === 'Sabado' ? { fixedRole: 'libre' } : {}) }));

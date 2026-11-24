@@ -2,10 +2,13 @@
 // (_doble ausente o incompleto: un plan guardado a medias, editado a mano o de otra versión) se trata como texto
 // libre: no se vuelve a racionar (se queda como está) y deja su causa en el log. Las demás comidas del día sí.
 import { describe, it, expect } from 'vitest';
-import { generarPlan } from '../generarPlan.js';
+import { generarPlan as generarPlanSinInterruptor } from '../generarPlan.js';
 import { ajustarDia } from '../racionesApp.js';
 import { esComidaDoble } from '../textos/comidaDoble.js';
 import { FREEFORM_POOL } from '../../data/freeformPool.js';
+// Paso 8: la regla de D-116 y D-117 está apagada por defecto (interruptor reglaLegumbre).
+// Estos tests prueban su código, así que la encienden.
+const generarPlan = (a0, a1, opts = {}) => generarPlanSinInterruptor(a0, a1, { reglaLegumbre: true, ...opts });
 
 const H74 = { intolerances: [], eliminatedFoods: [], tiempoCocina: 'normal', experiencia: 'intermedio', simpleMode: false, hambre: 'media', kcalAdjust: 0, extras: {}, gender: 'male', age: 36, weight: 74, height: 178, activity: 'moderate', goal: 'maintain', mealsPerDay: 4, trainingDays: ['Lunes', 'Miércoles', 'Viernes'] };
 const clonar = (x) => JSON.parse(JSON.stringify(x));

@@ -6,8 +6,8 @@
 // scripts/banco/medicion/estructura-comida-final/resumen.md (prototipo de medición).
 
 import { describe, it, expect } from 'vitest';
-import { generarPlanEngine2 } from '../engine2App.js';
-import { generarPlan, platosRecientesPara } from '../generarPlan.js';
+import { generarPlanEngine2 as generarPlanEngine2SinInterruptor } from '../engine2App.js';
+import { generarPlan as generarPlanSinInterruptor, platosRecientesPara } from '../generarPlan.js';
 import { ajustarDia, topeLegumbre } from '../racionesApp.js';
 import { componerComidaDoble, compraPorPlato } from '../textos/comidaDoble.js';
 import { leerComida } from '../medidor/leerComida.js';
@@ -22,6 +22,10 @@ import { papelDe, REPARTO } from '../../engine2/nutrientes/raciones.js';
 import { PERFILES as BANCO } from '../../../scripts/banco/perfiles.mjs';
 import { tuplaDe } from '../textos/componer.js';
 import { FREEFORM_POOL } from '../../data/freeformPool.js';
+// Paso 8: la regla de D-116 y D-117 está apagada por defecto (interruptor reglaLegumbre).
+// Estos tests prueban su código, así que la encienden.
+const generarPlanEngine2 = (a0, a1, opts = {}) => generarPlanEngine2SinInterruptor(a0, a1, { reglaLegumbre: true, ...opts });
+const generarPlan = (a0, a1, opts = {}) => generarPlanSinInterruptor(a0, a1, { reglaLegumbre: true, ...opts });
 
 const CATALOGO = aplicarNombresD105(aplicarAjustesD099(catalogoApp()));
 const PRIMEROS = CATALOGO.filter(esCompuestoLegumbre);

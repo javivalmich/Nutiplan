@@ -6,13 +6,17 @@
 //   B5: si engine2 no encuentra alternativa, la comida se queda como está, con el aviso de la comida doble,
 //       sin ir al motor viejo (que perdería el segundo).
 import { describe, it, expect } from 'vitest';
-import { generarPlan, regenerarComida } from '../generarPlan.js';
+import { generarPlan as generarPlanSinInterruptor, regenerarComida as regenerarComidaSinInterruptor } from '../generarPlan.js';
 import { metaEngine2 } from '../engine2App.js';
 import { esComidaDoble, esComidaDobleIncompleta } from '../textos/comidaDoble.js';
 import { catalogoApp } from '../catalogo.js';
 import { aplicarAjustesD099 } from '../../engine2/dishes/ajustesD099.js';
 import { aplicarNombresD105 } from '../../engine2/dishes/alinosD105.js';
 import { FREEFORM_POOL } from '../../data/freeformPool.js';
+// Paso 8: la regla de D-116 y D-117 está apagada por defecto (interruptor reglaLegumbre).
+// Estos tests prueban su código, así que la encienden.
+const generarPlan = (a0, a1, opts = {}) => generarPlanSinInterruptor(a0, a1, { reglaLegumbre: true, ...opts });
+const regenerarComida = (a0, a1, a2, a3, a4, a5, opts = {}) => regenerarComidaSinInterruptor(a0, a1, a2, a3, a4, a5, { reglaLegumbre: true, ...opts });
 
 const H74 = { intolerances: [], eliminatedFoods: [], tiempoCocina: 'normal', experiencia: 'intermedio', simpleMode: false, hambre: 'media', kcalAdjust: 0, extras: {}, gender: 'male', age: 36, weight: 74, height: 178, activity: 'moderate', goal: 'maintain', mealsPerDay: 4, trainingDays: ['Lunes', 'Miércoles', 'Viernes'] };
 const clonar = (x) => JSON.parse(JSON.stringify(x));

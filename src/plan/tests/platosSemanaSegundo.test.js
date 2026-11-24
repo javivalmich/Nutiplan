@@ -3,11 +3,14 @@
 // Paso 1 de la etapa 2 (scripts/banco/medicion/estructura-comida.md, sección 12).
 
 import { describe, it, expect } from 'vitest';
-import { generarPlan, platosRecientesPara } from '../generarPlan.js';
+import { generarPlan as generarPlanSinInterruptor, platosRecientesPara } from '../generarPlan.js';
 import { metaEngine2 } from '../engine2App.js';
 import { catalogoApp } from '../catalogo.js';
 import { nombreVisible } from '../../engine2/dishes/alinosD105.js';
 import { FREEFORM_POOL } from '../../data/freeformPool.js';
+// Paso 8: la regla de D-116 y D-117 está apagada por defecto (interruptor reglaLegumbre).
+// Estos tests prueban su código, así que la encienden.
+const generarPlan = (a0, a1, opts = {}) => generarPlanSinInterruptor(a0, a1, { reglaLegumbre: true, ...opts });
 
 const P = { intolerances: [], eliminatedFoods: [], tiempoCocina: 'normal', experiencia: 'intermedio', simpleMode: false, hambre: 'media', kcalAdjust: 0, extras: {}, gender: 'female', age: 34, weight: 62, height: 165, activity: 'moderate', goal: 'maintain', mealsPerDay: 4, trainingDays: ['Martes'] };
 const O = (w, recientes) => ({ month: 9, pastProteins: {}, freeFormPool: FREEFORM_POOL, weekNumber: w, userId: 'segundo-semana', saveMealMemory: () => {}, platosRecientes: recientes });

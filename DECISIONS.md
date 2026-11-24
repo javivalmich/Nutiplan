@@ -4768,6 +4768,17 @@ Pendiente
 Estado resultante
 Implementado en el motor y en la app (commits en «Decide»).
 
+Ampliación — [2026-11-24] Apagada por interruptor (paso 8 de la legumbre como guarnición)
+Decide: Javi (plan de la legumbre como guarnición aprobado el 2026-11-23; paso 8 pedido el 2026-11-24). Commit: `bb1f9c8`, rama `motor/i0-banco-cantidades`.
+Contexto: la legumbre como guarnición se midió siempre con D-116 y D-117 apagadas (`scripts/banco/medicion/guarnicion/plan-implementacion.md`). Guarnición y comida doble a la vez no se ha medido nunca, así que la regla se apaga antes de encender la guarnición.
+Decisión:
+12. La regla de D-116 y D-117 tiene un interruptor, `reglaLegumbre`, apagado por defecto: en `runWalk` y `materializePlan`, y en las opciones de `generarPlan` y `regenerarComida`. El código no se borra: con `reglaLegumbre: true` actúa como antes.
+13. Apagada: sin segundos, sin la red de D-116.5 (solo existía para retirar la regla) y con la causa `regla_legumbre_apagada` en el log al empezar el walk.
+14. Las alternativas leen el mismo interruptor. Apagado, el plato nuevo de una comida de plato único puede ser un compuesto de legumbre, como antes de D-116. Una comida doble guardada (`_dishId2`) sigue sin poder cambiarse por un compuesto de legumbre, y se sigue leyendo, racionando y regenerando igual (test `src/plan/tests/interruptorLegumbre.test.js`).
+15. Los 17 archivos de test de D-116 y D-117 encienden la regla (`reglaLegumbre: true`) y siguen probando su código.
+Efecto: `VERSION_MOTOR` 2026-11-24. En el banco cambian 72 de 96 semanas: las 8 de cada uno de los 9 perfiles omnívoros sin SIBO; SIBO, vegetariana y vegana no cambian. No hay infracciones nuevas de D-099.3: sin-pescado-2000 pasa de 1 a 0 (especie en días seguidos), y vegana-1400 mantiene las que ya tenía, sin la regla.
+Estado resultante: apagada en la app. El código queda en el motor.
+
 ## D-117 — [2026-11-15] Días de legumbre sorteados con la semilla (modifica D-024)
 
 Decide: Javi. Implementado entre el 2026-11-15 y el 2026-11-22: `4378c3a`, `f10f600`, `a7d81ef` (test), `3f3eba2`, `b97a0da`, `1c23a97` y `ed5196b`. Medido en memoria antes de implementar, con D-116 (`scripts/banco/medicion/estructura-comida.md`), sobre `b5a5723`.
@@ -4804,6 +4815,14 @@ Pendiente
 
 Estado resultante
 Implementado en el motor con D-116 (commits en «Decide»).
+
+Ampliación — [2026-11-24] Apagada por interruptor (paso 8 de la legumbre como guarnición)
+Decide: Javi (plan de la legumbre como guarnición aprobado el 2026-11-23; paso 8 pedido el 2026-11-24). Commit: `bb1f9c8`, rama `motor/i0-banco-cantidades`.
+Contexto: la legumbre como guarnición se midió siempre con D-116 y D-117 apagadas (`scripts/banco/medicion/guarnicion/plan-implementacion.md`). Guarnición y comida doble a la vez no se ha medido nunca, así que la regla se apaga antes de encender la guarnición.
+Decisión:
+9. Con el interruptor `reglaLegumbre` apagado (por defecto; D-116.12) no se sortean días de legumbre: el paso 4 de D-024 vuelve a actuar como antes de D-117, con su suelo semanal de legumbre y su veda de un día (asiento 4), en lugar del día de al lado de D-117.5. Con `reglaLegumbre: true` el sorteo actúa como antes.
+Efecto: el de D-116.12 (los dos van juntos).
+Estado resultante: apagada en la app. El código queda en el motor.
 
 ## D-118 — [2026-11-16] Tope semanal de pescado y marisco, parámetro del perfil
 

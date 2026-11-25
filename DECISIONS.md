@@ -4906,12 +4906,12 @@ Decisión
 Texto del plato (paso 9, en el mismo commit; sin asiento propio)
 - `src/plan/textos/guarnicion.js` pone la legumbre en el hueco del hidrato y cambia el nombre («Conejo al horno con espinacas y patata» → «Conejo al horno con espinacas y garbanzos»). Solo vale una legumbre de la lista del plato.
 - La compra dice la legumbre de bote escurrida («Garbanzos cocidos de bote (130 g escurridos)»). La receta tiene el paso de calentarla en la sartén, asarla en la bandeja (al horno) o solo escurrirla (en frío).
+- El edamame no es de bote: se compra congelado y desgranado («Edamame congelado (desgranado, 130 g)») y se hierve 3-4 min o se saltea; en frío, hervido y frío (Javi, 2026-11-25; `e80d3dd`).
 
 Efecto
 Ninguno todavía: ningún plato lleva guarnición hasta el paso 4. Test: `src/plan/tests/guarnicionPlato.test.js` (16 casos, con la guarnición forzada en platos reales del catálogo). El banco no tiene diferencias con la línea base.
 
 Pendiente
-- El edamame se escribe «de bote», como en el prototipo; en España se vende sobre todo congelado. Sin decidir.
 - Lo que decida el paso 4 (D-119).
 
 Estado resultante

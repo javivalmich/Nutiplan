@@ -27,6 +27,7 @@
 - **Medir:** perfil omnívoro que elimina carne y ave, con tope de pescado 3.
 - **Preparar el Mac** (CLAUDE.md, «Trabajo desde varios ordenadores»).
 - **Migración de seguridad en Supabase de producción** (rama `fix/autorizacion-rpc`, solo en local; ver abajo).
+- **Seguridad: los filtros de alérgenos e intolerancias leen palabras del texto de la receta, no los ingredientes.** El texto que miran (`src/plan/engine2App.js`, la función de la línea 105 y su uso en las líneas 147 y 193) junta el título, p1, p2, la compra **y los pasos de la receta**, y lo pasa por expresiones regulares (`TEXTO_INTOLERANCIA`; `alergenosDeTexto` en `src/engine2/nutrientes/alergenos.js`; `src/engine2/nutrientes/dietas.js`). Caso real (PR #36): un paso que decía «cuando la superficie esté casi cuajada» se leyó como el lácteo «cuajada», y las tres tortillas de plantilla desaparecían para quien no toma lactosa. El texto del PR #36 lo evita, pero el problema sigue: una frase puede quitar un plato que no lleva el alérgeno, y un ingrediente escrito con otra palabra (o solo en un paso) puede no quitar uno que sí lo lleva. Revisar que filtren por los ingredientes (la compra, o `leerComida`), no por frases sueltas, con tests de los dos sentidos.
 
 ---
 

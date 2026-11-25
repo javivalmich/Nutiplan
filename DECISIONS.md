@@ -4980,3 +4980,22 @@ Pendiente
 
 Estado resultante
 En el código, sin actuar.
+
+## D-121 — [2026-11-25] Sin el mismo hidrato en días seguidos
+
+Decide: Javi (decidido el 2026-11-23 con el plan de la legumbre como guarnición: «no repetir hidrato en días seguidos en todas las dietas»). Implementado: `e80d3dd`, rama `motor/i0-banco-cantidades`.
+
+Contexto
+Con la guarnición (D-119) cambian los hidratos de la semana y el mismo hidrato salía en días seguidos más a menudo: en el prototipo sin esta regla, 773 semanas de 1800 en los 9 omnívoros, frente a 619 en `main` (`scripts/banco/medicion/guarnicion/prototipo4-resumen.md`). Es una regla del menú general, como las de D-099.3.
+
+Decisión
+1. En cada hueco, antes de las preferencias A y B, se prefieren los candidatos cuyo hidrato de plantilla (arroz, patata, boniato, quinoa, pasta) no está en el día anterior ni en el siguiente, si ya está decidido (`hidratoPoolGuarnicion`, `src/engine2/walk/guarnicion.js`). Una comida con guarnición cuenta como «legumbre», así que dos guarniciones seguidas tampoco valen (D-119.5).
+2. Es un filtro con vuelta atrás: si dejaría el hueco sin candidatos, no se aplica. Causas: `hidrato_dias_seguidos_evitado` y `hidrato_dias_seguidos_sin_aplicar`.
+3. Para todos los perfiles y dietas. Los platos sin hueco de hidrato (los redactados, los de la dieta vegetariana y vegana) no tienen nada que comparar: la regla no les afecta.
+4. Solo con la regla de D-116 y D-117 apagada (D-116.12), como D-119.
+
+Efecto
+En el prototipo con esta regla, 39 semanas de 1800 con el mismo hidrato en días seguidos en los 9 omnívoros (`prototipo4-resumen.md`); el motor real da los mismos menús que el prototipo (control de D-119). Test: `src/plan/tests/guarnicionSemana.test.js`.
+
+Estado resultante
+Implementado en el motor.

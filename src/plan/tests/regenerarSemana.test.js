@@ -26,6 +26,8 @@ function semanaActual(perfil, userId) {
 const regenerar = (plan, perfil, userId) => regenerarSemana(recargar(plan), clonar(perfil), 2200, opts(userId, 61));
 const comidasYCenas = (plan) => plan.days.flatMap((d) => d.meals.filter((m) => m && (m.time === 'Comida' || m.time === 'Cena')));
 const titulos = (plan) => comidasYCenas(plan).map((m) => m.title);
+// day.id lleva Date.now() del motor viejo (buildPlan.js:44); se compara sin él, como el banco (banco.mjs:55).
+const sinIds = (r) => JSON.stringify({ ...r, plan: { ...r.plan, days: r.plan.days.map((d) => ({ ...d, id: undefined })) } });
 const textoDe = (m) => [m.title, m.p1, m.p2, ...(m.shopping || []), ...((m.recipe || []).filter((x) => typeof x === 'string'))].filter(Boolean).join(' · ');
 
 describe('regenerar la semana entera con engine2', { timeout: 300000 }, () => {
@@ -42,11 +44,11 @@ describe('regenerar la semana entera con engine2', { timeout: 300000 }, () => {
     expect(r.plan.platosSemana.filter((p) => anteriores.has(p))).toEqual([]);
   });
 
-  it('misma entrada, mismo resultado (byte a byte)', () => {
+  it('misma entrada, mismo resultado (byte a byte, salvo day.id)', () => {
     const { s61 } = semanaActual(H74, 'regen-h74');
     const a = regenerar(s61, H74, 'regen-h74');
     const b = regenerar(s61, H74, 'regen-h74');
-    expect(JSON.stringify(a)).toBe(JSON.stringify(b));
+    expect(sinIds(a)).toBe(sinIds(b));
   });
 
   it('tres pulsaciones seguidas dan tres planes distintos entre sí y del original; misma semana y contador, mismo plan', () => {
@@ -59,7 +61,7 @@ describe('regenerar la semana entera con engine2', { timeout: 300000 }, () => {
     const firmas = [s61, r1.plan, r2.plan, r3.plan].map((p) => JSON.stringify(titulos(p)));
     expect(new Set(firmas).size).toBe(4);
     // Mismo contador (regenerar otra vez desde el mismo plan): mismo plan.
-    expect(JSON.stringify(regenerar(r1.plan, H74, 'regen-h74'))).toBe(JSON.stringify(r2));
+    expect(sinIds(regenerar(r1.plan, H74, 'regen-h74'))).toBe(sinIds(r2));
   });
 
   it('la semana anterior sigue siendo la de verdad, y la siguiente vuelve a contar desde 0', () => {

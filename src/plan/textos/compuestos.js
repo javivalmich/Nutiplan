@@ -212,7 +212,8 @@ function pasoProteina(P, cookM, A) {
   const L = lo(P.g, P.n);
   if (P.tipo === 'huevo') {
     if (cookM === 'revuelto') return `Bate los huevos con sal${A ? ` y ${A.texto}` : ''} y cuájalos en la sartén a fuego medio, removiendo, 2-3 min.`;
-    if (cookM === 'tortilla') return `Bate los huevos con sal${A ? ` y ${A.texto}` : ''}, viértelos en la sartén caliente con unas gotas de aceite y cuaja la tortilla 2-3 min por cada lado.`;
+    // Tortilla francesa doblada: sin darle la vuelta (Javi, 2026-11-25).
+    if (cookM === 'tortilla') return `Bate los huevos con sal${A ? ` y ${A.texto}` : ''}, viértelos en la sartén caliente con unas gotas de aceite, a fuego medio. Deja que cuaje 2-3 min sin remover; cuando por encima esté casi hecha, dóblala por la mitad (tortilla francesa, sin darle la vuelta).`;
     if (cookM === 'crudo') return 'Cuece los huevos 10 min en agua hirviendo, enfríalos en agua fría y pélalos.';
     return `Haz los huevos a la plancha con unas gotas de aceite 2-3 min, hasta que cuaje la clara${A ? `, y alíñalos con ${A.texto}` : ''}.`;
   }

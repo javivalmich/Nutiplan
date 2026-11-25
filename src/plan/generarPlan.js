@@ -37,6 +37,19 @@ export function motorPara(profile) {
   return motorPorDefecto();
 }
 
+// D-107: red para cuando engine2 no llega a llenar la semana con los platos recientes vetados. La usa
+// generarPlan con dieta vegetariana o vegana y, desde D-123, «Regenerar plan» con todas las dietas.
+const RED_D107 = Object.freeze([
+  { platosRecientes: [], aviso: 'repite platos de la semana anterior' },
+  { platosRecientes: [], maxRepeticiones: 2, aviso: 'repite platos en la semana (hasta 2 veces): hay pocos platos para esta dieta' },
+  { platosRecientes: [], maxRepeticiones: 7, aviso: 'repite platos en la semana: hay muy pocos platos para esta dieta' },
+  // Último recurso (vegana, celíaca y sin soja o sin legumbres, p. ej.:
+  // no queda ninguna cena, o ningún plato): los platos de reserva, sin
+  // gluten, soja ni legumbres. Son cenas más cortas y se repiten; antes
+  // eso que cenar platos de comida (D-109, decisión de Javi).
+  { platosRecientes: [], maxRepeticiones: 7, platosReserva: true, aviso: 'cenas más cortas y repetidas: hay muy pocos platos para esta dieta' },
+]);
+
 export function generarPlan(profile, targetKcal, opts = {}) {
   if (profile && profile._regenContext) return buildPlan(profile, targetKcal, opts);
   if (motorPara(profile) === 'legacy') return { ...buildPlan(profile, targetKcal, opts), motor: 'legacy' };
@@ -49,16 +62,7 @@ export function generarPlan(profile, targetKcal, opts = {}) {
     // Si aun así no llega (vegana y sin soja, p. ej.), se deja repetir platos
     // dentro de la semana: el motor viejo no conoce las dietas y serviría carne.
     if (profile && (profile.dieta === 'vegetariana' || profile.dieta === 'vegana')) {
-      const intentos = [
-        { platosRecientes: [], aviso: 'repite platos de la semana anterior' },
-        { platosRecientes: [], maxRepeticiones: 2, aviso: 'repite platos en la semana (hasta 2 veces): hay pocos platos para esta dieta' },
-        { platosRecientes: [], maxRepeticiones: 7, aviso: 'repite platos en la semana: hay muy pocos platos para esta dieta' },
-        // Último recurso (vegana, celíaca y sin soja o sin legumbres, p. ej.:
-        // no queda ninguna cena, o ningún plato): los platos de reserva, sin
-        // gluten, soja ni legumbres. Son cenas más cortas y se repiten; antes
-        // eso que cenar platos de comida (D-109, decisión de Javi).
-        { platosRecientes: [], maxRepeticiones: 7, platosReserva: true, aviso: 'cenas más cortas y repetidas: hay muy pocos platos para esta dieta' },
-      ];
+      const intentos = RED_D107;
       for (const { aviso, ...extra } of intentos) {
         try {
           const plan = generarPlanEngine2(profile, targetKcal, { ...opts, ...extra, catalogo: opts.catalogo || catalogoApp() });
@@ -171,4 +175,48 @@ export function regenerarComida(plan, dayIdx, time, deseo, profile, targetKcal, 
     // Con dieta, el motor viejo serviría carne: mejor no cambiar el plato.
     return conDieta ? { ...plan, alternativaSinCambio: true } : null;
   }
+}
+
+// ─── «Regenerar plan»: la semana entera, con engine2 (D-123, revierte D-102) ───
+
+export const AVISO_REGENERAR_FALLO = 'No se ha podido regenerar el menú. Sigues con el plan que tenías.';
+
+/**
+ * Otro menú para la misma semana. Misma semilla de la semana más el número de regeneración (que se guarda en el
+ * plan y vuelve a 0 la semana siguiente), y los platos de la semana anterior y los del plan actual se evitan
+ * (filtro). Si con eso algún hueco se queda sin platos, la red de D-107 (vaciar recientes y luego permitir
+ * repeticiones), con cualquier dieta. Si engine2 tampoco así llega, se queda el plan actual con un aviso: nunca
+ * el motor viejo.
+ * @returns {{ ok: boolean, plan: object, aviso?: string }}
+ */
+export function regenerarSemana(planActual, profile, targetKcal, opts = {}) {
+  if (!planActual || !Array.isArray(planActual.days) || !planActual.days.length) return { ok: false, plan: planActual, aviso: AVISO_REGENERAR_FALLO };
+  const meta = metaEngine2(planActual);
+  const anterior = meta.platosSemanaAnterior || [];
+  const actuales = [...(Array.isArray(meta.platosSemana) ? meta.platosSemana : titulosComidaCena(planActual)), ...(meta.desayunosSemana || [])];
+  const regeneracion = (Number.isInteger(meta.regeneraciones) && meta.regeneraciones > 0 ? meta.regeneraciones : 0) + 1;
+  const comun = { ...opts, regeneracion, platosSemanaAnterior: anterior, catalogo: opts.catalogo || catalogoApp() };
+  const intentos = [{ platosRecientes: [...new Set([...anterior, ...actuales])] }, ...RED_D107];
+  let primerError = null;
+  for (const { aviso, ...extra } of intentos) {
+    try {
+      const plan = generarPlanEngine2(profile, targetKcal, { ...comun, ...extra });
+      const decisionLog = [...(plan.decisionLog || []), {
+        causa: aviso ? 'regenerar_semana_red_d107' : 'regenerar_semana',
+        detalle: `regeneración ${regeneracion} de la semana ${opts.weekNumber ?? 0}: se evitan ${anterior.length} platos de la semana anterior y ${actuales.length} del plan actual`
+          + (aviso ? `; con ese filtro no llegaba (${String(primerError && primerError.message ? primerError.message : primerError)}): ${aviso}` : ''),
+      }];
+      return { ok: true, plan: { ...plan, decisionLog, ...(aviso ? { motorAviso: `${aviso} (${String(primerError && primerError.message ? primerError.message : primerError)})` } : {}) } };
+    } catch (err) {
+      if (!primerError) primerError = err;
+      console.error('[regenerarSemana] engine2 falló', aviso || 'con los platos recientes', err);
+    }
+  }
+  return { ok: false, plan: planActual, aviso: AVISO_REGENERAR_FALLO };
+}
+
+function titulosComidaCena(plan) {
+  const t = [];
+  for (const d of plan.days) for (const m of d.meals || []) if (m && (m.time === 'Comida' || m.time === 'Cena') && m.title) t.push(m.title);
+  return t;
 }

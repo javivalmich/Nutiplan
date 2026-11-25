@@ -1,4 +1,4 @@
-# Estado de la rama `motor/i0-banco-cantidades` (traspaso, 2026-11-24)
+# Estado de la rama `motor/i0-banco-cantidades` (traspaso, 2026-11-25)
 
 Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, creada desde `main`
 `19a300c`. Lleva mergeado `main` `9522e92` (PR #27, seguridad de las legumbres) en `ce21c11`. Sin merge a `main`. La sesión de auditoría de seguridad trabaja aparte, en
@@ -129,7 +129,14 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
 | `a2578bf` | `DECISIONS.md`: D-116 y D-117, apagadas por interruptor |
 | `e74e471` | Pasos 6 y 9, sin actuar: raciones de la guarnición (`raciones.js`, `racionesApp.js`), texto, compra y receta (`textos/guarnicion.js`, `compuestos.js`, `componer.js`) y alternativas que no van al motor viejo (test `guarnicionPlato.test.js`) |
 | `ded044d` | `DECISIONS.md`: D-120 (raciones de la guarnición) |
-| el siguiente a `ded044d` | `ESTADO.md` al día |
+| `e36c24d` | `ESTADO.md` al día |
+| `e80d3dd` | Pasos 4, 5 y 7: la guarnición en el walk (`walk/guarnicion.js`), la (b), las reglas de la semana, la red de D-099.3; edamame congelado; `VERSION_MOTOR` 2026-11-25; línea base regenerada (tests `guarnicionSemana.test.js`, `guarnicion.red.test.js`) |
+| `dd38c1f` | `DECISIONS.md`: D-120, el edamame |
+| `5c68bbc` | `DECISIONS.md`: D-119 (la guarnición, con el control) |
+| `49b505d` | `DECISIONS.md`: D-024, la guarnición cuenta como legumbre |
+| `349e53e` | `DECISIONS.md`: D-099.3, la red de la (b) |
+| `d755029` | `DECISIONS.md`: D-121, sin el mismo hidrato en días seguidos |
+| el siguiente a `d755029` | Control de 200 semanas (`medicion/controlGuarnicion.mjs`, `resumenControlGuarnicion.mjs`, `guarnicion/control-motor.md`), semanas de ejemplo (`guarnicion/motor-ejemplos.md`) y `ESTADO.md` al día |
 
 ## Legumbre como guarnición: dónde se para (2026-11-23)
 
@@ -150,7 +157,15 @@ Plan: `medicion/guarnicion/plan-implementacion.md`, aprobado por Javi el 2026-11
   - Banco: cambian 72 de 96 semanas (las 8 de los 9 perfiles omnívoros sin SIBO); SIBO, vegetariana y vegana, iguales. D-099.3: ninguna infracción nueva; sin-pescado-2000 pasa de 1 a 0 y vegana-1400 mantiene las suyas (15 especies más de 2 veces y 2 en días seguidos, sin la regla).
 - **Pasos 6 y 9 (raciones y texto): en el código, sin actuar** (`e74e471`, D-120 en `ded044d`). Ningún plato lleva guarnición hasta el paso 4; el banco no cambia. Los tests fuerzan la guarnición en platos reales del catálogo.
   - Abierto: el edamame se escribe «de bote», como en el prototipo (en España se vende sobre todo congelado).
-- **Siguiente, cuando lo pida Javi:** los pasos 4, 5 y 7 juntos (D-119; línea base nueva y `VERSION_MOTOR` nueva).
+- **Pasos 4, 5 y 7: hechos** (`e80d3dd`; D-119, D-024, D-099.3 y D-121 en commits aparte). La guarnición ya actúa en la app.
+  - Línea base regenerada: cambian 88 de 96 semanas (todas salvo vegetariana-2000). En el banco, D-099.3 solo cambia en vegana-1400 (17 → 20), por el tope de 3 legumbres.
+  - Dos tests de D-024 (`runWalk.frequencies.test.js`, f3 y f12) usaban compuestos de legumbre, que la (b) saca del pool; pasan a platos redactados de legumbre, con las mismas expectativas.
+  - Control (`guarnicion/control-motor.md`): los mismos menús que el prototipo con el RNG de engine2 en las 3600 semanas. Frente a prototipo7 tal cual cambian por el hash del RNG (FNV-1a en el prototipo).
+  - 9 omnívoros: cortas 2,87 (`main`) → 2,40; proteína del día 101,2 → 103,3 %; legumbres 1,16 → 2,02 por semana; pescado 4,28 → 2,67; fuera de ±5 % 10,7 → 12,1 %; D-099.3 6 → 0; la red actúa 7 veces.
+- **Abierto, decide Javi:**
+  - el tope de 3 legumbres en vegana y vegetariana (vegana-1400: D-099.3 420 → 508 en 200 semanas; legumbres 3,01 → 2,75);
+  - en la receta de un plato al horno con guarnición, el paso de asar la legumbre «los últimos 15 min» va el primero, antes de meter la proteína; el texto es el del prototipo.
+- **Siguiente, cuando lo pida Javi:** sin pasos pendientes del plan. Lo de «Antes de llevar la rama a `main`».
 
 ## Dónde se para la sesión anterior (2026-11-22)
 

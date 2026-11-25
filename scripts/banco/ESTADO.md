@@ -145,7 +145,8 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
 | `2385b77` | `DECISIONS.md`: D-122 |
 | `ab0a058` | `ESTADO.md` al día: D-122 |
 | `03d1740`, `dc659d1` | Fuera los 9 `.json` en bruto de `medicion/estructura-comida/` y a `.gitignore`; `resumenEstructura.mjs` avisa si faltan |
-| el siguiente a `dc659d1` | `ESTADO.md` al día; `PLAN-limpieza-historia.md`, sustituido por «Squash and merge» |
+| `12ecb88` | `ESTADO.md` al día; `PLAN-limpieza-historia.md`, sustituido por «Squash and merge» |
+| el siguiente a `12ecb88` | `ESTADO.md` al día: copia de las ramas de seguridad, `main` local al día, `.gitattributes` a la espera del merge del #28 |
 
 ## Legumbre como guarnición: dónde se para (2026-11-23)
 
@@ -178,8 +179,9 @@ Plan: `medicion/guarnicion/plan-implementacion.md`, aprobado por Javi el 2026-11
 - **`fix/autorizacion-rpc`** (solo en local, `a398173`) cambia 2 archivos de `supabase/`, ninguno de los que cambia esta rama. Su worktree tiene además 4 `.md` sin seguimiento en `docs/`.
 - **PR #28 a `main`, listo para revisar** (ya no es borrador): se mergea con «Squash and merge». Sin merge.
 - **Ramas subidas a `origin` el 2026-11-25:** las 18 que solo estaban en local (16 ya estaban enteras en `main` o en otra rama remota; `feat/weekly-veg-count` y `util/hoja-anotacion` tenían su propio commit).
-- **Sin subir, a la espera de Javi:** `fix/autorizacion-rpc` y `docs/auditoria-integral`. El repositorio es público, y las dos describen debilidades de seguridad (la migración de autorización de las RPC y su test; la auditoría de la app) que aún no están corregidas en producción.
-- **`.gitattributes`:** propuesto, no aplicado. Con `* text=auto eol=lf` no se renormaliza ningún archivo: los 47 con CRLF o mezcla son evidencia de `docs/evidence/fase7-*`, con su propio `.gitattributes` `-text`.
+- **No se suben (Javi, 2026-11-25):** `fix/autorizacion-rpc` y `docs/auditoria-integral`. Copia en `C:/Users/javiv/OneDrive/Nutiplan/backup-ramas-seguridad-2026-11-25.bundle` (2,7 MB, historia completa, comprobada con `git bundle verify`). Los 4 `.md` sin seguimiento del worktree de seguridad (`docs/`) no van en el bundle. Motivo: El repositorio es público, y las dos describen debilidades de seguridad (la migración de autorización de las RPC y su test; la auditoría de la app) que aún no están corregidas en producción.
+- **`main` local** al día con `origin/main` (`9522e92`, avance rápido).
+- **`.gitattributes`:** propuesto, no aplicado. La rama y el PR se hacen cuando el #28 esté mergeado (el 2026-11-25 seguía abierto). Con `* text=auto eol=lf` no se renormaliza ningún archivo: los 47 con CRLF o mezcla son evidencia de `docs/evidence/fase7-*`, con su propio `.gitattributes` `-text`.
 - **Crema repetida (2026-11-25, `guarnicion/crema-repetida.md`):** dos platos distintos con la misma crema (calabacín, casi siempre) coinciden por azar en alrededor del 1 % de las semanas, a cualquier distancia. La única ventana de conservación es la del ancla (`buildWeekArc.js:250`, D-099.3.b–c), que no cubre las cremas.
   - Propuesta medida en el hook: una crema repetida, solo 2 o 3 días después, y mejor solo entre cremas de plantilla. Mismas comidas cortas, legumbres, pescado y D-099.3.
   - **Implementado (D-122, `7bef6a2`), variante «solo plantillas».** El motor real da los mismos menús que el hook en las 1800 semanas. Quedan 3 repeticiones, todas a 3 días, escritas como «Haz el doble de crema y guarda la mitad…» / «Calienta la crema de … que hiciste el …».

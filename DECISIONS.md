@@ -4886,6 +4886,52 @@ Pendiente
 Estado resultante
 Implementado en el motor y en la app: el tope de 3 se aplica a todos los perfiles desde `b87ccc3`, y cede ante D-099.3 desde `0878f81`.
 
+## D-119 — [2026-11-25] Legumbre de bote como guarnición, en lugar del hidrato del plato
+
+Decide: Javi (diseño cerrado y plan aprobado el 2026-11-23; pasos 4, 5 y 7 pedidos el 2026-11-25). Implementado: `e80d3dd`, rama `motor/i0-banco-cantidades`. Se relaciona con D-024 (la guarnición cuenta como legumbre), D-099.3 (su red), D-116 y D-117 (apagadas, D-116.12), D-120 (raciones) y D-121 (hidrato en días seguidos).
+
+Contexto
+Con D-116 y D-117 la legumbre iba de primero con un segundo de ave o carne. Medido en memoria (`scripts/banco/medicion/guarnicion/`, `prototipo4.md` a `prototipo7.md`), una legumbre de bote en el hueco del hidrato de un plato de plantilla da semanas con menos comidas cortas de proteína que `main` y sin infracciones de D-099.3 en los omnívoros. La lista de legumbres válidas de cada plato es la del inventario (`src/engine2/dishes/guarnicionLegumbre.js`, paso 3).
+
+Decisión
+1. Dónde: en la comida, nunca en la cena, después de elegir el plato del hueco (`src/engine2/walk/guarnicion.js`, `decidirGuarnicion`). Solo si el plato tiene lista y al perfil le vale alguna legumbre de ella. Solo en dietas omnívoras.
+2. Qué legumbres le valen al perfil: las de la lista sin las que quitan sus intolerancias (legumbres, SIBO, soja y el resto de alérgenos por el texto de la compra) y sus alimentos eliminados con los sinónimos de D-103 (`legumbresGuarnicionDelPerfil`, `src/plan/engine2App.js`).
+3. Cómo, en dos pasos, con la semilla (RNG propio «::guarnicion», que no consume el de la selección):
+   - primero, «hidrato original» o «legumbre», uniforme entre las dos;
+   - si sale legumbre, cuál de las que quedan tras las reglas de la semana (D-024, D-121 y los límites de abajo), uniforme entre ellas.
+   No es una puntuación ni un ranking (constitución 1): las dos opciones del primer paso son igual de válidas para el plato (el hidrato que trae la plantilla o una legumbre que el inventario da por buena con él), y las legumbres del segundo también, porque los filtros ya han quitado las que no valen. Elegir entre opciones igual de válidas es un desempate, y los desempates se hacen con el RNG sembrado. Las dos tiradas quedan en el log con su evidencia (`guarnicion_hidrato_original`, `guarnicion_legumbre_elegida`).
+4. La (b): en omnívoras, un compuesto de legumbre (plantilla «legumbre») solo entra en el pool de un hueco si no queda otro candidato (`legumbre_compuesta_fuera_hay_otro`, `legumbre_compuesta_sin_otro_candidato`). Los platos redactados de legumbre (fabada, cocido, hummus…) no cambian. Vegetariana y vegana, sin la (b).
+5. Límites de la semana, con vuelta atrás y causa:
+   - tope de 3 legumbres por semana, guarniciones y platos de legumbre juntos (`legumbre_tope_semana`, `guarnicion_legumbre_tope`); se aplica a todas las dietas, como en el prototipo;
+   - suelo de 2 por la guarnición desde el jueves: si la semana va corta, el siguiente hueco que admite guarnición la lleva sin el primer paso (`guarnicion_suelo_semana`); nunca fuerza un plato de legumbre;
+   - guisantes y habitas, juntos, como mucho 1 vez (`guarnicion_guisantes_habitas`);
+   - sin guarnición en días seguidos, aunque sea de otra legumbre; con el suelo pendiente, cede solo si no queda otra comida servida en la semana (`guarnicion_dias_seguidos_evitada` / `_sin_aplicar`);
+   - no repetir legumbre en la semana, tampoco la de un plato de legumbre ya servido (`guarnicion_legumbre_no_repetida` / `_sin_aplicar`);
+   - en la cena, ninguna (`guarnicion_legumbre_cena`).
+6. El plato: el walk devuelve las guarniciones aparte (`guarniciones`, como `segundos`) y `materializePlan` las pone en su comida. La app escribe el plato con la legumbre (D-120: nombre, compra, receta y raciones). En `platosSemana` va el nombre del plato sin la guarnición: D-099.3 compara el plato.
+7. Solo con la regla de D-116 y D-117 apagada (D-116.12). Con `reglaLegumbre: true` no hay guarnición.
+
+Control (2026-11-25, 200 semanas en los 18 perfiles del prototipo)
+- Motor real frente al prototipo con el tope escalado (`variantesGuarnicion2.mjs` sobre `7a7f518`) con el RNG de engine2: los mismos menús en las 3600 semanas.
+  - El prototipo usaba una copia del RNG con otro hash (FNV-1a); con ella los menús no se pueden comparar día a día. El motor usa el de engine2 (`mulberry32(seedFromString(…))`), como el resto del walk.
+  - Las cifras de las comidas cambian solo en comidas con alubias blancas o habitas: `composicion.js` redondea sus kcal (93 y 57, frente a 93,1 y 57,2 del prototipo; D-100.6). Casi siempre es 1 kcal. En 6 comidas el redondeo cruza el 5 % que hace añadir pan (D-100.2) y la diferencia llega a 38 kcal.
+- Agregado de los 9 omnívoros del banco:
+
+  | | Cortas/sem | Proteína del día | Legumbres/sem (guarnición) | Pescado/sem | Fuera de ±5 % | D-099.3 | Red |
+  |---|---|---|---|---|---|---|---|
+  | `main` | 2,87 | 101,2 % | 1,16 (0,00) | 4,28 | 10,7 % | 6 | — |
+  | prototipo7 | 2,42 | 103,3 % | 2,00 (1,75) | 2,67 | 11,9 % | 0 | 11 |
+  | motor real | 2,40 | 103,3 % | 2,02 (1,78) | 2,67 | 12,1 % | 0 | 7 |
+
+- Con los 18 perfiles, D-099.3 pasa de 426 en `main` a 508, como en el prototipo. Todas son de vegana-1400 (420 → 508): el tope de 3 legumbres le quita platos de legumbre (3,01 → 2,75 por semana) a una dieta cuyo catálogo ya incumplía D-099.3 todas las semanas.
+
+Pendiente
+- Si el tope de 3 legumbres debe aplicarse a la dieta vegana y a la vegetariana, donde la legumbre es la proteína principal. Sin decidir.
+- omni-3714 sigue con 3,34 comidas cortas por semana (4,37 en `main`).
+
+Estado resultante
+Implementado en el motor y en la app. `VERSION_MOTOR` 2026-11-25.
+
 ## D-120 — [2026-11-24] Raciones de la comida con guarnición de legumbre
 
 Decide: Javi (diseño cerrado el 2026-11-23 con `prototipo6.md` y `prototipo7.md`; plan aprobado el mismo día). Implementado el 2026-11-24, sin actuar todavía: `e74e471`, rama `motor/i0-banco-cantidades`. D-119 queda para el paso 4 (la elección del hidrato en dos pasos).

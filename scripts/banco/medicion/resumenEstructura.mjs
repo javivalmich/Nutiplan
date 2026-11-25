@@ -14,6 +14,7 @@ const NOMBRE = { off: 'Hoy', final: 'Final: 3 · sin pescado · todas, con (a), 
 const datos = {};
 for (const k of ORDEN) { const f = path.join(dir, `${k}.json`); if (fs.existsSync(f)) datos[k] = JSON.parse(fs.readFileSync(f, 'utf8')); }
 const claves = ORDEN.filter((k) => datos[k]);
+if (!claves.length) throw new Error(`No hay ningún .json de medirEstructura.mjs en ${dir}: no están en el repo; regenéralos (ver la cabecera de este archivo)`);
 const OMNI8 = ['omni-1434', 'omni-2174', 'omni-2600-3comidas', 'omni-3714', 'celiaco-2400', 'sin-lactosa-2000', 'omni-2174-ancla', 'omni-2000-sin-atun'];
 const DIAS = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 const f2 = (x) => (Number.isFinite(x) ? x.toFixed(2) : '—');

@@ -140,7 +140,10 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
 | `e3ca022` | El tope de 3 legumbres solo en omnívoras; al horno, la legumbre después de la proteína; línea base regenerada (vegana-1400 y el texto de la receta) |
 | `faf2b74`, `048bef7` | `DECISIONS.md`: D-119 (el tope solo en omnívoras) y D-120 (el orden de la receta) |
 | `8aa4843` | Semanas de ejemplo con la receta nueva, `PLAN-limpieza-historia.md` y `ESTADO.md` al día; PR borrador a `main` (#28) |
-| el siguiente a `8aa4843` | Medición de la crema repetida y su ventana (`medicion/variantesCremaRepetida.mjs`, `resumenCremaRepetida.mjs`, `guarnicion/crema-repetida.md`), sin cambiar `src/` |
+| `b43ba0c` | Medición de la crema repetida y su ventana (`medicion/variantesCremaRepetida.mjs`, `resumenCremaRepetida.mjs`, `guarnicion/crema-repetida.md`), sin cambiar `src/` |
+| `7bef6a2` | D-122: la crema repetida 2 o 3 días después y escrita como la crema guardada (`walk/cremas.js`, `compuestos.js`, `leerComida.js`, alternativas); línea base regenerada (6 semanas de sibo-2000) (test `cremaVentana.test.js`) |
+| `2385b77` | `DECISIONS.md`: D-122 |
+| el siguiente a `2385b77` | `ESTADO.md` al día |
 
 ## Legumbre como guarnición: dónde se para (2026-11-23)
 
@@ -174,7 +177,8 @@ Plan: `medicion/guarnicion/plan-implementacion.md`, aprobado por Javi el 2026-11
 - **PR borrador a `main` abierto.** Sin merge.
 - **Crema repetida (2026-11-25, `guarnicion/crema-repetida.md`):** dos platos distintos con la misma crema (calabacín, casi siempre) coinciden por azar en alrededor del 1 % de las semanas, a cualquier distancia. La única ventana de conservación es la del ancla (`buildWeekArc.js:250`, D-099.3.b–c), que no cubre las cremas.
   - Propuesta medida en el hook: una crema repetida, solo 2 o 3 días después, y mejor solo entre cremas de plantilla. Mismas comidas cortas, legumbres, pescado y D-099.3.
-  - Falta decidir e implementar (regla, texto de cocinar el doble y de la crema guardada, asiento).
+  - **Implementado (D-122, `7bef6a2`), variante «solo plantillas».** El motor real da los mismos menús que el hook en las 1800 semanas. Quedan 3 repeticiones, todas a 3 días, escritas como «Haz el doble de crema y guarda la mitad…» / «Calienta la crema de … que hiciste el …».
+  - Pendiente: las alternativas (`elegirAlternativa`) no aplican la regla; la compra semanal agregada debe sumar el doble del primer día.
 - **Siguiente, cuando lo pida Javi:** lo de «Antes de llevar la rama a `main`».
 
 ## Dónde se para la sesión anterior (2026-11-22)

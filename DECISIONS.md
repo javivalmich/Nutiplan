@@ -5010,3 +5010,43 @@ En el prototipo con esta regla, 39 semanas de 1800 con el mismo hidrato en días
 
 Estado resultante
 Implementado en el motor.
+
+## D-122 — [2026-11-25] Una crema repetida va 2 o 3 días después: la crema guardada
+
+Decide: Javi (2026-11-25, variante «solo plantillas»). Implementado: `7bef6a2`, rama `motor/i0-banco-cantidades`. Medido antes en memoria: `scripts/banco/medicion/guarnicion/crema-repetida.md` (`b43ba0c`).
+
+Contexto
+En un plan del Preview salía la crema de calabacín el lunes y el sábado. No era un ancla ni un plato batchable: dos platos distintos del catálogo llevaban la misma crema («Crema de calabacín con gambas encima», «Crema de calabacín con huevos encima», la ficha libre «Crema de calabacín con queso fresco y huevo») y coincidían por azar.
+- D-099.3.d compara por el nombre visible y no lo ve.
+- La única ventana de conservación del motor es la de las sobras del ancla (`computeLeftoverDays`, `src/engine2/skeleton/buildWeekArc.js:250`; D-099.3.b–c), y las cremas no son bases de ancla.
+- En 200 semanas de los 9 omnívoros pasaba en 17 semanas, a cualquier distancia, del mismo día a 5 días después.
+
+Decisión
+1. Una crema de plantilla cuyo vegetal ya salió en la semana solo entra en el pool 2 o 3 días después de la primera, y una sola vez (`filtrarCremas`, `src/engine2/walk/cremas.js`).
+   - El vegetal es el primero del nombre visible («Crema de calabacín…» → calabacín).
+   - Filtro con vuelta atrás: si dejaría el hueco sin candidatos, no se aplica.
+   - Causas: `crema_repetida_fuera_de_ventana`, `crema_repetida_sin_aplicar`.
+   - La crema aguanta 3 días en la nevera, como las bases del ancla (`bases.js:31`).
+2. Con una ficha libre de crema («Crema de calabacín con queso fresco y huevo») no se repite: su compra y su receta están cerradas.
+3. La pareja (dos cremas de plantilla del mismo vegetal a 2 o 3 días) queda en el log (`crema_guardada`) y en la salida del walk (`cremas`). `materializePlan` marca las dos comidas.
+4. Texto (`escribirCompuesto`, plantilla `sopa_crema`):
+   - Primer día: la compra lleva el doble de verdura, de cebolla y de caldo, con «…, la mitad para el jueves». La receta empieza con «Haz el doble de crema y guarda la mitad en un táper para el jueves.».
+   - Segundo día: la crema no está en la compra. Los pasos de pochar, cocer y triturar son «Calienta la crema de calabacín que hiciste el lunes.». En frío: «Saca de la nevera la crema fría de … que hiciste el …».
+   - El segundo día, la crema es la del primero (su verdura y sus gramos), aunque la ficha de ese plato lleve otra segunda verdura: «Crema de calabacín con huevos encima» lleva calabacín y zanahoria, pero se come la crema de calabacín del lunes.
+5. Medidor (`leerComida`): el primer día, una línea «…, la mitad para el …» cuenta la mitad. El segundo, la crema guardada (`_cremaGuardada`) cuenta aunque no esté en la compra. Los gramos de la crema los fija `gramosVerdura` por las kcal del perfil, así que los dos días son iguales.
+6. Alternativas: cambiar una comida de la pareja vuelve a escribir la otra como una crema normal, con su compra y su receta completas, y vuelve a racionar su día (`alternativa_deshace_crema_guardada`).
+
+Efecto (control de 200 semanas, 9 omnívoros del banco)
+- El motor real da los mismos menús que el hook medido (`variantesCremaRepetida.mjs --soloPlantilla`) en las 1800 semanas.
+- Cremas del mismo vegetal repetidas: 17 semanas antes (a 0, 1, 2, 3, 4 y 5 días), 3 ahora, todas a 3 días y entre plantillas.
+- Comidas cortas 2,40 → 2,39 por semana; legumbres 2,02 → 2,01; pescado 2,67; D-099.3, 0.
+- Cambia el menú de 854 de 1800 semanas: el filtro también saca del pool cremas que el azar no habría elegido.
+- En la línea base del banco (8 semanas por perfil) solo cambian 6 semanas de sibo-2000.
+- Test: `src/plan/tests/cremaVentana.test.js`.
+
+Pendiente
+- Las alternativas (`elegirAlternativa`) no aplican la regla del punto 1: cambiar una comida puede traer una crema repetida fuera de la ventana.
+- La lista de la compra semanal agregada, cuando exista, debe sumar el doble del primer día y nada del segundo.
+
+Estado resultante
+Implementado en el motor y en la app.

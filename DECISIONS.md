@@ -4250,6 +4250,16 @@ Autorización y límites
 Estado resultante
 Primera Fase 7 superada por orden del titular; la evaluación ciega no acreditó no inferioridad. engine2 es el motor por defecto; legacy se conserva como reserva.
 
+Ampliación — [2026-11-25] Red de D-099.3 de la (b) (paso 7 de la legumbre como guarnición; D-119)
+Decide: Javi (plan aprobado el 2026-11-23; paso 7 pedido el 2026-11-25). Commit: `e80d3dd`, rama `motor/i0-banco-cantidades`.
+Contexto: la (b) de D-119.4 saca los compuestos de legumbre del pool de las omnívoras. En un catálogo con pocas especies (sin-pescado-2000) eso puede dejar la semana con una infracción de D-099.3 (punto 3, d y e) que las reglas, hueco a hueco, no evitan.
+Decisión:
+- Si la semana termina con alguna infracción de D-099.3 y la (b) había sacado algún compuesto de legumbre del pool, el walk se repite entero, con la misma semilla, sin esa exclusión. La guarnición, el suelo y los topes siguen. Causa: `guarnicion_red_d099_sin_b`, con las infracciones de la semana descartada.
+- Como mucho una repetición. Si la semana sigue con infracción, se queda así, con su propia causa (`infraccion_d099_guarnicion_red_sin_b`).
+- Si la (b) no había sacado nada (vegetariana, vegana, o un perfil sin compuestos de legumbre), no hay nada que retirar: no se repite y la infracción queda anotada (`infraccion_d099_guarnicion_sin_exclusion`).
+- Sustituye a la red de D-116.5 mientras D-116 esté apagada (D-116.12); la red de D-116.5 sigue en el código para `reglaLegumbre: true`.
+Efecto (control de 200 semanas, D-119): la red actúa 7 veces, todas en sin-pescado-2000, y las 7 semanas quedan sin infracción. Los 9 omnívoros del banco tienen 0 infracciones de D-099.3, frente a 6 en `main`. Test: `src/engine2/walk/tests/guarnicion.red.test.js`.
+
 ## D-100 — [2026-10-11] Medidor nutricional con BEDCA y raciones calculadas por engine2
 
 Decide: Javi. HEAD: `c790c4a`.

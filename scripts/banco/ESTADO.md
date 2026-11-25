@@ -139,7 +139,8 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
 | `21fbaed` | Control de 200 semanas (`medicion/controlGuarnicion.mjs`, `resumenControlGuarnicion.mjs`, `guarnicion/control-motor.md`), semanas de ejemplo (`guarnicion/motor-ejemplos.md`) y `ESTADO.md` al día |
 | `e3ca022` | El tope de 3 legumbres solo en omnívoras; al horno, la legumbre después de la proteína; línea base regenerada (vegana-1400 y el texto de la receta) |
 | `faf2b74`, `048bef7` | `DECISIONS.md`: D-119 (el tope solo en omnívoras) y D-120 (el orden de la receta) |
-| el siguiente a `048bef7` | Semanas de ejemplo con la receta nueva, `PLAN-limpieza-historia.md` y `ESTADO.md` al día; PR borrador a `main` |
+| `8aa4843` | Semanas de ejemplo con la receta nueva, `PLAN-limpieza-historia.md` y `ESTADO.md` al día; PR borrador a `main` (#28) |
+| el siguiente a `8aa4843` | Medición de la crema repetida y su ventana (`medicion/variantesCremaRepetida.mjs`, `resumenCremaRepetida.mjs`, `guarnicion/crema-repetida.md`), sin cambiar `src/` |
 
 ## Legumbre como guarnición: dónde se para (2026-11-23)
 
@@ -171,6 +172,9 @@ Plan: `medicion/guarnicion/plan-implementacion.md`, aprobado por Javi el 2026-11
 - **Despliegue:** Vercel, por integración con GitHub. Un push a `main` despliega Production; un push a cualquier otra rama, solo un Preview. Producción tiene `9522e92` (PR #27). El Preview de `048bef7` es https://nutiplan-ld5ikvkl4-nuti-s-projects.vercel.app.
 - **`fix/autorizacion-rpc`** (solo en local, `a398173`) cambia 2 archivos de `supabase/`, ninguno de los que cambia esta rama. Su worktree tiene además 4 `.md` sin seguimiento en `docs/`.
 - **PR borrador a `main` abierto.** Sin merge.
+- **Crema repetida (2026-11-25, `guarnicion/crema-repetida.md`):** dos platos distintos con la misma crema (calabacín, casi siempre) coinciden por azar en alrededor del 1 % de las semanas, a cualquier distancia. La única ventana de conservación es la del ancla (`buildWeekArc.js:250`, D-099.3.b–c), que no cubre las cremas.
+  - Propuesta medida en el hook: una crema repetida, solo 2 o 3 días después, y mejor solo entre cremas de plantilla. Mismas comidas cortas, legumbres, pescado y D-099.3.
+  - Falta decidir e implementar (regla, texto de cocinar el doble y de la crema guardada, asiento).
 - **Siguiente, cuando lo pida Javi:** lo de «Antes de llevar la rama a `main`».
 
 ## Dónde se para la sesión anterior (2026-11-22)

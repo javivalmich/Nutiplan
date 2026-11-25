@@ -14,7 +14,9 @@ Medición, no cambia reglas. 200 semanas (60 a 259) en los 18 perfiles del proto
 - **Cifras de las comidas.** Con el mismo menú, solo cambian comidas con alubias blancas o habitas: `composicion.js` redondea sus kcal (93 y 57; el prototipo usaba 93,1 y 57,2; D-100.6). Casi siempre es 1 kcal.
   - En 6 comidas el redondeo cruza el 5 % que hace añadir pan (D-100.2). Ejemplo: omni-2174, semana 122, viernes, salmón con alubias blancas. En el prototipo la comida llega a 775 kcal, justo por encima de 774,25 (el 95 % de 815), y no lleva pan. Con 0,22 kcal menos queda por debajo: lleva 30 g de pan y el salmón baja de 195 a 175 g (813 kcal).
 - **Red de D-099.3:** 7 veces en el motor real y 11 en prototipo7, todas en sin-pescado-2000. La diferencia es del RNG: son otros menús. En los dos casos las semanas quedan sin infracción.
-- **D-099.3 en vegana-1400:** 420 en `main` y 508 en el prototipo y en el motor. Viene del tope de 3 legumbres, que se aplica a todas las dietas, como en el prototipo. Pendiente en D-119.
+- **D-099.3 en vegana-1400:** 420 en `main` y 508 en el prototipo y en el motor. Viene del tope de 3 legumbres, que se aplicaba a todas las dietas, como en el prototipo.
+  - Decidido por Javi el 2026-11-25 (`e3ca022`): el tope solo en omnívoras.
+  - Sin el tope, vegana-1400 queda en 397 y vegetariana-2000 sigue en 0 (D-119). Las tablas de abajo son de `e80d3dd`, todavía con el tope.
 
 ## Agregado
 

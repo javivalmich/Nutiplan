@@ -1,4 +1,4 @@
-# Semanas de ejemplo del motor real (HEAD `e80d3dd`), tal como las ve el usuario
+# Semanas de ejemplo del motor real (HEAD `e3ca022`), tal como las ve el usuario
 
 ### omni-2174, semana 60 (2174 kcal)
 
@@ -51,7 +51,7 @@
 - **Comida: Conejo al horno con alcachofas y habitas** *(guarnición de legumbre)*
   - Conejo troceado (185 g) al horno con limón, orégano y ajo · Habitas de bote (220 g escurridos) · 2 alcachofas asadas (200 g) · AOVE (20 ml) · Pan integral (90 g) para acompañar
   - Compra: Conejo troceado (185 g) · Habitas de bote (220 g escurridos) · Alcachofas (2 alcachofas, 200 g) · Limón (½) · Orégano · Ajo (1 diente) · AOVE (20 ml) · Pan integral (90 g)
-  - Receta: 1. Escurre y enjuaga las habitas de bote, sécalas, alíñalas con un poco del aceite y sal y ásalas en la misma bandeja los últimos 15 min. 2. Pon el conejo en una bandeja con limón, orégano y ajo, sal y un chorrito del aceite, y hornéalo a 200 °C 35-40 min. 3. Limpia las alcachofas, pártelas por la mitad y ásalas al horno 30 min a 200 °C (o cuécelas 20 min con limón). 4. Sirve el conejo con las alcachofas y las habitas.
+  - Receta: 1. Pon el conejo en una bandeja con limón, orégano y ajo, sal y un chorrito del aceite, y hornéalo a 200 °C 35-40 min. 2. Cuando falten 15 min, añade a la bandeja las habitas de bote, escurridas, enjuagadas y secadas, con un poco del aceite y sal. 3. Limpia las alcachofas, pártelas por la mitad y ásalas al horno 30 min a 200 °C (o cuécelas 20 min con limón). 4. Sirve el conejo con las alcachofas y las habitas.
 - **Cena: Tom Kha Gai — sopa tailandesa de pollo y coco**
   - Sopa cremosa de leche de coco con pechuga de pollo en tiras · setas shiitake · galanga o jengibre · Lemongrass · hojas de lima kaffir · salsa de pescado · lima · cilantro · chile
   - Compra: Pechuga de pollo (145g) · Leche de coco light (200ml) · Caldo de pollo (200ml) · Setas shiitake o de cultivo (80g) · Galanga fresca (o jengibre, 20g) · Lemongrass (1 tallo) · Hojas de lima kaffir (3, frescas o secas) · Salsa de pescado (15ml) · Lima (1) · Chile rojo (1/2) · Cilantro fresco
@@ -145,7 +145,7 @@
 - **Comida: Conejo al ajillo con pimientos y garbanzos** *(guarnición de legumbre)*
   - Conejo troceado (170 g) al horno con ajo, perejil y guindilla · Garbanzos cocidos de bote (220 g escurridos) · 1 pimiento mediano asado (180 g) · AOVE (20 ml) · Pan integral (30 g) para acompañar
   - Compra: Conejo troceado (170 g) · Garbanzos cocidos de bote (220 g escurridos) · Pimientos (1 mediano, 180 g) · Ajo (2 dientes) · Perejil fresco · Guindilla (opcional) · AOVE (20 ml) · Pan integral (30 g)
-  - Receta: 1. Escurre y enjuaga los garbanzos de bote, sécalos, alíñalos con un poco del aceite y sal y ásalos en la misma bandeja los últimos 15 min. 2. Pon el conejo en una bandeja con ajo, perejil y guindilla, sal y un chorrito del aceite, y hornéalo a 200 °C 35-40 min. 3. Corta los pimientos en tiras y ásalos al horno 25 min a 200 °C (o saltéalos 6-8 min). 4. Sirve el conejo con los pimientos y los garbanzos.
+  - Receta: 1. Pon el conejo en una bandeja con ajo, perejil y guindilla, sal y un chorrito del aceite, y hornéalo a 200 °C 35-40 min. 2. Cuando falten 15 min, añade a la bandeja los garbanzos de bote, escurridos, enjuagados y secados, con un poco del aceite y sal. 3. Corta los pimientos en tiras y ásalos al horno 25 min a 200 °C (o saltéalos 6-8 min). 4. Sirve el conejo con los pimientos y los garbanzos.
 - **Cena: Crema de calabacín con queso fresco y huevo**
   - Crema de calabacín con patata y caldo de pollo · 2 huevos duros encima · queso fresco batido · Sofrito de cebolla y ajo · AOVE al acabado · pimienta blanca
   - Compra: Calabacín (350g) · Patata (190g) · Cebolla (60g) · Ajo (1 diente) · Caldo de pollo (300ml) · Huevos (2) · Queso fresco batido (150g) · AOVE (15ml) · Sal · Pimienta blanca
@@ -239,7 +239,7 @@
 - **Comida: Lomo de cerdo al horno con berenjena y alubias blancas** *(guarnición de legumbre)*
   - Lomo de cerdo (135 g) al horno con pimentón ahumado y ajo · Alubias blancas cocidas de bote (130 g escurridos) · ½ berenjena a la plancha (180 g) · AOVE (20 ml)
   - Compra: Lomo de cerdo (135 g) · Alubias blancas cocidas de bote (130 g escurridos) · Berenjena (½, 180 g) · Pimentón ahumado (1 cdita) · Ajo (1 diente) · AOVE (20 ml)
-  - Receta: 1. Escurre y enjuaga las alubias blancas de bote, sécalas, alíñalas con un poco del aceite y sal y ásalas en la misma bandeja los últimos 15 min. 2. Pon el lomo en una bandeja con pimentón ahumado y ajo, sal y un chorrito del aceite, y hornéalo a 200 °C 20-25 min. 3. Corta la berenjena en rodajas, sálala y hazla a la plancha 4 min por lado (o al horno 25 min a 200 °C). 4. Sirve el lomo con la berenjena y las alubias blancas.
+  - Receta: 1. Pon el lomo en una bandeja con pimentón ahumado y ajo, sal y un chorrito del aceite, y hornéalo a 200 °C 20-25 min. 2. Cuando falten 15 min, añade a la bandeja las alubias blancas de bote, escurridas, enjuagadas y secadas, con un poco del aceite y sal. 3. Corta la berenjena en rodajas, sálala y hazla a la plancha 4 min por lado (o al horno 25 min a 200 °C). 4. Sirve el lomo con la berenjena y las alubias blancas.
 - **Cena: Huevos revueltos con brócoli**
   - 3 huevos revueltos con limón, orégano y ajo · ½ brócoli al vapor (150 g) · AOVE (15 ml)
   - Compra: Huevos (3 ud) · Brócoli (½, 150 g) · Limón (½) · Orégano · Ajo (1 diente) · AOVE (15 ml)
@@ -279,7 +279,7 @@
 - **Comida: Pechuga de pavo al horno con judías verdes y garbanzos** *(guarnición de legumbre)*
   - Pechuga de pavo (110 g) al horno con limón, orégano y ajo · Garbanzos cocidos de bote (130 g escurridos) · 3 puñados de judías verdes al vapor (150 g) · AOVE (20 ml)
   - Compra: Pechuga de pavo (110 g) · Garbanzos cocidos de bote (130 g escurridos) · Judías verdes (3 puñados, 150 g) · Limón (½) · Orégano · Ajo (1 diente) · AOVE (20 ml)
-  - Receta: 1. Escurre y enjuaga los garbanzos de bote, sécalos, alíñalos con un poco del aceite y sal y ásalos en la misma bandeja los últimos 15 min. 2. Pon la pechuga de pavo en una bandeja con limón, orégano y ajo, sal y un chorrito del aceite, y hornéala a 200 °C 18-20 min. 3. Cuece las judías verdes al vapor o en agua con sal 8-10 min. 4. Sirve el pavo con las judías verdes y los garbanzos.
+  - Receta: 1. Pon la pechuga de pavo en una bandeja con limón, orégano y ajo, sal y un chorrito del aceite, y hornéala a 200 °C 18-20 min. 2. Cuando falten 15 min, añade a la bandeja los garbanzos de bote, escurridos, enjuagados y secados, con un poco del aceite y sal. 3. Cuece las judías verdes al vapor o en agua con sal 8-10 min. 4. Sirve el pavo con las judías verdes y los garbanzos.
 - **Cena: Sopa de miso con tofu firme, setas shiitake y alga wakame**
   - Caldo dashi · miso blanco disuelto · tofu firme en dados · setas shiitake · alga wakame · cebolleta · Acompañar con arroz blanco (50g seco) si se quiere versión más saciante (+180kcal)
   - Compra: Tofu firme (180g) · Pasta de miso blanco o rojo (2 cdas / 30g) · Caldo dashi (500ml, de sobre dashi + agua o caldo de alga kombu) · Setas shiitake secas (10g) o frescas (60g) · Alga wakame seca (5g) · Cebolleta (2) · Salsa de soja (5ml, opcional) · Aceite de sésamo (5ml)

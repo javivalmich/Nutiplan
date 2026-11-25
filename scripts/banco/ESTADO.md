@@ -136,7 +136,10 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
 | `49b505d` | `DECISIONS.md`: D-024, la guarnición cuenta como legumbre |
 | `349e53e` | `DECISIONS.md`: D-099.3, la red de la (b) |
 | `d755029` | `DECISIONS.md`: D-121, sin el mismo hidrato en días seguidos |
-| el siguiente a `d755029` | Control de 200 semanas (`medicion/controlGuarnicion.mjs`, `resumenControlGuarnicion.mjs`, `guarnicion/control-motor.md`), semanas de ejemplo (`guarnicion/motor-ejemplos.md`) y `ESTADO.md` al día |
+| `21fbaed` | Control de 200 semanas (`medicion/controlGuarnicion.mjs`, `resumenControlGuarnicion.mjs`, `guarnicion/control-motor.md`), semanas de ejemplo (`guarnicion/motor-ejemplos.md`) y `ESTADO.md` al día |
+| `e3ca022` | El tope de 3 legumbres solo en omnívoras; al horno, la legumbre después de la proteína; línea base regenerada (vegana-1400 y el texto de la receta) |
+| `faf2b74`, `048bef7` | `DECISIONS.md`: D-119 (el tope solo en omnívoras) y D-120 (el orden de la receta) |
+| el siguiente a `048bef7` | Semanas de ejemplo con la receta nueva, `PLAN-limpieza-historia.md` y `ESTADO.md` al día; PR borrador a `main` |
 
 ## Legumbre como guarnición: dónde se para (2026-11-23)
 
@@ -162,10 +165,13 @@ Plan: `medicion/guarnicion/plan-implementacion.md`, aprobado por Javi el 2026-11
   - Dos tests de D-024 (`runWalk.frequencies.test.js`, f3 y f12) usaban compuestos de legumbre, que la (b) saca del pool; pasan a platos redactados de legumbre, con las mismas expectativas.
   - Control (`guarnicion/control-motor.md`): los mismos menús que el prototipo con el RNG de engine2 en las 3600 semanas. Frente a prototipo7 tal cual cambian por el hash del RNG (FNV-1a en el prototipo).
   - 9 omnívoros: cortas 2,87 (`main`) → 2,40; proteína del día 101,2 → 103,3 %; legumbres 1,16 → 2,02 por semana; pescado 4,28 → 2,67; fuera de ±5 % 10,7 → 12,1 %; D-099.3 6 → 0; la red actúa 7 veces.
-- **Abierto, decide Javi:**
-  - el tope de 3 legumbres en vegana y vegetariana (vegana-1400: D-099.3 420 → 508 en 200 semanas; legumbres 3,01 → 2,75);
-  - en la receta de un plato al horno con guarnición, el paso de asar la legumbre «los últimos 15 min» va el primero, antes de meter la proteína; el texto es el del prototipo.
-- **Siguiente, cuando lo pida Javi:** sin pasos pendientes del plan. Lo de «Antes de llevar la rama a `main`».
+- **Decidido por Javi el 2026-11-25** (`e3ca022`):
+  - el tope de 3 legumbres solo en omnívoras. vegana-1400, en 200 semanas: legumbres 3,04 por semana (3,01 en `main`) y D-099.3 397 (420 en `main`). Los menús omnívoros no cambian;
+  - al horno, la legumbre después de la proteína («Cuando falten 15 min, añade a la bandeja…»).
+- **Despliegue:** Vercel, por integración con GitHub. Un push a `main` despliega Production; un push a cualquier otra rama, solo un Preview. Producción tiene `9522e92` (PR #27). El Preview de `048bef7` es https://nutiplan-ld5ikvkl4-nuti-s-projects.vercel.app.
+- **`fix/autorizacion-rpc`** (solo en local, `a398173`) cambia 2 archivos de `supabase/`, ninguno de los que cambia esta rama. Su worktree tiene además 4 `.md` sin seguimiento en `docs/`.
+- **PR borrador a `main` abierto.** Sin merge.
+- **Siguiente, cuando lo pida Javi:** lo de «Antes de llevar la rama a `main`».
 
 ## Dónde se para la sesión anterior (2026-11-22)
 
@@ -247,7 +253,7 @@ Plan: `medicion/guarnicion/plan-implementacion.md`, aprobado por Javi el 2026-11
 4. **Prueba a mano, en el móvil y en el panel del nutricionista:** el título largo de la comida doble, las dos partes en `p1` y `p2`, la receta con los dos platos, la compra con dos aceites, el aviso de la comida doble sin alternativa y una alternativa de una comida doble. Nadie lo ha visto todavía en pantalla.
 5. **Revisión del diff de la rama frente a `main`** (motor, app, tests y scripts de medición). Los errores de lint de `OriginalPlanApp.jsx` ya estaban en `main`; la rama solo cambia una línea de ese archivo.
 6. **Batería completa en un entorno con `.env.local`**, para que cargue la suite `src/data/__tests__/pdb.characterization.test.js` (aquí no carga) y ver el test intermitente de `scripts/fase7` (tiempo límite de 5 s). Sin tocar Supabase ni producción.
-7. **Sacar de la historia los datos en bruto de `db9a2fd`:** 9 archivos `.json` de `scripts/banco/medicion/` que suman 26,4 MB. Antes, una copia de seguridad de la rama (un `git bundle` o un clon aparte). Hay que reescribir la historia de esta rama y volver a subirla con `--force-with-lease`, solo esta rama: sin tocar la rama de seguridad (`fix/autorizacion-rpc`, worktree `C:\Users\javiv\app-comida`) ni `main`.
+7. **Sacar de la historia los datos en bruto de `db9a2fd`** (plan, sin ejecutar: `PLAN-limpieza-historia.md`): 9 archivos `.json` de `scripts/banco/medicion/` que suman 26,4 MB. Antes, una copia de seguridad de la rama (un `git bundle` o un clon aparte). Hay que reescribir la historia de esta rama y volver a subirla con `--force-with-lease`, solo esta rama: sin tocar la rama de seguridad (`fix/autorizacion-rpc`, worktree `C:\Users\javiv\app-comida`) ni `main`.
 8. **PR a `main` con el visto bueno de Javi.** Sin merge sin su autorización.
 9. **Coordinar el merge con la rama de seguridad y desplegar en el cambio de semana** (domingo por la noche): así los planes nuevos empiezan con la semana y nadie ve cambiar sus platos a media semana (punto 1).
 

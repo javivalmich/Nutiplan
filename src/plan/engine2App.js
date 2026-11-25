@@ -246,6 +246,17 @@ export function huecosPrincipales(meals) {
  * @param {number} targetKcal
  * @param {object} opts mismas opciones que buildPlan + platosRecientes (nombres de la semana anterior)
  */
+// D-123: la semilla es usuario + semana (CLAUDE.md, regla 6) y, al regenerar la semana con «Regenerar plan»,
+// el número de regeneración de esa semana. Sin regeneración (la primera generación) es la de siempre.
+function regeneracionesDe(opts) {
+  const n = Number(opts && opts.regeneracion);
+  return Number.isInteger(n) && n > 0 ? n : 0;
+}
+function semillaDe(opts) {
+  const n = regeneracionesDe(opts);
+  return `${opts.userId ?? 'anon'}:${opts.weekNumber ?? 0}` + (n ? `:regen${n}` : '');
+}
+
 export function generarPlanEngine2(profile, targetKcal, opts = {}) {
   // opts.raciones === false deja las cantidades del motor viejo (solo para comparar).
   const conRaciones = opts.raciones !== false;
@@ -261,7 +272,7 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
       dieta: dietaDe(profile),
       ...conTopePescado(profile),
     },
-    seed: `${opts.userId ?? 'anon'}:${opts.weekNumber ?? 0}`,
+    seed: semillaDe(opts),
     strategy: base.strategy,
     catalog: catalogo,
     platosRecientes: opts.platosRecientes || [],
@@ -378,7 +389,11 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
 
   const adaptados = conSibo(profile) || conDieta(profile) ? days.map((d) => ({ ...d, meals: d.meals.map((m) => adaptarSiProcede(m, profile)) })) : days;
   // D-110: desayunos y tentempiés de engine2 (rutina semanal), para todos.
-  const seguros = ponerDesayunos(adaptados, profile, { seed: `${opts.userId ?? 'anon'}:${opts.weekNumber ?? 0}`, platosRecientes: opts.platosRecientes || [] });
+  // D-123: al regenerar la semana, los recientes llevan también los platos del plan actual, pero la semana
+  // anterior que se guarda sigue siendo la de verdad (la usa la próxima regeneración de esta semana).
+  const semanaAnterior = Array.isArray(opts.platosSemanaAnterior) ? opts.platosSemanaAnterior : (opts.platosRecientes || []);
+  const regeneraciones = regeneracionesDe(opts);
+  const seguros = ponerDesayunos(adaptados, profile, { seed: semillaDe(opts), platosRecientes: opts.platosRecientes || [] });
 
   const plan = {
     ...base,
@@ -388,7 +403,7 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
     weekScore: null,
     motor: 'engine2',
     platosSemana,
-    platosSemanaAnterior: opts.platosRecientes || [],
+    platosSemanaAnterior: semanaAnterior,
     desayunosSemana: seguros.desayunosSemana,
     ancla: resumenAncla,
     decisionLog: [...e2.decisionLog, ...seguros.log],
@@ -397,7 +412,7 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
   // La base de datos solo guarda los días del plan (no los campos de arriba):
   // lo que engine2 necesita para recalcular y para las alternativas va también
   // dentro del primer día.
-  plan.days = guardarMeta(plan.days, { version: VERSION_MOTOR, ancla: resumenAncla, platosSemana, platosSemanaAnterior: opts.platosRecientes || [], desayunosSemana: seguros.desayunosSemana });
+  plan.days = guardarMeta(plan.days, { version: VERSION_MOTOR, ancla: resumenAncla, platosSemana, platosSemanaAnterior: semanaAnterior, desayunosSemana: seguros.desayunosSemana, ...(regeneraciones ? { regeneraciones } : {}) });
   // Raciones de engine2: gramos según el objetivo del usuario (D-100).
   if (!conRaciones) return plan;
   return { ...cantidadesDelAncla(ajustarPlan(plan, profile, targetKcal), profile, targetKcal), raciones: 'engine2' };
@@ -457,6 +472,8 @@ export function metaEngine2(plan) {
     platosSemana: plan.platosSemana || d0.platosSemana || null,
     platosSemanaAnterior: plan.platosSemanaAnterior || d0.platosSemanaAnterior || [],
     desayunosSemana: plan.desayunosSemana || d0.desayunosSemana || [],
+    // D-123: cuántas veces se ha regenerado esta semana (no está si ninguna).
+    regeneraciones: plan.regeneraciones !== undefined ? plan.regeneraciones : d0.regeneraciones,
   };
 }
 

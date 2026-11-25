@@ -5,7 +5,7 @@ import { GOAL_ADJ, computeTrend, getNutricionistaFeedback, adherenciaPct, calcTD
          getPastProteinFrequency, searchFoods, calcFoodKcal, getDefaultAlts, buildPlan }
   from "../../engine/index.js";
 import { SDB } from "../../data/sdb.js";
-import { generarPlan, platosRecientesPara, recalcularDia, regenerarComida, usaRaciones } from "../../plan/generarPlan.js";
+import { generarPlan, platosRecientesPara, recalcularDia, regenerarComida, regenerarSemana, usaRaciones } from "../../plan/generarPlan.js";
 import { comprobarRegeneracionViejo } from "../../plan/regeneracionSegura.js";
 import { PREGUNTA_PESCADO, AYUDA_PESCADO, OPCIONES_PESCADO, preguntaPescadoVisible, respuestaPescado, conRespuestaPescado } from "../../plan/preguntaPescado.js";
 import { __PERF, __TRACE, getWeekNumber } from "../../data/runtime.js";
@@ -678,9 +678,22 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
     }
   };
 
-  // «Regenerar plan» se quitó (D-102): la misma semana da siempre el mismo menú;
-  // se cambian comidas sueltas con «🔄 Alternativas», y el plan se rehace al
-  // cambiar el perfil, en el check-in o al empezar semana.
+  // «Regenerar plan» (D-123, revierte D-102): la semana entera, con engine2 y nunca con el motor viejo. Misma
+  // semana con otro número de regeneración y sin los platos de la semana anterior ni los del plan actual
+  // (src/plan/generarPlan.js, regenerarSemana). Si engine2 falla, el plan se queda como estaba y se avisa.
+  // La compra va en cada comida, así que sale ya con el plan nuevo.
+  const handleRegenerate=()=>{
+    if (isNutriPlan) { setNavOpen(false); return; }
+    if (!window.confirm("Esto cambia todo el menú de esta semana. ¿Seguir?")) return;
+    const wk=weekNum;
+    const r=__PERF.time("engine2:regenerarSemana", () => regenerarSemana(plan, profile, targetKcal, {month:new Date().getMonth(),pastProteins:getPastProteinFrequency(loadMealMemory(currentUser.id)),freeFormPool:FREEFORM_POOL,saveMealMemory:(w,L,D)=>saveMealMemory(currentUser.id,w,L,D),weekNumber:wk,userId:currentUser.id,perf:__PERF}));  // PERF
+    if (!r.ok) { alert(r.aviso); setNavOpen(false); return; }
+    const newPlan=r.plan;
+    setPlan(newPlan); setActiveDay(0); setActiveTab("plan");
+    // Los «Extras del día» se conservan (Javi, 2026-11-25): son lo que el usuario ha añadido, no el menú.
+    saveData(currentUser.id,profile,newPlan,wk,extras); setNavOpen(false);
+    saveToPDB(profile, newPlan, wk, extras, "system");
+  };
 
   const regenerateMeal=(dayIdx, mealSlot, semanticHint)=>{
     // Step 4+5: registrar acción del usuario y logs de diagnóstico
@@ -1424,6 +1437,11 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
                 {(plan.weekWarnings||[]).filter(function(w){ return !w.startsWith("[AJUSTE]"); }).map(function(w,i){return <div key={"w"+i} style={{fontSize:11,color:THEME.colorWarning,padding:"2px 0",lineHeight:1.4}}>{w}</div>;})}
               </div>
             )}
+            {!isNutriPlan&&(
+              <div style={{padding:"12px 16px",borderBottom:"1px solid #30363d"}}>
+                <button onClick={function(){handleRegenerate();setNavOpen(false);}} style={{width:"100%",padding:"10px",borderRadius:8,border:"none",background:THEME.accent,color:THEME.bgPage,fontFamily:sans,fontSize:13,fontWeight:700,cursor:"pointer"}}>🔄 Regenerar plan</button>
+              </div>
+            )}
             {[
               {icon:"📋",label:"Check-in semanal",action:function(){setShowCheckin(true);setNavOpen(false);}},
               {icon:"✏️",label:"Cambiar mi perfil",action:handleEditProfile},
@@ -1735,6 +1753,7 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
               <div style={{fontFamily:serif,fontSize:13,color:THEME.textDark2,marginBottom:12}}>Acciones</div>
               <div style={{display:"flex",flexDirection:"column",gap:8}}>
                 <button onClick={()=>setShowCheckin(true)} style={{padding:"11px",borderRadius:10,border:"none",background:THEME.gradPurple,color:THEME.bgWhite,fontFamily:sans,fontSize:13,fontWeight:700,cursor:"pointer",textAlign:"left",paddingLeft:14}}>📋 Check-in semanal {isNutriPlan?"(notifica a tu nutricionista)":""}</button>
+                {!isNutriPlan&&<button onClick={handleRegenerate} style={{padding:"11px",borderRadius:10,border:"none",background:"linear-gradient(135deg,"+gc.primary+","+gc.primary+"bb)",color:THEME.bgWhite,fontFamily:sans,fontSize:13,fontWeight:700,cursor:"pointer",textAlign:"left",paddingLeft:14}}>🔄 Regenerar plan semanal</button>}
                 <button onClick={handleEditProfile} style={{padding:"11px",borderRadius:10,border:"1px solid #e2e8f0",background:THEME.bgLightAlt,color:THEME.textDark2,fontFamily:sans,fontSize:13,fontWeight:600,cursor:"pointer",textAlign:"left",paddingLeft:14}}>✏️ Cambiar mi perfil</button>
                 <button onClick={handleReset} style={{padding:"11px",borderRadius:10,border:"1px solid #fecaca",background:THEME.bgErrorLight,color:THEME.colorErrorDark,fontFamily:sans,fontSize:13,fontWeight:600,cursor:"pointer",textAlign:"left",paddingLeft:14}}>🗑️ Empezar de cero</button>
                 <button onClick={onLogout} style={{padding:"11px",borderRadius:10,border:"1px solid #e2e8f0",background:THEME.bgLightAlt,color:THEME.textMuted,fontFamily:sans,fontSize:13,fontWeight:600,cursor:"pointer",textAlign:"left",paddingLeft:14}}>← Cerrar sesión</button>

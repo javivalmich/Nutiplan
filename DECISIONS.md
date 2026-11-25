@@ -1065,6 +1065,14 @@ Formato:
     INPUT para que Javi autorice, nunca sustituto de esa autorización explícita. Guardado como
     memoria de feedback para sesiones futuras.
 
+Ampliación — [2026-11-25] La guarnición de legumbre cuenta como legumbre (pasos 4 y 5 de la legumbre como guarnición; D-119)
+Decide: Javi (plan aprobado el 2026-11-23). Commit: `e80d3dd`, rama `motor/i0-banco-cantidades`.
+Decisión:
+- Una comida con guarnición de legumbre es consumo de legumbre para el paso 4: sube el contador semanal de legumbre y marca el día, igual que `registerConsumption` con un plato de legumbre (`decidirGuarnicion`, `src/engine2/walk/guarnicion.js`). Así, los huecos siguientes ven la semana menos corta de legumbre y el suelo de D-024 no pide además un plato de legumbre.
+- Además del suelo de D-024, la semana tiene un tope de 3 legumbres (guarniciones y platos de legumbre juntos) y un suelo de 2 que solo pone la guarnición, desde el jueves (D-119.5). El tope saca los platos de legumbre del pool cuando ya hay 3; si no queda otro candidato, no se aplica y se dice en el log.
+- Con D-116 y D-117 apagadas (D-116.12) el paso 4 vuelve a ser el de este asiento, sin el sorteo de días de D-117.
+- El recordatorio de subir la legumbre a 4 (AESAN) sigue abierto.
+
 ## D-025 — [2026-07-07] Contrato del adaptador humanScore (F4-P2c): criterio de
   satisfacción de D-020 vía medición parcial tipificada
 - Decisión. D-020 queda satisfecho midiendo lo medible hoy, sin esperar
@@ -4242,6 +4250,16 @@ Autorización y límites
 Estado resultante
 Primera Fase 7 superada por orden del titular; la evaluación ciega no acreditó no inferioridad. engine2 es el motor por defecto; legacy se conserva como reserva.
 
+Ampliación — [2026-11-25] Red de D-099.3 de la (b) (paso 7 de la legumbre como guarnición; D-119)
+Decide: Javi (plan aprobado el 2026-11-23; paso 7 pedido el 2026-11-25). Commit: `e80d3dd`, rama `motor/i0-banco-cantidades`.
+Contexto: la (b) de D-119.4 saca los compuestos de legumbre del pool de las omnívoras. En un catálogo con pocas especies (sin-pescado-2000) eso puede dejar la semana con una infracción de D-099.3 (punto 3, d y e) que las reglas, hueco a hueco, no evitan.
+Decisión:
+- Si la semana termina con alguna infracción de D-099.3 y la (b) había sacado algún compuesto de legumbre del pool, el walk se repite entero, con la misma semilla, sin esa exclusión. La guarnición, el suelo y los topes siguen. Causa: `guarnicion_red_d099_sin_b`, con las infracciones de la semana descartada.
+- Como mucho una repetición. Si la semana sigue con infracción, se queda así, con su propia causa (`infraccion_d099_guarnicion_red_sin_b`).
+- Si la (b) no había sacado nada (vegetariana, vegana, o un perfil sin compuestos de legumbre), no hay nada que retirar: no se repite y la infracción queda anotada (`infraccion_d099_guarnicion_sin_exclusion`).
+- Sustituye a la red de D-116.5 mientras D-116 esté apagada (D-116.12); la red de D-116.5 sigue en el código para `reglaLegumbre: true`.
+Efecto (control de 200 semanas, D-119): la red actúa 7 veces, todas en sin-pescado-2000, y las 7 semanas quedan sin infracción. Los 9 omnívoros del banco tienen 0 infracciones de D-099.3, frente a 6 en `main`. Test: `src/engine2/walk/tests/guarnicion.red.test.js`.
+
 ## D-100 — [2026-10-11] Medidor nutricional con BEDCA y raciones calculadas por engine2
 
 Decide: Javi. HEAD: `c790c4a`.
@@ -4264,6 +4282,19 @@ Hora del entreno en el perfil (producto) para colocar bien el batido post-entren
 
 Estado resultante
 engine2 decide qué se come y cuánto. El motor viejo sigue componiendo el texto de cada plato y queda como reserva.
+
+Ampliación — [2026-11-23] Legumbres nuevas (paso 2 de la legumbre como guarnición)
+Decide: Javi (plan aprobado el 2026-11-23; aproximaciones decididas en el diseño de la guarnición). Commit: `6297fec`, rama `motor/i0-banco-cantidades`.
+Contexto: la guarnición de legumbre de bote necesita legumbres que el medidor no tenía. `composicion.js` se regenera con `scripts/medidor/composicion.mjs` desde la misma descarga de BEDCA del 2026-10-11 (mismo sha256), no a mano; pasa de 136 a 142 ingredientes (seis nuevos y uno renombrado).
+Decisión:
+6. Ingredientes nuevos, todos cocidos o de bote salvo las habitas, con el rango de las legumbres cocidas de hoy (120–400 g; las habitas, 50–200 g, como guisantes y edamame) y su texto de compra en `leerComida.js`:
+   - `alubias_blancas_cocidas`: BEDCA 898, alubia blanca en conserva.
+   - `alubias_rojas_cocidas` y `alubias_pintas_cocidas`: BEDCA 900, alubia negra hervida. Aproximación decidida por Javi: BEDCA no tiene alubia roja, y la pinta solo en seco.
+   - `lentejas_pardinas_cocidas` y `lentejas_beluga_cocidas`: BEDCA 1126, la misma lenteja en conserva que `lentejas_cocidas`. Aproximación: BEDCA no las distingue.
+   - `habitas`: BEDCA 2194, haba fresca.
+7. `alubias_cocidas` pasa a llamarse `alubias_negras_cocidas`: su fuente ya era la alubia negra (BEDCA 900). No cambia ningún texto: el plan dice «Alubias negras cocidas» y se lee igual.
+8. El aviso de la alubia negra (92 kcal frente a 108 por sus macros) lo heredan las rojas y las pintas. Se deja, como el resto de avisos: no se corrige.
+Efecto: ninguno en los menús. Nadie usa aún estos ingredientes; el único texto del catálogo que cambia de clave es «Lentejas pardinas cocidas» de un plato libre, que pasa de `lentejas_cocidas` a `lentejas_pardinas_cocidas` con la misma composición y el mismo rango. El banco no tiene diferencias con la línea base. Test: `src/plan/medidor/tests/legumbresNuevas.test.js`.
 
 ## D-101 — [2026-10-11] Alternativas de comida elegidas por engine2
 
@@ -4554,3 +4585,468 @@ Medido
 
 Estado resultante
 El huevo sale en cantidades de casa: 1 a 3 por comida y nunca más de 4 al día.
+
+## D-112 — [2026-11-13] Raciones: lo que la ficha pide por debajo del mínimo se respeta
+
+Decide: Javi (variante B, elegida el 2026-11-12). Implementado en `4a0f8db` (rama `motor/i0-banco-cantidades`).
+
+Contexto
+D-100 fija un «rango humano por ingrediente» (`DECISIONS.md:4254`) sin valores; los valores están en `raciones.js` (`RANGO`, `RANGO_UD`, `RANGO_GRUPO`). `ajustarComida` subía al mínimo todo lo que quedaba por debajo. En 21 fichas hay 12 ingredientes por debajo de su mínimo (más los dos aceites, cuyo «por debajo» es la conversión de 5 ml a 4,6 g). Así, el yogur que va de salsa (20 g) se servía a 125 g, ¼ de aguacate a ½, una clara de rebozar a 2, y a 3714 kcal la cancha del ceviche llegaba a 145 g. Se midió también la variante A (el mínimo pasa a ser lo que pide la ficha) y se descartó: el yogur de salsa llegaba a 420 g.
+
+Decisión
+1. Si la ficha pide de un ingrediente ajustable menos que el mínimo de su rango, ese ingrediente queda fijo en la cantidad de la ficha: no sube al mínimo ni crece con el objetivo. Su energía cuenta, y el resto del plato se ajusta alrededor.
+2. Quedan fuera el aceite, lo que añade engine2 (pan, fruta y frutos secos) y las masas de receta marcadas en la ficha (`masa: true`: crepes de avena y batido de soja), que conservan el comportamiento anterior.
+3. Cada ingrediente fijado así deja en el decision log la causa `cantidad_de_la_ficha`, con la cantidad de la ficha y el mínimo.
+4. Tests en `minimosFicha.test.js`: 19 fichas a 1434, 2174 y 3714 kcal conservan su cantidad, las dos masas mantienen el comportamiento anterior y la causa queda en el log. Las 19 fichas probadas son las 21 que piden algo por debajo del mínimo menos las 2 masas.
+
+Consecuencia aceptada (Javi)
+Los ingredientes fijados por la ficha, incluidos los que dan nombre al plato, no crecen con el objetivo. A más calorías, el plato crece por sus otros ingredientes.
+
+Medido
+Banco, 12 perfiles × 8 semanas, `1ca217c` → `4a0f8db`; repetido el 2026-11-13 contra `139b3c1`, con el mismo resultado.
+- Cambian 62 de 2688 comidas, todas con el mismo plato.
+- Ningún perfil sale de ±5 %. La vegana de 1400 kcal pasa de 3 a 2 semanas fuera.
+- La proteína media del día cambia como mucho 0,4 g.
+- La energía va a la patata (+900 g) y al pan integral (+240 g).
+- Con las masas incluidas habría cambiado como mucho 0,6 g de proteína, en 139 comidas (variante en memoria sobre `1ca217c`; el borrador decía 142, medido sobre una base anterior).
+
+Pendiente
+- La masa como unidad. Para conservar la proporción de la receta dentro de ±10 %, la masa tendría que escalar con un solo factor, en pasos del ingrediente más grueso: medio factor en las crepes (1 de sus 2 huevos) y uno entero en el batido (1 plátano). Iría en el grupo proteico si lleva algo proteico, y sin mínimos sueltos por ingrediente. Escalar cada ingrediente con su propio grupo no basta: el huevo/avena de las crepes sale entre 1,12 y 2,27, frente a 2,65 en la ficha.
+- El huevo de las crepes. Ya hoy se desvía de la proporción (huevo/avena 1,77 a 1434 kcal, frente a 2,65 en la ficha).
+- El batido solo se ha visto a 1400 kcal. En el banco solo aparece en el perfil vegano de 1400 kcal; el caso de 3714 kcal se midió poniéndolo a mano en un día.
+
+Estado resultante
+Lo que la ficha pide en poca cantidad (una salsa, un rebozado, un aderezo) se sirve en esa cantidad a cualquier objetivo de calorías. Las dos masas siguen como antes, a la espera de decidir la masa como unidad.
+
+## D-113 — [2026-11-13] SIBO: el aceite aromatizado con ajo sustituye al aceite de cocinar
+
+Decide: Javi (2026-11-12 y 2026-11-13). Implementado en `33abeae`, `1ca217c` y `5c2e1a9` (rama `motor/i0-banco-cantidades`).
+
+Contexto
+Con SIBO, la adaptación quitaba el ajo y añadía al final de la compra «Aceite aromatizado con ajo (opcional)», sin cantidad. El lector, que es el mismo para las raciones y para el medidor, le ponía la cantidad de aceite del texto. En el perfil SIBO del banco, 66 de 224 comidas llevaban así dos aceites, y de ahí venían 21 de las 23 comidas con kcal declaradas distintas de las releídas. La semana salía dentro de ±5 % igualmente, porque el error entraba igual en lo decidido y en lo medido.
+
+Decisión
+1. Con SIBO, el aceite aromatizado con ajo sustituye al aceite de cocinar, con su misma cantidad: el AOVE o, si no hay, el de girasol, incluido «Aceite de sésamo o girasol» (pad thai). La compra lleva una sola línea de aceite de cocinar, que se lee como AOVE.
+2. Nunca sustituye al aceite de sésamo solo, que es un aliño de sabor propio.
+3. El texto del plato nombra el mismo aceite que la compra. Si no hay aceite de cocinar que sustituir, no se añade aceite y el texto dice «aceite» donde la adaptación del ajo escribía el aromatizado (en el catálogo, la fabada).
+4. Tests en `src/plan/tests/siboAceite.test.js` (`src/engine2/nutrientes/fodmap.js`).
+
+Medido
+Perfil `sibo-2000` del banco, 8 semanas, 224 comidas, `08c05f3` → `1ca217c`; repetido el 2026-11-13.
+- Comidas con dos aceites: 66 → 0.
+- Aceite releído: 2406 → 1799 g.
+- Cambian 74 de 224 comidas, ninguna de plato.
+- La energía va al pan sin gluten (+1300 g), la patata (+580 g), el boniato (+330 g), el arroz (+250 g) y la quinoa (+205 g).
+- Comidas con kcal declaradas distintas de las releídas: 23 → 2. Las 2 eran el queso en lonchas, que resuelve D-112: en `139b3c1` son 0.
+- Semanas fuera de ±5 %: 0 antes y después (desvío de −2,2…−0,3 % a −2,5…0,0 %). Proteína media del día: 103,9 → 105,6 g.
+- El pad thai no sale en ninguna de las 2688 comidas del banco: su cambio (`5c2e1a9`) solo está cubierto por el test.
+
+Estado resultante
+Una persona con SIBO ve un solo aceite de cocinar por plato, con su cantidad, y el mismo nombre en la receta y en la compra.
+
+## D-114 — [2026-11-13] La sugerencia de la comida libre del sábado no es consumo
+
+Decide: Javi. Implementado en `47705c1` (rama `motor/i0-banco-cantidades`).
+
+Contexto
+La comida del sábado es libre y el plato que elige el walk queda solo como sugerencia (D-099.3.i). Aun así, el walk la registraba como consumo, igual que un plato servido (`runWalk.js`, `registerConsumption`): subía el contador del suelo semanal de su familia, vedaba ese suelo el domingo y marcaba el sábado como día con verdura. Medido en 200 semanas por perfil, con los 9 perfiles del banco que comen pescado:
+- Los 0,64 días sin verdura por semana eran todos sábados: con la sugerencia cubriendo la verdura, la cena ya no se dirigía a un plato con verdura.
+- Cuando la sugerencia era de pescado (578 de 1800 semanas) se servían 4,57 pescados, frente a 5,06 en el resto, y en 2 semanas el suelo de 3 se cumplió con 2 servidos.
+
+Decisión
+1. La sugerencia de la comida libre no es consumo: no sube los contadores de los suelos semanales (ni activa su veda) y no marca la verdura del día ni su identidad (paso 5).
+2. El paso 4 no la dirige: se elige entre los candidatos que dejan los filtros y las preferencias, sin nivel de verdura ni de suelo.
+3. Sigue contando para no repetir plato en la semana ni en la siguiente, y para el tope y la separación por proteína principal (D-099.3.d y e).
+4. El hueco es la comida del día con `fixedRole: "libre"`, el mismo criterio con el que `materializePlan.js` la marca `libre`. La evidencia del hueco lo dice en el decision log.
+5. Test en `src/engine2/walk/tests/runWalk.sugerencia.test.js`: 3 de sus 6 casos fallaban antes del cambio.
+
+Medido
+200 semanas por perfil, antes → después. El motor con el cambio da los mismos menús que la variante medida en memoria antes de implementarla (2400 semanas idénticas).
+- Días sin verdura por semana: 0,64 → 0,00 en los 9 perfiles con pescado; 0,64 → 0,13 sin pescado ni marisco; 0,04 → 0,00 en la vegetariana; 0,17 → 0,00 en la vegana.
+- Pescado servido por semana: 4,91 → 4,94 (dentro del ruido). Semanas con menos de 3 servidos: 2 de 1800 → 0.
+- Con la sugerencia de pescado se sirven 4,83, frente a 4,99 en el resto.
+- Calorías y proteína: sin cambios (132,6 g de proteína al día; semanas fuera de ±5 %, 10 → 4 de 1800).
+- Reglas de D-099.3 y restricciones: 0 infracciones antes y después.
+- Línea base del banco regenerada en el mismo commit.
+
+Pendiente
+- En el perfil sin pescado ni marisco quedan 0,13 días sin verdura por semana.
+- El cambio hizo que un test de dietas sacara un plato cuyo texto ya no cuadraba con la compra (ñoquis con espinacas y requesón). Se corrigió aparte, en la ficha del plato (`fe1367e`).
+
+Estado resultante
+Lo que el usuario no come no cuenta: los suelos de pescado y legumbre y la verdura diaria se cumplen con platos servidos.
+
+Ampliación — [2026-11-14] La preferencia B no mira la sugerencia
+Decide: Javi. Implementado en `b5a5723` (rama `motor/i0-banco-cantidades`).
+1. La sugerencia tampoco cuenta como comida anterior para la preferencia B (no tres comidas seguidas con el mismo `tempFeel`, `runWalk.js:512-534`). Si la comida de ayer o de anteayer es la sugerencia, no hay racha de dos comidas servidas: B no se aplica y la evidencia del hueco lo dice.
+2. Solo afecta a la comida del domingo. La cena del sábado se sirve y B la sigue mirando.
+3. Test en `src/engine2/walk/tests/runWalk.preferenciaB.test.js`: el caso del domingo fallaba antes del cambio. Línea base del banco regenerada en el mismo commit.
+Medido: 200 semanas por perfil, antes → después, en los 9 perfiles con pescado (`scripts/banco/medicion/compararPreferenciaB.mjs` sobre dos salidas de `medirDiseno.mjs`). Cambian los menús de 1698 de 1800 semanas: al cambiar el domingo cambia el azar de los huecos siguientes y la semana siguiente.
+- Comida del domingo: «caliente» 995 → 1156, «frío» 299 → 189 y «muy caliente» 443 → 345, de 1800 (el resto son platos cuya sensación térmica el script no lee: 63 → 110). Antes B le quitaba sobre todo lo «caliente», que es lo más frecuente en la comida; ahora el domingo queda como los demás días.
+- Pescado servido por semana: 4,38 → 4,40. Legumbre: 1,15 → 1,13. Proteína media del día: 131,9 → 132,0 g.
+- Reglas de D-099.3, familia en días seguidos y restricciones: 0 infracciones antes y después.
+Pendiente: la preferencia A (no repetir el tipo de plato de ayer, `runWalk.js:497-510`) sigue mirando la sugerencia como comida anterior.
+
+## D-115 — [2026-11-13] No repetir familia proteica en días seguidos
+
+Decide: Javi. Implementado en `e2eaf89` (regla), `c22367a` (red de seguridad) y `12c3aff` (alternativas), rama `motor/i0-banco-cantidades`.
+
+Contexto
+D-099.3.e separa por proteína principal, que es la especie: la misma no sale el mismo día ni en días seguidos. No impide encadenar especies de una misma familia (merluza, atún, gambas). Medido en 200 semanas por perfil, con los 9 perfiles del banco que comen pescado: 4,94 pescados por semana, rachas de hasta 7 días seguidos con pescado y 2,33 repeticiones de familia en días seguidos por semana. El azar puro sobre el catálogo da 4,11 pescados; el tope y la separación por especie lo suben a 4,84, porque el pescado tiene muchas especies y el ave solo dos.
+
+Decisión
+Se extiende D-099.3.e, que queda como está.
+1. Una familia proteica que ya sale el día anterior o el siguiente no se repite. Familia es el `proteinType` del plato; pescado y marisco cuentan como una sola (`familiaProteica`, `src/engine2/dishes/bases.js`).
+2. Solo dietas omnívoras. En vegetariana y vegana casi todo es «vegetal» y la regla no es aplicable.
+3. Es un filtro con vuelta atrás, después de la separación por proteína: si dejaría el hueco sin candidatos, no se aplica y la evidencia del hueco lo dice.
+4. No mira la comida y la cena del mismo día.
+5. La sugerencia de la comida libre ni se filtra ni cuenta como vecina (D-114).
+6. Los dos platos del ancla no pasan por el filtro: los coloca `expandWeekArc.js` antes del walk. Pueden ser de la misma familia en días seguidos, como en D-099.3.e, y cuentan como vecinos para los demás huecos.
+7. Red de seguridad. El filtro mira un hueco cada vez y, en un catálogo muy corto, puede gastar antes los platos que valían para un hueco posterior y dejarlo sin ninguno. Si el walk falla por eso y el filtro había descartado algún candidato, se repite la semana entera sin el filtro (misma semilla) antes de dar el fallo por bueno, y queda en el decision log con la causa `familia_dias_seguidos_retirada`. Es un envoltorio de `runWalk`; si tampoco así hay platos, el fallo sigue como antes.
+8. Alternativas. `elegirAlternativa` aplica la misma regla, con las causas `alternativa_familia_dias_seguidos` y `alternativa_familia_dias_seguidos_sin_aplicar`. No se aplica cuando el plato que se quita era del ancla: manda el aprovechamiento.
+9. Tests: `src/engine2/walk/tests/runWalk.familia.test.js` (regla y red de seguridad) y `src/engine2/walk/tests/alternativa.test.js`.
+
+Medido
+200 semanas por perfil, antes → después, en los 9 perfiles con pescado. El motor con la regla da los mismos menús que la variante medida en memoria antes de implementarla (2400 semanas idénticas).
+- Pescado servido por semana: 4,94 → 4,38. Semanas con 5 o más: 66 % → 42 %.
+- Racha máxima de días seguidos con pescado: 7 → 2.
+- Repeticiones de familia en días seguidos: 2,33 → 0,08 por semana; las que quedan son pares del ancla.
+- Huecos donde no se aplica por falta de candidatos: 3 de 23.010. En el perfil sin pescado ni marisco, 248 de 2.600 (9,5 %).
+- Misma familia en la comida y la cena de un día: 0,51 → 0,76 por semana (la regla no lo mira).
+- Proteína media del día: 132,6 → 131,9 g. Reglas de D-099.3 y restricciones: 0 infracciones.
+- Red de seguridad: no se activa en ninguna de las 2400 semanas del banco, ni en 540 semanas de 9 perfiles omnívoros con varias intolerancias (el más corto, 38 comidas y 53 cenas). Se activa en el caso «lactosa + gluten» de `scripts/phaseP2c`, que deja 18 platos para 14 huecos por una vía que la app no usa.
+- Semanas fuera de ±5 % de calorías: 4 → 12 de 1800. Son `omni-2600-3comidas` (1 → 7), `omni-3714` (1 → 4) y el perfil con ancla (0 → 1); `omni-1434` baja de 2 a 0. No es un desplazamiento: el desvío medio de los dos primeros no cambia (−2,35 → −2,31 % y −2,50 → −2,56 %) y las semanas por debajo de −4 % son las mismas (14 → 14 y 14 → 15). Esos dos perfiles ya están un 2,4 % por debajo de su objetivo, con las raciones en el techo, y el −5 % cae en la cola de su reparto. La línea anterior a D-114 tenía 6 y 3 semanas fuera en esos mismos perfiles.
+- Línea base del banco regenerada en `e2eaf89`; la red de seguridad y las alternativas no la cambian.
+
+Pendiente
+- Ampliar la regla al mismo día (comida y cena de distinta familia): medido, sin implementar. Deja el pescado en 3,87 por semana, con el 82 % de las semanas en 4, y sube los huecos sin candidato (41 de 2.600 con SIBO, 478 sin pescado ni marisco).
+- Los perfiles de 2600 y 3714 kcal quedan un 2,4 % por debajo de su objetivo de media: es anterior a esta regla.
+
+Estado resultante
+Un omnívoro no come la misma familia de proteína dos días seguidos, salvo los dos platos del ancla, ni en el menú ni al pedir una alternativa.
+
+## D-116 — [2026-11-15] La legumbre compuesta no va como plato único: primero y segundo
+
+Decide: Javi. Implementado entre el 2026-11-15 y el 2026-11-22. Motor (`src/engine2`): `db4ded5`, `006f3a0`, `de0041a`, `d6b44de`, `2b49d3e`, `ff2fa23` y `13c1a70`. App (`src/plan`): `11b3de4` y `3191a32` a `bf7cde7`. Después: `6b07fb9`, `b9f4de9`, `85854cc`, `0820950`, `3dcd939`, `e3a3653`, `9f708e5` y `10a823d`. Medido en memoria antes de implementar (`scripts/banco/medicion/estructura-comida.md`), sobre `b5a5723`.
+
+Contexto
+Javi lo dijo en octubre y no quedó escrito: las lentejas o una sopa pueden ir de primero con pollo de segundo, pero no como plato único. Hoy la legumbre sale 1,27 veces por semana, siempre como plato único, con el 78 % de la proteína de su comida de mediana; 1921 de 2027 comidas de legumbre quedan por debajo del 95 %. La legumbre es un ingrediente «energético» en las raciones (`raciones.js:115`) y el plato no tiene nada proteico que subir. El plato único completo (legumbre con cereal o con proteína dentro) se descartó: el cereal baja la proteína y solo 5 de los 18 platos de legumbre llevan proteína. (Cifras de 200 semanas por perfil en los 8 perfiles omnívoros sin SIBO.)
+
+Decisión
+1. Un plato compuesto de legumbre (legumbre con verdura) no se sirve solo: va de primero, con un segundo de proteína con verdura en la misma comida. Vale para todas las legumbres compuestas, no solo para las lentejas.
+2. El segundo es un plato compuesto de proteína con verdura, sin cereal, de ave o de carne: ni pescado ni marisco, ni huevo. Sale de los platos que el catálogo marca como de cena (hoy, 23 sin pescado ni huevo).
+3. El segundo se come: cuenta para no repetir plato (D-099.3.d), para el tope y la separación por especie (D-099.3.e), para la familia en días seguidos (D-115) y para la verdura del día y el suelo de pescado (D-024). Pasa por esos filtros con la misma vuelta atrás. El paso 4 no lo dirige.
+4. Si ningún segundo disponible cumple el tope de 2 por especie, ese día la legumbre va como plato único, y el decision log lo dice (`segundo_sin_tope_plato_unico`).
+5. Red de seguridad. Si la semana termina con alguna infracción de D-099.3 (plato repetido en la semana o de la anterior, una especie más de 2 veces, el mismo día o en días seguidos salvo los platos del ancla, legumbre en la cena), se repite el walk entero sin segundos, con la misma semilla. Los días de legumbre de D-117 se mantienen y la legumbre va como plato único. Queda en el log con la causa `segundos_retirados_d099` y la lista de infracciones. Se mira sobre los platos servidos, con los segundos dentro y sin la sugerencia del sábado.
+   Implementación (Javi, 2026-11-15): la semana solo se repite si tenía algún segundo; si termina con una infracción sin segundos que retirar (no los tenía, o ya se retiraron), no se repite y queda en el log con la causa `infraccion_d099_sin_segundos`. Cada intento pasa antes por la red de D-115.7: la repetición sin segundos vuelve a empezar con el filtro de familia, y como mucho hay 4 walks por semana.
+   Red del pool vacío (Javi, 2026-11-15): si el intento con segundos deja el walk sin platos para un hueco y llegó a colocar algún segundo, la semana se repite entera sin segundos, con la misma semilla, antes de dar el fallo por bueno (y de que la app caiga al motor viejo); queda en el log con la causa `segundos_retirados_pool_vacio`. Si tampoco sin segundos hay platos, falla como antes. No se suma a la repetición por D-099.3: el máximo sigue en 4 walks por semana.
+   Modificado (Javi, 2026-11-15; implementado en `ff2fa23`): en los dos casos (infracción de D-099.3 y pool vacío) la semana se repite con la regla de D-116 y D-117 apagada del todo: sin días de legumbre sorteados, sin segundos y con el paso 4 de D-024 como antes. Sustituye a «sin segundos, con los días sorteados», que dejaba la legumbre como plato único los días sorteados. Motivo: la regla nueva no debe dejar la proteína peor que hoy. Medido en 200 semanas por perfil, por la entrada de la app (`scripts/banco/medicion/estructura-comida-final/variantes-red.md`), comidas y cenas cortas de proteína por semana, hoy / sin segundos con días sorteados / regla apagada: sin pescado ni marisco (banco) 4,29 / 3,64 / 3,15; gluten y sin pescado ni marisco (sintético) 4,03 / 4,71 / 3,92; lactosa, gluten y sin pescado ni marisco (sintético) 4,22 / 5,01 / 4,18. Infracciones de D-099.3 en esos perfiles: 0 / 0 / 2, 28 / 2 / 25 y 28 / 2 / 28. Causas: `regla_legumbre_retirada_d099` y `regla_legumbre_retirada_pool_vacio` (sustituyen a `segundos_retirados_d099` y `segundos_retirados_pool_vacio`); si la semana repetida sigue incumpliendo, `infraccion_d099_regla_retirada`. Como mucho 4 walks por semana.
+   Red del pool vacío sin segundos (Javi, 2026-11-16; implementado en `13c1a70`): si el walk con la regla activa se queda sin platos, la semana se repite con la regla apagada aunque no se hubiera colocado ningún segundo (antes solo si los había, y si no la app caía al motor viejo). Misma causa, `regla_legumbre_retirada_pool_vacio`, con su motivo. Como mucho 4 walks por semana: con la regla, con y sin el filtro de familia; sin ella, con y sin él. El fallo que sale de `runWalk` lleva la lista de los walks intentados.
+6. Raciones: los dos platos son una sola comida, con el objetivo de siempre. El primero parte de media ración (legumbre 50 g en seco, que es el mínimo de su rango; verdura y aceite a la mitad), y la legumbre se ajusta con tope en lo que el mismo plato recibe como plato único a 2174 kcal. La proteína se reparte como en cualquier comida: los proteicos se dimensionan con la legumbre a su cantidad de partida. Javi descartó resolver proteína y energía a la vez. Medido, dejaba la proteína de la comida en su objetivo exacto (100 % de mediana frente a 112 %), con 30 comidas por debajo del 95 % en lugar de 7 y 190 fuera de ±5 % de calorías en lugar de 121.
+   Modificado (Javi, 2026-11-16; implementado en `b9f4de9`): la comida doble no lleva más aceite que el máximo de un plato único en esa comida (20 g del rango de `raciones.js`), 10 g en cada plato (el primero es un guiso que pocha la cebolla en el aceite; el segundo, una plancha o un horno). Lo que falta de kcal lo cubre primero la legumbre hasta su tope, después el segundo dentro de su rango (el proteico marcado crece si no queda ningún energético libre; causa `proteico_crece_por_energia`) y después el pan o la fruta, como antes. Medido en 200 semanas por perfil, en los 9 perfiles con comida doble (`scripts/banco/medicion/variantes-comida-doble.md` y `estructura-comida-final/control-aceite-10-10.md`), antes → después: aceite de la comida doble 32,7 → 19,7 ml de media (máximo 40 → 20); aceite del día 43,4 → 37,8 ml (máximo 80 → 60, el de antes de esta decisión); comidas dobles fuera de ±5 % de kcal 134 → 32; cortas de proteína 13 → 0; proteína del día 103,8 → 105,9 %; legumbre en seco 80 → 105 g y segundo 145 → 140 g (medianas); con pan o fruta 20 → 32 %. A 3714 kcal el segundo llega a su máximo (300 g), la legumbre a 120 g en seco, hay pan siempre y la proteína de esa comida queda en el 135 % de su objetivo.
+   Modificado (Javi, 2026-11-16; implementado en `0820950`): el segundo crece también desde su mínimo, antes que el pan (antes solo crecía si no estaba en ningún límite, y cuando la proteína pedía menos que su mínimo se quedaba ahí y entraba el pan). Por eso, a partir de 2174 kcal la legumbre del primero llega a su tope y ya no es media ración: 115 g en seco de mediana a 2174 kcal y 120 g a 3714 (50 g a 1434). Control final, 200 semanas por perfil en los 9 perfiles con comida doble (5240 comidas dobles): 0 por debajo del 95 % del objetivo de su comida (antes, 14); 33 por encima del 105 %, todas en omni-1434 y en días en que el reparto del resto les bajó el objetivo (frente a su objetivo sin el reparto, +2,8 % como mucho); 0 cortas de proteína; proteína del día 108,0 %; aceite 19,7 ml por comida doble (máximo 20) y 37,9 ml por día (máximo 65, en un día sin comida doble); lectura junta distinta de plato a plato 0; con pan o fruta, 20 % (antes, 32 %).
+   Orden corregido (segunda revisión, M1; implementado el 2026-11-22 en `9f708e5`): el segundo solo crece cuando la legumbre del primero ya no puede crecer más (está en su tope). Si la legumbre se quedó en su mínimo, crece antes ella, hasta su tope, y después el segundo; después, el pan o la fruta, como antes. Antes el segundo crecía en cuanto no quedaba ningún energético libre, también con la legumbre en su mínimo (caso de omni-1434, semanas 60 a 67, en `racionesDoble.test.js`), y el log decía «legumbre y aceite en su máximo» sin serlo. El log dice ahora qué crece (la legumbre, el segundo o los dos, con antes y después en medidas de casa, y solo si crece de verdad) y si la legumbre está en su tope y el aceite en su máximo. Causas: `proteico_crece_por_energia` si crece el segundo y `legumbre_crece_por_energia` si solo crece la legumbre. Control de 200 semanas por perfil en los 9 perfiles con comida doble (`scripts/banco/medicion/estructura-comida-final/control-m1.md`, antes → después): solo cambia la mediana del segundo en omni-1434, 100 → 95 g. Igual: 5244 comidas dobles; 1 por debajo del 95 % (omni-3714, semana 85, con la legumbre en su tope, el segundo en su máximo y pan; ya estaba antes del cambio); 41 por encima del 105 %, todas en omni-1434; 0 cortas de proteína; proteína del día 106,7 %; aceite 19,7 ml por comida doble y 37,6 por día (máximo 60); con pan o fruta, 1057 (20 %).
+7. Texto: una sola comida, con el primero en `p1` y el segundo en `p2`, la compra y la receta de los dos seguidas. La forma del plan no cambia.
+8. Los platos redactados de legumbre (cocido, fabada, hummus con pollo, curry con arroz, burrito, falafel, ensalada de lentejas) no cambian: siguen como plato único.
+9. Solo dietas omnívoras. En vegetariana y vegana no hay segundos (los 8 de la vegetariana son de huevo; la vegana no tiene ninguno) y la regla no se aplica. La sugerencia de la comida libre no lleva segundo (D-114).
+10. Toda elección deja su causa en el decision log. Causas actuales (2026-11-22): en el walk, `segundo_de_legumbre` (con los filtros que actuaron), `segundo_sin_candidato` y `segundo_sin_tope_plato_unico`; en la red, `regla_legumbre_retirada_d099`, `regla_legumbre_retirada_pool_vacio`, `infraccion_d099_sin_segundos` e `infraccion_d099_regla_retirada` (`segundos_retirados_d099` y `segundos_retirados_pool_vacio` no se escriben desde `ff2fa23`); en las raciones, `proteico_crece_por_energia` (crece el segundo) y `legumbre_crece_por_energia` (solo crece la legumbre; `9f708e5`); en la app, `alternativa_sin_legumbre_compuesta`, `alternativa_retira_segundo`, `alternativa_retira_comida_doble_incompleta` (se cambia una comida doble que llegaba sin los datos de sus dos platos: salen el primero y el segundo de los platos de la semana; `10a823d`), `alternativa_sin_candidato_comida_doble` y `comida_doble_incompleta_texto_libre`.
+11. Alternativas (Javi, 2026-11-16). Al cambiar una comida doble sale un plato único, y el segundo se retira de la comida, de la compra y de los platos de la semana (`alternativa_retira_segundo`; `bf7cde7`). En un perfil con sorteo de días de legumbre (omnívoro, con compuestos de legumbre en su catálogo), ninguna alternativa puede ser un compuesto de legumbre como plato único, sea doble o no la comida que se cambia: es un veto, no se relaja (`alternativa_sin_legumbre_compuesta`; `6b07fb9` para la comida doble y `3dcd939` para cualquiera). Si engine2 no encuentra alternativa para una comida doble, la comida se queda como está, con un aviso propio y sin ir al motor viejo (`alternativa_sin_candidato_comida_doble`; `85854cc`). Medido en 20 semanas de 3 perfiles (`scripts/banco/medicion/estructura-comida-final/alternativas-comida.md`): compuestos de legumbre al cambiar un plato único 32 → 0 de 752; alternativas sin candidato 0 → 0; con el deseo relajado 34 → 45 de 752.
+
+Medido
+200 semanas por perfil, reglas actuales → esta decisión con D-117, en memoria (`medirEstructura.mjs` con `--ec=suelo3,sinPescado,todas,antesAB,topePlatoUnico,red`, tablas de `resumenEstructura.mjs`). Salvo que se diga otra cosa, en los 8 perfiles omnívoros sin SIBO (1600 semanas).
+- Reglas de D-099.3: 0 infracciones en los 10 perfiles medidos, igual que hoy. D-114: la sugerencia nunca lleva segundo. Restricciones: 0 comidas con un alimento vetado o eliminado.
+- Red de seguridad: actúa en 71 de 2000 semanas, todas del perfil sin pescado ni marisco (71 de sus 200). En los otros 9 perfiles, nunca. Sin ella, ese perfil tenía 21 semanas con una especie más de 2 veces, 11 especies repetidas el mismo día y 34 en días seguidos.
+- Segundo sin tope, plato único (punto 4): 3 veces en 200 semanas, en el perfil sin pescado ni marisco; nunca en los demás.
+- Comida con segundo: 112 % de su objetivo de proteína de mediana; 13 de 4783 por debajo del 95 %.
+- Comidas y cenas cortas de proteína: 3,04 → 1,85 por semana. Proteína del día: 100,8 % → 104,5 % del objetivo.
+- Comida de legumbre a 1434 kcal: unos 451 g (329 como plato único), con 50 g de legumbre en seco y 95 g de carne o ave. A 3714 kcal: unos 927 g (933 como plato único), con 105 g de legumbre en seco y 260 g de carne o ave, 100 g de proteína para un objetivo de 83 y pan o fruta en el 90 % de los casos.
+- Pescado servido: 4,33 → 3,90 por semana. Semanas con menos de 3: 1 → 5 de 1600.
+- Familia en días seguidos (D-115), sin ancla: 2 → 238 en las 1600 semanas (0,15 por semana); en el perfil sin pescado ni marisco, 269 → 367 en 200. El filtro no se puede aplicar al segundo 14,6 veces por cada 100 semanas: el segundo solo puede ser ave o carne, y a veces las dos ya salen el día de al lado.
+- Perfil sin pescado ni marisco: comidas y cenas cortas 4,29 → 3,64 por semana (5,00 en las semanas en que actúa la red, 2,89 en el resto).
+
+Pendiente
+- Implementación por etapas: `scripts/banco/medicion/estructura-comida.md`, sección 9. La etapa 1 no cambia la forma del plan ni toca el plan compartido.
+- Días de crepes a 1434 kcal: con la comida doble, 4 de los 1200 días de 200 semanas de omni-1434 pasan del 105 % de su objetivo diario, hasta +14,0 % (antes, con un plato único, +8,5 % como mucho; `scripts/banco/medicion/estructura-comida-final/dias-encima-1434.md`). Las crepes de avena del desayuno y el tentempié no bajan de sus mínimos, el reparto del resto baja el objetivo de la comida y la comida doble tiene un suelo más alto que un plato único (unas 520 kcal). Va con el pendiente de la masa como unidad.
+- Alternativas de una comida con dos platos: resuelto en el punto 11 (sale un plato único).
+- La preferencia A sigue mirando la sugerencia del sábado (D-114).
+- La sopa de primero: no hay en el catálogo sopas ni cremas sin proteína.
+- Perfiles con un solo segundo posible (2026-11-22, `scripts/banco/medicion/estructura-comida-final/un-segundo-reparto.md`, 200 semanas, perfiles sintéticos). `solo-pollo-2000` tiene el pollo como única carne: 8 segundos, todos de pollo. `un-segundo-2000` tiene un solo plato que vale de segundo. Hay sorteo de días de legumbre, pero se colocan pocos segundos (1,17 y 0,46 comidas dobles por semana): los demás días sorteados la legumbre va como plato único. D-117.7 no los cubre, porque tienen un segundo posible. Comidas y cenas cortas de proteína por semana; entre paréntesis, la proteína del día:
+
+  | | `main` | HEAD | HEAD sin tope de pescado | HEAD sin tope ni D-115 |
+  |---|---|---|---|---|
+  | solo-pollo-2000 | 2,50 (102,6 %) | 3,46 (102,2 %) | 3,42 (102,5 %) | 2,60 (104,8 %) |
+  | un-segundo-2000 | 3,00 (100,8 %) | 4,36 (99,0 %) | 4,18 (99,5 %) | 3,73 (100,5 %) |
+
+  - Legumbre como plato único por semana, de `main` a HEAD: 1,43 → 2,08 y 1,40 → 2,69.
+  - De la diferencia de `main` a HEAD (+0,96 y +1,36), el tope de pescado de D-118 pone +0,04 y +0,18, y el filtro de familia de D-115, +0,82 y +0,45. La regla de la legumbre, con lo demás de la rama, pone +0,10 y +0,73. El reparto depende del orden en que se quitan las reglas.
+  - Medido y descartado: que un día sorteado solo fije el nivel de legumbre si hay un segundo posible (`nivel-con-segundo.md`). Esos días la cascada normal sigue eligiendo legumbre, y deja 3,46 y 4,08 comidas cortas por semana.
+  - Sin decidir.
+- El banco no tiene ningún perfil con gluten y sin pescado ni marisco. Esos perfiles ya incumplen D-099.3 hoy, sin la regla (28 casos en 200 semanas en los dos sintéticos medidos: especie en días seguidos, el mismo día o más de 2 veces), porque el catálogo les deja pocas especies; con la red, la regla se apaga en 192 a 195 de cada 200 semanas.
+
+Estado resultante
+Implementado en el motor y en la app (commits en «Decide»).
+
+Ampliación — [2026-11-24] Apagada por interruptor (paso 8 de la legumbre como guarnición)
+Decide: Javi (plan de la legumbre como guarnición aprobado el 2026-11-23; paso 8 pedido el 2026-11-24). Commit: `bb1f9c8`, rama `motor/i0-banco-cantidades`.
+Contexto: la legumbre como guarnición se midió siempre con D-116 y D-117 apagadas (`scripts/banco/medicion/guarnicion/plan-implementacion.md`). Guarnición y comida doble a la vez no se ha medido nunca, así que la regla se apaga antes de encender la guarnición.
+Decisión:
+12. La regla de D-116 y D-117 tiene un interruptor, `reglaLegumbre`, apagado por defecto: en `runWalk` y `materializePlan`, y en las opciones de `generarPlan` y `regenerarComida`. El código no se borra: con `reglaLegumbre: true` actúa como antes.
+13. Apagada: sin segundos, sin la red de D-116.5 (solo existía para retirar la regla) y con la causa `regla_legumbre_apagada` en el log al empezar el walk.
+14. Las alternativas leen el mismo interruptor. Apagado, el plato nuevo de una comida de plato único puede ser un compuesto de legumbre, como antes de D-116. Una comida doble guardada (`_dishId2`) sigue sin poder cambiarse por un compuesto de legumbre, y se sigue leyendo, racionando y regenerando igual (test `src/plan/tests/interruptorLegumbre.test.js`).
+15. Los 17 archivos de test de D-116 y D-117 encienden la regla (`reglaLegumbre: true`) y siguen probando su código.
+Efecto: `VERSION_MOTOR` 2026-11-24. En el banco cambian 72 de 96 semanas: las 8 de cada uno de los 9 perfiles omnívoros sin SIBO; SIBO, vegetariana y vegana no cambian. No hay infracciones nuevas de D-099.3: sin-pescado-2000 pasa de 1 a 0 (especie en días seguidos), y vegana-1400 mantiene las que ya tenía, sin la regla.
+Estado resultante: apagada en la app. El código queda en el motor.
+
+## D-117 — [2026-11-15] Días de legumbre sorteados con la semilla (modifica D-024)
+
+Decide: Javi. Implementado entre el 2026-11-15 y el 2026-11-22: `4378c3a`, `f10f600`, `a7d81ef` (test), `3f3eba2`, `b97a0da`, `1c23a97` y `ed5196b`. Medido en memoria antes de implementar, con D-116 (`scripts/banco/medicion/estructura-comida.md`), sobre `b5a5723`.
+
+Contexto
+D-024 atiende los suelos semanales en el primer hueco donde se puede, después de las preferencias A y B y después de la verdura del día (asiento 3), con una veda de un día (asiento 4). En la comida la verdura gana casi siempre y el suelo de legumbre apenas actúa: hoy la legumbre sale 1,27 veces por semana con un suelo de 3. Poner los suelos antes que la verdura en la comida (contrafactual A) la sube a 2,74, pero la fija en lunes, miércoles y viernes en 1281 de 1600 semanas, porque el walk recorre la semana en orden y la veda hace el resto.
+
+Decisión
+1. Antes del walk se sortean con la semilla 3 días de legumbre, con un RNG propio (`::walk::estructura`). El sorteo es entre todos los conjuntos válidos de días: sin el día de la comida libre, sin dos días seguidos y sin los días en que el ancla ya colocó un plato. Las legumbres del ancla cuentan para los 3. El domingo puede salir.
+   Implementación (2026-11-15, `4378c3a`; evidencia corregida en `b97a0da`): si no caben 3 días (el ancla ocupa días, sin dos seguidos), se sortean 2 o 1 entre los conjuntos válidos de ese tamaño, y si no cabe ninguno, ninguno. La evidencia de `dias_legumbre_sorteados` dice cuántos días se piden, cuántos caben y cuántos se sortean, y el log lleva `sorteados`.
+2. En la comida de un día sorteado, el nivel de legumbre va antes que las preferencias A y B y antes que la verdura del día. Dentro del nivel, A y B siguen actuando con su vuelta atrás. Si no hay candidato de legumbre, el hueco sigue como siempre y el log lo dice (`dia_legumbre_sin_candidato`).
+   Decisión de Javi (2026-11-15): con 1 o 2 platos compuestos de legumbre se sortean igualmente 3 días; los que no se llenan siguen la cascada normal con `dia_legumbre_sin_candidato`, sin el suelo semanal de D-024. Es lo que hacía el prototipo de medición.
+   Modificado (Javi, 2026-11-16; implementado en `3f3eba2`): orden dentro del nivel. Antes de las preferencias A y B se prefiere un primero cuya legumbre no salga ya en la semana (en ningún plato servido, los del ancla incluidos) y, después, uno cuyo aliño no lleve ya otro primero de la semana. Cada preferencia es un filtro con vuelta atrás: si dejaría el hueco sin candidatos no se aplica. Sin pesos. Causas: `primero_legumbre_no_usada`, `primero_alino_no_usado` y sus `_sin_aplicar`. Medido en 200 semanas por perfil, en memoria (`scripts/banco/medicion/variantes-comida-doble.md` y `primeros-sin-pescado.md`; el motor da los mismos menús que la variante medida en 2000 de 2000 semanas). En los 8 perfiles omnívoros sin SIBO, antes → después: semanas que repiten legumbre en sus primeros 83 → 63 %, aliño 63 → 52 %, el mismo guiso 27 → 16 %; días sorteados sin legumbre 2,7 → 0,9 por cada 100 semanas; infracciones de D-099.3 0 → 0; semanas con la red 0 → 0; comidas y cenas cortas de proteína 1,85 → 1,85 por semana. En los tres perfiles sin pescado ni marisco (sin-pescado-2000 y los sintéticos con gluten y con lactosa y gluten), con el aceite 10 + 10: infracciones de D-099.3 2 → 2, 25 → 24 y 28 → 27; comidas y cenas cortas de proteína 3,14 → 3,17, 3,92 → 3,83 y 4,18 → 4,17 por semana; semanas con la red 63 → 64, 192 → 183 y 195 → 197; repiten legumbre 88 → 76 %, 88 → 88 % y 60 → 33 %. Las diferencias en contra (0,03 comidas cortas por semana y 1 a 2 semanas más con la red de cada 200) se aceptan como ruido. No cambia el reparto de los 14 primeros: lentejas con pimentón sigue en el 35 %, por la composición del catálogo y el tope del ajillo. Consecuencia en las raciones: las comidas dobles fuera de ±5 % de kcal pasan de 32 a 47 de 5240 en los 9 perfiles con comida doble (33 de ellas a 1434 kcal); las cortas de proteína siguen en 0.
+3. Esto modifica D-024 en esos huecos: el paso 4 iba después de las preferencias A y B (cascada pool → A → B → paso 4), y el asiento 3 ponía la verdura del día antes que los contadores semanales.
+4. Fuera de los días sorteados el suelo semanal de legumbre no actúa. La precedencia «legumbre antes que pescado» del asiento 2 de D-024 deja de tener objeto; el suelo de pescado sigue igual.
+5. El día anterior y el siguiente a uno sorteado no llevan legumbre a la comida, si quedan otros candidatos (`vecino_de_dia_legumbre`). Para la legumbre, sustituye a la veda del asiento 4 de D-024.
+6. El suelo de legumbre de `weeklyTargets.js` (3) es el número de días sorteados.
+7. Sin pesos: filtros, un orden de prioridades y azar sembrado. Causas en el log: `dias_legumbre_sorteados` (con los días y el número de conjuntos válidos), `dia_legumbre_sorteado`, `dia_legumbre_sin_candidato` y `vecino_de_dia_legumbre`.
+   Implementación (Javi, 2026-11-15): un perfil sin ningún plato compuesto de legumbre (SIBO) no sortea días y D-024 sigue para él tal cual; queda en el log con la causa `dias_legumbre_sin_sorteo`.
+   Sin segundo posible (segunda revisión, A1; implementado el 2026-11-22 en `1c23a97`): un perfil sin ningún plato que valga de segundo (rotativo, no vetado, de ave o carne con verdura y de cena, D-116.2) tampoco sortea días, y D-024 sigue para él como hoy. Misma causa, `dias_legumbre_sin_sorteo`, con `motivo: 'sin_segundo_posible'`. Se mira el catálogo del perfil, no los platos de la semana anterior: un perfil con un solo segundo posible sí sortea. Medido en 200 semanas por la entrada de la app (`scripts/banco/medicion/cortasProteina.mjs`), perfil sintético sin carne ni ave: comidas y cenas cortas de proteína 4,64 → 4,21 por semana (en `main`, 2,94; la distancia la hacen juntos el tope de pescado de D-118 y el filtro de familia de D-115: sin los dos, 3,04). Perfil sintético con un solo segundo posible: no lo cubre (3,00 en `main`, 4,36 aquí, 0,46 comidas dobles por semana).
+8. Solo dietas omnívoras. En vegetariana y vegana D-024 sigue como está.
+
+Medido
+Las mismas 200 semanas por perfil de D-116 (8 perfiles omnívoros sin SIBO, 1600 semanas).
+- Legumbre: 1,27 → 3,02 por semana; 2,99 con segundo y 0,03 como plato único (platos redactados). Semanas con menos de 3: 1510 → 37 de 1600.
+- Reparto por día (comidas de legumbre por semana): L 0,54 · M 0,29 · X 0,47 · J 0,28 · V 0,61 · S 0 · D 0,83. El patrón más frecuente (miércoles, viernes y domingo) sale el 19 % de las semanas. El domingo entra en 6 de los 7 conjuntos válidos de 3 días.
+- Día sorteado sin legumbre: 2,7 por cada 100 semanas. Con el nivel del día después de A y B eran 5,6; los que quedan los dejan sin candidatos los filtros que van antes de A (no repetir plato, tope y separación por especie, aliño). No se ha medido cuál.
+- Días sin verdura: 0,03 por semana, igual que hoy.
+- Reglas de D-099.3: 0 infracciones en los 10 perfiles medidos (con la red de seguridad de D-116).
+
+Pendiente
+- Un perfil sin ningún plato de legumbre (SIBO) sortea días igual y los anota todos sin candidato (600 en 200 semanas). La implementación no debe sortear días para ese perfil. Resuelto en la implementación (`dias_legumbre_sin_sorteo`, punto 7).
+- El recordatorio de D-024 sobre subir la legumbre a 4 (AESAN) sigue abierto.
+
+Estado resultante
+Implementado en el motor con D-116 (commits en «Decide»).
+
+Ampliación — [2026-11-24] Apagada por interruptor (paso 8 de la legumbre como guarnición)
+Decide: Javi (plan de la legumbre como guarnición aprobado el 2026-11-23; paso 8 pedido el 2026-11-24). Commit: `bb1f9c8`, rama `motor/i0-banco-cantidades`.
+Contexto: la legumbre como guarnición se midió siempre con D-116 y D-117 apagadas (`scripts/banco/medicion/guarnicion/plan-implementacion.md`). Guarnición y comida doble a la vez no se ha medido nunca, así que la regla se apaga antes de encender la guarnición.
+Decisión:
+9. Con el interruptor `reglaLegumbre` apagado (por defecto; D-116.12) no se sortean días de legumbre: el paso 4 de D-024 vuelve a actuar como antes de D-117, con su suelo semanal de legumbre y su veda de un día (asiento 4), en lugar del día de al lado de D-117.5. Con `reglaLegumbre: true` el sorteo actúa como antes.
+Efecto: el de D-116.12 (los dos van juntos).
+Estado resultante: apagada en la app. El código queda en el motor.
+
+## D-118 — [2026-11-16] Tope semanal de pescado y marisco, parámetro del perfil
+
+Decide: Javi (2026-11-16; el tope que cede, el 2026-11-16; el perfil sin carne ni ave, el 2026-11-22). Implementado en `b87ccc3` y, el tope que cede, en `0878f81`. Medido antes en memoria (`scripts/banco/medicion/variantesPescado.mjs`, `estructura-comida-final/pescado-topes.md`); después, `estructura-comida-final/tope-pescado-cede.md` y `sin-carne-ave-main-head.md`.
+
+Contexto
+Con D-116 y D-117 el pescado y el marisco salían 3,91 veces por semana en los 8 perfiles omnívoros sin SIBO, con 4 o más en el 72 % de las semanas (282 de 1600 con más de 4), y 5,03 con SIBO. Solo había un tope por especie (2 por semana, `TOPE_PROTEINA_SEMANA`) y un suelo de pescado de 3 (D-024), pero ningún techo para la familia.
+
+Decisión
+1. Pescado y marisco tienen un tope semanal común, `pescadoMaxSemana`, un campo del perfil: un entero de 2 a 4. Si el perfil no lo trae, vale 3. Lo valida `contracts/profile.js`; un valor fuera de rango no se acepta (el motor lanza y la app cae al motor viejo, como con cualquier perfil inválido).
+2. Se cuenta por especie (`ESPECIES_PESCADO_MARISCO` en `bases.js`), así que también cuentan los platos de familia «cereal» con atún o gambas. Los segundos de la comida doble nunca son pescado (D-116.2): no aplica.
+3. En cada hueco del walk, si la semana ya llega al tope con los platos servidos, el pescado y el marisco salen del pool justo después del tope por especie, y el hueco sigue por la cascada normal. Es un filtro con vuelta atrás: si dejaría el hueco sin candidatos, no se aplica.
+4. El suelo de pescado del paso 4 (D-024) es el menor entre 3 y el tope. Con tope de 2, el suelo es 2.
+5. El tope cede si aplicarlo obligaría a una infracción de D-099.3, con el valor por defecto y con el elegido por el usuario: si sin el pescado no quedara ningún candidato con una especie que no salga ya ese día o el de al lado, y con el pescado sí, el tope no se aplica en ese hueco. Más de 2 por especie ya lo filtra el tope por especie, que va antes.
+6. La sugerencia de la comida libre no cuenta para el tope (no se sirve), pero pasa por el filtro: si la semana ya llega al tope, no se sugiere pescado. Se acepta así.
+7. Las alternativas respetan el tope: si el resto de la semana ya llega, el plato nuevo no es pescado ni marisco, con la misma vuelta atrás.
+8. El tope se aplica a todos los perfiles, también a los que casi no tienen otra proteína animal que el pescado (sin carne ni ave). En el perfil sintético sin carne ni ave, la diferencia con no tener tope (4,21 frente a 4,17 comidas y cenas cortas de proteína por semana) se acepta como ruido (Javi, 2026-11-22). SIBO mantiene el valor por defecto de 3 (Javi, 2026-11-22): el 4 queda descartado por ahora.
+9. La app pasa el campo al perfil reducido del motor solo si el perfil lo trae. Sin cambios en el cuestionario, la vista ni Supabase.
+10. Causas en el log, sin pesos:
+    - al empezar el walk, `tope_pescado_semana_fijado` (con el tope, de dónde sale y el suelo);
+    - en los huecos, `tope_pescado_semana`, `tope_pescado_semana_sin_aplicar` y `tope_pescado_semana_cede_d099`;
+    - en las alternativas, `alternativa_tope_pescado` y `alternativa_tope_pescado_sin_aplicar`.
+
+Medido
+200 semanas por perfil, por la entrada de la app. El motor real da el mismo menú y el mismo texto que la variante medida en memoria en 1800 de 1800 semanas (tope de 3, 9 perfiles, antes del tope que cede).
+- 8 perfiles omnívoros sin SIBO:
+
+  | | Pescado y marisco/sem | Semanas con 4 o más | Comidas y cenas cortas/sem | Proteína del día | Infracciones de D-099.3 |
+  |---|---|---|---|---|---|
+  | Sin tope | 3,91 | 1158 | 1,84 | 108,4 % | 0 |
+  | Tope de 3 que cede (`0878f81`) | 3,01 | — | 2,03 | 108,1 % | 0 |
+
+  - El tope cede 20 veces en 1600 semanas.
+  - Qué ocupa los huecos, por semana: cerdo +0,30, comidas sin proteína animal +0,17, ave +0,13, carne roja +0,12, conejo +0,11 y huevo +0,08. La legumbre no cambia (3,04 → 3,03).
+- sibo-2000:
+
+  | | Pescado/sem | Veces que cede (en 200 semanas) | Infracciones de D-099.3 | Comidas y cenas cortas/sem | Proteína del día |
+  |---|---|---|---|---|---|
+  | Sin tope | 5,03 | — | 0 | 1,85 | 99,5 % |
+  | Tope de 3, sin ceder | 3,00 | — | 7 | 2,30 | 98,2 % |
+  | Tope de 3 que cede | 3,05 | 10 | 0 | 2,29 | 98,1 % |
+  | Valor por defecto 4 (en memoria, sin implementar) | 4,00 | 2 | 0 | 2,10 | 98,6 % |
+
+  - Las 7 infracciones sin ceder: 5 de especie dos veces el mismo día y 2 en días seguidos, sobre todo conejo en la comida y la cena del domingo. SIBO no tiene legumbre ni la red de D-116.5, y sin pescado su catálogo se queda corto.
+  - Ningún walk falla ni cae al motor viejo.
+- Tope de 2 (medido con el suelo en 3, antes de bajarlo): pescado 2,00 y 2,15 cortas por semana. Infracciones de D-099.3: 0 en los 8 omnívoros y 17 en sibo-2000.
+- Perfil sintético sin carne ni ave (sin ningún segundo posible; con D-117.7 no sortea días):
+  - Con el tope de 3: 4,21 cortas por semana, proteína del día 98,2 % y pescado 6,74 por semana (3,74 platos por encima del tope: cede o no se puede aplicar).
+  - Sin tope: 4,17 cortas y 98,6 %.
+  - En `main` (`19a300c`): 2,94 cortas, 101,1 % y pescado 8,77.
+  - Las cortas de más son legumbre como plato único: se sirven 1,78 → 3,35 por semana y quedan cortas 1,56 → 2,67. Entran donde sale el pescado.
+  - Hacen falta juntos este tope y el filtro de familia de D-115 para esa distancia. Sin uno solo de los dos, 4,17 o 4,29 cortas; sin los dos, 3,04.
+
+Pendiente
+- sibo-2000: mantiene el tope por defecto de 3, decidido el 2026-11-22. Sus comidas cortas siguen en 2,29 por semana (1,85 sin tope). Con el 4 bajarían a 2,10; queda descartado por ahora.
+- Perfil sin carne ni ave (Javi, 2026-11-22: no se toca). Con el tope de 3 queda en 4,21 comidas y cenas cortas de proteína por semana, frente a 2,94 en `main`. Con tope de 4 (y sin D-115) baja a 3,96 (`scripts/banco/medicion/estructura-comida-final/sin-d115-y-un-segundo.md`). Se resolverá con la pregunta del cuestionario.
+- El cuestionario, la vista y dónde se guarda el campo en el perfil.
+- El tope de 2 con el suelo en 2 no se ha medido en 200 semanas (la medición del tope de 2 fue con el suelo en 3).
+- La legumbre a 4 está medida (con el tope de 3: 3,74 por semana; días fijos en L, X, V y D en 1397 de 1600 semanas) y no decidida.
+
+Estado resultante
+Implementado en el motor y en la app: el tope de 3 se aplica a todos los perfiles desde `b87ccc3`, y cede ante D-099.3 desde `0878f81`.
+
+## D-119 — [2026-11-25] Legumbre de bote como guarnición, en lugar del hidrato del plato
+
+Decide: Javi (diseño cerrado y plan aprobado el 2026-11-23; pasos 4, 5 y 7 pedidos el 2026-11-25). Implementado: `e80d3dd`, rama `motor/i0-banco-cantidades`. Se relaciona con D-024 (la guarnición cuenta como legumbre), D-099.3 (su red), D-116 y D-117 (apagadas, D-116.12), D-120 (raciones) y D-121 (hidrato en días seguidos).
+
+Contexto
+Con D-116 y D-117 la legumbre iba de primero con un segundo de ave o carne. Medido en memoria (`scripts/banco/medicion/guarnicion/`, `prototipo4.md` a `prototipo7.md`), una legumbre de bote en el hueco del hidrato de un plato de plantilla da semanas con menos comidas cortas de proteína que `main` y sin infracciones de D-099.3 en los omnívoros. La lista de legumbres válidas de cada plato es la del inventario (`src/engine2/dishes/guarnicionLegumbre.js`, paso 3).
+
+Decisión
+1. Dónde: en la comida, nunca en la cena, después de elegir el plato del hueco (`src/engine2/walk/guarnicion.js`, `decidirGuarnicion`). Solo si el plato tiene lista y al perfil le vale alguna legumbre de ella. Solo en dietas omnívoras.
+2. Qué legumbres le valen al perfil: las de la lista sin las que quitan sus intolerancias (legumbres, SIBO, soja y el resto de alérgenos por el texto de la compra) y sus alimentos eliminados con los sinónimos de D-103 (`legumbresGuarnicionDelPerfil`, `src/plan/engine2App.js`).
+3. Cómo, en dos pasos, con la semilla (RNG propio «::guarnicion», que no consume el de la selección):
+   - primero, «hidrato original» o «legumbre», uniforme entre las dos;
+   - si sale legumbre, cuál de las que quedan tras las reglas de la semana (D-024, D-121 y los límites de abajo), uniforme entre ellas.
+   No es una puntuación ni un ranking (constitución 1): las dos opciones del primer paso son igual de válidas para el plato (el hidrato que trae la plantilla o una legumbre que el inventario da por buena con él), y las legumbres del segundo también, porque los filtros ya han quitado las que no valen. Elegir entre opciones igual de válidas es un desempate, y los desempates se hacen con el RNG sembrado. Las dos tiradas quedan en el log con su evidencia (`guarnicion_hidrato_original`, `guarnicion_legumbre_elegida`).
+4. La (b): en omnívoras, un compuesto de legumbre (plantilla «legumbre») solo entra en el pool de un hueco si no queda otro candidato (`legumbre_compuesta_fuera_hay_otro`, `legumbre_compuesta_sin_otro_candidato`). Los platos redactados de legumbre (fabada, cocido, hummus…) no cambian. Vegetariana y vegana, sin la (b).
+5. Límites de la semana, con vuelta atrás y causa:
+   - tope de 3 legumbres por semana, guarniciones y platos de legumbre juntos (`legumbre_tope_semana`, `guarnicion_legumbre_tope`), solo en dietas omnívoras. En vegetariana y vegana, donde la legumbre es la proteína principal, sin tope (Javi, 2026-11-25; `e3ca022`). El prototipo lo aplicaba a todas las dietas;
+   - suelo de 2 por la guarnición desde el jueves: si la semana va corta, el siguiente hueco que admite guarnición la lleva sin el primer paso (`guarnicion_suelo_semana`); nunca fuerza un plato de legumbre;
+   - guisantes y habitas, juntos, como mucho 1 vez (`guarnicion_guisantes_habitas`);
+   - sin guarnición en días seguidos, aunque sea de otra legumbre; con el suelo pendiente, cede solo si no queda otra comida servida en la semana (`guarnicion_dias_seguidos_evitada` / `_sin_aplicar`);
+   - no repetir legumbre en la semana, tampoco la de un plato de legumbre ya servido (`guarnicion_legumbre_no_repetida` / `_sin_aplicar`);
+   - en la cena, ninguna (`guarnicion_legumbre_cena`).
+6. El plato: el walk devuelve las guarniciones aparte (`guarniciones`, como `segundos`) y `materializePlan` las pone en su comida. La app escribe el plato con la legumbre (D-120: nombre, compra, receta y raciones). En `platosSemana` va el nombre del plato sin la guarnición: D-099.3 compara el plato.
+7. Solo con la regla de D-116 y D-117 apagada (D-116.12). Con `reglaLegumbre: true` no hay guarnición.
+
+Control (2026-11-25, 200 semanas en los 18 perfiles del prototipo)
+- Motor real frente al prototipo con el tope escalado (`variantesGuarnicion2.mjs` sobre `7a7f518`) con el RNG de engine2: los mismos menús en las 3600 semanas.
+  - El prototipo usaba una copia del RNG con otro hash (FNV-1a); con ella los menús no se pueden comparar día a día. El motor usa el de engine2 (`mulberry32(seedFromString(…))`), como el resto del walk.
+  - Las cifras de las comidas cambian solo en comidas con alubias blancas o habitas: `composicion.js` redondea sus kcal (93 y 57, frente a 93,1 y 57,2 del prototipo; D-100.6). Casi siempre es 1 kcal. En 6 comidas el redondeo cruza el 5 % que hace añadir pan (D-100.2) y la diferencia llega a 38 kcal.
+- Agregado de los 9 omnívoros del banco:
+
+  | | Cortas/sem | Proteína del día | Legumbres/sem (guarnición) | Pescado/sem | Fuera de ±5 % | D-099.3 | Red |
+  |---|---|---|---|---|---|---|---|
+  | `main` | 2,87 | 101,2 % | 1,16 (0,00) | 4,28 | 10,7 % | 6 | — |
+  | prototipo7 | 2,42 | 103,3 % | 2,00 (1,75) | 2,67 | 11,9 % | 0 | 11 |
+  | motor real | 2,40 | 103,3 % | 2,02 (1,78) | 2,67 | 12,1 % | 0 | 7 |
+
+- Con los 18 perfiles, D-099.3 pasaba de 426 en `main` a 508, como en el prototipo. Todas eran de vegana-1400 (420 → 508): el tope de 3 legumbres le quitaba platos de legumbre (3,01 → 2,75 por semana) a una dieta cuyo catálogo ya incumplía D-099.3 todas las semanas.
+- Sin el tope en vegetariana y vegana (`e3ca022`, 200 semanas):
+
+  | | Cortas/sem | Proteína del día | Legumbres/sem | Semanas con más de 3 | Fuera de ±5 % | D-099.3 |
+  |---|---|---|---|---|---|---|
+  | vegana-1400, `main` | 4,87 | 90,5 % | 3,01 | 36 | 50,0 % | 420 |
+  | vegana-1400, con tope | 4,54 | 91,6 % | 2,75 | 0 | 51,3 % | 508 |
+  | vegana-1400, sin tope | 4,79 | 90,9 % | 3,04 | 39 | 50,9 % | 397 |
+  | vegetariana-2000, `main` | 4,33 | 98,4 % | 2,22 | 8 | 7,9 % | 0 |
+  | vegetariana-2000, con tope | 4,42 | 98,3 % | 2,41 | 0 | 7,5 % | 0 |
+  | vegetariana-2000, sin tope | 4,50 | 98,4 % | 2,42 | 5 | 8,2 % | 0 |
+
+  Las dos dietas siguen sin guarnición; los menús omnívoros no cambian.
+
+Pendiente
+- omni-3714 sigue con 3,34 comidas cortas por semana (4,37 en `main`).
+
+Estado resultante
+Implementado en el motor y en la app. `VERSION_MOTOR` 2026-11-25.
+
+## D-120 — [2026-11-24] Raciones de la comida con guarnición de legumbre
+
+Decide: Javi (diseño cerrado el 2026-11-23 con `prototipo6.md` y `prototipo7.md`; plan aprobado el mismo día). Implementado el 2026-11-24, sin actuar todavía: `e74e471`, rama `motor/i0-banco-cantidades`. D-119 queda para el paso 4 (la elección del hidrato en dos pasos).
+
+Contexto
+La legumbre de bote puede ir de guarnición en lugar del hidrato de un plato de plantilla (`src/engine2/dishes/guarnicionLegumbre.js`, paso 3). Con el rango general de la legumbre cocida (120–400 g, que además crece con la amplitud) la guarnición salía como un plato de legumbre, y el proteico crecía sin tope para cubrir las calorías de quien come mucho. Medido en memoria (`scripts/banco/medicion/variantesGuarnicion2.mjs`, opciones `--racionGuarnicion3 --topeEscalado`, y `scripts/banco/medicion/guarnicion/prototipo6.md` y `prototipo7.md`): en omni-3714, 3,44 comidas cortas por semana, frente a 4,37 en `main`; la diferencia con el criterio de 3,42 se acepta como ruido (Javi, 2026-11-23).
+
+Decisión
+1. La legumbre de la guarnición la marca la app (`guarnicionLeg`, en `src/plan/racionesApp.js`, por la clave de `_guarnicion`). Sin ninguna marca no cambia nada.
+2. Va de 100 a 220 g escurridos, en pasos de 10, y no crece con la amplitud del objetivo. En el reparto de la comida sale como mucho con 130 g (`SALIDA_GUARNICION`).
+3. Tope de plato del proteico en una comida con guarnición: 200 g de ave o carne y 220 g de pescado o marisco (`topePlato`). Por encima de 2200 kcal escala con la amplitud, como el máximo de los energéticos (D-100.2), en pasos del rango del proteico.
+4. El pan que la comida ya lleva se queda en su mínimo en el reparto.
+5. Orden de prioridades, sin pesos: primero la proteína (el proteico se dimensiona por la proteína de la comida, hasta su tope de plato; no crece por calorías). Si después faltan kcal, crece la legumbre hasta 220 g y, solo después, el pan, dentro de su rango. Si aún falta más de un 5 %, se añade el acompañamiento de siempre (D-100.2).
+6. La causa es `guarnicion_crece_por_energia`: cuánto lleva el proteico y si está en su tope, y qué ha crecido y cuánto.
+7. Relación con D-116.6: `crecerSiFalta` (el segundo de la comida doble) no se toca; las dos reglas no coinciden en una comida, porque la guarnición no va en la comida doble (D-116 y D-117 apagadas, D-116.12).
+8. Alternativas (decisión de Javi del 2026-11-23): cambiar una comida con guarnición nunca va al motor viejo, que perdería la guarnición. Si engine2 no tiene alternativa, la comida se queda como está, con aviso y la causa `alternativa_sin_candidato_guarnicion`, como la comida doble (`src/plan/generarPlan.js`).
+
+Texto del plato (paso 9, en el mismo commit; sin asiento propio)
+- `src/plan/textos/guarnicion.js` pone la legumbre en el hueco del hidrato y cambia el nombre («Conejo al horno con espinacas y patata» → «Conejo al horno con espinacas y garbanzos»). Solo vale una legumbre de la lista del plato.
+- La compra dice la legumbre de bote escurrida («Garbanzos cocidos de bote (130 g escurridos)»). La receta tiene el paso de calentarla en la sartén, asarla en la bandeja (al horno) o solo escurrirla (en frío). Al horno, el paso de la legumbre va después de meter la proteína: «Cuando falten 15 min, añade a la bandeja…» (Javi, 2026-11-25; `e3ca022`).
+- El edamame no es de bote: se compra congelado y desgranado («Edamame congelado (desgranado, 130 g)») y se hierve 3-4 min o se saltea; en frío, hervido y frío (Javi, 2026-11-25; `e80d3dd`).
+
+Efecto
+Ninguno todavía: ningún plato lleva guarnición hasta el paso 4. Test: `src/plan/tests/guarnicionPlato.test.js` (16 casos, con la guarnición forzada en platos reales del catálogo). El banco no tiene diferencias con la línea base.
+
+Pendiente
+- Lo que decida el paso 4 (D-119).
+
+Estado resultante
+En el código, sin actuar.
+
+## D-121 — [2026-11-25] Sin el mismo hidrato en días seguidos
+
+Decide: Javi (decidido el 2026-11-23 con el plan de la legumbre como guarnición: «no repetir hidrato en días seguidos en todas las dietas»). Implementado: `e80d3dd`, rama `motor/i0-banco-cantidades`.
+
+Contexto
+Con la guarnición (D-119) cambian los hidratos de la semana y el mismo hidrato salía en días seguidos más a menudo: en el prototipo sin esta regla, 773 semanas de 1800 en los 9 omnívoros, frente a 619 en `main` (`scripts/banco/medicion/guarnicion/prototipo4-resumen.md`). Es una regla del menú general, como las de D-099.3.
+
+Decisión
+1. En cada hueco, antes de las preferencias A y B, se prefieren los candidatos cuyo hidrato de plantilla (arroz, patata, boniato, quinoa, pasta) no está en el día anterior ni en el siguiente, si ya está decidido (`hidratoPoolGuarnicion`, `src/engine2/walk/guarnicion.js`). Una comida con guarnición cuenta como «legumbre», así que dos guarniciones seguidas tampoco valen (D-119.5).
+2. Es un filtro con vuelta atrás: si dejaría el hueco sin candidatos, no se aplica. Causas: `hidrato_dias_seguidos_evitado` y `hidrato_dias_seguidos_sin_aplicar`.
+3. Para todos los perfiles y dietas. Los platos sin hueco de hidrato (los redactados, los de la dieta vegetariana y vegana) no tienen nada que comparar: la regla no les afecta.
+4. Solo con la regla de D-116 y D-117 apagada (D-116.12), como D-119.
+
+Efecto
+En el prototipo con esta regla, 39 semanas de 1800 con el mismo hidrato en días seguidos en los 9 omnívoros (`prototipo4-resumen.md`); el motor real da los mismos menús que el prototipo (control de D-119). Test: `src/plan/tests/guarnicionSemana.test.js`.
+
+Estado resultante
+Implementado en el motor.
+
+## D-122 — [2026-11-25] Una crema repetida va 2 o 3 días después: la crema guardada
+
+Decide: Javi (2026-11-25, variante «solo plantillas»). Implementado: `7bef6a2`, rama `motor/i0-banco-cantidades`. Medido antes en memoria: `scripts/banco/medicion/guarnicion/crema-repetida.md` (`b43ba0c`).
+
+Contexto
+En un plan del Preview salía la crema de calabacín el lunes y el sábado. No era un ancla ni un plato batchable: dos platos distintos del catálogo llevaban la misma crema («Crema de calabacín con gambas encima», «Crema de calabacín con huevos encima», la ficha libre «Crema de calabacín con queso fresco y huevo») y coincidían por azar.
+- D-099.3.d compara por el nombre visible y no lo ve.
+- La única ventana de conservación del motor es la de las sobras del ancla (`computeLeftoverDays`, `src/engine2/skeleton/buildWeekArc.js:250`; D-099.3.b–c), y las cremas no son bases de ancla.
+- En 200 semanas de los 9 omnívoros pasaba en 17 semanas, a cualquier distancia, del mismo día a 5 días después.
+
+Decisión
+1. Una crema de plantilla cuyo vegetal ya salió en la semana solo entra en el pool 2 o 3 días después de la primera, y una sola vez (`filtrarCremas`, `src/engine2/walk/cremas.js`).
+   - El vegetal es el primero del nombre visible («Crema de calabacín…» → calabacín).
+   - Filtro con vuelta atrás: si dejaría el hueco sin candidatos, no se aplica.
+   - Causas: `crema_repetida_fuera_de_ventana`, `crema_repetida_sin_aplicar`.
+   - La crema aguanta 3 días en la nevera, como las bases del ancla (`bases.js:31`).
+2. Con una ficha libre de crema («Crema de calabacín con queso fresco y huevo») no se repite: su compra y su receta están cerradas.
+3. La pareja (dos cremas de plantilla del mismo vegetal a 2 o 3 días) queda en el log (`crema_guardada`) y en la salida del walk (`cremas`). `materializePlan` marca las dos comidas.
+4. Texto (`escribirCompuesto`, plantilla `sopa_crema`):
+   - Primer día: la compra lleva el doble de verdura, de cebolla y de caldo, con «…, la mitad para el jueves». La receta empieza con «Haz el doble de crema y guarda la mitad en un táper para el jueves.».
+   - Segundo día: la crema no está en la compra. Los pasos de pochar, cocer y triturar son «Calienta la crema de calabacín que hiciste el lunes.». En frío: «Saca de la nevera la crema fría de … que hiciste el …».
+   - El segundo día, la crema es la del primero (su verdura y sus gramos), aunque la ficha de ese plato lleve otra segunda verdura: «Crema de calabacín con huevos encima» lleva calabacín y zanahoria, pero se come la crema de calabacín del lunes.
+5. Medidor (`leerComida`): el primer día, una línea «…, la mitad para el …» cuenta la mitad. El segundo, la crema guardada (`_cremaGuardada`) cuenta aunque no esté en la compra. Los gramos de la crema los fija `gramosVerdura` por las kcal del perfil, así que los dos días son iguales.
+6. Alternativas: cambiar una comida de la pareja vuelve a escribir la otra como una crema normal, con su compra y su receta completas, y vuelve a racionar su día (`alternativa_deshace_crema_guardada`).
+
+Efecto (control de 200 semanas, 9 omnívoros del banco)
+- El motor real da los mismos menús que el hook medido (`variantesCremaRepetida.mjs --soloPlantilla`) en las 1800 semanas.
+- Cremas del mismo vegetal repetidas: 17 semanas antes (a 0, 1, 2, 3, 4 y 5 días), 3 ahora, todas a 3 días y entre plantillas.
+- Comidas cortas 2,40 → 2,39 por semana; legumbres 2,02 → 2,01; pescado 2,67; D-099.3, 0.
+- Cambia el menú de 854 de 1800 semanas: el filtro también saca del pool cremas que el azar no habría elegido.
+- En la línea base del banco (8 semanas por perfil) solo cambian 6 semanas de sibo-2000.
+- Test: `src/plan/tests/cremaVentana.test.js`.
+
+Pendiente
+- Las alternativas (`elegirAlternativa`) no aplican la regla del punto 1: cambiar una comida puede traer una crema repetida fuera de la ventana.
+- La lista de la compra semanal agregada, cuando exista, debe sumar el doble del primer día y nada del segundo.
+
+Estado resultante
+Implementado en el motor y en la app.

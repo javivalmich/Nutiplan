@@ -5,7 +5,7 @@
 // skeleton, no duplicado).
 
 import { describe, it, expect } from 'vitest';
-import { validateProfile, ProfileValidationError, INTOLERANCE_VALUES } from '../profile.js';
+import { validateProfile, ProfileValidationError, INTOLERANCE_VALUES, pescadoMaxSemanaDe, PESCADO_MAX_SEMANA } from '../profile.js';
 import { DAYS_ORDER } from '../../skeleton/days.js';
 
 describe('validateProfile — v1: trainingDays valido acepta', () => {
@@ -91,5 +91,26 @@ describe('validateProfile — f16: intolerances (D-022, primer consumidor P2), e
     } catch (err) {
       expect(err.message).toContain('intolerances');
     }
+  });
+});
+
+describe('validateProfile — pescadoMaxSemana (tope semanal de pescado y marisco, 2026-11-16)', () => {
+  it('acepta un entero de 2 a 4, y el campo es opcional', () => {
+    for (const n of [2, 3, 4]) expect(validateProfile({ trainingDays: [], pescadoMaxSemana: n })).toBe(true);
+    expect(validateProfile({ trainingDays: [] })).toBe(true);
+  });
+
+  it('rechaza lo demás, nombrando el campo', () => {
+    for (const v of [1, 5, 3.5, '3', null, -1]) {
+      expect(() => validateProfile({ trainingDays: [], pescadoMaxSemana: v })).toThrow(/pescadoMaxSemana/);
+    }
+  });
+
+  it('pescadoMaxSemanaDe: sin el campo vale 3; con él, su valor; inválido, error', () => {
+    expect(PESCADO_MAX_SEMANA).toEqual({ min: 2, max: 4, defecto: 3 });
+    expect(pescadoMaxSemanaDe({ trainingDays: [] })).toBe(3);
+    expect(pescadoMaxSemanaDe(undefined)).toBe(3);
+    expect(pescadoMaxSemanaDe({ pescadoMaxSemana: 2 })).toBe(2);
+    expect(() => pescadoMaxSemanaDe({ pescadoMaxSemana: 5 })).toThrow(ProfileValidationError);
   });
 });

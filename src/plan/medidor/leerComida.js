@@ -8,6 +8,14 @@
 // en el texto de la comida (p1/p2) y, si no la hay, lo deja anotado como
 // «sinCantidad» en vez de inventarla.
 //
+// La comida con primero y segundo (D-116, textos/comidaDoble.js) lleva dos
+// platos en una sola comida: la compra del primero y, detrás, la del segundo
+// (`_doble.corte` dice cuántas líneas son del primero), con el primero en p1 y
+// el segundo en p2. Cada plato tiene su aceite: una línea de aceite sin
+// cantidad se busca en el texto de SU plato, y cada ingrediente dice de qué
+// plato es (`plato`: 1 o 2). Así la comida doble se lee igual junta que plato
+// a plato.
+//
 // Vive en src/plan (capa de la app), no en src/eval: eval no puede importar
 // engine2 (tripwire inverso). Nada de engine2 lo importa.
 
@@ -57,11 +65,17 @@ const RECONOCER = [
   [/seit[aá]n/, 'seitan'],
   [/soja texturizada/, 'soja_texturizada'],
   [/salsa de pescado/, 'condimento'],
+  [/lentejas pardinas cocidas/, 'lentejas_pardinas_cocidas'],
+  [/lentejas beluga cocidas/, 'lentejas_beluga_cocidas'],
   [/lentejas.*cocidas/, 'lentejas_cocidas'],
   [/lenteja/, 'lentejas_seco'],
   [/garbanzos cocidos/, 'garbanzos_cocidos'],
   [/garbanzo/, 'garbanzos_seco'],
-  [/alubias negras cocidas/, 'alubias_cocidas'],
+  [/alubias negras cocidas/, 'alubias_negras_cocidas'],
+  [/alubias blancas cocidas/, 'alubias_blancas_cocidas'],
+  [/alubias rojas cocidas/, 'alubias_rojas_cocidas'],
+  [/alubias pintas cocidas/, 'alubias_pintas_cocidas'],
+  [/habitas/, 'habitas'],
   [/alubia|fabes/, 'alubias_seco'],
   [/edamame/, 'edamame'],
   [/guisante/, 'guisantes'],
@@ -144,6 +158,8 @@ const RECONOCER = [
   [/mantequilla de cacahuete/, 'crema_cacahuete'],
   [/mantequilla/, 'mantequilla'],
   [/aove|aceite de oliva/, 'aove'],
+  // SIBO: sustituye al AOVE del plato (es aceite de oliva aromatizado).
+  [/aceite aromatizado con ajo/, 'aove'],
   [/aceite/, 'aceite_semillas'],
   [/almendra/, 'almendra'],
   [/nueces o almendras|nuez(?! moscada)|nueces/, 'nuez'],
@@ -169,6 +185,8 @@ export function reconocer(nombre) {
 
 const num = (s) => {
   if (s === '½') return 0.5;
+  // «1½», «14½»: así escribe cantidades.js las medias piezas.
+  if (/^\d+½$/.test(s)) return Number(s.slice(0, -1)) + 0.5;
   if (/^\d+\/\d+$/.test(s)) { const [a, b] = s.split('/').map(Number); return a / b; }
   return Number(String(s).replace(',', '.'));
 };
@@ -190,7 +208,9 @@ export function gramosDe(clave, cantidad) {
   if ((m = q.match(/(\d+)\s*hojas?\b/)) && ing.gHoja) return { gramos: num(m[1]) * ing.gHoja, como: 'hoja' };
   if ((m = q.match(/(\d+)\s*lonchas?\b/)) && ing.gLoncha) return { gramos: num(m[1]) * ing.gLoncha, como: 'loncha' };
   if ((m = q.match(/^(\d+)\s*-\s*(\d+)/)) && ing.gUd) return { gramos: ((num(m[1]) + num(m[2])) / 2) * ing.gUd, como: 'ud' };
-  if ((m = q.match(/^(\d+\/\d+|½|\d+(?:[.,]\d+)?)\s*(ud|unidad|unidades|grandes?|medianas?|pieza)?\b/)) && ing.gUd) {
+  // El final se comprueba con (?![\w½]) y no con \b: «½» no es letra, y con \b
+  // «1½» se leía como 1 y «½» a solas no se leía.
+  if ((m = q.match(/^(\d+\/\d+|\d*½|\d+(?:[.,]\d+)?)\s*(ud|unidad|unidades|grandes?|medianas?|pieza)?(?![\w½])/)) && ing.gUd) {
     return { gramos: num(m[1]) * ing.gUd, como: 'ud' };
   }
   return null;
@@ -212,8 +232,12 @@ export function leerComida(meal) {
   const sinCantidad = [];
   let libre = false;
   const texto = `${meal.p1 || ''} · ${meal.p2 || ''}`;
-  for (const s of meal.shopping || []) {
-    const linea = String(s);
+  // Comida doble: líneas de la compra que son del primero (las demás, del segundo).
+  const corte = meal._dishId2 && meal._doble && Number.isInteger(meal._doble.corte) ? meal._doble.corte : null;
+  const compra = meal.shopping || [];
+  for (let k = 0; k < compra.length; k++) {
+    const linea = String(compra[k]);
+    const plato = corte == null ? null : (k < corte ? 1 : 2);
     const nombre = linea.replace(/\s*\(.*$/, '').trim();
     const clave = reconocer(nombre);
     if (clave === null) { libre = true; continue; }
@@ -228,13 +252,19 @@ export function leerComida(meal) {
     const extra = linea.match(/\)\s*\+\s*(\d+)\s*g\b/);
     if (g && extra) g = { gramos: g.gramos + Number(extra[1]), como: g.como };
     if (!g && (clave === 'aove' || clave === 'aceite_semillas')) {
-      const ml = aceiteEnTexto(texto);
+      const ml = aceiteEnTexto(plato === 1 ? meal.p1 : plato === 2 ? meal.p2 : texto);
       if (ml != null) g = { gramos: ml * ing.gMl, como: 'ml (texto)' };
       // «· AOVE» sin cantidad (tostadas, desayunos): un chorrito, 10 ml. Estimado y marcado.
       else g = { gramos: 10 * ing.gMl, como: 'estimado 10 ml' };
     }
     if (!g) { sinCantidad.push(linea); continue; }
-    items.push({ clave, gramos: Math.round(g.gramos * 10) / 10, como: g.como, texto: linea, nombre });
+    // D-122: el primer día de una crema guardada se compra el doble («…, la mitad para el jueves»): hoy se come la mitad.
+    if (/, la mitad para el /.test(paren || '')) g = { gramos: g.gramos / 2, como: `${g.como} (la mitad)` };
+    items.push({ clave, gramos: Math.round(g.gramos * 10) / 10, como: g.como, texto: linea, nombre, ...(plato ? { plato } : {}) });
+  }
+  // D-122: el segundo día, la crema guardada no está en la compra, pero se come.
+  for (const it of (meal._cremaGuardada && meal._cremaGuardada.items) || []) {
+    items.push({ clave: it.clave, gramos: it.gramos, como: 'crema guardada', texto: `crema guardada del ${meal._cremaGuardada.de}`, nombre: it.clave });
   }
   return { items, sinCantidad, libre };
 }

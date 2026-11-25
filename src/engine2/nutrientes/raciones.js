@@ -54,7 +54,9 @@ const RANGO = Object.freeze({
   morcilla: [30, 100, 10], panceta: [20, 80, 5], salmon_ahumado: [30, 120, 5],
   atun_conserva: [50, 200, 5], mejillon: [100, 400, 10], berberecho: [80, 300, 10], tofu: [80, 250, 5], tofu_sedoso: [80, 250, 10],
   tempeh: [80, 200, 5], seitan: [80, 250, 5], soja_texturizada: [30, 90, 5],
-  lentejas_cocidas: [120, 400, 10], garbanzos_cocidos: [120, 400, 10], alubias_cocidas: [120, 400, 10],
+  lentejas_cocidas: [120, 400, 10], garbanzos_cocidos: [120, 400, 10], alubias_negras_cocidas: [120, 400, 10],
+  alubias_blancas_cocidas: [120, 400, 10], alubias_rojas_cocidas: [120, 400, 10], alubias_pintas_cocidas: [120, 400, 10],
+  lentejas_pardinas_cocidas: [120, 400, 10], lentejas_beluga_cocidas: [120, 400, 10], habitas: [50, 200, 10],
   hummus: [30, 120, 5], edamame: [50, 200, 10], guisantes: [50, 200, 10],
   avena: [30, 90, 5], muesli: [30, 90, 5], patata: [100, 350, 10], boniato: [100, 350, 10],
   pan_blanco: [30, 100, 10], pan_integral: [30, 100, 10], pan_centeno: [30, 100, 10], pan_sin_gluten: [30, 100, 10],
@@ -78,12 +80,37 @@ const RANGO_UD = Object.freeze({
 const SIEMPRE_FIJO = new Set(['levadura_nutricional', 'harina', 'pan_rallado', 'tahini', 'leche_coco', 'coco_rallado', 'algas', 'aceituna', 'pepinillo']);
 
 const r1 = (x) => Math.round(x * 10) / 10;
+const ACEITES = new Set(['aove', 'aceite_semillas']);
 
 export const FALTA_PARA_ACOMPANAR = 0.05;
 export const TOPE_HUEVOS_COMIDA = 3;
 export const TOPE_HUEVOS_DIA = 4;
 export const KCAL_RACION_NORMAL = 2200;
 export const AMPLITUD_MAX = 1.4;
+
+// D-120 (paso 6 de la legumbre como guarnición; decisión de Javi del
+// 2026-11-23): raciones de una comida cuya legumbre va de guarnición, en lugar
+// del hidrato del plato. La legumbre lleva la marca guarnicionLeg (la pone
+// racionesApp.js). Sin ninguna marca, nada de esto actúa.
+//   - La legumbre va de 100 a 220 g (de bote, escurrida) y no crece con la
+//     amplitud del objetivo; en el reparto sale como mucho con 130 g.
+//   - Tope de plato del proteico: 200 g de ave o carne y 220 g de pescado o
+//     marisco; por encima de 2200 kcal escala con la amplitud, como el máximo
+//     de los energéticos.
+//   - El pan que ya lleva la comida se queda en su mínimo en el reparto.
+//   - Si faltan kcal: el proteico solo va por la proteína (hasta su tope);
+//     después crece la legumbre hasta 220 g y después el pan, por este orden.
+export const RANGO_GUARNICION = Object.freeze([100, 220, 10]);
+export const SALIDA_GUARNICION = 130;
+export const TOPE_PLATO_CARNE = 200;
+export const TOPE_PLATO_PESCADO = 220;
+const PESCADO_PLATO = new Set(['salmon', 'salmon_ahumado', 'merluza', 'bacalao', 'dorada', 'corvina', 'sardina', 'bonito', 'atun_conserva', 'gambas', 'calamar', 'mejillon', 'berberecho']);
+const CARNE_PLATO = new Set(['pollo_pechuga', 'pollo_muslo', 'pollo_picado', 'pollo_cocido', 'pavo_pechuga', 'pavo_picado', 'ternera_magra', 'ternera_picada', 'cerdo_lomo', 'conejo']);
+/** Tope de plato del proteico en una comida con guarnición (sin escalar), o null. */
+export function topePlato(clave) {
+  return PESCADO_PLATO.has(clave) ? TOPE_PLATO_PESCADO : CARNE_PLATO.has(clave) ? TOPE_PLATO_CARNE : null;
+}
+const esPan = (clave) => String(clave).startsWith('pan_');
 const PAN = { clave: 'pan_integral', gramos: 60, unidad: 'g', nombre: 'pan para acompañar' };
 // D-110: con celiaquía o SIBO no se añade pan integral; en su lugar, pan sin
 // gluten (la app lo veta para el resto de perfiles).
@@ -150,10 +177,24 @@ function suma(items, composicion, gramosDe) {
  * @param {number} [amplitud] factor (≥ 1) para el máximo de los energéticos
  */
 export function ajustarComida(items, meta, composicion, amplitud = 1, { topeHuevos = null } = {}) {
+  const conGuarnicion = items.some((it) => it.guarnicionLeg);
   const estado = items.map((it) => {
     const comp = composicion[it.clave];
     const papel = comp && !it.fijo ? papelDe(it.clave, comp) : 'fijo';
     let rango = papel === 'fijo' ? null : rangoDe(it.clave, it.unidad);
+    // D-112 (borrador, decisión de Javi del 2026-11-12): lo que la ficha pide
+    // por debajo del mínimo de su rango (el yogur que va de salsa, ¼ de
+    // aguacate, una clara para rebozar) queda fijo en lo que pide la ficha: ni
+    // sube al mínimo ni crece con el objetivo; el resto del plato se ajusta
+    // alrededor. No se aplica al aceite (su «por debajo» es la conversión de 5 ml
+    // a 4,6 g), a lo que añade engine2, ni a las masas de receta (crepes,
+    // batido), que conservan el comportamiento anterior hasta que se decida
+    // cómo escalan juntas.
+    let fijoPorFicha = null;
+    if (rango && !it.anadido && !it.masa && !ACEITES.has(it.clave) && it.gramos < rango[0] - 0.05) {
+      fijoPorFicha = { ficha: it.gramos, minimo: rango[0] };
+      rango = null;
+    }
     // D-111: huevos por comida con tope (lo decide racionesDia según el día).
     if (rango && it.clave === 'huevo' && topeHuevos) {
       const tope = topeHuevos * INGREDIENTES.huevo.gUd;
@@ -169,7 +210,15 @@ export function ajustarComida(items, meta, composicion, amplitud = 1, { topeHuev
       const [a, b, p] = rango;
       rango = [a, Math.max(b, Math.floor((b * amplitud) / p) * p), p];
     }
-    return { ...it, papel: rango ? papel : 'fijo', rango, nuevo: it.gramos, limitado: null };
+    // D-120: la legumbre de la guarnición, con su rango propio (sin amplitud).
+    if (rango && it.guarnicionLeg) rango = [...RANGO_GUARNICION];
+    // D-120: tope de plato del proteico, escalado con la amplitud por encima de 2200 kcal.
+    const t0 = conGuarnicion && rango ? topePlato(it.clave) : null;
+    if (t0) {
+      const tope = amplitud > 1 ? Math.max(t0, Math.floor((t0 * amplitud) / rango[2]) * rango[2]) : t0;
+      rango = [Math.min(rango[0], tope), Math.min(rango[1], tope), rango[2]];
+    }
+    return { ...it, papel: rango ? papel : 'fijo', rango, nuevo: it.gramos, limitado: null, fijoPorFicha };
   });
   const libres = () => estado.filter((e) => e.papel !== 'fijo' && !e.limitado);
 
@@ -198,12 +247,54 @@ export function ajustarComida(items, meta, composicion, amplitud = 1, { topeHuev
     for (const e of libres()) {
       const fx = e.papel === 'proteico' ? fP : fE;
       const g = e.gramos * fx;
-      const [min, max] = e.rango;
+      // D-120: en el reparto, la legumbre de la guarnición sale como mucho con
+      // SALIDA_GUARNICION y el pan se queda en su mínimo; lo que falte lo reparte
+      // después crecerGuarnicion, por orden.
+      const [min, max] = e.guarnicionLeg ? [e.rango[0], Math.min(e.rango[1], SALIDA_GUARNICION)]
+        : conGuarnicion && esPan(e.clave) ? [e.rango[0], e.rango[0]] : e.rango;
       if (g < min) { e.nuevo = min; e.limitado = 'minimo'; cambio = true; } else if (g > max) { e.nuevo = max; e.limitado = 'maximo'; cambio = true; } else e.nuevo = g;
     }
     if (!cambio) break;
   }
 
+  // D-116.6, modificado (decisión de Javi del 2026-11-16): un proteico marcado
+  // con crecerSiFalta (el del segundo de la comida doble) crece dentro de su
+  // rango cuando ya no queda ningún energético libre (la legumbre en su tope y
+  // el aceite en su máximo) y aún faltan kcal. Va antes del pan o la fruta, que
+  // racionesDia solo añade si después sigue faltando más de un 5 %. Es un orden
+  // de prioridades: primero la legumbre, después el segundo, después el pan.
+  // Crece también si estaba en su mínimo (la proteína pedía menos que el mínimo
+  // de su rango); solo no crece si ya está en su máximo.
+  // Segunda revisión, M1 (2026-11-22): el proteico solo crece cuando la
+  // legumbre ya no puede crecer más (está en su tope). Si la legumbre se quedó
+  // en su mínimo (en una vuelta anterior, cuando aún faltaba poco), crece
+  // antes ella, hasta su tope.
+  let crecido;
+  const crecen = estado.filter((e) => e.crecerSiFalta && e.papel === 'proteico' && e.rango && e.limitado !== 'maximo');
+  const energeticos = estado.filter((e) => e.papel === 'energetico');
+  const esLegumbre = (e) => INGREDIENTES[e.clave] && INGREDIENTES[e.clave].grupo === 'legumbre';
+  const faltaKcal = () => meta.kcal - suma(estado, composicion, (e) => e.nuevo).kcal;
+  if (crecen.length && !energeticos.some((e) => !e.limitado) && faltaKcal() > 0) {
+    const cambios = [];
+    const crecer = (e, falta, papel) => {
+      const antes = e.nuevo;
+      const g = e.nuevo + (falta * 100) / composicion[e.clave].kcal;
+      if (g >= e.rango[1]) { e.nuevo = e.rango[1]; e.limitado = 'maximo'; } else { e.nuevo = g; e.limitado = null; }
+      cambios.push({ e, papel, antes });
+    };
+    for (const e of energeticos.filter((x) => esLegumbre(x) && x.limitado === 'minimo')) {
+      const falta = faltaKcal();
+      if (falta > 0) crecer(e, falta, 'legumbre');
+    }
+    const legumbreEnTope = energeticos.filter(esLegumbre).every((e) => e.limitado === 'maximo');
+    if (legumbreEnTope && faltaKcal() > 0) {
+      const falta = faltaKcal();
+      for (const e of crecen) crecer(e, falta / crecen.length, 'segundo');
+    }
+    if (cambios.length) crecido = { cambios, legumbreEnTope: energeticos.filter(esLegumbre).every((e) => e.limitado === 'maximo') };
+  }
+
+  const crecidoGuarnicion = conGuarnicion ? crecerGuarnicion(estado, faltaKcal, composicion) : null;
   // Medidas de casa.
   for (const e of estado) {
     if (e.papel === 'fijo') continue;
@@ -211,11 +302,55 @@ export function ajustarComida(items, meta, composicion, amplitud = 1, { topeHuev
     e.nuevo = Math.min(max, Math.max(min, Math.round(e.nuevo / paso) * paso));
   }
   const total = suma(estado, composicion, (e) => e.nuevo);
+  if (crecido) {
+    // Antes y después en medidas de casa, y solo lo que de verdad crece (el redondeo puede comerse el cambio).
+    const enCasa = (e, g) => { const [min, max, paso] = e.rango; return Math.min(max, Math.max(min, Math.round(g / paso) * paso)); };
+    const cambios = crecido.cambios
+      .map(({ e, papel, antes }) => ({ clave: e.clave, papel, antes: r1(enCasa(e, antes)), despues: r1(e.nuevo) }))
+      .filter((c) => c.despues > c.antes);
+    const aceiteEnMaximo = estado.filter((e) => e.papel === 'energetico' && ACEITES.has(e.clave)).every((e) => e.limitado === 'maximo');
+    crecido = cambios.length ? { cambios, legumbreEnTope: crecido.legumbreEnTope, aceiteEnMaximo } : undefined;
+  }
   return {
-    items: estado.map((e) => ({ clave: e.clave, unidad: e.unidad, antes: e.gramos, gramos: r1(e.nuevo), papel: e.papel, limitado: e.limitado, ...(e.anadido ? { anadido: true } : {}) })),
+    ...(crecido ? { crecido } : {}),
+    ...(crecidoGuarnicion ? { crecidoGuarnicion } : {}),
+    items: estado.map((e) => ({ clave: e.clave, unidad: e.unidad, antes: e.gramos, gramos: r1(e.nuevo), papel: e.papel, limitado: e.limitado, ...(e.anadido ? { anadido: true } : {}), ...(e.fijoPorFicha ? { fijoPorFicha: e.fijoPorFicha } : {}) })),
     kcal: Math.round(total.kcal),
     proteina: Math.round(total.proteina),
   };
+}
+
+/**
+ * D-120: si a una comida con guarnición le faltan kcal, crece la legumbre hasta
+ * su máximo y después el pan, por este orden y dentro de su rango. El proteico
+ * no crece por kcal: va por la proteína de la comida, hasta su tope de plato;
+ * se anota cómo queda, para la causa. Devuelve lo que cambió, o null.
+ */
+function crecerGuarnicion(estado, faltaKcal, composicion) {
+  const cambios = [];
+  for (const e of estado.filter((x) => x.papel === 'proteico' && x.rango && topePlato(x.clave))) {
+    cambios.push({ clave: e.clave, papel: 'proteina', despues: e.nuevo, tope: e.rango[1], enTope: e.limitado === 'maximo' });
+  }
+  const crecer = (e, papel) => {
+    const falta = faltaKcal();
+    const comp = composicion[e.clave];
+    if (falta <= 0 || !e.rango || !comp || !comp.kcal) return;
+    const antes = e.nuevo;
+    const g = e.nuevo + (falta * 100) / comp.kcal;
+    if (g >= e.rango[1]) { e.nuevo = e.rango[1]; e.limitado = 'maximo'; } else { e.nuevo = g; e.limitado = null; }
+    if (e.nuevo > antes) cambios.push({ clave: e.clave, papel, antes, despues: e.nuevo });
+  };
+  for (const e of estado.filter((x) => x.guarnicionLeg)) crecer(e, 'legumbre');
+  for (const e of estado.filter((x) => x.papel !== 'fijo' && esPan(x.clave))) crecer(e, 'pan');
+  return cambios.length ? cambios : null;
+}
+
+/** Texto de la causa guarnicion_crece_por_energia (D-120). */
+export function textoCrecidoGuarnicion(cambios) {
+  const papel = { legumbre: 'la legumbre', pan: 'el pan' };
+  const prot = cambios.filter((x) => x.papel === 'proteina').map((x) => `${x.clave} ${Math.round(x.despues)} g por la proteína de la comida${x.enTope ? ` (en su tope de plato, ${x.tope} g: la proteína pedía más)` : ` (tope ${x.tope} g)`}`);
+  const kc = cambios.filter((x) => x.papel !== 'proteina');
+  return `comida con guarnición: ${prot.join('; ') || 'sin proteico con tope'}${kc.length ? `; con la proteína ${cambios.some((x) => x.enTope) ? 'hasta el tope' : 'cubierta'}, faltaban kcal: crece ${kc.map((x) => `${papel[x.papel]} (${x.clave} ${Math.round(x.antes)} → ${Math.round(x.despues)} g)`).join('; después ')}` : ''}`;
 }
 
 /**
@@ -347,6 +482,20 @@ export function racionesDia({ comidas, aparte = [], objetivo, composicion, vetad
       causa: 'raciones_por_objetivo', momento: c.momento, id: c.id,
       detalle: `objetivo ${Math.round(r.meta.kcal)} kcal y ${Math.round(r.meta.proteina)} g de proteína → ${r.kcal} kcal y ${r.proteina} g${limitados.length ? `; en su límite: ${limitados.join(', ')}` : ''}`,
     });
+    if (r.crecido) {
+      const { cambios, legumbreEnTope, aceiteEnMaximo } = r.crecido;
+      const segundo = cambios.filter((x) => x.papel === 'segundo');
+      const texto = (x) => `${x.papel === 'legumbre' ? 'crece la legumbre' : 'crece el segundo'} (${x.clave} ${x.antes} → ${x.despues} g)`;
+      log.push({
+        causa: segundo.length ? 'proteico_crece_por_energia' : 'legumbre_crece_por_energia', momento: c.momento, id: c.id,
+        detalle: `faltaban kcal: ${cambios.map(texto).join('; ')}; legumbre ${legumbreEnTope ? 'en su tope' : 'por debajo de su tope'}, aceite ${aceiteEnMaximo ? 'en su máximo' : 'por debajo de su máximo'}; dentro de su rango, antes de añadir pan o fruta (D-116.6)`,
+      });
+    }
+    if (r.crecidoGuarnicion) log.push({ causa: 'guarnicion_crece_por_energia', momento: c.momento, id: c.id, detalle: textoCrecidoGuarnicion(r.crecidoGuarnicion) });
+    const deFicha = r.items.filter((i) => i.fijoPorFicha);
+    if (deFicha.length) {
+      log.push({ causa: 'cantidad_de_la_ficha', momento: c.momento, id: c.id, detalle: `fijo en lo que pide la ficha, por debajo del mínimo de su rango: ${deFicha.map((i) => `${i.clave} ${i.fijoPorFicha.ficha} g (mínimo ${i.fijoPorFicha.minimo} g)`).join(', ')}` });
+    }
     if (r.meta.proteinaMin && r.proteina < r.meta.proteinaMin - 0.5) {
       log.push({ causa: 'proteina_por_debajo_del_minimo', momento: c.momento, id: c.id, detalle: `${r.proteina} g frente a ${Math.round(r.meta.proteinaMin)} g: el plato no tiene ingredientes proteicos suficientes dentro de sus rangos` });
     }

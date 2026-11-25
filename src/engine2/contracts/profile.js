@@ -59,6 +59,35 @@ export function validateProfile(profile) {
     }
   }
 
+  const errorTope = errorPescadoMaxSemana(profile);
+  if (errorTope) errors.push(errorTope);
+
   if (errors.length) throw new ProfileValidationError(errors);
   return true;
+}
+
+/**
+ * Tope semanal de platos de pescado y marisco (decision de Javi, 2026-11-16):
+ * campo opcional del perfil, un entero de 2 a 4. Si el perfil no lo trae, vale
+ * 3. Primer consumidor: runWalk (filtro del pool y suelo de pescado del paso 4)
+ * y elegirAlternativa.
+ */
+export const PESCADO_MAX_SEMANA = Object.freeze({ min: 2, max: 4, defecto: 3 });
+
+function errorPescadoMaxSemana(profile) {
+  if (!profile || !('pescadoMaxSemana' in profile)) return null;
+  const v = profile.pescadoMaxSemana;
+  if (Number.isInteger(v) && v >= PESCADO_MAX_SEMANA.min && v <= PESCADO_MAX_SEMANA.max) return null;
+  return `"pescadoMaxSemana" debe ser un entero de ${PESCADO_MAX_SEMANA.min} a ${PESCADO_MAX_SEMANA.max}, recibido: ${JSON.stringify(v)}`;
+}
+
+/**
+ * Tope semanal de pescado y marisco de un perfil: el suyo, o 3 si no lo trae.
+ * Un valor fuera de rango lanza ProfileValidationError (sin fallback silencioso).
+ * @returns {number}
+ */
+export function pescadoMaxSemanaDe(profile) {
+  const error = errorPescadoMaxSemana(profile);
+  if (error) throw new ProfileValidationError([error]);
+  return profile && 'pescadoMaxSemana' in profile ? profile.pescadoMaxSemana : PESCADO_MAX_SEMANA.defecto;
 }

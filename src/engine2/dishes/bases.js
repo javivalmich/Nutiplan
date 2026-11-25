@@ -83,5 +83,57 @@ export function proteinaPrincipal(dish) {
   return (vista.tupla && vista.tupla.P) || vista.claveP || null;
 }
 
+/**
+ * Familia proteica de un plato para la regla «no repetir familia en dias
+ * seguidos» (decision de Javi, 2026-11-13): el proteinType del resolvedor, con
+ * pescado y marisco como UNA sola familia. null si el plato no se puede
+ * resolver (catalogos sinteticos de test): un plato sin familia ni se descarta
+ * ni cuenta como vecino.
+ */
+export function familiaProteica(dish) {
+  const vista = vistaSegura(dish);
+  if (!vista || !vista.proteinType) return null;
+  return vista.proteinType === 'marisco' ? 'pescado' : vista.proteinType;
+}
+
 /** Tope de veces que una misma proteina principal sale en la semana (comida + cena). */
 export const TOPE_PROTEINA_SEMANA = 2;
+
+/**
+ * Especies de pescado y marisco (proteina principal del catalogo). Para el
+ * tope semanal de pescado y marisco (perfil pescadoMaxSemana, 2026-11-16) se
+ * cuentan como una sola familia y por especie, asi que tambien cuentan los
+ * platos de familia «cereal» con atun o gambas.
+ */
+export const ESPECIES_PESCADO_MARISCO = Object.freeze(new Set([
+  'atun', 'bacalao', 'berberechos', 'bonito', 'calamares', 'corvina', 'dorada', 'gambas', 'mejillones', 'merluza', 'salmon', 'sardinas',
+]));
+
+/** ¿Es un plato de pescado o marisco (por su proteina principal)? */
+export function esPescadoOMarisco(dish) {
+  return ESPECIES_PESCADO_MARISCO.has(proteinaPrincipal(dish));
+}
+
+/**
+ * ¿Es un plato compuesto de legumbre (legumbre con verdura, plantilla
+ * «legumbre»)? Son los «primeros» de D-116: no van como plato unico. Los
+ * platos redactados de legumbre (cocido, fabada...) no lo son.
+ */
+export function esCompuestoLegumbre(dish) {
+  const vista = vistaSegura(dish);
+  return !!(vista && vista.tupla && vista.tupla.tmpl === 'legumbre');
+}
+
+/** Familias que pueden ir de segundo tras un primero de legumbre (D-116.2): ni pescado, ni marisco, ni huevo. */
+export const FAMILIAS_SEGUNDO = Object.freeze(['ave', 'carne']);
+
+/**
+ * ¿Puede ir de segundo tras un primero de legumbre (D-116.2)? Un compuesto de
+ * proteina con verdura, sin cereal (plantilla «caliente_clasico», C vacio), de
+ * ave o de carne.
+ */
+export function esSegundoDeLegumbre(dish) {
+  const vista = vistaSegura(dish);
+  return !!(vista && vista.tupla && vista.tupla.tmpl === 'caliente_clasico' && !vista.tupla.C
+    && FAMILIAS_SEGUNDO.includes(vista.proteinType));
+}

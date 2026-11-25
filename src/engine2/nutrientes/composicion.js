@@ -5,7 +5,9 @@ export const COMPOSICION_DATOS = {
  "bedcaSha256": "402956bec217e3438f79c98bb8ce78d9296d4beb1de13fbbccb77c535337f6bb",
  "unidades": "por 100 g de parte comestible, en el estado del ingrediente (crudo, seco, cocido…)",
  "avisos": [
-  "alubias_cocidas: energía 92 kcal frente a 108 por sus macros (Alubia negra, seca, remojada, hervida)",
+  "alubias_negras_cocidas: energía 92 kcal frente a 108 por sus macros (Alubia negra, seca, remojada, hervida)",
+  "alubias_rojas_cocidas: energía 92 kcal frente a 108 por sus macros (Alubia negra, seca, remojada, hervida)",
+  "alubias_pintas_cocidas: energía 92 kcal frente a 108 por sus macros (Alubia negra, seca, remojada, hervida)",
   "queso_crema: energía 141 kcal frente a 191 por sus macros (Queso para untar, natural, bajo en calorías)",
   "queso_crema: agua + macros = 105.5 g por 100 g (Queso para untar, natural, bajo en calorías)"
  ],
@@ -513,6 +515,34 @@ export const COMPOSICION_DATOS = {
     "nota": "Lenteja, en conserva: «Lenteja, hervida» de BEDCA tiene valores de lenteja seca"
    }
   },
+  "lentejas_pardinas_cocidas": {
+   "kcal": 74,
+   "proteina": 6.3,
+   "hidratos": 11.4,
+   "grasa": 0.2,
+   "fibra": 5.1,
+   "agua": 79.4,
+   "fuente": {
+    "bedca": "1126",
+    "nombre": "Lenteja, en conserva",
+    "grupo": "Legumbres, semillas, frutos secos y derivados",
+    "nota": "Aproximación: la lenteja en conserva de lentejas_cocidas; BEDCA no distingue la pardina (D-100)"
+   }
+  },
+  "lentejas_beluga_cocidas": {
+   "kcal": 74,
+   "proteina": 6.3,
+   "hidratos": 11.4,
+   "grasa": 0.2,
+   "fibra": 5.1,
+   "agua": 79.4,
+   "fuente": {
+    "bedca": "1126",
+    "nombre": "Lenteja, en conserva",
+    "grupo": "Legumbres, semillas, frutos secos y derivados",
+    "nota": "Aproximación: la lenteja en conserva de lentejas_cocidas; BEDCA no distingue la beluga (D-100)"
+   }
+  },
   "garbanzos_seco": {
    "kcal": 334,
    "proteina": 19.3,
@@ -553,7 +583,7 @@ export const COMPOSICION_DATOS = {
     "grupo": "Legumbres, semillas, frutos secos y derivados"
    }
   },
-  "alubias_cocidas": {
+  "alubias_negras_cocidas": {
    "kcal": 92,
    "proteina": 8.4,
    "hidratos": 13.7,
@@ -564,6 +594,61 @@ export const COMPOSICION_DATOS = {
     "bedca": "900",
     "nombre": "Alubia negra, seca, remojada, hervida",
     "grupo": "Legumbres, semillas, frutos secos y derivados"
+   }
+  },
+  "alubias_blancas_cocidas": {
+   "kcal": 93,
+   "proteina": 6.7,
+   "hidratos": 15.7,
+   "grasa": 0.2,
+   "fibra": 4.4,
+   "agua": 72.5,
+   "fuente": {
+    "bedca": "898",
+    "nombre": "Alubia blanca, en conserva",
+    "grupo": "Legumbres, semillas, frutos secos y derivados"
+   }
+  },
+  "alubias_rojas_cocidas": {
+   "kcal": 92,
+   "proteina": 8.4,
+   "hidratos": 13.7,
+   "grasa": 0.2,
+   "fibra": 8.7,
+   "agua": 68.9,
+   "fuente": {
+    "bedca": "900",
+    "nombre": "Alubia negra, seca, remojada, hervida",
+    "grupo": "Legumbres, semillas, frutos secos y derivados",
+    "nota": "Aproximación: alubia negra hervida; BEDCA no tiene alubia roja (decidido por Javi, D-100)"
+   }
+  },
+  "alubias_pintas_cocidas": {
+   "kcal": 92,
+   "proteina": 8.4,
+   "hidratos": 13.7,
+   "grasa": 0.2,
+   "fibra": 8.7,
+   "agua": 68.9,
+   "fuente": {
+    "bedca": "900",
+    "nombre": "Alubia negra, seca, remojada, hervida",
+    "grupo": "Legumbres, semillas, frutos secos y derivados",
+    "nota": "Aproximación: alubia negra hervida; BEDCA solo tiene la judía pinta en seco (decidido por Javi, D-100)"
+   }
+  },
+  "habitas": {
+   "kcal": 57,
+   "proteina": 4.6,
+   "hidratos": 8.6,
+   "grasa": 0.4,
+   "fibra": 4.2,
+   "agua": 82.2,
+   "fuente": {
+    "bedca": "2194",
+    "nombre": "Haba, fresca",
+    "grupo": "Legumbres, semillas, frutos secos y derivados",
+    "nota": "Haba, fresca"
    }
   },
   "edamame": {

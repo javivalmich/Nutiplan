@@ -689,7 +689,7 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
     if (isNutriPlan) { alert("🔒 Plan de nutricionista — usa las alternativas disponibles o contacta con tu nutricionista."); return; }
     // Plan de engine2: la alternativa la elige engine2 con las reglas del menú (D-101).
     const planE2=regenerarComida(plan, dayIdx, mealSlot, semanticHint||"diferente", profile, targetKcal, {month:new Date().getMonth(),pastProteins:getPastProteinFrequency(loadMealMemory(currentUser.id)),freeFormPool:FREEFORM_POOL,weekNumber:weekNum,userId:currentUser.id});
-    if(planE2&&planE2.alternativaSinCambio){ alert("No hay otra opción que encaje con tu dieta para esta comida."); return; }
+    if(planE2&&planE2.alternativaSinCambio){ alert(planE2.alternativaAviso||"No hay otra opción que encaje con tu dieta para esta comida."); return; }
     if(planE2){
       traceSetPlan("user", plan, planE2);
       setPlan(planE2); saveData(currentUser.id,profile,planE2,weekNum,extras); setSwapSemantic(null);

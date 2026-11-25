@@ -6,9 +6,21 @@
 //   1. Universo: platos del momento (comida/cena), no vetados por las
 //      intolerancias, que no salen ya esta semana ni salieron la anterior
 //      (por nombre visible), y distintos del plato que se quita.
+//   1a. Con sinLegumbreCompuesta, el plato nuevo no puede ser un compuesto de
+//      legumbre, que quedaría como plato único (D-116.1). Lo pide la app al
+//      cambiar una comida con primero y segundo (decisión de Javi del
+//      2026-11-16) y, en un perfil con sorteo de días de legumbre, al cambiar
+//      cualquier comida (2026-11-16). Es un veto: no se relaja.
 //   2. Tope de proteína principal por semana y proteína separada (no el mismo
 //      día ni el de al lado). Si dejarían sin candidatos, no se aplican y se
-//      dice.
+//      dice. Tras el tope por especie, el tope semanal de pescado y marisco
+//      (topePescado, el del perfil; 2026-11-16): si el resto de la semana ya
+//      llega, el plato nuevo no es pescado ni marisco, con la misma vuelta atrás.
+//   2a. Familia en días seguidos (decisión de Javi, 2026-11-13; extiende
+//      D-099.3.e): no una familia proteica que ya sale el día anterior o el
+//      siguiente (pescado y marisco, una sola). Solo dietas omnívoras. No se
+//      aplica si el plato que se quita era del ancla (manda el
+//      aprovechamiento). Si dejaría sin candidatos, no se aplica y se dice.
 //   2b. Aliños (D-105): no el mismo aliño que el otro plato del día, y el
 //      ajillo como mucho 2 veces por semana. Si dejaría sin candidatos, no se
 //      aplica y se dice.
@@ -26,7 +38,8 @@
 import { DAYS_ORDER } from '../skeleton/days.js';
 import { mulberry32, seedFromString } from '../skeleton/rng.js';
 import { computeVetoUniverse } from './vetoes.js';
-import { proteinaPrincipal, TOPE_PROTEINA_SEMANA, llevaBase } from '../dishes/bases.js';
+import { proteinaPrincipal, familiaProteica, TOPE_PROTEINA_SEMANA, llevaBase, esCompuestoLegumbre, ESPECIES_PESCADO_MARISCO } from '../dishes/bases.js';
+import { PESCADO_MAX_SEMANA } from '../contracts/profile.js';
 import { alinoDe, TOPE_AJILLO_SEMANA } from '../dishes/alinosD105.js';
 import { TOPE_CENAS_HUEVO } from './runWalk.js';
 
@@ -53,10 +66,12 @@ export const DESEOS = Object.freeze({
  * @param {string|null} [input.anclaBase] ingrediente base si el plato que se quita era del ancla
  * @param {string} [input.dieta] omnivora | vegetariana | vegana (D-107: tope de huevo en vegetariana)
  * @param {string|number} input.seed
+ * @param {boolean} [input.sinLegumbreCompuesta] el plato nuevo no puede ser un compuesto de legumbre (D-116.1)
+ * @param {number} [input.topePescado] tope semanal de pescado y marisco del perfil (por defecto, 3)
  * @returns {{ dish: object, decisionLog: object[] }}
  */
 export function elegirAlternativa(input) {
-  const { catalog, semana, day, momento, actualId, deseo, platosRecientes = [], intolerancias = [], anclaBase = null, seed, dieta = 'omnivora' } = input;
+  const { catalog, semana, day, momento, actualId, deseo, platosRecientes = [], intolerancias = [], anclaBase = null, seed, dieta = 'omnivora', sinLegumbreCompuesta = false, topePescado = PESCADO_MAX_SEMANA.defecto } = input;
   const log = [];
   const nota = (causa, evidencia) => log.push({ decisionId: `alternativa-${log.length}`, day, momento, causa, evidencia });
   const porId = new Map(catalog.map((d) => [d.id, d]));
@@ -69,10 +84,13 @@ export function elegirAlternativa(input) {
   const recientes = new Set(platosRecientes.map((x) => nombre(x)));
   const { vetoedIds } = computeVetoUniverse(catalog, intolerancias);
 
-  const universo = catalog.filter((d) => d.rol !== 'capricho' && d.momento.includes(momento) && !vetoedIds.has(d.id)
+  const posibles = catalog.filter((d) => d.rol !== 'capricho' && d.momento.includes(momento) && !vetoedIds.has(d.id)
     && !usados.has(d.nombre || d.id) && !recientes.has(d.nombre || d.id));
+  // 1a. El plato nuevo va solo, así que no puede ser un compuesto de legumbre (D-116.1).
+  const universo = sinLegumbreCompuesta ? posibles.filter((d) => !esCompuestoLegumbre(d)) : posibles;
   if (!universo.length) throw new Error(`elegirAlternativa: sin platos posibles para ${day}/${momento}`);
   nota('alternativa_universo', `${universo.length} platos de ${momento}, sin repetir la semana ni la anterior${vetoedIds.size ? `, sin ${vetoedIds.size} vetados` : ''}`);
+  if (sinLegumbreCompuesta) nota('alternativa_sin_legumbre_compuesta', `el plato nuevo va solo: fuera ${posibles.length - universo.length} compuestos de legumbre, que no se sirven como plato único (D-116.1)`);
 
   // 2. Tope y separación de proteína (como runWalk).
   const cuenta = new Map();
@@ -80,10 +98,27 @@ export function elegirAlternativa(input) {
   let pool = universo;
   const conTope = pool.filter((d) => (cuenta.get(proteinaPrincipal(d)) || 0) < TOPE_PROTEINA_SEMANA);
   if (conTope.length) { if (conTope.length < pool.length) nota('alternativa_tope_proteina', `descarta ${pool.length - conTope.length} platos de proteínas que ya salen ${TOPE_PROTEINA_SEMANA} veces`); pool = conTope; } else nota('alternativa_tope_proteina_sin_aplicar', 'dejaría sin candidatos');
+  // 2'. Tope semanal de pescado y marisco (como runWalk): cuenta el resto de la semana, sin la comida que se cambia.
+  const pescadosSemana = otros.filter((s) => ESPECIES_PESCADO_MARISCO.has(proteinaPrincipal(porId.get(s.dishId) || {}))).length;
+  if (pescadosSemana >= topePescado) {
+    const sinPescado = pool.filter((d) => !ESPECIES_PESCADO_MARISCO.has(proteinaPrincipal(d)));
+    if (sinPescado.length) { if (sinPescado.length < pool.length) nota('alternativa_tope_pescado', `descarta ${pool.length - sinPescado.length} platos de pescado o marisco: la semana ya lleva ${pescadosSemana} (tope ${topePescado})`); pool = sinPescado; } else nota('alternativa_tope_pescado_sin_aplicar', 'dejaría sin candidatos');
+  }
   const i = DAYS_ORDER.indexOf(day);
   const cercanas = new Set(otros.filter((s) => Math.abs(DAYS_ORDER.indexOf(s.day) - i) <= 1).map((s) => proteinaPrincipal(porId.get(s.dishId) || {})).filter(Boolean));
   const separados = pool.filter((d) => !cercanas.has(proteinaPrincipal(d)));
   if (separados.length) { if (separados.length < pool.length) nota('alternativa_proteina_separada', `descarta ${pool.length - separados.length} platos de ${[...cercanas].join(', ')} (ya salen ese día o el de al lado)`); pool = separados; } else nota('alternativa_proteina_separada_sin_aplicar', 'dejaría sin candidatos');
+
+  // 2a. Familia en días seguidos (como runWalk). La sugerencia de la comida
+  // libre no llega en `semana` (no es un plato servido), así que no cuenta.
+  if (dieta !== 'vegetariana' && dieta !== 'vegana' && !anclaBase) {
+    const familias = new Set(otros.filter((s) => Math.abs(DAYS_ORDER.indexOf(s.day) - i) === 1).map((s) => familiaProteica(porId.get(s.dishId) || {})).filter(Boolean));
+    const otraFamilia = pool.filter((d) => !familias.has(familiaProteica(d)));
+    if (otraFamilia.length) {
+      if (otraFamilia.length < pool.length) nota('alternativa_familia_dias_seguidos', `descarta ${pool.length - otraFamilia.length} platos de ${[...familias].join(', ')} (ya salen el día de al lado)`);
+      pool = otraFamilia;
+    } else nota('alternativa_familia_dias_seguidos_sin_aplicar', `dejaría sin candidatos (${[...familias].join(', ')} ya salen el día de al lado)`);
+  }
 
   // 2b. Aliños (D-105, como runWalk).
   const alinosHoy = new Set(otros.filter((s) => s.day === day).map((s) => alinoDe(porId.get(s.dishId) || {})).filter(Boolean));

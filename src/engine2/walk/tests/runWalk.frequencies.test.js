@@ -12,6 +12,7 @@ import { loadCatalog } from '../../dishes/loadCatalog.js';
 import { resolveDishComposition } from '../../dishes/compositionResolver.js';
 import { DAYS_ORDER } from '../../skeleton/days.js';
 import { MOMENTOS } from '../../dishes/schema.js';
+import { esCompuestoLegumbre } from '../../dishes/bases.js';
 
 const DIAS = DAYS_ORDER;
 
@@ -43,7 +44,9 @@ function anchorEverythingExcept(openSlots) {
 }
 
 const catalogReal = loadCatalog();
-const legumbresComida = catalogReal.filter((d) => d.rol === 'rotativo' && d.momento.includes('comida') && resolveDishComposition(d).proteinType === 'legumbre');
+// Paso 4 de la guarnición (D-119, la (b)): en omnívoras un compuesto de legumbre solo es plato si el hueco no tiene
+// otro candidato. Estos tests miden el paso 4 de D-024, así que usan legumbres que no son compuestos (platos redactados).
+const legumbresComida = catalogReal.filter((d) => d.rol === 'rotativo' && d.momento.includes('comida') && resolveDishComposition(d).proteinType === 'legumbre' && !esCompuestoLegumbre(d));
 const legumbre1 = legumbresComida[0];
 const legumbre2 = legumbresComida[1];
 const neutroSinVerdura = catalogReal.find((d) => d.id === '["pasta","huevo","pasta",null,null,"ajillo","revuelto"]');
@@ -92,7 +95,8 @@ describe('runWalk - v15: frecuencias (P2b-ii, paso 4 del walk, D-024)', () => {
     const catalog = loadCatalog();
     const { weekArc } = buildWeekArc({ profile: { trainingDays: [] }, seed: 0, strategy: 'x' });
     const { decisionLog } = runWalk({ weekArc, catalog, seed: 0 });
-    const rellenos = decisionLog.filter((d) => !d.evento);
+    // D-116: el segundo de una comida de legumbre tiene su propia entrada (momento "comida_segundo"); no es un hueco.
+    const rellenos = decisionLog.filter((d) => !d.evento && d.momento !== 'comida_segundo');
     for (const r of rellenos) {
       // Toda entrada de relleno tiene una evidencia bien formada: o no
       // menciona "paso 4:" (silencio, sin intervencion -- ver

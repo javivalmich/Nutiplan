@@ -50,3 +50,6 @@ scripts/diag/
 # negarlo aquí cierra la trampa latente si alguna vez se destrackeara.
 scripts/phaseB2/output/*
 !scripts/phaseB2/output/dishCompositionConfirmations.json
+
+# Datos en bruto de las mediciones del banco (2026-11-25): no se versionan. Los .md con las cifras sí.
+scripts/banco/medicion/estructura-comida/*.json

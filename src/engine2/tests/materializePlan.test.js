@@ -10,6 +10,7 @@ import { buildWeekArc } from '../skeleton/buildWeekArc.js';
 import { runWalk } from '../walk/runWalk.js';
 import { loadCatalog } from '../dishes/loadCatalog.js';
 import { aplicarAjustesD099 } from '../dishes/ajustesD099.js';
+import { aplicarNombresD105 } from '../dishes/alinosD105.js';
 import { DAYS_ORDER } from '../skeleton/days.js';
 import { MOMENTOS } from '../dishes/schema.js';
 
@@ -144,8 +145,9 @@ describe('materializePlan — §4.6 decisionLog es UNA coleccion, cardinalidad =
   it('cardinalidad == arcLog.length + walkLog.length (arco primero, walk despues)', () => {
     const catalog = loadCatalog();
     const { weekArc, decisionLog: arcLog } = buildWeekArc(FIXTURE_INPUT);
-    // D-099: materializePlan aplica los ajustes de catalogo antes del walk.
-    const { decisionLog: walkLog } = runWalk({ weekArc, catalog: aplicarAjustesD099(catalog), seed: FIXTURE_INPUT.seed, profile: FIXTURE_INPUT.profile });
+    // D-099 y D-105: materializePlan aplica los ajustes de catalogo y los nombres visibles antes del walk
+    // (desde D-116 la evidencia del segundo nombra el primero).
+    const { decisionLog: walkLog } = runWalk({ weekArc, catalog: aplicarNombresD105(aplicarAjustesD099(catalog)), seed: FIXTURE_INPUT.seed, profile: FIXTURE_INPUT.profile });
     const plan = materializePlan({ ...FIXTURE_INPUT, catalog });
 
     expect(plan.decisionLog).toHaveLength(arcLog.length + walkLog.length);
@@ -159,7 +161,9 @@ describe('materializePlan — §4.6 decisionLog es UNA coleccion, cardinalidad =
     // un log). No se ejecuta la mutacion aqui -- ver reporte, Paso 3.
     const catalog = loadCatalog();
     const { weekArc, decisionLog: arcLog } = buildWeekArc(FIXTURE_INPUT);
-    const { decisionLog: walkLog } = runWalk({ weekArc, catalog, seed: FIXTURE_INPUT.seed, profile: FIXTURE_INPUT.profile });
+    // Mismo catalogo que usa materializePlan por dentro (ajustes de D-099 y nombres de D-105): con el catalogo
+    // sin ajustar el walk es otro y su log no tiene por que medir lo mismo.
+    const { decisionLog: walkLog } = runWalk({ weekArc, catalog: aplicarNombresD105(aplicarAjustesD099(catalog)), seed: FIXTURE_INPUT.seed, profile: FIXTURE_INPUT.profile });
     const plan = materializePlan({ ...FIXTURE_INPUT, catalog });
     expect(plan.decisionLog).toHaveLength(arcLog.length + walkLog.length);
     expect(plan.decisionLog).not.toHaveLength(walkLog.length);

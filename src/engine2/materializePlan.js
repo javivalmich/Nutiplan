@@ -34,7 +34,7 @@ function findDish(catalog, dishId) {
  */
 export function materializePlan(input) {
   const {
-    profile, seed, strategy, fuenteEditorial, cocinarEnCantidad, maxRepeticiones,
+    profile, seed, strategy, fuenteEditorial, cocinarEnCantidad, maxRepeticiones, reglaLegumbre = false, legumbresGuarnicion = [],
   } = input;
   // D-099: ajustes de catalogo (legumbres solo de comida; huevo con tomate en
   // crudo, plato normal de cena) sin tocar dishes.json (hash de D-028).
@@ -46,11 +46,22 @@ export function materializePlan(input) {
   const { weekArc, decisionLog: arcLog } = buildWeekArc({
     profile, seed, strategy, fuenteEditorial, cocinarEnCantidad,
   });
-  const { slots, decisionLog: walkLog } = runWalk({
-    weekArc, catalog, seed, profile, fuenteEditorial, platosRecientes, maxRepeticiones,
+  const { slots, segundos, guarniciones = [], cremas = [], decisionLog: walkLog } = runWalk({
+    weekArc, catalog, seed, profile, fuenteEditorial, platosRecientes, maxRepeticiones, reglaLegumbre, legumbresGuarnicion,
   });
 
   const slotsByKey = new Map(slots.map((s) => [`${s.day}::${s.momento}`, s]));
+  // D-116: la comida de legumbre compuesta lleva un segundo (opcional). No es
+  // un hueco mas: va dentro de su comida. Lo decide el walk; aqui solo se copia.
+  const segundoPorDia = new Map(segundos.map((s) => [s.day, s.dishId]));
+  // D-119: la legumbre de guarnicion que decidio el walk va en su comida; el texto lo escribe la app.
+  const guarnicionPorDia = new Map(guarniciones.map((g) => [g.day, g.legumbre]));
+  // D-122: cada comida de una pareja de crema sabe su papel y el otro hueco.
+  const cremaPorHueco = new Map();
+  for (const c of cremas) {
+    cremaPorHueco.set(`${c.cocinar.day}::${c.cocinar.momento}`, { rol: 'cocinar', otro: c.aprovechar });
+    cremaPorHueco.set(`${c.aprovechar.day}::${c.aprovechar.momento}`, { rol: 'aprovechar', otro: c.cocinar });
+  }
 
   const days = DAYS_ORDER.map((day) => ({
     day,
@@ -60,7 +71,10 @@ export function materializePlan(input) {
       // sugerencia por si el usuario quiere cocinar.
       const beat = weekArc.beats.find((b) => b.day === day);
       const libre = momento === 'comida' && beat && beat.fixedRole === 'libre';
-      return { momento, dish: findDish(catalog, slot.dishId), ...(libre ? { libre: true } : {}) };
+      const segundo = momento === 'comida' && !libre && segundoPorDia.has(day) ? { segundo: findDish(catalog, segundoPorDia.get(day)) } : {};
+      const guarnicion = momento === 'comida' && !libre && guarnicionPorDia.has(day) ? { guarnicion: { legumbre: guarnicionPorDia.get(day) } } : {};
+      const crema = !libre && cremaPorHueco.has(`${day}::${momento}`) ? { crema: cremaPorHueco.get(`${day}::${momento}`) } : {};
+      return { momento, dish: findDish(catalog, slot.dishId), ...(libre ? { libre: true } : {}), ...segundo, ...guarnicion, ...crema };
     }),
   }));
 

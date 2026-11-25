@@ -29,7 +29,7 @@ export function tuplaDe(dishId) {
 // Clave del medidor de cada ingrediente base del ancla, en platos libres.
 const CLAVES_BASE = Object.freeze({
   pollo: ['pollo_pechuga', 'pollo_muslo', 'pollo_cocido'], pavo: ['pavo_pechuga'], ternera: ['ternera_magra', 'ternera_picada'],
-  cerdo: ['cerdo_lomo'], garbanzos: ['garbanzos_seco', 'garbanzos_cocidos', 'hummus'], alubias: ['alubias_seco', 'alubias_cocidas'],
+  cerdo: ['cerdo_lomo'], garbanzos: ['garbanzos_seco', 'garbanzos_cocidos', 'hummus'], alubias: ['alubias_seco', 'alubias_negras_cocidas'],
   arroz: ['arroz_seco', 'arroz_integral_cocido'], quinoa: ['quinoa_seco'],
 });
 
@@ -62,21 +62,28 @@ export function aplicarAnclaLibre(meal) {
  * @param {number} targetKcal
  * @param {{ancla?: object}} [extra]
  */
-export function componerPlato(dish, momento, targetKcal, { ancla = null } = {}) {
+export function componerPlato(dish, momento, targetKcal, { ancla = null, crema = null } = {}) {
   const time = momento === 'cena' ? 'Cena' : 'Comida';
-  const tupla = tuplaDe(dish.id);
+  // Paso 9 (D-120): un plato con guarnición de legumbre lleva su tupla con la legumbre en el hueco del hidrato (guarnicion.js).
+  const tupla = dish._tuplaGuarnicion || tuplaDe(dish.id);
   if (tupla) {
     const gramos = gramosDePartida(tupla, targetKcal);
-    const componer = { tupla, nombre: dish.nombre, momento, batchable: !!dish.batchable, shelfLifeDays: dish.shelfLifeDays || 0, gramos };
+    // D-122: la crema de la pareja. El día de la crema guardada, con la verdura y los gramos de la del primer día.
+    const cremaPlato = crema && tupla.tmpl === 'sopa_crema' ? (crema.rol === 'aprovechar' && crema.tupla
+      ? (() => { const g0 = gramosDePartida(crema.tupla, targetKcal); return { rol: 'aprovechar', dia: crema.dia, V: crema.tupla.V, V2: crema.tupla.V2, gV: g0.V, gV2: g0.V2, crudo: crema.tupla.cookM === 'crudo' }; })()
+      : { rol: crema.rol, dia: crema.dia }) : null;
+    const componer = { tupla, nombre: dish.nombre, momento, batchable: !!dish.batchable, shelfLifeDays: dish.shelfLifeDays || 0, gramos, ...(cremaPlato ? { crema: cremaPlato } : {}) };
     const anclaPlato = ancla && huecoDeBase(tupla, ancla.base) ? ancla : null;
     const t = escribirCompuesto({ ...componer, ancla: anclaPlato });
     return {
       time, emoji: t.emoji, title: t.title, p1: t.p1, p2: t.p2, shopping: t.shopping, recipe: t.recipe,
+      ...(t._cremaGuardada ? { _cremaGuardada: t._cremaGuardada } : {}),
       metadata: { plateType: dish.plateType },
       // _spec: para las regeneraciones del motor viejo (planes antiguos), con el nombre de engine2.
       _spec: { ...tupla, slot: time, plateType: dish.plateType, title: dish.nombre },
       _componer: componer,
       ...(anclaPlato ? { _ancla: anclaPlato } : {}),
+      ...(dish._guarnicion ? { _guarnicion: dish._guarnicion } : {}),
     };
   }
   const ficha = libres.get(dish.id);
@@ -114,5 +121,5 @@ export function recomponer(meal, gramosPorClave) {
     aove: gramosPorClave.has('aove') ? Math.round(gramosPorClave.get('aove') / 0.92 / 5) * 5 || 5 : c.gramos.aove,
   };
   const t = escribirCompuesto({ ...c, gramos, ancla: meal._ancla || null });
-  return { ...meal, title: t.title, p1: t.p1, p2: t.p2, shopping: t.shopping, recipe: t.recipe };
+  return { ...meal, title: t.title, p1: t.p1, p2: t.p2, shopping: t.shopping, recipe: t.recipe, ...(t._cremaGuardada ? { _cremaGuardada: t._cremaGuardada } : {}) };
 }

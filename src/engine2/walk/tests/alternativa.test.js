@@ -3,7 +3,7 @@ import { elegirAlternativa, DESEOS } from '../alternativa.js';
 import { materializePlan } from '../../materializePlan.js';
 import { loadCatalog } from '../../dishes/loadCatalog.js';
 import { aplicarAjustesD099 } from '../../dishes/ajustesD099.js';
-import { proteinaPrincipal, TOPE_PROTEINA_SEMANA, llevaBase } from '../../dishes/bases.js';
+import { proteinaPrincipal, familiaProteica, TOPE_PROTEINA_SEMANA, llevaBase } from '../../dishes/bases.js';
 import { resolveDishComposition } from '../../dishes/compositionResolver.js';
 import { DAYS_ORDER } from '../../skeleton/days.js';
 
@@ -15,7 +15,8 @@ const esLegumbre = (d) => { try { const v = resolveDishComposition(d); return ['
 const casos = [];
 for (let s = 0; s < 12; s++) for (const [day, momento] of [['Martes', 'cena'], ['Jueves', 'comida']]) casos.push({ seed: 81000 + s, day, momento });
 
-describe('elegirAlternativa — reglas del menú', () => {
+// Tiempo límite explícito (segunda revisión, B2): solos tardan hasta 1,7 s; con la batería en paralelo se acercan a los 5 s por defecto.
+describe('elegirAlternativa — reglas del menú', { timeout: 30000 }, () => {
   it('nunca repite un plato de la semana ni el que se quita, y respeta el momento', () => {
     for (const { seed, day, momento } of casos) {
       const semana = semanaDe(plan(seed));
@@ -70,7 +71,7 @@ describe('elegirAlternativa — reglas del menú', () => {
   });
 });
 
-describe('elegirAlternativa — el deseo del usuario', () => {
+describe('elegirAlternativa — el deseo del usuario', { timeout: 30000 }, () => {
   it('cumple el deseo o dice por qué lo relaja', () => {
     for (const { seed, day, momento } of casos) {
       const semana = semanaDe(plan(seed));
@@ -113,5 +114,104 @@ describe('elegirAlternativa — el deseo del usuario', () => {
     const b = elegirAlternativa({ catalog, semana, day: 'Martes', momento: 'cena', actualId, deseo: 'ligero', seed: 9 });
     expect(b.dish.id).toBe(a.dish.id);
     expect(a.decisionLog.every((e) => e.causa && e.evidencia)).toBe(true);
+  });
+});
+
+// Familia en dias seguidos (decision de Javi, 2026-11-13; extiende D-099.3.e):
+// la alternativa sigue la misma regla que el menu de la semana.
+describe('elegirAlternativa — no repetir familia proteica en días seguidos', { timeout: 30000 }, () => {
+  const vecinas = (semana, day, momento) => {
+    const i = DAYS_ORDER.indexOf(day);
+    return new Set(semana.filter((s) => !(s.day === day && s.momento === momento) && Math.abs(DAYS_ORDER.indexOf(s.day) - i) === 1)
+      .map((s) => familiaProteica(porId.get(s.dishId))).filter(Boolean));
+  };
+
+  it('la alternativa no es de una familia que ya sale el día anterior o el siguiente (pescado y marisco, una sola), si hay candidatos', () => {
+    let aplicada = 0;
+    for (const { seed, day, momento } of casos) {
+      const semana = semanaDe(plan(seed));
+      const actualId = semana.find((s) => s.day === day && s.momento === momento).dishId;
+      for (const deseo of [undefined, ...Object.keys(DESEOS)]) {
+        const { dish, decisionLog } = elegirAlternativa({ catalog, semana, day, momento, actualId, deseo, seed });
+        if (decisionLog.some((e) => e.causa === 'alternativa_familia_dias_seguidos')) aplicada += 1;
+        if (decisionLog.some((e) => e.causa === 'alternativa_familia_dias_seguidos_sin_aplicar')) continue;
+        expect(vecinas(semana, day, momento).has(familiaProteica(dish))).toBe(false);
+      }
+    }
+    expect(aplicada).toBeGreaterThan(0);
+  });
+
+  it('si dejaría sin candidatos, no se aplica y queda en el log', () => {
+    const { seed, day, momento } = casos[0];
+    const semana = semanaDe(plan(seed));
+    const actualId = semana.find((s) => s.day === day && s.momento === momento).dishId;
+    const fam = [...vecinas(semana, day, momento)];
+    // Catálogo reducido a los platos de las familias vecinas (y los de la semana).
+    const enSemana = new Set(semana.map((s) => s.dishId));
+    const corto = catalog.filter((d) => enSemana.has(d.id) || fam.includes(familiaProteica(d)));
+    const { dish, decisionLog } = elegirAlternativa({ catalog: corto, semana, day, momento, actualId, seed });
+    expect(decisionLog.some((e) => e.causa === 'alternativa_familia_dias_seguidos_sin_aplicar')).toBe(true);
+    expect(fam).toContain(familiaProteica(dish));
+  });
+
+  it('solo dietas omnívoras: con dieta vegetariana o vegana la regla no existe', () => {
+    const { seed, day, momento } = casos[0];
+    const semana = semanaDe(plan(seed));
+    const actualId = semana.find((s) => s.day === day && s.momento === momento).dishId;
+    for (const dieta of ['vegetariana', 'vegana']) {
+      const { decisionLog } = elegirAlternativa({ catalog, semana, day, momento, actualId, seed, dieta });
+      expect(decisionLog.some((e) => String(e.causa).startsWith('alternativa_familia_dias_seguidos'))).toBe(false);
+    }
+  });
+
+  it('si el plato era del ancla, la regla no se aplica: manda el aprovechamiento', () => {
+    const p = plan(81003, { cocinarEnCantidad: { activo: true, dia: 'Domingo' } });
+    const anclaLog = p.decisionLog.find((e) => e.cause === 'eleccion_ancla_por_seed');
+    const base = anclaLog.consequence.replace('ancla elegida: base:', '');
+    const entrada = p.decisionLog.find((e) => e.causa === 'ancla_base_aprovechado');
+    const semana = semanaDe(p);
+    const actualId = semana.find((s) => s.day === entrada.day && s.momento === entrada.momento).dishId;
+    const { decisionLog } = elegirAlternativa({ catalog, semana, day: entrada.day, momento: entrada.momento, actualId, anclaBase: base, seed: 1 });
+    expect(decisionLog.some((e) => String(e.causa).startsWith('alternativa_familia_dias_seguidos'))).toBe(false);
+  });
+});
+
+
+describe('elegirAlternativa — la comida con primero y segundo (D-116.1)', { timeout: 30000 }, () => {
+  // Decisión de Javi (2026-11-16): la alternativa de una comida doble no puede ser un plato
+  // compuesto de legumbre, que quedaría como plato único.
+  const esCompuestoLeg = (d) => { try { return resolveDishComposition(d).tupla?.tmpl === 'legumbre'; } catch { return false; } };
+  const compuestos = catalog.filter(esCompuestoLeg);
+
+  it('con sinLegumbreCompuesta no sale ningún compuesto de legumbre, con cualquier deseo', () => {
+    expect(compuestos.length).toBeGreaterThan(0);
+    for (let s = 0; s < 6; s++) {
+      const p = plan(`doble-${s}`);
+      const semana = semanaDe(p);
+      for (const d of p.days) {
+        const comida = d.meals.find((m) => m.momento === 'comida' && !m.libre);
+        if (!comida) continue;
+        for (const deseo of Object.keys(DESEOS)) {
+          const r = elegirAlternativa({ catalog, semana, day: d.day, momento: 'comida', actualId: comida.dish.id, deseo, seed: `doble-${s}`, sinLegumbreCompuesta: true });
+          expect(esCompuestoLeg(r.dish)).toBe(false);
+          expect(r.decisionLog.some((e) => e.causa === 'alternativa_sin_legumbre_compuesta')).toBe(true);
+        }
+      }
+    }
+  });
+
+  it('sin la opción, todo sigue igual (puede salir un compuesto de legumbre con «reconfortante»)', () => {
+    let alguno = false;
+    for (let s = 0; s < 6 && !alguno; s++) {
+      const p = plan(`doble-${s}`);
+      for (const d of p.days) {
+        const comida = d.meals.find((m) => m.momento === 'comida' && !m.libre);
+        if (!comida) continue;
+        const r = elegirAlternativa({ catalog, semana: semanaDe(p), day: d.day, momento: 'comida', actualId: comida.dish.id, deseo: 'comfort', seed: `doble-${s}` });
+        expect(r.decisionLog.some((e) => e.causa === 'alternativa_sin_legumbre_compuesta')).toBe(false);
+        if (esCompuestoLeg(r.dish)) alguno = true;
+      }
+    }
+    expect(alguno).toBe(true);
   });
 });

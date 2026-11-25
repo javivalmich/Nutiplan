@@ -56,7 +56,51 @@ const TIEMPO = {
 
 // ─── Hidratos ───────────────────────────────────────────────────────────────
 
+// Legumbre como guarnición (paso 9; D-120): la legumbre de bote, escurrida,
+// ocupa el hueco del hidrato del plato. clave: ingrediente del medidor (las de
+// src/engine2/dishes/guarnicionLegumbre.js); nombre: cómo va en el título; el y
+// pron: con artículo y pronombre, para la receta.
+export const LEGUMBRES_GUARNICION = Object.freeze({
+  garbanzos_cocidos: { nombre: 'garbanzos', compra: 'Garbanzos cocidos de bote', el: 'los garbanzos', g: 'm', pron: 'los' },
+  alubias_blancas_cocidas: { nombre: 'alubias blancas', compra: 'Alubias blancas cocidas de bote', el: 'las alubias blancas', g: 'f', pron: 'las' },
+  alubias_rojas_cocidas: { nombre: 'alubias rojas', compra: 'Alubias rojas cocidas de bote', el: 'las alubias rojas', g: 'f', pron: 'las' },
+  alubias_pintas_cocidas: { nombre: 'alubias pintas', compra: 'Alubias pintas cocidas de bote', el: 'las alubias pintas', g: 'f', pron: 'las' },
+  alubias_negras_cocidas: { nombre: 'alubias negras', compra: 'Alubias negras cocidas de bote', el: 'las alubias negras', g: 'f', pron: 'las' },
+  lentejas_pardinas_cocidas: { nombre: 'lentejas pardinas', compra: 'Lentejas pardinas cocidas de bote', el: 'las lentejas pardinas', g: 'f', pron: 'las' },
+  lentejas_beluga_cocidas: { nombre: 'lentejas beluga', compra: 'Lentejas beluga cocidas de bote', el: 'las lentejas beluga', g: 'f', pron: 'las' },
+  habitas: { nombre: 'habitas', compra: 'Habitas de bote', el: 'las habitas', g: 'f', pron: 'las' },
+  guisantes: { nombre: 'guisantes', compra: 'Guisantes de bote', el: 'los guisantes', g: 'm', pron: 'los' },
+  // El edamame se compra congelado y desgranado (Javi, 2026-11-25): se hierve o se saltea, no se escurre de bote.
+  edamame: {
+    nombre: 'edamame', compra: 'Edamame congelado', nota: 'desgranado', el: 'el edamame', g: 'm', pron: 'lo',
+    receta: 'Hierve el edamame 3-4 min en agua con sal y escúrrelo (o saltéalo 4-5 min en una sartén con un poco del aceite y sal).',
+    recetaFrio: 'Hierve el edamame 3-4 min en agua con sal, escúrrelo y déjalo enfriar.',
+  },
+});
+/** Clave del hueco de hidrato de una legumbre de guarnición (fría en ensaladas y platos crudos). */
+export const claveHidratoGuarnicion = (clave, frio) => `g_${clave}${frio ? '_frio' : ''}`;
+const hidratosGuarnicion = {};
+for (const [clave, l] of Object.entries(LEGUMBRES_GUARNICION)) {
+  // base: gramos de partida; las raciones los ajustan (D-120: 100-220 g, salida 130 g).
+  const base = { compra: l.compra, el: l.el, g: l.g, base: 130, clave, ...(l.nota ? { nota: l.nota } : { escurrido: true }) };
+  if (l.receta) {
+    // Con su propia receta (el edamame congelado): la misma al horno; en frío, cocido y frío.
+    hidratosGuarnicion[claveHidratoGuarnicion(clave, false)] = { ...base, receta: l.receta };
+    hidratosGuarnicion[claveHidratoGuarnicion(clave, true)] = { ...base, receta: l.recetaFrio };
+    continue;
+  }
+  hidratosGuarnicion[claveHidratoGuarnicion(clave, false)] = {
+    ...base,
+    receta: `Escurre y enjuaga ${l.el} de bote; caliénta${l.pron} 2-3 min en una sartén con un poco del aceite y sal.`,
+    // Al horno va después de meter la proteína (Javi, 2026-11-25): la legumbre solo pasa los últimos 15 min.
+    recetaHorno: `Cuando falten 15 min, añade a la bandeja ${l.el} de bote, ${['escurrid', 'enjuagad'].map((x) => `${x}${l.g === 'f' ? 'as' : 'os'}`).join(', ')} y secad${l.g === 'f' ? 'as' : 'os'}, con un poco del aceite y sal.`,
+    trasProteina: true,
+  };
+  hidratosGuarnicion[claveHidratoGuarnicion(clave, true)] = { ...base, receta: `Escurre y enjuaga ${l.el} de bote.` };
+}
+
 export const HIDRATOS = Object.freeze({
+  ...hidratosGuarnicion,
   arroz: { compra: 'Arroz', el: 'el arroz', g: 'm', base: 70, seco: true, clave: 'arroz_seco', receta: 'Cuece el arroz en agua con sal 15-18 min y escúrrelo.' },
   pasta: { compra: 'Pasta integral', el: 'la pasta', g: 'f', base: 80, seco: true, clave: 'pasta_integral_seco', receta: 'Cuece la pasta en agua con sal hasta que esté al dente (unos 10 min) y escúrrela.' },
   patata: { compra: 'Patata', el: 'la patata', g: 'f', base: 200, clave: 'patata', receta: 'Cuece la patata con piel en agua con sal 20-25 min (o 8 min tapada en el microondas) y córtala en rodajas.', recetaHorno: 'Corta la patata en gajos, alíñala con un poco del aceite y sal y ásala a 200 °C 30-35 min.' },
@@ -249,17 +293,21 @@ export function pasoCocinarDeMas(base, hoy, guardar, unidad = 'g') {
  * @param {{base:string, rol:'cocinar'|'aprovechar', cuando?:string, guardar?:{dia:string,gramos:number}[]}} [entrada.ancla]
  * @returns {{title, p1, p2, shopping, recipe}}
  */
-export function escribirCompuesto({ tupla, nombre, momento, gramos, ancla = null, batchable = false, shelfLifeDays = 0 }) {
+export function escribirCompuesto({ tupla, nombre, momento, gramos, ancla = null, batchable = false, shelfLifeDays = 0, crema = null }) {
   const { tmpl, cookM } = tupla;
   const P = PROTEINAS[tupla.P];
   const C = tupla.C ? HIDRATOS[tupla.C] : null;
-  const V = tupla.V ? VERDURAS[tupla.V] : null;
-  const V2 = tupla.V2 ? VERDURAS[tupla.V2] : null;
+  // D-122: el día de la crema guardada, la crema es la del primer día (su verdura y sus gramos), no la de esta ficha.
+  const guardada = tmpl === 'sopa_crema' && crema && crema.rol === 'aprovechar';
+  const doble = tmpl === 'sopa_crema' && crema && crema.rol === 'cocinar';
+  const V = guardada ? (crema.V ? VERDURAS[crema.V] : null) : tupla.V ? VERDURAS[tupla.V] : null;
+  const V2 = guardada ? (crema.V2 ? VERDURAS[crema.V2] : null) : tupla.V2 ? VERDURAS[tupla.V2] : null;
   const A = tupla.S ? ALINOS[tupla.S] : null;
   const gP = gramos.P;
   const gC = gramos.C;
-  const gV = gramos.V;
-  const gV2 = gramos.V2;
+  const gV = guardada ? crema.gV : gramos.V;
+  const gV2 = guardada ? crema.gV2 : gramos.V2;
+  const mitad = doble ? `, la mitad para el ${crema.dia}` : '';
   const aove = gramos.aove || 15;
 
   const hueco = ancla ? huecoDeBase(tupla, ancla.base) : null;
@@ -271,7 +319,7 @@ export function escribirCompuesto({ tupla, nombre, momento, gramos, ancla = null
   const conA = A ? ` con ${A.texto}` : '';
   let p1;
   let p2;
-  const carbTxt = C ? `${C.compra} (${gC} g${C.seco ? ' en seco' : ''})` : null;
+  const carbTxt = C ? `${C.compra} (${C.nota ? `${C.nota}, ` : ''}${gC} g${C.seco ? ' en seco' : ''}${C.escurrido ? ' escurridos' : ''})` : null;
   const aceite = `AOVE (${aove} ml)`;
   const verdurasCon = (hint) => [V && verduraTexto(V, gV, hint ? V.p2 : ''), V2 && verduraTexto(V2, gV2, hint ? V2.p2 : '')].filter(Boolean);
 
@@ -290,7 +338,8 @@ export function escribirCompuesto({ tupla, nombre, momento, gramos, ancla = null
     p2 = [...verdurasCon(true), A ? (A.tomate ? A.texto : `con ${A.texto}`) : null, aceite, 'queso rallado al gusto'].filter(Boolean).join(' · ');
   } else if (tmpl === 'legumbre') {
     p1 = `${P.compra} (${gP} g en seco) ${concuerda('guisado', P.g, P.n)}${conA}`;
-    p2 = [...verdurasCon(false), 'caldo de verduras', aceite].filter(Boolean).join(' · ');
+    // El hidrato de una legumbre compuesta (las lentejas con arroz) va aparte, con «en seco».
+    p2 = [carbTxt, ...verdurasCon(false), 'caldo de verduras', aceite].filter(Boolean).join(' · ');
   } else {
     p1 = `${cantidadP(P, gP)} ${metodo}${conA}`;
     p2 = [carbTxt, ...verdurasCon(true), aceite].filter(Boolean).join(' · ');
@@ -299,11 +348,14 @@ export function escribirCompuesto({ tupla, nombre, momento, gramos, ancla = null
   // ── Compra ──
   const shopping = [];
   shopping.push(compraP(P, gP, hueco === 'P' ? notaCompra : null));
-  if (C) shopping.push(`${C.compra} (${gC} g${hueco === 'C' && notaCompra ? `, ${notaCompra}` : ''})`);
-  if (V) shopping.push(`${V.compra} (${V.medida(gV).corta}, ${gV} g)`);
-  if (V2) shopping.push(`${V2.compra} (${V2.medida(gV2).corta}, ${gV2} g)`);
+  // El hidrato en seco (arroz, pasta, quinoa) se compra «en seco», igual que dice el texto del plato.
+  if (C) shopping.push(`${C.compra} (${C.nota ? `${C.nota}, ` : ''}${gC} g${C.seco ? ' en seco' : ''}${C.escurrido ? ' escurridos' : ''}${hueco === 'C' && notaCompra ? `, ${notaCompra}` : ''})`);
+  // D-122: el primer día de la crema guardada se compra el doble de verdura (y de caldo); el segundo, nada de la crema.
+  const xV = doble ? 2 : 1;
+  if (V && !guardada) shopping.push(`${V.compra} (${V.medida(xV * gV).corta}, ${xV * gV} g${mitad})`);
+  if (V2 && !guardada) shopping.push(`${V2.compra} (${V2.medida(xV * gV2).corta}, ${xV * gV2} g${mitad})`);
   if (A) shopping.push(...A.compra);
-  if (tmpl === 'sopa_crema' && cookM !== 'crudo') shopping.push('Cebolla (1/2)', 'Caldo de verduras (400 ml)');
+  if (tmpl === 'sopa_crema' && cookM !== 'crudo' && !guardada) shopping.push(doble ? `Cebolla (1${mitad})` : 'Cebolla (1/2)', doble ? `Caldo de verduras (800 ml${mitad})` : 'Caldo de verduras (400 ml)');
   if (tmpl === 'legumbre') shopping.push('Cebolla (1/2)', 'Caldo de verduras (500 ml)', 'Laurel (1 hoja)');
   if (cookM === 'guisado' && tmpl !== 'legumbre') shopping.push('Cebolla (1/2)');
   shopping.push(aceite);
@@ -329,18 +381,31 @@ export function escribirCompuesto({ tupla, nombre, momento, gramos, ancla = null
     recipe.push(hueco === 'P' && ancla.rol === 'aprovechar'
       ? `Incorpora ${P.corto}, cubre con el caldo, añade el laurel${A ? `, ${A.texto}` : ''} y cuece 10 min a fuego suave.`
       : `Incorpora ${P.corto}, cubre con el caldo, añade el laurel${A ? `, ${A.texto}` : ''} y cuece a fuego suave ${t}, hasta que estén tiernos.`.replace('tiernos', P.g === 'f' ? 'tiernas' : 'tiernos'));
+    // El hidrato (las lentejas con arroz) se cuece aparte o, el día de aprovechar, se usa el ya cocido.
+    if (C) {
+      recipe.push(pasoBase('C', C.receta));
+      recipe.push(`Sirve ${P.el} con ${C.el}.`);
+    }
   } else if (tmpl === 'sopa_crema') {
-    if (cookM === 'crudo') {
+    const deCrema = `${V ? V.el.replace(/^(el|la|los|las) /, '') : 'verduras'}${V2 ? ` y ${V2.el.replace(/^(el|la|los|las) /, '')}` : ''}`;
+    if (doble) recipe.push(`Haz el doble de crema y guarda la mitad en un táper para el ${crema.dia}.`);
+    if (guardada) {
+      recipe.push(crema.crudo
+        ? `Saca de la nevera la crema fría de ${deCrema} que hiciste el ${crema.dia}.`
+        : `Calienta la crema de ${deCrema} que hiciste el ${crema.dia}.`);
+    } else if (cookM === 'crudo') {
       recipe.push(`Tritura ${V ? V.el : 'la verdura'}${V2 ? ` con ${V2.el}` : ''} con el aceite, sal y un chorrito de agua fría hasta que quede fina; enfría en la nevera.`);
     } else {
-      recipe.push('Pocha media cebolla picada con un poco del aceite 5 min.');
+      recipe.push(doble ? 'Pocha una cebolla picada con un poco del aceite 5 min.' : 'Pocha media cebolla picada con un poco del aceite 5 min.');
       recipe.push(`Añade ${V ? V.el : 'la verdura'}${V2 ? ` y ${V2.el}` : ''} en trozos, cubre con el caldo y cuece tapado a fuego suave 20 min.`);
       recipe.push('Tritura hasta que quede fina y ajusta de sal.');
     }
     recipe.push(pasoBase('P', pasoProteina(P, cookM, A)));
     recipe.push(`Sirve la crema con ${P.corto} encima.`);
   } else {
-    if (C) recipe.push(pasoBase('C', C.recetaHorno && cookM === 'horno' ? C.recetaHorno : C.receta));
+    // La legumbre de guarnición al horno entra en la bandeja después de la proteína (D-120).
+    const despues = C && C.trasProteina && cookM === 'horno';
+    if (C && !despues) recipe.push(pasoBase('C', C.recetaHorno && cookM === 'horno' ? C.recetaHorno : C.receta));
     if (tmpl === 'pasta' && A && A.tomate) {
       recipe.push(pasoBase('P', pasoProteina(P, cookM, null)));
       recipe.push('Añade el tomate triturado con una pizca de sal y orégano y deja 8-10 min a fuego suave.');
@@ -348,22 +413,29 @@ export function escribirCompuesto({ tupla, nombre, momento, gramos, ancla = null
       // En la ensalada el aliño es para el plato entero, no para cocinar la proteína.
       recipe.push(pasoBase('P', pasoProteina(P, cookM, tmpl === 'ensalada' ? null : A)));
     }
+    if (despues) recipe.push(C.recetaHorno);
     const crudas = tmpl === 'ensalada';
     for (const v of [V, V2].filter(Boolean)) recipe.push(crudas && v.crudo ? v.crudo : v.receta);
-    if (tmpl === 'ensalada') recipe.push(`Mezcla todo${C ? ` con ${C.el} ya templad${C.g === 'f' ? 'a' : 'o'}` : ''} y aliña con el aceite${A ? ` y ${A.el || A.texto}` : ', vinagre y sal'}.`);
+    if (tmpl === 'ensalada') recipe.push(`Mezcla todo${C ? ` con ${C.el}${C.escurrido || C.nota ? '' : ` ya templad${C.g === 'f' ? 'a' : 'o'}`}` : ''} y aliña con el aceite${A ? ` y ${A.el || A.texto}` : ', vinagre y sal'}.`);
     else if (tmpl === 'bowl') recipe.push(`Monta el bol: ${C ? `${C.el} de base, ` : ''}${P.corto} encima y la verdura al lado; un hilo del aceite por encima.`);
     else if (tmpl === 'pasta') recipe.push(`Mezcla la pasta con ${P.corto} y la verdura${A && !A.tomate ? ` y ${A.texto}` : ''}; termina con queso rallado al gusto.`);
     else recipe.push(`Sirve ${P.corto} con ${[V && V.el, V2 && V2.el, C && C.el].filter(Boolean).join(', ').replace(/, ([^,]*)$/, ' y $1')}${C || V ? '' : ''}.`);
   }
   if (trasBase >= 0 && ancla.guardar && ancla.guardar.length) {
     // Antes del paso de la base («Cocina de una vez 255 g…», y luego cómo); en
-    // las legumbres la cocción es el último paso: va al final.
-    const donde = tmpl === 'legumbre' ? recipe.length : trasBase;
+    // las legumbres, si la base es la legumbre, la cocción es el último paso: va
+    // al final. Si la base es su hidrato (las lentejas con arroz), antes del arroz.
+    const donde = tmpl === 'legumbre' && hueco === 'P' ? recipe.length : trasBase;
     recipe.splice(donde, 0, pasoCocinarDeMas(ancla.base, hueco === 'P' ? gP : gC, ancla.guardar));
   }
   if (batchable && shelfLifeDays > 1 && !aprovecha) recipe.push(`Se conserva bien en la nevera hasta ${shelfLifeDays} días.`);
 
-  return { title: nombre, emoji: momento === 'cena' ? '🌙' : '☀️', p1: mayus(p1), p2: mayus(p2), shopping, recipe: recipe.map(mayus) };
+  // D-122: lo que lleva la crema guardada, para el medidor (no está en la compra de hoy).
+  const cremaGuardada = guardada ? {
+    de: crema.dia,
+    items: [V && { clave: V.clave, gramos: gV }, V2 && { clave: V2.clave, gramos: gV2 }, !crema.crudo && { clave: 'cebolla', gramos: 60 }].filter(Boolean),
+  } : null;
+  return { title: nombre, emoji: momento === 'cena' ? '🌙' : '☀️', p1: mayus(p1), p2: mayus(p2), shopping, recipe: recipe.map(mayus), ...(cremaGuardada ? { _cremaGuardada: cremaGuardada } : {}) };
 }
 
 /**

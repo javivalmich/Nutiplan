@@ -28,6 +28,9 @@ function des(p) {
     id: p.id, tipo: 'desayuno', time: 'Desayuno', emoji: p.emoji || '🌅', title: p.titulo,
     p1: p.p1, p2: p.p2, shopping: p.compra, recipe: p.receta, metadata: { tiempo: p.tiempo },
     ficha: Object.freeze({ rapido: p.tiempo <= 10, finde: !!p.finde, llevar: false, base: p.base, proteina: p.proteina, soloDieta: !!p.soloDieta }),
+    // D-112 (borrador): una masa de receta (crepes, batido) no aplica la regla
+    // «lo que la ficha pide por debajo del mínimo queda fijo» (raciones.js).
+    ...(p.masa ? { masa: true } : {}),
   });
 }
 
@@ -42,7 +45,7 @@ function tent(p) {
 // Los veganos de D-107, con su ficha.
 const FICHA_DIETA = Object.freeze({
   des_revuelto_tofu: { tiempo: 6, base: 'tofu', proteina: 'tofu' },
-  des_batido_tofu_sedoso: { tiempo: 3, base: 'batido', proteina: 'tofu' },
+  des_batido_tofu_sedoso: { tiempo: 3, base: 'batido', proteina: 'tofu', masa: true },
   des_tostada_tofu_aguacate: { tiempo: 8, base: 'tostada', proteina: 'tofu' },
   des_avena_soja_platano: { tiempo: 6, base: 'avena', proteina: 'soja' },
   des_yogur_soja_avena: { tiempo: 3, base: 'yogur', proteina: 'soja' },
@@ -258,7 +261,7 @@ export const DESAYUNOS = Object.freeze([
     receta: ['Sofríe el pimiento picado con el aceite 5 min y añade el tomate y el pimentón; cocina 5 min.', 'Haz dos huecos, casca los huevos y tapa hasta que cuaje la clara, 5-6 min.', 'Sirve con el pan para mojar.'],
   }),
   des({
-    id: 'des_crepes_avena_queso', titulo: 'Crepes de avena con queso fresco batido y fruta', tiempo: 15, finde: true, base: 'tortitas', proteina: 'huevo',
+    id: 'des_crepes_avena_queso', titulo: 'Crepes de avena con queso fresco batido y fruta', tiempo: 15, finde: true, base: 'tortitas', proteina: 'huevo', masa: true,
     p1: 'Crepes de copos de avena (40g), huevos (2 ud) y leche semidesnatada (100ml) · queso fresco batido 0% (150g) · fruta',
     p2: 'Con canela · café o té',
     compra: ['Copos de avena (40g)', 'Huevos (2 ud)', 'Leche semidesnatada (100ml)', 'Queso fresco batido 0% (150g)', 'Fruta de temporada (1 ud)', 'Canela'],

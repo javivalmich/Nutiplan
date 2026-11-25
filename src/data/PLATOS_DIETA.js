@@ -856,8 +856,8 @@ export const PLATOS_DIETA = Object.freeze([
     temp: 'caliente', energia: 'bajo', batch: false, sobras: 'media', dias: 2,
     gluten: true, lactosa: true, verdura: ['espinacas'],
     kcal: 620, P: 30, F: 16, C: 88, densidad: 'medium', saciedad: 4, digestion: 'medium', tiempo: 15,
-    p1: 'Ñoquis de patata (250g) · salsa de espinacas y requesón (150g)',
-    p2: 'Con parmesano rallado',
+    p1: 'Ñoquis de patata (250g) · espinacas (150g) · requesón (150g)',
+    p2: 'En salsa de espinacas y requesón, con parmesano rallado',
     compra: ['Gnocchi (250g)', 'Espinacas frescas (150g)', 'Requesón (150g)', 'Parmesano rallado (15g)', 'Nuez moscada', 'AOVE (10ml)'],
     receta: [
       'Cuece los ñoquis en agua con sal hasta que floten (2-3 min) y escúrrelos.',

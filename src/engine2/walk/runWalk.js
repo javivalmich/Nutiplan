@@ -105,11 +105,22 @@ import { DAYS_ORDER } from '../skeleton/days.js';
 import { mulberry32, seedFromString } from '../skeleton/rng.js';
 import { MOMENTOS } from '../dishes/schema.js';
 import { computeVetoUniverse } from './vetoes.js';
-import { proteinaPrincipal, TOPE_PROTEINA_SEMANA } from '../dishes/bases.js';
+import {
+  proteinaPrincipal, familiaProteica, esCompuestoLegumbre, esSegundoDeLegumbre, TOPE_PROTEINA_SEMANA, ESPECIES_PESCADO_MARISCO,
+} from '../dishes/bases.js';
+import { pescadoMaxSemanaDe } from '../contracts/profile.js';
+import { DEFAULT_WEEKLY_TARGETS } from '../contracts/weeklyTargets.js';
 import { alinoDe, TOPE_AJILLO_SEMANA } from '../dishes/alinosD105.js';
 import {
   initFrequencyState, registerConsumption, chooseFrequencyLevel, chooseIdentityLevel,
 } from './frequencies.js';
+import {
+  reglaLegumbreActiva, sortearDiasLegumbre, elegirSegundo, claveSegundo, infraccionesD099,
+} from './legumbre.js';
+import {
+  crearGuarnicion, filtrarPoolGuarnicion, hidratoPoolGuarnicion, decidirGuarnicion, redD099Guarnicion,
+} from './guarnicion.js';
+import { filtrarCremas, parejasDeCrema } from './cremas.js';
 
 /** D-107: cenas de huevo por semana como mucho, con dieta vegetariana (decisión de Javi). */
 export const TOPE_CENAS_HUEVO = 3;
@@ -181,9 +192,167 @@ function reshapeP1aEntry(entry) {
  * entrada en la allowlist); el tercer productor (anchorVista) vive en
  * buildWeekArc.js, fuera de este modulo.
  * @param {{weekArc: object, catalog: ReadonlyArray<object>, seed: (number|string), memoryStore?: object, profile?: {intolerances?: string[]}, fuenteEditorial?: {version: number, confirmed: object}}} input
- * @returns {{slots: object[], decisionLog: object[]}}
+ * @returns {{slots: object[], segundos: {day: string, momento: 'comida', dishId: string, primero: string}[], decisionLog: object[]}}
  */
 export function runWalk(input) {
+  // Interruptor de la regla de legumbre (paso 8 de la legumbre como guarnicion;
+  // decision de Javi del 2026-11-24). Apagado por defecto: sin sorteo de dias
+  // (D-117), sin segundos (D-116), con el paso 4 de D-024 como en main y sin
+  // la red de D-116.5, que solo existe para retirar la regla. El codigo de la
+  // regla se queda: input.reglaLegumbre === true la enciende tal cual.
+  if (input.reglaLegumbre !== true) {
+    const intentos = [];
+    try {
+      const resultado = walkConRedDeFamilia(input, { sinRegla: true, intentos, apagadaPorInterruptor: true });
+      // Red de D-099.3 de la (b) (paso 7 de la guarnicion): si la semana incumple
+      // D-099.3 y la (b) habia sacado compuestos de legumbre del pool, se repite
+      // entera con la misma semilla sin esa exclusion. Como mucho una vez.
+      return redD099Guarnicion(input, resultado, {
+        repetir: () => walkConRedDeFamilia(input, { sinRegla: true, intentos, apagadaPorInterruptor: true, sinExclusionB: true }),
+        infraccionesD099,
+        anotarInfraccion,
+      });
+    } catch (err) {
+      throw conWalks(err, intentos);
+    }
+  }
+  // Red de seguridad de la regla de legumbre (D-116.5; decision de Javi del
+  // 2026-11-15). El segundo añade apariciones de proteina a la semana; en un
+  // catalogo con pocas especies puede dejarla con alguna infraccion de
+  // D-099.3, o gastar el ultimo plato que valia para un hueco posterior. En
+  // los dos casos el walk se repite ENTERO con la regla de D-116 y D-117
+  // apagada, con la misma seed: sin dias de legumbre sorteados, sin segundos y
+  // con el paso 4 de D-024 como antes. Repetir sin segundos pero con los dias
+  // sorteados dejaba la legumbre como plato unico esos dias, y la proteina
+  // peor que sin la regla (medido: scripts/banco/medicion/estructura-comida-final/variantes-red.md).
+  // Por D-099.3, solo si habia algun segundo: sin ellos no hay nada que retirar.
+  // Por pool vacio, siempre que la regla estuviera activa, aunque no se hubiera
+  // colocado ningun segundo (decision de Javi del 2026-11-16): la regla cambia
+  // que platos se gastan, y la semana sin ella puede no quedarse sin platos.
+  //
+  // Orden de las redes. Cada intento, con la regla o sin ella, pasa por la red
+  // del filtro de familia (walkConRedDeFamilia): primero con el filtro y, solo
+  // si el walk se queda sin platos y el filtro habia descartado algo, sin el.
+  // La red de la regla mira lo que sale de ahi (la semana, o el fallo por pool
+  // vacio) y, si repite, la repeticion EMPIEZA OTRA VEZ CON el filtro de
+  // familia. No hay bucle: son llamadas fijas, sin recursion. Como mucho 4
+  // walks por semana (con la regla: con filtro y sin el; sin la regla: con
+  // filtro y sin el). Las dos causas no se suman: el intento con la regla o
+  // falla o devuelve una semana. La semana sin la regla ya no se repite.
+  const intentos = [];
+  let resultado;
+  try {
+    resultado = walkConRedDeFamilia(input, { sinRegla: false, intentos });
+  } catch (err) {
+    if (!(err && err.poolVacio && err.reglaActiva)) throw conWalks(err, intentos);
+    try {
+      return repetirSinRegla(input, intentos, {
+        causa: 'regla_legumbre_retirada_pool_vacio',
+        motivo: err.segundosColocados > 0
+          ? `con los segundos el walk se quedaba sin platos (${err.message})`
+          : `con la regla (dias de legumbre sorteados, sin ningun segundo colocado) el walk se quedaba sin platos (${err.message})`,
+        dias: err.diasLegumbre || [],
+      });
+    } catch (err2) {
+      if (err2 && err2.poolVacio) err2.segundosColocadosConLaRegla = err.segundosColocados;
+      throw conWalks(err2, intentos);
+    }
+  }
+  // Solo con la regla en marcha (dias de legumbre sorteados): sin ella no hay segundos ni red (D-116.9, D-117).
+  const sorteo = resultado.decisionLog.find((e) => e.causa === 'dias_legumbre_sorteados');
+  if (!sorteo) return resultado;
+  const infracciones = infraccionesD099(input, resultado);
+  if (!infracciones.length) return resultado;
+  if (!resultado.segundos.length) return anotarInfraccion(resultado, infracciones, 'infraccion_d099_sin_segundos', 'sin ningun segundo: la red de D-116.5 solo actua si los habia');
+  const familiaRetirada = resultado.decisionLog.some((e) => e.causa === 'familia_dias_seguidos_retirada');
+  return repetirSinRegla(input, intentos, {
+    causa: 'regla_legumbre_retirada_d099',
+    motivo: `con los segundos la semana incumplia D-099.3 (${infracciones.join('; ')})`
+      + (familiaRetirada ? '; la semana descartada ya se habia rehecho sin el filtro de familia, y la repeticion vuelve a empezar con el' : ''),
+    dias: sorteo.dias,
+    extra: { infracciones, semanaDescartada: { familiaRetirada } },
+  });
+}
+
+const describirWalks = (intentos) => intentos.map((x) => `${x.sinRegla ? 'sin' : 'con'} la regla, ${x.sinFamilia ? 'sin' : 'con'} filtro de familia`);
+// El fallo que sale de runWalk lleva los walks que se intentaron (diagnostico; como mucho 4).
+function conWalks(err, intentos) {
+  if (err && typeof err === 'object') err.walks = describirWalks(intentos);
+  return err;
+}
+
+// La repeticion de la red: la semana entera con la regla de D-116 y D-117 apagada.
+function repetirSinRegla(input, intentos, { causa, motivo, dias, extra = {} }) {
+  const semana = walkConRedDeFamilia(input, { sinRegla: true, intentos });
+  semana.decisionLog.push({
+    decisionId: `walk-select-${semana.decisionLog.length}`,
+    day: undefined,
+    momento: undefined,
+    plato: undefined,
+    causa,
+    evidencia: `${motivo}; se repite el walk entero con la regla de D-116 y D-117 apagada, con la misma semilla: `
+      + `sin dias de legumbre sorteados (eran [${dias.join(', ')}]), sin segundos y con el paso 4 de D-024 como antes`,
+    alternativasDescartadas: [],
+    evento: true,
+    diasDescartados: dias,
+    ...extra,
+    walks: describirWalks(intentos),
+  });
+  const quedan = infraccionesD099(input, semana);
+  return quedan.length
+    ? anotarInfraccion(semana, quedan, 'infraccion_d099_regla_retirada', 'con la regla de D-116 y D-117 apagada: la red ya no repite mas')
+    : semana;
+}
+
+// Una semana que termina con infracciones de D-099.3 que la red no arregla
+// (no tenia segundos, o ya se repitio con la regla apagada). No se repite
+// nada; queda en el log con su propia causa.
+function anotarInfraccion(resultado, infracciones, causa, detalle) {
+  resultado.decisionLog.push({
+    decisionId: `walk-select-${resultado.decisionLog.length}`,
+    day: undefined,
+    momento: undefined,
+    plato: undefined,
+    causa,
+    evidencia: `la semana incumple D-099.3 (${infracciones.join('; ')}) ${detalle}; la semana se queda asi`,
+    alternativasDescartadas: [],
+    evento: true,
+    infracciones,
+  });
+  return resultado;
+}
+
+function walkConRedDeFamilia(input, { sinRegla, intentos = [], apagadaPorInterruptor = false, sinExclusionB = false }) {
+  // Red de seguridad del filtro de familia (decision de Javi, 2026-11-13).
+  // Ese filtro mira un hueco cada vez: en un catalogo muy corto puede gastar
+  // antes de tiempo los platos que valian para un hueco posterior y dejarlo
+  // sin ninguno. Si el walk falla por pool vacio y el filtro habia descartado
+  // algun candidato, se repite ENTERO sin el filtro (misma seed: mismo
+  // resultado siempre) antes de propagar el fallo, y se dice en el log.
+  const uso = { familiaDescarto: false };
+  try {
+    intentos.push({ sinRegla, sinFamilia: false });
+    return walkUnaVez(input, { sinFamilia: false, uso, sinRegla, apagadaPorInterruptor, sinExclusionB });
+  } catch (err) {
+    if (!(err && err.poolVacio) || !uso.familiaDescarto) throw err;
+    intentos.push({ sinRegla, sinFamilia: true });
+    const resultado = walkUnaVez(input, { sinFamilia: true, uso: { familiaDescarto: false }, sinRegla, apagadaPorInterruptor, sinExclusionB });
+    resultado.decisionLog.push({
+      decisionId: `walk-select-${resultado.decisionLog.length}`,
+      day: undefined,
+      momento: undefined,
+      plato: undefined,
+      causa: 'familia_dias_seguidos_retirada',
+      evidencia: `con el filtro «familia en dias seguidos» el walk se quedaba sin platos (${err.message}); `
+        + 'se repite la semana entera sin ese filtro, antes de dar el fallo por bueno',
+      alternativasDescartadas: [],
+      evento: true,
+    });
+    return resultado;
+  }
+}
+
+function walkUnaVez(input, { sinFamilia, uso, sinRegla, apagadaPorInterruptor = false, sinExclusionB = false }) {
   // input.memoryStore se recibe por inyeccion y NUNCA se lee ni se invoca aqui (D-019, v13):
   // no se desestructura para que quede estructuralmente imposible tocarlo por accidente.
   const {
@@ -194,9 +363,16 @@ export function runWalk(input) {
   // Sin nombre (catalogos sinteticos de test), la clave es el id.
   const nombrePorId = new Map(catalog.map((d) => [d.id, d.nombre || d.id]));
   const recientes = new Set(platosRecientes.map((id) => nombrePorId.get(id) ?? id));
+  // Legumbre como guarnicion (D-119), con la regla de D-116 y D-117 apagada: sus
+  // filtros del pool, el hidrato en dias seguidos y la eleccion de la guarnicion.
+  const guarn = apagadaPorInterruptor
+    ? crearGuarnicion({ seed, profile, legumbres: input.legumbresGuarnicion || [], sinExclusionB })
+    : null;
   const usedNames = new Set();
   const protPorId = new Map(catalog.map((d) => [d.id, d]));
   const protMemo = new Map();
+  const famMemo = new Map();
+  const familiaCache = (id) => { if (!famMemo.has(id)) famMemo.set(id, protPorId.has(id) ? familiaProteica(protPorId.get(id)) : null); return famMemo.get(id); };
   const proteinaCache = (id) => { if (!protMemo.has(id)) protMemo.set(id, protPorId.has(id) ? proteinaPrincipal(protPorId.get(id)) : null); return protMemo.get(id); };
   const { slots: p1aSlots, decisionLog: p1aRawLog } = expandWeekArc({ weekArc, catalog, seed, platosRecientes, intolerancias: profile?.intolerances ?? [] });
 
@@ -209,14 +385,43 @@ export function runWalk(input) {
   }
 
   const decisionLog = p1aRawLog.map(reshapeP1aEntry);
+  if (apagadaPorInterruptor) {
+    decisionLog.push({
+      decisionId: `walk-select-${decisionLog.length}`, day: undefined, momento: undefined, plato: undefined,
+      causa: 'regla_legumbre_apagada',
+      evidencia: 'la regla de legumbre de D-116 y D-117 esta apagada (interruptor reglaLegumbre, apagado por defecto): '
+        + 'sin dias de legumbre sorteados, sin segundos y con el paso 4 de D-024 como antes',
+      alternativasDescartadas: [], evento: true,
+    });
+  }
   const rng = selectRng(seed);
 
   const intolerancias = profile?.intolerances ?? [];
   const { vetoedIds, conteo: conteoVetos, activo: vetoActivo } = computeVetoUniverse(catalog, intolerancias, { fuenteEditorial });
 
+  // Dias de legumbre (D-117): se sortean con la semilla antes de elegir nada.
+  // Solo dietas omnivoras; null si la regla no actua (dieta, o perfil sin
+  // platos compuestos de legumbre).
+  // Con sinRegla (la repeticion de la red de D-116.5) la regla esta apagada: ni sorteo, ni segundos.
+  const legumbre = !sinRegla && reglaLegumbreActiva(profile)
+    ? sortearDiasLegumbre({
+      p1aSlots, catalog, vetoedIds, seed,
+      registrar: (causa, evidencia, extra = {}) => decisionLog.push({
+        decisionId: `walk-select-${decisionLog.length}`, day: undefined, momento: undefined, plato: undefined, causa, evidencia, alternativasDescartadas: [], evento: true, ...extra,
+      }),
+    })
+    : null;
+
   // Paso 4 (frecuencias, D-024): el estado arranca desde lo que P1a ya
   // coloco (ancla + sobras tambien son consumo, asiento 5).
   const freqState = initFrequencyState(p1aSlots, undefined, fuenteEditorial);
+
+  // Tope semanal de pescado y marisco (decision de Javi, 2026-11-16): el del
+  // perfil (pescadoMaxSemana, de 2 a 4) o 3 si no lo trae. Pescado y marisco
+  // como una sola familia, contados por especie. El suelo de pescado del paso 4
+  // (D-024) es el menor entre el suyo y el tope.
+  const topePescado = pescadoMaxSemanaDe(profile);
+  const suelos = { ...DEFAULT_WEEKLY_TARGETS, pescado: Math.min(DEFAULT_WEEKLY_TARGETS.pescado, topePescado) };
 
   function pushFill(day, momento, dishId, causa, evidencia, alternativasDescartadas) {
     const key = slotKey(day, momento);
@@ -236,7 +441,39 @@ export function runWalk(input) {
     });
   }
 
-  function pushEvent(day, causa, evidencia) {
+  // D-117.2, modificado (decision de Javi del 2026-11-16): dentro del nivel de
+  // legumbre de un dia sorteado, y antes de las preferencias A y B, se prefiere
+  // un primero cuya legumbre no salga ya en la semana (en ningun plato servido,
+  // los del ancla incluidos) y, despues, uno cuyo aliño no lleve ya otro primero
+  // de la semana. Cada preferencia es un filtro con vuelta atras: si dejaria el
+  // hueco sin candidatos no se aplica, y las dos dejan su causa en el log. Sin
+  // pesos. La sugerencia de la comida libre no es un plato servido.
+  function preferirPrimero(day, candidatos) {
+    const servidos = [...slots.values()].filter((s2) => !s2.abierto && s2.dishId && !(s2.fixedRole === 'libre' && s2.momento === 'comida'));
+    let c = candidatos;
+    const legUsadas = new Set(servidos.map((s2) => proteinaCache(s2.dishId)).filter(Boolean));
+    const sinLeg = c.filter((d) => !legUsadas.has(proteinaCache(d.id)));
+    if (sinLeg.length && sinLeg.length < c.length) {
+      // La evidencia nombra solo las legumbres de los candidatos descartados (segunda revisión, B1).
+      const yaSalen = [...new Set(c.map((d) => proteinaCache(d.id)).filter((p) => legUsadas.has(p)))];
+      pushEvent(day, 'primero_legumbre_no_usada', `primero: descarta ${c.length - sinLeg.length} de ${c.length} candidatos de legumbre que ya salen esta semana (${yaSalen.join(', ')})`);
+      c = sinLeg;
+    } else if (!sinLeg.length) {
+      pushEvent(day, 'primero_legumbre_no_usada_sin_aplicar', 'primero: todas las legumbres candidatas ya salen esta semana; no se aplica');
+    }
+    const primeros = servidos.filter((s2) => s2.momento === 'comida' && !s2.segundo && protPorId.has(s2.dishId) && esCompuestoLegumbre(protPorId.get(s2.dishId)));
+    const alinos = new Set(primeros.map((s2) => alinoDe(protPorId.get(s2.dishId))).filter(Boolean));
+    const sinAlino = c.filter((d) => !alinos.has(alinoDe(d)));
+    if (sinAlino.length && sinAlino.length < c.length) {
+      pushEvent(day, 'primero_alino_no_usado', `primero: descarta ${c.length - sinAlino.length} de ${c.length} candidatos con un aliño que ya sale en otro primero (${[...alinos].join(', ')})`);
+      c = sinAlino;
+    } else if (!sinAlino.length) {
+      pushEvent(day, 'primero_alino_no_usado_sin_aplicar', 'primero: todos los candidatos llevan un aliño que ya sale; no se aplica');
+    }
+    return c;
+  }
+
+  function pushEvent(day, causa, evidencia, extra = {}) {
     decisionLog.push({
       decisionId: `walk-select-${decisionLog.length}`,
       day,
@@ -246,7 +483,36 @@ export function runWalk(input) {
       evidencia,
       alternativasDescartadas: [],
       evento: true,
+      ...extra,
     });
+  }
+
+  pushEvent(undefined, 'tope_pescado_semana_fijado',
+    `tope de pescado y marisco ${topePescado} por semana (${profile && 'pescadoMaxSemana' in profile ? 'del perfil' : 'por defecto'}); `
+      + `suelo de pescado ${suelos.pescado}${suelos.pescado < DEFAULT_WEEKLY_TARGETS.pescado ? ` (D-024 pide ${DEFAULT_WEEKLY_TARGETS.pescado}; baja al tope)` : ''}`,
+    { tope: topePescado, suelo: suelos.pescado });
+
+  // Segundo de un primero de legumbre (D-116): la legumbre compuesta no va
+  // como plato unico. Vale para la que elige el walk y para la que coloco el
+  // ancla; nunca para la sugerencia de la comida libre (D-114). El segundo se
+  // come: cuenta para los suelos, la verdura del dia y la identidad.
+  function segundoDe(day, i, slot, primeroId) {
+    if (!legumbre || slot.fixedRole === 'libre') return;
+    const primero = protPorId.get(primeroId);
+    if (!primero || !esCompuestoLegumbre(primero)) return;
+    const elegido = elegirSegundo({
+      rng: legumbre.rng, primero, day, i, slots, catalog, usedIds, usedNames, recientes, vetoedIds, sinFamilia, uso,
+      proteinaDe: proteinaCache,
+      familiaDe: familiaCache,
+      alinoDe: (id) => (protPorId.has(id) ? alinoDe(protPorId.get(id)) : null),
+      topeProteina: TOPE_PROTEINA_SEMANA,
+      topeAjillo: TOPE_AJILLO_SEMANA,
+      esSegundo: esSegundoDeLegumbre,
+      nivelIdentidad: (candidatos) => chooseIdentityLevel({ candidatesFinal: candidatos, state: freqState, fuenteEditorial }),
+      decisionLog,
+      registrar: pushEvent,
+    });
+    if (elegido) registerConsumption(freqState, elegido, day, undefined, fuenteEditorial);
   }
 
   function getDishAt(day, momento) {
@@ -325,7 +591,12 @@ export function runWalk(input) {
     for (const momento of MOMENTOS) {
       const key = slotKey(day, momento);
       const slot = slots.get(key);
-      if (!slot.abierto) continue; // Paso 1: ya colocado, la cadena no corre.
+      if (!slot.abierto) { // Paso 1: ya colocado, la cadena no corre.
+        if (momento === 'comida') segundoDe(day, i, slot, slot.dishId);
+        continue;
+      }
+      // La comida del dia libre es una sugerencia, no un plato servido (D-099.3.i, D-114).
+      const esSugerencia = slot.fixedRole === 'libre' && momento === 'comida';
 
       let pool = catalog.filter((d) => d.rol === 'rotativo' && d.momento.includes(momento) && !usedIds.has(d.id) && !usedNames.has(d.nombre || d.id) && !vetoedIds.has(d.id) && !recientes.has(d.nombre || d.id));
       // D-107: con un catálogo muy corto (dieta vegana y sin soja, p. ej.) la
@@ -345,12 +616,20 @@ export function runWalk(input) {
         if (pool.length) pushEvent(day, 'repeticion_por_catalogo_corto', `${day}/${momento}: no queda ningún plato sin repetir; se admite repetir (hasta ${maxRepeticiones} veces por semana): ${pool.length} candidatos`);
       }
       if (pool.length === 0) {
-        throw new Error(
+        const errPool = new Error(
           `runWalk: pool rotativo vacio para ${day}/${momento} `
             + `(rol="rotativo", momento admite "${momento}", excluidos los ids ya usados en la semana y los vetados)`,
         );
+        errPool.poolVacio = true; // lo leen la red del filtro de familia y la de los segundos
+        errPool.segundosColocados = [...slots.values()].filter((s) => s.segundo).length;
+        errPool.diasLegumbre = legumbre ? [...legumbre.dias] : [];
+        errPool.reglaActiva = !!legumbre; // con la regla apagada (o sin compuestos de legumbre) no hay sorteo
+        throw errPool;
       }
 
+      if (guarn) pool = filtrarPoolGuarnicion(guarn, { pool, day, momento, decisionLog, esCompuestoLegumbre, slots, familiaCache });
+      // D-122: una crema repetida va 2 o 3 días después de la primera, una vez y entre plantillas.
+      pool = filtrarCremas({ pool, day, momento, slots, nombrePorId, decisionLog });
       // Prototipo (visor): tope de proteina principal por semana. Si dejaria el
       // hueco sin candidatos, no se aplica y se dice en la evidencia.
       const cuentaProteina = new Map();
@@ -369,7 +648,44 @@ export function runWalk(input) {
       // Prototipo (visor): una proteina que ya sale ese dia, el anterior o el
       // siguiente no se repite aqui (separar las dos veces de la semana). Si no
       // queda ningun candidato, no se aplica y se dice en la evidencia.
-      const base0 = poolTope.length ? poolTope : pool;
+      const baseTope = poolTope.length ? poolTope : pool;
+
+      // Tope semanal de pescado y marisco (2026-11-16): si la semana ya llega,
+      // el pescado sale del pool del hueco y el hueco sigue por la cascada
+      // normal. Con vuelta atras: si dejaria el hueco sin candidatos, no se
+      // aplica. Cuenta los platos servidos (no la sugerencia de la comida libre).
+      let base0 = baseTope;
+      {
+        let servidos = 0;
+        for (const s2 of slots.values()) {
+          if (s2.abierto || !s2.dishId || (s2.fixedRole === 'libre' && s2.momento === 'comida')) continue;
+          if (ESPECIES_PESCADO_MARISCO.has(proteinaCache(s2.dishId))) servidos += 1;
+        }
+        if (servidos >= topePescado) {
+          const sinPescado = baseTope.filter((d) => !ESPECIES_PESCADO_MARISCO.has(proteinaCache(d.id)));
+          // El tope cede si aplicarlo obligaria a una infraccion de D-099.3
+          // (decision de Javi del 2026-11-16): sin el pescado no quedaria
+          // ningun candidato con una especie que no salga ya ese dia o el de al
+          // lado, y con el si. (Mas de 2 por especie ya lo filtra el tope por
+          // especie de arriba.)
+          const especiesCerca = new Set();
+          for (const s2 of slots.values()) {
+            if (s2.abierto || !s2.dishId || Math.abs(DAYS_ORDER.indexOf(s2.day) - i) > 1) continue;
+            const pr = proteinaCache(s2.dishId);
+            if (pr) especiesCerca.add(pr);
+          }
+          const separadoSin = sinPescado.filter((d) => !especiesCerca.has(proteinaCache(d.id)));
+          const separadoCon = baseTope.filter((d) => !especiesCerca.has(proteinaCache(d.id)));
+          if (sinPescado.length && !separadoSin.length && separadoCon.length) {
+            pushEvent(day, 'tope_pescado_semana_cede_d099', `${momento}: ya salen ${servidos} platos de pescado o marisco (tope ${topePescado}), pero sin el pescado todos los candidatos repetirian una especie que ya sale ese dia o el de al lado (${[...especiesCerca].join(', ')}): el tope cede para no incumplir D-099.3`);
+          } else if (sinPescado.length && sinPescado.length < baseTope.length) {
+            pushEvent(day, 'tope_pescado_semana', `${momento}: ya salen ${servidos} platos de pescado o marisco (tope ${topePescado}): fuera ${baseTope.length - sinPescado.length} candidatos`);
+            base0 = sinPescado;
+          } else if (!sinPescado.length) {
+            pushEvent(day, 'tope_pescado_semana_sin_aplicar', `${momento}: ya salen ${servidos} platos de pescado o marisco (tope ${topePescado}), pero quitarlos dejaria el hueco sin candidatos`);
+          }
+        }
+      }
       const cercanas = new Set();
       for (const s2 of slots.values()) {
         if (s2.abierto || !s2.dishId) continue;
@@ -388,7 +704,33 @@ export function runWalk(input) {
       // D-107 (dieta vegetariana): huevo como mucho una vez al dia y en como
       // mucho TOPE_CENAS_HUEVO cenas por semana. Si dejaria el hueco sin
       // candidatos, no se aplica y se dice.
-      const baseH = poolSeparado.length ? poolSeparado : base0;
+      // Familia en dias seguidos (decision de Javi, 2026-11-13; extiende
+      // D-099.3.e): una familia proteica (proteinType, con pescado y marisco
+      // como una sola) que ya sale el dia anterior o el siguiente no se repite
+      // aqui. Solo dietas omnivoras. No mira el mismo dia. La sugerencia de la
+      // comida libre no es un plato servido: ni se filtra ni cuenta como
+      // vecina. Los platos del ancla los coloca P1a y no pasan por aqui. Si no
+      // queda ningun candidato, no se aplica y se dice en la evidencia.
+      const baseF = poolSeparado.length ? poolSeparado : base0;
+      let baseH = baseF;
+      let notaFamilia = '';
+      if (!sinFamilia && profile?.dieta !== 'vegetariana' && profile?.dieta !== 'vegana' && !esSugerencia) {
+        const familiasCercanas = new Set();
+        for (const s2 of slots.values()) {
+          if (s2.abierto || !s2.dishId) continue;
+          if (s2.fixedRole === 'libre' && s2.momento === 'comida') continue;
+          if (Math.abs(DAYS_ORDER.indexOf(s2.day) - i) !== 1) continue;
+          const fam = familiaCache(s2.dishId);
+          if (fam) familiasCercanas.add(fam);
+        }
+        const poolFamilia = baseF.filter((d) => !familiasCercanas.has(familiaCache(d.id)));
+        if (poolFamilia.length === baseF.length) notaFamilia = '';
+        else if (poolFamilia.length) {
+          baseH = poolFamilia;
+          uso.familiaDescarto = true;
+          notaFamilia = `familia en dias seguidos: descarta ${baseF.length - poolFamilia.length} candidatos de ${[...familiasCercanas].join(', ')} (ya salen el dia de al lado); `;
+        } else notaFamilia = `familia en dias seguidos sin aplicar: dejaria el hueco sin candidatos (${[...familiasCercanas].join(', ')} ya salen el dia de al lado); `;
+      }
       let poolHuevo = baseH;
       let notaHuevo = '';
       if (profile?.dieta === 'vegetariana') {
@@ -436,6 +778,23 @@ export function runWalk(input) {
 
       const ayer = i > 0 ? getDishAt(DAYS_ORDER[i - 1], momento) : null;
       let candidatesA = poolAlino.length ? poolAlino : base1;
+      if (guarn) candidatesA = hidratoPoolGuarnicion(guarn, { pool: candidatesA, day, i, momento, decisionLog, slots });
+      // Dia de legumbre (D-117.2, modifica D-024): en la comida de un dia
+      // sorteado, el nivel de legumbre (platos compuestos de legumbre) va
+      // ANTES que las preferencias A y B y que la verdura del dia. A y B
+      // siguen actuando dentro del nivel, con su vuelta atras. Sin candidato,
+      // el hueco sigue como siempre y el log lo dice. (El dia libre nunca se
+      // sortea: un dia de legumbre no es la sugerencia.)
+      let nivelLegumbre = null;
+      if (legumbre && momento === 'comida' && legumbre.dias.has(day)) {
+        const nivel = candidatesA.filter(esCompuestoLegumbre);
+        if (nivel.length) {
+          nivelLegumbre = { candidatos: nivel.length, de: candidatesA.length };
+          candidatesA = preferirPrimero(day, nivel);
+        } else {
+          pushEvent(day, 'dia_legumbre_sin_candidato', `${day} es dia de legumbre, pero ninguno de los ${candidatesA.length} candidatos del hueco (tras no repetir plato, tope y separacion por proteina, familia y alino) es un compuesto de legumbre; el hueco sigue con el paso 4 de siempre`);
+        }
+      }
       let notaA;
       if (!ayer) {
         notaA = `preferencia A no aplica: no hay dia anterior en la semana para ${day}/${momento}`;
@@ -450,9 +809,16 @@ export function runWalk(input) {
       }
 
       const anteayer = i > 1 ? getDishAt(DAYS_ORDER[i - 2], momento) : null;
+      // La sugerencia de la comida libre no es una comida servida (decision de
+      // Javi, 2026-11-14; amplia D-114): B no la cuenta como comida anterior.
+      // Con ella como «ayer» o «anteayer» no hay racha de dos comidas servidas.
+      const diaSugerenciaPrevia = [i - 1, i - 2].filter((j) => j >= 0).map((j) => DAYS_ORDER[j])
+        .find((d) => momento === 'comida' && slots.get(slotKey(d, momento))?.fixedRole === 'libre');
       let candidatesB = candidatesA;
       let notaB;
-      if (!ayer || !anteayer || ayer.tempFeel !== anteayer.tempFeel) {
+      if (diaSugerenciaPrevia) {
+        notaB = `preferencia B no aplica: la comida del ${diaSugerenciaPrevia} es la sugerencia de la comida libre, no una comida servida`;
+      } else if (!ayer || !anteayer || ayer.tempFeel !== anteayer.tempFeel) {
         notaB = `preferencia B no aplica: no hay racha de 2 dias previos con el mismo tempFeel en ${momento}`;
       } else {
         const objetivoTempFeel = ayer.tempFeel;
@@ -467,9 +833,55 @@ export function runWalk(input) {
 
       // Paso 4 (frecuencias, D-024): opera sobre candidatesB (post A/B),
       // ANTES del desempate final -- el RNG solo ve el nivel ganador.
-      const { nivel: candidatesFinal, causa: causaFreq, evidencia: notaFreq } = chooseFrequencyLevel({
-        day, candidatesB, state: freqState, fuenteEditorial,
-      });
+      //
+      // Sugerencia de la comida libre (decision de Javi, 2026-11-13): la
+      // comida del dia libre no se sirve; el plato elegido queda solo como
+      // sugerencia (materializePlan lo marca `libre`, D-099.3.i). No es
+      // consumo: el paso 4 no la dirige, y mas abajo no sube los contadores
+      // de los suelos ni marca la verdura del dia. Sigue en usedIds/usedNames
+      // (no repetir plato) y cuenta para el tope y la separacion por proteina.
+      // (esSugerencia se calcula al abrir el hueco.)
+      //
+      // Con dias de legumbre sorteados (D-117): en la comida de un dia
+      // sorteado el nivel ya esta fijado arriba (antes de A y B) y el paso 4
+      // no vuelve a partir; en los demas huecos el suelo semanal de legumbre
+      // no actua, y el dia de al lado de uno sorteado no lleva legumbre a la
+      // comida si quedan otros candidatos (sustituye, para la legumbre, a la
+      // veda de D-024).
+      let paso4;
+      if (esSugerencia) paso4 = { nivel: candidatesB, causa: null, evidencia: null };
+      else if (nivelLegumbre) {
+        paso4 = {
+          nivel: candidatesB,
+          causa: 'dia_legumbre_sorteado',
+          evidencia: `paso 4: ${day} es dia de legumbre (sorteado con la semilla); nivel preferente = ${nivelLegumbre.candidatos} compuestos de legumbre de ${nivelLegumbre.de} candidatos, fijado antes que las preferencias A y B y que la verdura del dia; ${candidatesB.length} tras A y B`,
+        };
+      } else if (legumbre) {
+        let baseB = candidatesB;
+        const vecino = momento === 'comida' && [i - 1, i + 1].some((j) => j >= 0 && j < DAYS_ORDER.length && legumbre.dias.has(DAYS_ORDER[j]));
+        if (vecino) {
+          const sin = candidatesB.filter((d) => familiaCache(d.id) !== 'legumbre');
+          if (sin.length && sin.length < candidatesB.length) baseB = sin;
+        }
+        paso4 = chooseFrequencyLevel({
+          day, candidatesB: baseB, state: freqState, fuenteEditorial, suelosInactivos: ['legumbre'], suelos,
+        });
+        if (baseB !== candidatesB) {
+          paso4 = {
+            ...paso4,
+            causa: paso4.causa || 'vecino_de_dia_legumbre',
+            evidencia: `${paso4.evidencia ? `${paso4.evidencia}; ` : 'paso 4: '}nivel preferente sin legumbre (${baseB.length} de ${candidatesB.length} candidatos post-A/B): el dia de al lado es dia de legumbre`,
+          };
+        }
+      } else {
+        paso4 = chooseFrequencyLevel({
+          day, candidatesB, state: freqState, fuenteEditorial, suelos,
+        });
+      }
+      const { nivel: candidatesFinal, causa: causaFreq, evidencia: notaFreq } = paso4;
+      const notaSugerencia = esSugerencia
+        ? '; sugerencia de la comida libre: no es consumo (no cuenta para los suelos semanales ni para la verdura del dia; el paso 4 no la dirige)'
+        : '';
 
       // Paso 5 (identidad de verdura, D-044): opera sobre candidatesFinal
       // (post paso4), ANTES del desempate final -- mismo principio que
@@ -501,10 +913,12 @@ export function runWalk(input) {
         momento,
         chosen.id,
         causa,
-        `${notaTope}${notaSeparada}${notaHuevo}${notaAlino}${notaA}; ${notaB}${notaFreq ? `; ${notaFreq}` : ''}${notaIdentidad ? `; ${notaIdentidad}` : ''}${notaRng}`,
+        `${notaTope}${notaSeparada}${notaFamilia}${notaHuevo}${notaAlino}${notaA}; ${notaB}${notaSugerencia}${notaFreq ? `; ${notaFreq}` : ''}${notaIdentidad ? `; ${notaIdentidad}` : ''}${notaRng}`,
         alternativas,
       );
-      registerConsumption(freqState, chosen, day, undefined, fuenteEditorial);
+      if (!esSugerencia) registerConsumption(freqState, chosen, day, undefined, fuenteEditorial);
+      if (guarn && !esSugerencia) decidirGuarnicion(guarn, { day, i, momento, dish: chosen, freqState, decisionLog, slots, familiaCache, proteinaCache });
+      if (momento === 'comida' && !esSugerencia) segundoDe(day, i, slot, chosen.id);
     }
   }
 
@@ -525,5 +939,21 @@ export function runWalk(input) {
 
   const orderedSlots = DAYS_ORDER.flatMap((day) => MOMENTOS.map((momento) => slots.get(slotKey(day, momento))));
 
-  return { slots: orderedSlots, decisionLog };
+  // Segundos (D-116): no son huecos; van aparte, en orden de dia.
+  const segundos = DAYS_ORDER.map((day) => slots.get(claveSegundo(day))).filter(Boolean)
+    .map((s) => ({ day: s.day, momento: s.momento, dishId: s.dishId, primero: s.primero }));
+
+  // Guarniciones de legumbre (D-119): van aparte, como los segundos; materializePlan las pone en su comida.
+  const guarniciones = guarn ? guarn.guarniciones.map((x) => ({ day: x.day, momento: 'comida', legumbre: x.legumbre })) : [];
+  // Parejas de crema (D-122): la primera se cocina el doble y la segunda es la crema guardada.
+  const cremas = parejasDeCrema(orderedSlots, nombrePorId);
+  for (const c of cremas) {
+    decisionLog.push({
+      decisionId: `walk-select-${decisionLog.length}`, day: undefined, momento: undefined, plato: undefined,
+      causa: 'crema_guardada',
+      evidencia: `crema de ${c.vegetal} el ${c.cocinar.day} (${c.cocinar.momento}) y el ${c.aprovechar.day} (${c.aprovechar.momento}), a 2 o 3 días: la primera se cocina el doble y se guarda la mitad para la segunda`,
+      alternativasDescartadas: [], evento: true, crema: c,
+    });
+  }
+  return { slots: orderedSlots, segundos, guarniciones, cremas, decisionLog };
 }

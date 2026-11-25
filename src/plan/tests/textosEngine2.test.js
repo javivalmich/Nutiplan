@@ -3,6 +3,7 @@
 // concordados y arreglos de los desayunos del motor viejo.
 import { describe, it, expect } from 'vitest';
 import { generarPlan } from '../generarPlan.js';
+import { compraPorPlato } from '../textos/comidaDoble.js';
 import { componerPlato, tuplaDe } from '../textos/componer.js';
 import { gramosVerdura, VERDURAS, concuerda } from '../textos/compuestos.js';
 import { limpiarTexto } from '../textos/legacy.js';
@@ -65,13 +66,17 @@ describe('en el plan', { timeout: 300000 }, () => {
     const b = generarPlan(P, 2000, O(42));
     expect(JSON.stringify(a.days.map((d) => d.meals))).toBe(JSON.stringify(b.days.map((d) => d.meals)));
     let n = 0;
+    // Cada plato compuesto, y cada uno de los dos de una comida doble (D-116) con el texto de su plato.
+    const partes = (m) => (m._doble ? compraPorPlato(m).map((compra, k) => ({ compra, texto: k === 0 ? m.p1 : m.p2 })) : [{ compra: m.shopping, texto: `${m.p1} ${m.p2}` }]);
     for (const d of a.days) for (const m of d.meals) {
-      if (!m || !m._componer) continue;
-      for (const s of m.shopping.slice(0, 2)) {
-        const g = (s.match(/^[^(]+\((\d+) (g|ud)[,)]/) || [])[1];
-        if (!g) continue;
-        n += 1;
-        expect(`${m.p1} ${m.p2}`, m.title).toMatch(new RegExp(`\\b${g} (g|huevos?)`));
+      if (!m || !(m._componer || m._doble)) continue;
+      for (const { compra, texto } of partes(m)) {
+        for (const s of compra.slice(0, 2)) {
+          const g = (s.match(/^[^(]+\((\d+) (g|ud)[,) ]/) || [])[1];
+          if (!g) continue;
+          n += 1;
+          expect(texto, m.title).toMatch(new RegExp(`\\b${g} (g|huevos?)`));
+        }
       }
     }
     expect(n).toBeGreaterThan(10);

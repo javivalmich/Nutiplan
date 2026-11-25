@@ -1,7 +1,7 @@
 # Estado de la rama `motor/i0-banco-cantidades` (traspaso, 2026-11-25)
 
 Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, creada desde `main`
-`19a300c`. Lleva mergeado `main` `9522e92` (PR #27, seguridad de las legumbres) en `ce21c11`. Sin merge a `main`. La sesión de auditoría de seguridad trabaja aparte, en
+`19a300c`. Lleva mergeado `main` `9522e92` (PR #27, seguridad de las legumbres) en `ce21c11`. **Mergeada en `main` el 2026-11-25 (PR #28, `d261df2`) y en producción desde ese día.** La rama se conserva en GitHub: los hashes que citan `DECISIONS.md` y este archivo son de sus commits. La sesión de auditoría de seguridad trabaja aparte, en
 `C:\Users\javiv\app-comida` (rama `fix/autorizacion-rpc`): no se toca.
 
 ## Commits (de más antiguo a más nuevo)
@@ -146,7 +146,9 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
 | `ab0a058` | `ESTADO.md` al día: D-122 |
 | `03d1740`, `dc659d1` | Fuera los 9 `.json` en bruto de `medicion/estructura-comida/` y a `.gitignore`; `resumenEstructura.mjs` avisa si faltan |
 | `12ecb88` | `ESTADO.md` al día; `PLAN-limpieza-historia.md`, sustituido por «Squash and merge» |
-| el siguiente a `12ecb88` | `ESTADO.md` al día: copia de las ramas de seguridad, `main` local al día, `.gitattributes` a la espera del merge del #28 |
+| `f2c3bc2`, `899766d` | `ESTADO.md` al día: copia de las ramas de seguridad, `main` local al día, `.gitattributes` a la espera del merge del #28 |
+| `d261df2` (en `main`) | Merge del PR #28 |
+| el siguiente a `899766d` | `ESTADO.md` al día: en producción |
 
 ## Legumbre como guarnición: dónde se para (2026-11-23)
 
@@ -177,11 +179,13 @@ Plan: `medicion/guarnicion/plan-implementacion.md`, aprobado por Javi el 2026-11
   - al horno, la legumbre después de la proteína («Cuando falten 15 min, añade a la bandeja…»).
 - **Despliegue:** Vercel, por integración con GitHub. Un push a `main` despliega Production; un push a cualquier otra rama, solo un Preview. Producción tiene `9522e92` (PR #27). El Preview de `048bef7` es https://nutiplan-ld5ikvkl4-nuti-s-projects.vercel.app.
 - **`fix/autorizacion-rpc`** (solo en local, `a398173`) cambia 2 archivos de `supabase/`, ninguno de los que cambia esta rama. Su worktree tiene además 4 `.md` sin seguimiento en `docs/`.
-- **PR #28 a `main`, listo para revisar** (ya no es borrador): se mergea con «Squash and merge». Sin merge.
+- **En producción desde el 2026-11-25.** El PR #28 se mergeó en `main` (`d261df2`, 16:31 UTC) y el despliegue de producción de Vercel de ese commit está en `success` (https://nutiplan-hm6qbcncm-nuti-s-projects.vercel.app). Llega a la app todo lo de esta rama: la guarnición de legumbre (D-119 a D-121), la crema guardada (D-122), D-116 y D-117 apagadas y el resto de reglas.
+  - **El merge no fue «Squash and merge»:** `d261df2` es un merge normal, con dos padres (`9522e92` y `899766d`). `main` lleva los 164 commits de la rama, también `db9a2fd`, con los 9 `.json` (26,6 MB) en la historia, aunque no en el árbol de la punta. Sacarlos ahora exigiría reescribir `main`. No se ha hecho nada; decide Javi.
+  - **`main` local** al día con `origin/main` (`d261df2`).
+- **`.gitattributes`:** rama `chore/gitattributes-lf` desde `main` `d261df2` y PR #29, sin merge. Comprobado otra vez: no renormaliza ningún archivo.
 - **Ramas subidas a `origin` el 2026-11-25:** las 18 que solo estaban en local (16 ya estaban enteras en `main` o en otra rama remota; `feat/weekly-veg-count` y `util/hoja-anotacion` tenían su propio commit).
 - **No se suben (Javi, 2026-11-25):** `fix/autorizacion-rpc` y `docs/auditoria-integral`. Copia en `C:/Users/javiv/OneDrive/Nutiplan/backup-ramas-seguridad-2026-11-25.bundle` (rehecho el 2026-11-25 con `docs/auditoria-integral` en `1913db7`, que añade los 4 `.md` que estaban sin seguimiento en `docs/` del worktree de seguridad; historia completa, comprobado con `git bundle verify`; el anterior, borrado). Las dos ramas siguen solo en local. Motivo: El repositorio es público, y las dos describen debilidades de seguridad (la migración de autorización de las RPC y su test; la auditoría de la app) que aún no están corregidas en producción.
-- **`main` local** al día con `origin/main` (`9522e92`, avance rápido).
-- **`.gitattributes`:** propuesto, no aplicado. La rama y el PR se hacen cuando el #28 esté mergeado (el 2026-11-25 seguía abierto). Con `* text=auto eol=lf` no se renormaliza ningún archivo: los 47 con CRLF o mezcla son evidencia de `docs/evidence/fase7-*`, con su propio `.gitattributes` `-text`.
+- **`.gitattributes`:** ver arriba (PR #29). Con `* text=auto eol=lf` no se renormaliza ningún archivo: los 47 con CRLF o mezcla son evidencia de `docs/evidence/fase7-*`, con su propio `.gitattributes` `-text`.
 - **Crema repetida (2026-11-25, `guarnicion/crema-repetida.md`):** dos platos distintos con la misma crema (calabacín, casi siempre) coinciden por azar en alrededor del 1 % de las semanas, a cualquier distancia. La única ventana de conservación es la del ancla (`buildWeekArc.js:250`, D-099.3.b–c), que no cubre las cremas.
   - Propuesta medida en el hook: una crema repetida, solo 2 o 3 días después, y mejor solo entre cremas de plantilla. Mismas comidas cortas, legumbres, pescado y D-099.3.
   - **Implementado (D-122, `7bef6a2`), variante «solo plantillas».** El motor real da los mismos menús que el hook en las 1800 semanas. Quedan 3 repeticiones, todas a 3 días, escritas como «Haz el doble de crema y guarda la mitad…» / «Calienta la crema de … que hiciste el …».

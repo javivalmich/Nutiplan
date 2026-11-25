@@ -69,3 +69,10 @@ Orden de fases (roadmap v2 — histórico):
 
 Frente activo: Frente B
 (Se actualizará al abrir formalmente el siguiente frente.)
+
+## Trabajo desde varios ordenadores
+El proyecto se trabaja desde dos ordenadores (PC con Windows y Mac). GitHub es la copia de referencia.
+- Al empezar cada sesión: `git fetch` y `git pull` de la rama en la que se va a trabajar, y leer `scripts/banco/ESTADO.md`. Si hay cambios sin commit o el pull da conflicto, parar y avisar antes de tocar nada.
+- Al terminar cada sesión: commit y push de todo lo hecho. No dejar ramas solo en local ni cambios sin commit.
+- Después de un merge hecho en GitHub, hacer pull de main antes de seguir.
+- `.env.local` no está en el repositorio: cada ordenador tiene el suyo y nunca se sube.

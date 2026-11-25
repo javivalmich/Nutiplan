@@ -4920,7 +4920,7 @@ Decisión
    No es una puntuación ni un ranking (constitución 1): las dos opciones del primer paso son igual de válidas para el plato (el hidrato que trae la plantilla o una legumbre que el inventario da por buena con él), y las legumbres del segundo también, porque los filtros ya han quitado las que no valen. Elegir entre opciones igual de válidas es un desempate, y los desempates se hacen con el RNG sembrado. Las dos tiradas quedan en el log con su evidencia (`guarnicion_hidrato_original`, `guarnicion_legumbre_elegida`).
 4. La (b): en omnívoras, un compuesto de legumbre (plantilla «legumbre») solo entra en el pool de un hueco si no queda otro candidato (`legumbre_compuesta_fuera_hay_otro`, `legumbre_compuesta_sin_otro_candidato`). Los platos redactados de legumbre (fabada, cocido, hummus…) no cambian. Vegetariana y vegana, sin la (b).
 5. Límites de la semana, con vuelta atrás y causa:
-   - tope de 3 legumbres por semana, guarniciones y platos de legumbre juntos (`legumbre_tope_semana`, `guarnicion_legumbre_tope`); se aplica a todas las dietas, como en el prototipo;
+   - tope de 3 legumbres por semana, guarniciones y platos de legumbre juntos (`legumbre_tope_semana`, `guarnicion_legumbre_tope`), solo en dietas omnívoras. En vegetariana y vegana, donde la legumbre es la proteína principal, sin tope (Javi, 2026-11-25; `e3ca022`). El prototipo lo aplicaba a todas las dietas;
    - suelo de 2 por la guarnición desde el jueves: si la semana va corta, el siguiente hueco que admite guarnición la lleva sin el primer paso (`guarnicion_suelo_semana`); nunca fuerza un plato de legumbre;
    - guisantes y habitas, juntos, como mucho 1 vez (`guarnicion_guisantes_habitas`);
    - sin guarnición en días seguidos, aunque sea de otra legumbre; con el suelo pendiente, cede solo si no queda otra comida servida en la semana (`guarnicion_dias_seguidos_evitada` / `_sin_aplicar`);
@@ -4941,10 +4941,21 @@ Control (2026-11-25, 200 semanas en los 18 perfiles del prototipo)
   | prototipo7 | 2,42 | 103,3 % | 2,00 (1,75) | 2,67 | 11,9 % | 0 | 11 |
   | motor real | 2,40 | 103,3 % | 2,02 (1,78) | 2,67 | 12,1 % | 0 | 7 |
 
-- Con los 18 perfiles, D-099.3 pasa de 426 en `main` a 508, como en el prototipo. Todas son de vegana-1400 (420 → 508): el tope de 3 legumbres le quita platos de legumbre (3,01 → 2,75 por semana) a una dieta cuyo catálogo ya incumplía D-099.3 todas las semanas.
+- Con los 18 perfiles, D-099.3 pasaba de 426 en `main` a 508, como en el prototipo. Todas eran de vegana-1400 (420 → 508): el tope de 3 legumbres le quitaba platos de legumbre (3,01 → 2,75 por semana) a una dieta cuyo catálogo ya incumplía D-099.3 todas las semanas.
+- Sin el tope en vegetariana y vegana (`e3ca022`, 200 semanas):
+
+  | | Cortas/sem | Proteína del día | Legumbres/sem | Semanas con más de 3 | Fuera de ±5 % | D-099.3 |
+  |---|---|---|---|---|---|---|
+  | vegana-1400, `main` | 4,87 | 90,5 % | 3,01 | 36 | 50,0 % | 420 |
+  | vegana-1400, con tope | 4,54 | 91,6 % | 2,75 | 0 | 51,3 % | 508 |
+  | vegana-1400, sin tope | 4,79 | 90,9 % | 3,04 | 39 | 50,9 % | 397 |
+  | vegetariana-2000, `main` | 4,33 | 98,4 % | 2,22 | 8 | 7,9 % | 0 |
+  | vegetariana-2000, con tope | 4,42 | 98,3 % | 2,41 | 0 | 7,5 % | 0 |
+  | vegetariana-2000, sin tope | 4,50 | 98,4 % | 2,42 | 5 | 8,2 % | 0 |
+
+  Las dos dietas siguen sin guarnición; los menús omnívoros no cambian.
 
 Pendiente
-- Si el tope de 3 legumbres debe aplicarse a la dieta vegana y a la vegetariana, donde la legumbre es la proteína principal. Sin decidir.
 - omni-3714 sigue con 3,34 comidas cortas por semana (4,37 en `main`).
 
 Estado resultante

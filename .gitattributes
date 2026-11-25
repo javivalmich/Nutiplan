@@ -1,4 +1,17 @@
+# Saltos de línea: LF en el repositorio y en la copia de trabajo para todos los archivos de texto
+# (git decide qué es texto). Las carpetas de evidencia docs/evidence/fase7-* tienen su propio
+# .gitattributes con -text: sus archivos se guardan byte a byte (custodia) y esta regla no los toca.
+* text=auto eol=lf
+
+# Explícitos (como hasta ahora)
 *.snap text eol=lf
 *.js text eol=lf
 *.jsx text eol=lf
+
+# Binarios
 *.xlsx binary
+*.png binary
+*.jpg binary
+*.ico binary
+*.pdf binary
+*.bundle binary

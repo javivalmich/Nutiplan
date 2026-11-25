@@ -26,7 +26,7 @@ import { animalDeTexto, dietaDe, VETADOS_POR_DIETA } from '../engine2/nutrientes
 import { ponerDesayunos, alternativaDesayuno } from './desayunosApp.js';
 import { conPlatosDieta } from './platosDieta.js';
 import { eliminadoEn } from './eliminados.js';
-import { componerPlato, gramosDeBase } from './textos/componer.js';
+import { componerPlato, gramosDeBase, tuplaDe } from './textos/componer.js';
 import { componerComidaDoble, esComidaDoble } from './textos/comidaDoble.js';
 import { nombreDeBase, LEGUMBRES_GUARNICION } from './textos/compuestos.js';
 import { conGuarnicion } from './textos/guarnicion.js';
@@ -305,15 +305,24 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
     // comida libre no lleva segundo (D-114).
     const segundo = !comida2.libre && comida2.segundo ? comida2.segundo : null;
     // D-119: con guarnición, el plato lleva la legumbre en el hueco del hidrato (nombre, compra y receta).
+    // D-122: la crema de la pareja (primer día: cocinar el doble; segundo: la crema guardada).
+    const cremaDe = (m2) => (m2.crema && !m2.libre ? {
+      rol: m2.crema.rol,
+      dia: DIA_LEGIBLE[m2.crema.otro.day] || m2.crema.otro.day,
+      ...(m2.crema.rol === 'aprovechar' ? { tupla: tuplaDe(m2.crema.otro.dishId) } : {}),
+    } : null);
     const platoComida = !comida2.libre && comida2.guarnicion ? conGuarnicion(comida2.dish, comida2.guarnicion.legumbre) : comida2.dish;
     const comida = segundo
       ? componerComidaDoble(comida2.dish, segundo, targetKcal, { ancla: anclaDe('comida'), porPlato: (plato) => adaptarSiProcede(plato, profile) })
-      : componerPlato(platoComida, 'comida', targetKcal, { ancla: anclaDe('comida') });
-    const cena = componerPlato(cena2.dish, 'cena', targetKcal, { ancla: anclaDe('cena') });
+      : componerPlato(platoComida, 'comida', targetKcal, { ancla: anclaDe('comida'), crema: cremaDe(comida2) });
+    const cena = componerPlato(cena2.dish, 'cena', targetKcal, { ancla: anclaDe('cena'), crema: cremaDe(cena2) });
     const marca = (meal, dish, momento) => {
       const c = causaDe.get(`${d2.day}|${momento}`);
       // La comida doble ya trae su título («…; de segundo, …») y los ids de sus dos platos.
-      return { ...meal, time: momento === 'cena' ? 'Cena' : 'Comida', title: meal._dishId2 ? meal.title : dish.nombre, _motor: 'engine2', _dishId: dish.id, ...(c && c.startsWith('ancla_base') ? { _causa: c } : {}) };
+      const m2 = momento === 'cena' ? cena2 : comida2;
+      // D-122: la comida de una pareja de crema guarda su papel y el otro hueco (lo usan las alternativas).
+      const crema = m2.crema && !m2.libre ? { _crema: { rol: m2.crema.rol, otro: { dia: m2.crema.otro.day, momento: m2.crema.otro.momento } } } : {};
+      return { ...meal, time: momento === 'cena' ? 'Cena' : 'Comida', title: meal._dishId2 ? meal.title : dish.nombre, _motor: 'engine2', _dishId: dish.id, ...(c && c.startsWith('ancla_base') ? { _causa: c } : {}), ...crema };
     };
     // Comida y cena por su posición en el día, no por la etiqueta: el motor
     // viejo a veces etiqueta «Cena» una comida de ficha libre (D-106).
@@ -517,6 +526,25 @@ export function regenerarComidaEngine2(plan, dayIdx, time, deseo, profile, targe
   const ajustado = plan.raciones === 'engine2' || day.raciones ? ajustarDia({ ...day, meals }, profile, targetKcal) : { day: { ...day, meals }, log: [] };
   let days = plan.days.slice();
   days[dayIdx] = ajustado.day;
+  // D-122: si la comida que se cambia era de una pareja de crema, la otra deja de serlo: se vuelve a escribir como
+  // una crema normal (con su compra y su receta completas) y se vuelve a racionar su día.
+  const cremaLog = [];
+  if (actual._crema && actual._crema.otro) {
+    const j = days.findIndex((d) => diaE2(d) === actual._crema.otro.dia);
+    const timeOtro = actual._crema.otro.momento === 'cena' ? 'Cena' : 'Comida';
+    const k = j >= 0 ? days[j].meals.findIndex((m) => m && m.time === timeOtro && m._crema) : -1;
+    const otroPlato = k >= 0 ? catalog.find((d) => d.id === days[j].meals[k]._dishId) : null;
+    if (otroPlato) {
+      const viejo = days[j].meals[k];
+      const rehecho = componerPlato(otroPlato, actual._crema.otro.momento, targetKcal);
+      const { _crema, _cremaGuardada, _base, nutricion, ...resto } = viejo; // eslint-disable-line no-unused-vars
+      const meals2 = days[j].meals.slice();
+      meals2[k] = adaptarSiProcede({ ...resto, ...rehecho, time: timeOtro, title: viejo.title, _motor: 'engine2', _dishId: otroPlato.id }, profile);
+      const aj2 = plan.raciones === 'engine2' || days[j].raciones ? ajustarDia({ ...days[j], meals: meals2 }, profile, targetKcal) : { day: { ...days[j], meals: meals2 }, log: [] };
+      days[j] = aj2.day;
+      cremaLog.push({ causa: 'alternativa_deshace_crema_guardada', day: actual._crema.otro.dia, momento: actual._crema.otro.momento, plato: otroPlato.id, detalle: `la comida que se cambia era de una pareja de crema: «${otroPlato.nombre}» vuelve a escribirse como una crema normal` }, ...aj2.log);
+    }
+  }
   // D-116: una comida doble se cambia por un plato único. El plato nuevo ocupa el sitio del primero
   // en platosSemana y el segundo sale: ya no se come, y la semana siguiente puede llevarlo.
   // Segunda revisión, M2 (2026-11-22): una comida doble incompleta (`_dishId2` sin los datos de sus dos
@@ -538,7 +566,7 @@ export function regenerarComidaEngine2(plan, dayIdx, time, deseo, profile, targe
     ...plan,
     days,
     platosSemana,
-    decisionLog: [...(plan.decisionLog || []).filter((e) => !(e.day === day.name && e.causa && String(e.causa).startsWith('raciones'))), ...decisionLog.map((e) => ({ ...e, deseo })), ...retirada.map((e) => ({ ...e, deseo })), ...ajustado.log],
+    decisionLog: [...(plan.decisionLog || []).filter((e) => !(e.day === day.name && e.causa && String(e.causa).startsWith('raciones'))), ...decisionLog.map((e) => ({ ...e, deseo })), ...retirada.map((e) => ({ ...e, deseo })), ...ajustado.log, ...cremaLog.map((e) => ({ ...e, deseo }))],
   };
 }
 

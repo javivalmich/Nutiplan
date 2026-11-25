@@ -46,7 +46,7 @@ export function materializePlan(input) {
   const { weekArc, decisionLog: arcLog } = buildWeekArc({
     profile, seed, strategy, fuenteEditorial, cocinarEnCantidad,
   });
-  const { slots, segundos, guarniciones = [], decisionLog: walkLog } = runWalk({
+  const { slots, segundos, guarniciones = [], cremas = [], decisionLog: walkLog } = runWalk({
     weekArc, catalog, seed, profile, fuenteEditorial, platosRecientes, maxRepeticiones, reglaLegumbre, legumbresGuarnicion,
   });
 
@@ -56,6 +56,12 @@ export function materializePlan(input) {
   const segundoPorDia = new Map(segundos.map((s) => [s.day, s.dishId]));
   // D-119: la legumbre de guarnicion que decidio el walk va en su comida; el texto lo escribe la app.
   const guarnicionPorDia = new Map(guarniciones.map((g) => [g.day, g.legumbre]));
+  // D-122: cada comida de una pareja de crema sabe su papel y el otro hueco.
+  const cremaPorHueco = new Map();
+  for (const c of cremas) {
+    cremaPorHueco.set(`${c.cocinar.day}::${c.cocinar.momento}`, { rol: 'cocinar', otro: c.aprovechar });
+    cremaPorHueco.set(`${c.aprovechar.day}::${c.aprovechar.momento}`, { rol: 'aprovechar', otro: c.cocinar });
+  }
 
   const days = DAYS_ORDER.map((day) => ({
     day,
@@ -67,7 +73,8 @@ export function materializePlan(input) {
       const libre = momento === 'comida' && beat && beat.fixedRole === 'libre';
       const segundo = momento === 'comida' && !libre && segundoPorDia.has(day) ? { segundo: findDish(catalog, segundoPorDia.get(day)) } : {};
       const guarnicion = momento === 'comida' && !libre && guarnicionPorDia.has(day) ? { guarnicion: { legumbre: guarnicionPorDia.get(day) } } : {};
-      return { momento, dish: findDish(catalog, slot.dishId), ...(libre ? { libre: true } : {}), ...segundo, ...guarnicion };
+      const crema = !libre && cremaPorHueco.has(`${day}::${momento}`) ? { crema: cremaPorHueco.get(`${day}::${momento}`) } : {};
+      return { momento, dish: findDish(catalog, slot.dishId), ...(libre ? { libre: true } : {}), ...segundo, ...guarnicion, ...crema };
     }),
   }));
 

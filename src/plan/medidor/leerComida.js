@@ -258,7 +258,13 @@ export function leerComida(meal) {
       else g = { gramos: 10 * ing.gMl, como: 'estimado 10 ml' };
     }
     if (!g) { sinCantidad.push(linea); continue; }
+    // D-122: el primer día de una crema guardada se compra el doble («…, la mitad para el jueves»): hoy se come la mitad.
+    if (/, la mitad para el /.test(paren || '')) g = { gramos: g.gramos / 2, como: `${g.como} (la mitad)` };
     items.push({ clave, gramos: Math.round(g.gramos * 10) / 10, como: g.como, texto: linea, nombre, ...(plato ? { plato } : {}) });
+  }
+  // D-122: el segundo día, la crema guardada no está en la compra, pero se come.
+  for (const it of (meal._cremaGuardada && meal._cremaGuardada.items) || []) {
+    items.push({ clave: it.clave, gramos: it.gramos, como: 'crema guardada', texto: `crema guardada del ${meal._cremaGuardada.de}`, nombre: it.clave });
   }
   return { items, sinCantidad, libre };
 }

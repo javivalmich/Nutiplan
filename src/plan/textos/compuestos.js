@@ -293,17 +293,21 @@ export function pasoCocinarDeMas(base, hoy, guardar, unidad = 'g') {
  * @param {{base:string, rol:'cocinar'|'aprovechar', cuando?:string, guardar?:{dia:string,gramos:number}[]}} [entrada.ancla]
  * @returns {{title, p1, p2, shopping, recipe}}
  */
-export function escribirCompuesto({ tupla, nombre, momento, gramos, ancla = null, batchable = false, shelfLifeDays = 0 }) {
+export function escribirCompuesto({ tupla, nombre, momento, gramos, ancla = null, batchable = false, shelfLifeDays = 0, crema = null }) {
   const { tmpl, cookM } = tupla;
   const P = PROTEINAS[tupla.P];
   const C = tupla.C ? HIDRATOS[tupla.C] : null;
-  const V = tupla.V ? VERDURAS[tupla.V] : null;
-  const V2 = tupla.V2 ? VERDURAS[tupla.V2] : null;
+  // D-122: el día de la crema guardada, la crema es la del primer día (su verdura y sus gramos), no la de esta ficha.
+  const guardada = tmpl === 'sopa_crema' && crema && crema.rol === 'aprovechar';
+  const doble = tmpl === 'sopa_crema' && crema && crema.rol === 'cocinar';
+  const V = guardada ? (crema.V ? VERDURAS[crema.V] : null) : tupla.V ? VERDURAS[tupla.V] : null;
+  const V2 = guardada ? (crema.V2 ? VERDURAS[crema.V2] : null) : tupla.V2 ? VERDURAS[tupla.V2] : null;
   const A = tupla.S ? ALINOS[tupla.S] : null;
   const gP = gramos.P;
   const gC = gramos.C;
-  const gV = gramos.V;
-  const gV2 = gramos.V2;
+  const gV = guardada ? crema.gV : gramos.V;
+  const gV2 = guardada ? crema.gV2 : gramos.V2;
+  const mitad = doble ? `, la mitad para el ${crema.dia}` : '';
   const aove = gramos.aove || 15;
 
   const hueco = ancla ? huecoDeBase(tupla, ancla.base) : null;
@@ -346,10 +350,12 @@ export function escribirCompuesto({ tupla, nombre, momento, gramos, ancla = null
   shopping.push(compraP(P, gP, hueco === 'P' ? notaCompra : null));
   // El hidrato en seco (arroz, pasta, quinoa) se compra «en seco», igual que dice el texto del plato.
   if (C) shopping.push(`${C.compra} (${C.nota ? `${C.nota}, ` : ''}${gC} g${C.seco ? ' en seco' : ''}${C.escurrido ? ' escurridos' : ''}${hueco === 'C' && notaCompra ? `, ${notaCompra}` : ''})`);
-  if (V) shopping.push(`${V.compra} (${V.medida(gV).corta}, ${gV} g)`);
-  if (V2) shopping.push(`${V2.compra} (${V2.medida(gV2).corta}, ${gV2} g)`);
+  // D-122: el primer día de la crema guardada se compra el doble de verdura (y de caldo); el segundo, nada de la crema.
+  const xV = doble ? 2 : 1;
+  if (V && !guardada) shopping.push(`${V.compra} (${V.medida(xV * gV).corta}, ${xV * gV} g${mitad})`);
+  if (V2 && !guardada) shopping.push(`${V2.compra} (${V2.medida(xV * gV2).corta}, ${xV * gV2} g${mitad})`);
   if (A) shopping.push(...A.compra);
-  if (tmpl === 'sopa_crema' && cookM !== 'crudo') shopping.push('Cebolla (1/2)', 'Caldo de verduras (400 ml)');
+  if (tmpl === 'sopa_crema' && cookM !== 'crudo' && !guardada) shopping.push(doble ? `Cebolla (1${mitad})` : 'Cebolla (1/2)', doble ? `Caldo de verduras (800 ml${mitad})` : 'Caldo de verduras (400 ml)');
   if (tmpl === 'legumbre') shopping.push('Cebolla (1/2)', 'Caldo de verduras (500 ml)', 'Laurel (1 hoja)');
   if (cookM === 'guisado' && tmpl !== 'legumbre') shopping.push('Cebolla (1/2)');
   shopping.push(aceite);
@@ -381,10 +387,16 @@ export function escribirCompuesto({ tupla, nombre, momento, gramos, ancla = null
       recipe.push(`Sirve ${P.el} con ${C.el}.`);
     }
   } else if (tmpl === 'sopa_crema') {
-    if (cookM === 'crudo') {
+    const deCrema = `${V ? V.el.replace(/^(el|la|los|las) /, '') : 'verduras'}${V2 ? ` y ${V2.el.replace(/^(el|la|los|las) /, '')}` : ''}`;
+    if (doble) recipe.push(`Haz el doble de crema y guarda la mitad en un táper para el ${crema.dia}.`);
+    if (guardada) {
+      recipe.push(crema.crudo
+        ? `Saca de la nevera la crema fría de ${deCrema} que hiciste el ${crema.dia}.`
+        : `Calienta la crema de ${deCrema} que hiciste el ${crema.dia}.`);
+    } else if (cookM === 'crudo') {
       recipe.push(`Tritura ${V ? V.el : 'la verdura'}${V2 ? ` con ${V2.el}` : ''} con el aceite, sal y un chorrito de agua fría hasta que quede fina; enfría en la nevera.`);
     } else {
-      recipe.push('Pocha media cebolla picada con un poco del aceite 5 min.');
+      recipe.push(doble ? 'Pocha una cebolla picada con un poco del aceite 5 min.' : 'Pocha media cebolla picada con un poco del aceite 5 min.');
       recipe.push(`Añade ${V ? V.el : 'la verdura'}${V2 ? ` y ${V2.el}` : ''} en trozos, cubre con el caldo y cuece tapado a fuego suave 20 min.`);
       recipe.push('Tritura hasta que quede fina y ajusta de sal.');
     }
@@ -418,7 +430,12 @@ export function escribirCompuesto({ tupla, nombre, momento, gramos, ancla = null
   }
   if (batchable && shelfLifeDays > 1 && !aprovecha) recipe.push(`Se conserva bien en la nevera hasta ${shelfLifeDays} días.`);
 
-  return { title: nombre, emoji: momento === 'cena' ? '🌙' : '☀️', p1: mayus(p1), p2: mayus(p2), shopping, recipe: recipe.map(mayus) };
+  // D-122: lo que lleva la crema guardada, para el medidor (no está en la compra de hoy).
+  const cremaGuardada = guardada ? {
+    de: crema.dia,
+    items: [V && { clave: V.clave, gramos: gV }, V2 && { clave: V2.clave, gramos: gV2 }, !crema.crudo && { clave: 'cebolla', gramos: 60 }].filter(Boolean),
+  } : null;
+  return { title: nombre, emoji: momento === 'cena' ? '🌙' : '☀️', p1: mayus(p1), p2: mayus(p2), shopping, recipe: recipe.map(mayus), ...(cremaGuardada ? { _cremaGuardada: cremaGuardada } : {}) };
 }
 
 /**

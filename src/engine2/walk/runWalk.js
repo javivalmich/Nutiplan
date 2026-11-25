@@ -120,6 +120,7 @@ import {
 import {
   crearGuarnicion, filtrarPoolGuarnicion, hidratoPoolGuarnicion, decidirGuarnicion, redD099Guarnicion,
 } from './guarnicion.js';
+import { filtrarCremas, parejasDeCrema } from './cremas.js';
 
 /** D-107: cenas de huevo por semana como mucho, con dieta vegetariana (decisión de Javi). */
 export const TOPE_CENAS_HUEVO = 3;
@@ -627,6 +628,8 @@ function walkUnaVez(input, { sinFamilia, uso, sinRegla, apagadaPorInterruptor = 
       }
 
       if (guarn) pool = filtrarPoolGuarnicion(guarn, { pool, day, momento, decisionLog, esCompuestoLegumbre, slots, familiaCache });
+      // D-122: una crema repetida va 2 o 3 días después de la primera, una vez y entre plantillas.
+      pool = filtrarCremas({ pool, day, momento, slots, nombrePorId, decisionLog });
       // Prototipo (visor): tope de proteina principal por semana. Si dejaria el
       // hueco sin candidatos, no se aplica y se dice en la evidencia.
       const cuentaProteina = new Map();
@@ -942,5 +945,15 @@ function walkUnaVez(input, { sinFamilia, uso, sinRegla, apagadaPorInterruptor = 
 
   // Guarniciones de legumbre (D-119): van aparte, como los segundos; materializePlan las pone en su comida.
   const guarniciones = guarn ? guarn.guarniciones.map((x) => ({ day: x.day, momento: 'comida', legumbre: x.legumbre })) : [];
-  return { slots: orderedSlots, segundos, guarniciones, decisionLog };
+  // Parejas de crema (D-122): la primera se cocina el doble y la segunda es la crema guardada.
+  const cremas = parejasDeCrema(orderedSlots, nombrePorId);
+  for (const c of cremas) {
+    decisionLog.push({
+      decisionId: `walk-select-${decisionLog.length}`, day: undefined, momento: undefined, plato: undefined,
+      causa: 'crema_guardada',
+      evidencia: `crema de ${c.vegetal} el ${c.cocinar.day} (${c.cocinar.momento}) y el ${c.aprovechar.day} (${c.aprovechar.momento}), a 2 o 3 días: la primera se cocina el doble y se guarda la mitad para la segunda`,
+      alternativasDescartadas: [], evento: true, crema: c,
+    });
+  }
+  return { slots: orderedSlots, segundos, guarniciones, cremas, decisionLog };
 }

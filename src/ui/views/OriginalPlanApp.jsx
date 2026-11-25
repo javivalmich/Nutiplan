@@ -7,6 +7,7 @@ import { GOAL_ADJ, computeTrend, getNutricionistaFeedback, adherenciaPct, calcTD
 import { SDB } from "../../data/sdb.js";
 import { generarPlan, platosRecientesPara, recalcularDia, regenerarComida, usaRaciones } from "../../plan/generarPlan.js";
 import { comprobarRegeneracionViejo } from "../../plan/regeneracionSegura.js";
+import { PREGUNTA_PESCADO, AYUDA_PESCADO, OPCIONES_PESCADO, preguntaPescadoVisible, respuestaPescado, conRespuestaPescado } from "../../plan/preguntaPescado.js";
 import { __PERF, __TRACE, getWeekNumber } from "../../data/runtime.js";
 import { trackUserAction, traceSetPlan, _checkPostActionOverwrite } from "../../data/echoGuard";
 import { PDB, loadData, saveData, clearData, loadMealMemory, saveMealMemory, loadProgress,
@@ -1230,6 +1231,20 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
             </div>
             {profile.intolerances.includes("sibo")&&(<div style={{fontSize:11,color:Dk.muted,marginTop:8,lineHeight:1.45}}>🌿 Los platos se adaptan a bajo en FODMAP: sin ajo (aceite aromatizado con ajo), parte verde de cebolla y puerro, sin gluten y sin lactosa. Es una guía orientativa: la dieta baja en FODMAP va por fases y conviene que la paute tu médico o dietista.</div>)}
           </div>
+          {preguntaPescadoVisible(profile)&&(
+            <div>
+              <div style={{fontSize:10,color:Dk.muted,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:6}}>Pescado y marisco</div>
+              <div style={{fontSize:13,color:Dk.text,fontWeight:600,marginBottom:4}}>{PREGUNTA_PESCADO}</div>
+              <div style={{fontSize:11,color:Dk.muted,marginBottom:10,lineHeight:1.45}}>{AYUDA_PESCADO}</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6}}>
+                {OPCIONES_PESCADO.map(o=>{const sel=respuestaPescado(profile)===o.valor;return(
+                  <button key={String(o.valor)} onClick={()=>setProfile(p=>conRespuestaPescado(p,o.valor))} aria-pressed={sel} style={{padding:"9px 12px",borderRadius:10,border:"2px solid "+(sel?Dk.accent:Dk.border),background:sel?Dk.accent+"18":Dk.card2,color:sel?Dk.accent:Dk.text,cursor:"pointer",fontFamily:sans,textAlign:"left"}}>
+                    <div style={{fontSize:13,fontWeight:600}}>{o.label}</div>
+                    <div style={{fontSize:11,color:Dk.muted}}>{o.desc}</div>
+                  </button>);})}
+              </div>
+            </div>
+          )}
           <div>
             <div style={{fontSize:10,color:Dk.muted,letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:8}}>Alimentos a eliminar</div>
             <div style={{display:"flex",gap:7,marginBottom:8}}>
@@ -1240,7 +1255,7 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
           </div>
           <div style={{background:Dk.card2,borderRadius:10,padding:12,border:"1px solid "+goalObj.color+"55"}}>
             <div style={{fontSize:10,color:Dk.muted,marginBottom:8,letterSpacing:"0.1em",textTransform:"uppercase"}}>Resumen final</div>
-            {[["🎯 Objetivo",GOAL_LABELS[profile.goal]],["🔥 Calorías",targetKcal+" kcal/día"],["💪 Macros",macros.protein+"g prot · "+macros.carbs+"g HC · "+macros.fat+"g grasa"],["🍽️ Comidas",profile.mealsPerDay+" comidas al día"],["🧠 Estrategia",(STRATEGIES[computeStrategy(profile)]||STRATEGIES.mantenimiento_equilibrado).label],["🥗 Dieta",(DIETAS.find(x=>x.key===(profile.dieta||"omnivora"))||DIETAS[0]).label],["🚫 Eliminar",[...profile.intolerances.map(k=>(INTOLERANCES.find(x=>x.key===k)||{label:k}).label||k),...profile.eliminatedFoods].join(", ")||"Nada"]].map(([k,v])=>(
+            {[["🎯 Objetivo",GOAL_LABELS[profile.goal]],["🔥 Calorías",targetKcal+" kcal/día"],["💪 Macros",macros.protein+"g prot · "+macros.carbs+"g HC · "+macros.fat+"g grasa"],["🍽️ Comidas",profile.mealsPerDay+" comidas al día"],["🧠 Estrategia",(STRATEGIES[computeStrategy(profile)]||STRATEGIES.mantenimiento_equilibrado).label],["🥗 Dieta",(DIETAS.find(x=>x.key===(profile.dieta||"omnivora"))||DIETAS[0]).label],...(preguntaPescadoVisible(profile)?[["🐟 Pescado",(OPCIONES_PESCADO.find(o=>o.valor===respuestaPescado(profile))||OPCIONES_PESCADO[3]).label]]:[]),["🚫 Eliminar",[...profile.intolerances.map(k=>(INTOLERANCES.find(x=>x.key===k)||{label:k}).label||k),...profile.eliminatedFoods].join(", ")||"Nada"]].map(([k,v])=>(
               <div key={k} style={{display:"flex",justifyContent:"space-between",fontSize:12,padding:"4px 0",borderBottom:"1px solid #30363d22",gap:8}}><span style={{color:Dk.muted,flexShrink:0}}>{k}</span><span style={{color:Dk.text,fontWeight:500,textAlign:"right",wordBreak:"break-word"}}>{v}</span></div>
             ))}
           </div>

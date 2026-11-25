@@ -5050,3 +5050,33 @@ Pendiente
 
 Estado resultante
 Implementado en el motor y en la app.
+
+## D-123 — [2026-11-25] Vuelve «Regenerar plan»: la semana entera, con engine2 (revierte D-102, punto 2)
+
+Decide: Javi. Rama `feat/regenerar-semana` desde `main` `e6d7220`.
+
+Contexto
+D-102 quitó «Regenerar plan» porque, con la misma semana, la semilla es la misma (CLAUDE.md, regla 6) y el menú salía igual: el botón parecía no hacer nada. El problema (b) de D-102, los datos de engine2 perdidos al recargar, ya está resuelto (`days[0]._engine2`). Investigación: `scripts/banco/medicion/investigacion-cuestionario.md`, punto 3, opción A (rama `investigacion/cuestionario-motor`).
+
+Decisión
+1. Vuelve el botón en los dos sitios donde estaba antes de D-102 (`677dd7f^`, `OriginalPlanApp.jsx:1405` y `:1719`): «🔄 Regenerar plan» en el menú lateral, bajo «Estado del plan», y «🔄 Regenerar plan semanal» en «Acciones», entre el check-in y «Cambiar mi perfil». Solo la semana entera; no hay «días restantes». Oculto en los planes del nutricionista.
+2. Antes de regenerar, confirmación: «Esto cambia todo el menú de esta semana. ¿Seguir?».
+3. Semilla: usuario + semana (regla 6) + número de regeneración de esa semana (`:regen<n>`). El número se guarda en el plan (`days[0]._engine2.regeneraciones`), empieza en 0 y no existe en la primera generación ni en la semana siguiente, que vuelve a contar desde 0. Así cada pulsación da otro menú y la misma semana con el mismo número da el mismo plan.
+4. Platos recientes (filtro, no peso): los de la semana anterior más los del plan actual (comidas, cenas, desayunos y tentempiés). La semana anterior que se guarda en el plan sigue siendo la de verdad, para que la próxima regeneración y la semana siguiente no se contaminen.
+5. Si con ese filtro algún hueco se queda sin platos, la red de D-107 (vaciar los recientes y, si no basta, permitir repeticiones hasta los platos de reserva), con cualquier dieta y solo en esta ruta. Causa en el decision log: `regenerar_semana` o `regenerar_semana_red_d107`. Nunca se deja un hueco vacío.
+6. Si engine2 tampoco así llega, se queda el plan actual, no se guarda nada y la app avisa: «No se ha podido regenerar el menú. Sigues con el plan que tenías.». Nunca se usa el motor viejo de reserva (`regenerarSemana` no pasa por `generarPlan` ni por `_regenContext`).
+7. La compra va dentro de cada comida: sale ya con el plan nuevo. No hay lista semanal ni marcas de comprado. Como antes de D-102, los «Extras del día» se vacían y se vuelve al lunes.
+8. La primera generación no cambia: sin número de regeneración la semilla, los recientes y lo que se guarda son los de antes, y la red de D-107 sigue solo para vegetariana y vegana en `generarPlan`.
+
+Código: `src/plan/generarPlan.js` (`regenerarSemana`, `AVISO_REGENERAR_FALLO`; la cadena de D-107 pasa a la constante `RED_D107`, sin cambios), `src/plan/engine2App.js` (semilla, `platosSemanaAnterior`, `regeneraciones`), `src/ui/views/OriginalPlanApp.jsx` (`handleRegenerate` y los dos botones). Tests: `src/plan/tests/regenerarSemana.test.js` y `regenerarSemanaFallo.test.js`.
+
+Límites
+- `generarPlanEngine2` sigue pidiendo al motor viejo la base del plan (estrategia, D-099.6), como en la primera generación. Lo que no se hace nunca es usar el plan del motor viejo como reserva.
+- `day.id` lleva `Date.now()` del motor viejo: el determinismo se comprueba sin él, como en el banco.
+- Cambiar el perfil o hacer el check-in rehace la semana con `generarPlan` y el número vuelve a 0.
+
+Efecto
+Banco sin diferencias con la línea base.
+
+Estado resultante
+Implementado en `src/plan` y en la app.

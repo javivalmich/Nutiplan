@@ -117,6 +117,9 @@ import {
 import {
   reglaLegumbreActiva, sortearDiasLegumbre, elegirSegundo, claveSegundo, infraccionesD099,
 } from './legumbre.js';
+import {
+  crearGuarnicion, filtrarPoolGuarnicion, hidratoPoolGuarnicion, decidirGuarnicion, redD099Guarnicion,
+} from './guarnicion.js';
 
 /** D-107: cenas de huevo por semana como mucho, con dieta vegetariana (decisión de Javi). */
 export const TOPE_CENAS_HUEVO = 3;
@@ -199,7 +202,15 @@ export function runWalk(input) {
   if (input.reglaLegumbre !== true) {
     const intentos = [];
     try {
-      return walkConRedDeFamilia(input, { sinRegla: true, intentos, apagadaPorInterruptor: true });
+      const resultado = walkConRedDeFamilia(input, { sinRegla: true, intentos, apagadaPorInterruptor: true });
+      // Red de D-099.3 de la (b) (paso 7 de la guarnicion): si la semana incumple
+      // D-099.3 y la (b) habia sacado compuestos de legumbre del pool, se repite
+      // entera con la misma semilla sin esa exclusion. Como mucho una vez.
+      return redD099Guarnicion(input, resultado, {
+        repetir: () => walkConRedDeFamilia(input, { sinRegla: true, intentos, apagadaPorInterruptor: true, sinExclusionB: true }),
+        infraccionesD099,
+        anotarInfraccion,
+      });
     } catch (err) {
       throw conWalks(err, intentos);
     }
@@ -310,7 +321,7 @@ function anotarInfraccion(resultado, infracciones, causa, detalle) {
   return resultado;
 }
 
-function walkConRedDeFamilia(input, { sinRegla, intentos = [], apagadaPorInterruptor = false }) {
+function walkConRedDeFamilia(input, { sinRegla, intentos = [], apagadaPorInterruptor = false, sinExclusionB = false }) {
   // Red de seguridad del filtro de familia (decision de Javi, 2026-11-13).
   // Ese filtro mira un hueco cada vez: en un catalogo muy corto puede gastar
   // antes de tiempo los platos que valian para un hueco posterior y dejarlo
@@ -320,11 +331,11 @@ function walkConRedDeFamilia(input, { sinRegla, intentos = [], apagadaPorInterru
   const uso = { familiaDescarto: false };
   try {
     intentos.push({ sinRegla, sinFamilia: false });
-    return walkUnaVez(input, { sinFamilia: false, uso, sinRegla, apagadaPorInterruptor });
+    return walkUnaVez(input, { sinFamilia: false, uso, sinRegla, apagadaPorInterruptor, sinExclusionB });
   } catch (err) {
     if (!(err && err.poolVacio) || !uso.familiaDescarto) throw err;
     intentos.push({ sinRegla, sinFamilia: true });
-    const resultado = walkUnaVez(input, { sinFamilia: true, uso: { familiaDescarto: false }, sinRegla, apagadaPorInterruptor });
+    const resultado = walkUnaVez(input, { sinFamilia: true, uso: { familiaDescarto: false }, sinRegla, apagadaPorInterruptor, sinExclusionB });
     resultado.decisionLog.push({
       decisionId: `walk-select-${resultado.decisionLog.length}`,
       day: undefined,
@@ -340,7 +351,7 @@ function walkConRedDeFamilia(input, { sinRegla, intentos = [], apagadaPorInterru
   }
 }
 
-function walkUnaVez(input, { sinFamilia, uso, sinRegla, apagadaPorInterruptor = false }) {
+function walkUnaVez(input, { sinFamilia, uso, sinRegla, apagadaPorInterruptor = false, sinExclusionB = false }) {
   // input.memoryStore se recibe por inyeccion y NUNCA se lee ni se invoca aqui (D-019, v13):
   // no se desestructura para que quede estructuralmente imposible tocarlo por accidente.
   const {
@@ -351,6 +362,11 @@ function walkUnaVez(input, { sinFamilia, uso, sinRegla, apagadaPorInterruptor = 
   // Sin nombre (catalogos sinteticos de test), la clave es el id.
   const nombrePorId = new Map(catalog.map((d) => [d.id, d.nombre || d.id]));
   const recientes = new Set(platosRecientes.map((id) => nombrePorId.get(id) ?? id));
+  // Legumbre como guarnicion (D-119), con la regla de D-116 y D-117 apagada: sus
+  // filtros del pool, el hidrato en dias seguidos y la eleccion de la guarnicion.
+  const guarn = apagadaPorInterruptor
+    ? crearGuarnicion({ seed, profile, legumbres: input.legumbresGuarnicion || [], sinExclusionB })
+    : null;
   const usedNames = new Set();
   const protPorId = new Map(catalog.map((d) => [d.id, d]));
   const protMemo = new Map();
@@ -610,6 +626,7 @@ function walkUnaVez(input, { sinFamilia, uso, sinRegla, apagadaPorInterruptor = 
         throw errPool;
       }
 
+      if (guarn) pool = filtrarPoolGuarnicion(guarn, { pool, day, momento, decisionLog, esCompuestoLegumbre, slots, familiaCache });
       // Prototipo (visor): tope de proteina principal por semana. Si dejaria el
       // hueco sin candidatos, no se aplica y se dice en la evidencia.
       const cuentaProteina = new Map();
@@ -758,6 +775,7 @@ function walkUnaVez(input, { sinFamilia, uso, sinRegla, apagadaPorInterruptor = 
 
       const ayer = i > 0 ? getDishAt(DAYS_ORDER[i - 1], momento) : null;
       let candidatesA = poolAlino.length ? poolAlino : base1;
+      if (guarn) candidatesA = hidratoPoolGuarnicion(guarn, { pool: candidatesA, day, i, momento, decisionLog, slots });
       // Dia de legumbre (D-117.2, modifica D-024): en la comida de un dia
       // sorteado, el nivel de legumbre (platos compuestos de legumbre) va
       // ANTES que las preferencias A y B y que la verdura del dia. A y B
@@ -896,6 +914,7 @@ function walkUnaVez(input, { sinFamilia, uso, sinRegla, apagadaPorInterruptor = 
         alternativas,
       );
       if (!esSugerencia) registerConsumption(freqState, chosen, day, undefined, fuenteEditorial);
+      if (guarn && !esSugerencia) decidirGuarnicion(guarn, { day, i, momento, dish: chosen, freqState, decisionLog, slots, familiaCache, proteinaCache });
       if (momento === 'comida' && !esSugerencia) segundoDe(day, i, slot, chosen.id);
     }
   }
@@ -921,5 +940,7 @@ function walkUnaVez(input, { sinFamilia, uso, sinRegla, apagadaPorInterruptor = 
   const segundos = DAYS_ORDER.map((day) => slots.get(claveSegundo(day))).filter(Boolean)
     .map((s) => ({ day: s.day, momento: s.momento, dishId: s.dishId, primero: s.primero }));
 
-  return { slots: orderedSlots, segundos, decisionLog };
+  // Guarniciones de legumbre (D-119): van aparte, como los segundos; materializePlan las pone en su comida.
+  const guarniciones = guarn ? guarn.guarniciones.map((x) => ({ day: x.day, momento: 'comida', legumbre: x.legumbre })) : [];
+  return { slots: orderedSlots, segundos, guarniciones, decisionLog };
 }

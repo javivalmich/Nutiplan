@@ -28,7 +28,8 @@ import { conPlatosDieta } from './platosDieta.js';
 import { eliminadoEn } from './eliminados.js';
 import { componerPlato, gramosDeBase } from './textos/componer.js';
 import { componerComidaDoble, esComidaDoble } from './textos/comidaDoble.js';
-import { nombreDeBase } from './textos/compuestos.js';
+import { nombreDeBase, LEGUMBRES_GUARNICION } from './textos/compuestos.js';
+import { conGuarnicion } from './textos/guarnicion.js';
 import { limpiarComidaLegacy } from './textos/legacy.js';
 import { adaptarSiProcede, conSibo, conDieta } from './adaptar.js';
 import { evaluateVeto } from '../engine2/walk/vetoes.js';
@@ -49,7 +50,7 @@ import { aplicarNombresD105, nombreVisible } from '../engine2/dishes/alinosD105.
 // pescado que cede, sin sorteo de días sin segundo posible y la legumbre que crece
 // antes que el segundo). De momento solo se escribe: nada la lee. Se cambia a mano
 // cuando cambie lo que el plan guardado lleva (fecha del día del cambio).
-export const VERSION_MOTOR = '2026-11-24';
+export const VERSION_MOTOR = '2026-11-25';
 
 export const DIA_ENGINE2 = Object.freeze({
   Lunes: 'Lunes', Martes: 'Martes', 'Miércoles': 'Miercoles', Jueves: 'Jueves',
@@ -124,6 +125,35 @@ export function intoleranciasDe(meal, profile) {
   if (intol.has('sibo') && (protagonistaFodmap(textoCompuesto(meal)) || fodmapRestante(texto))) out.push('sibo');
   if (vetadosDieta.length) for (const c of animalDeTexto(texto)) if (vetadosDieta.includes(c)) out.push(c);
   return out;
+}
+
+/**
+ * D-119: legumbres de guarnición que el perfil puede comer, con los mismos filtros que el catálogo
+ * (paso 1): intolerancia a legumbres, SIBO, soja y el resto de alérgenos por el texto de la compra,
+ * y alimentos eliminados con sus sinónimos. Devuelve las claves y, de las que no, por qué.
+ */
+export function legumbresGuarnicionDelPerfil(profile) {
+  const intol = new Set((profile && profile.intolerances) || []);
+  const eliminados = ((profile && profile.eliminatedFoods) || []).map((f) => String(f).toLowerCase().trim()).filter(Boolean);
+  const validas = [];
+  const fuera = [];
+  for (const [clave, l] of Object.entries(LEGUMBRES_GUARNICION)) {
+    const texto = `${l.compra} · ${l.nombre}`;
+    let motivo = null;
+    if (intol.has('legumbres')) motivo = 'intolerancia a legumbres';
+    else if (intol.has('sibo')) motivo = 'SIBO';
+    else {
+      const al = [...alergenosDeTexto(texto)].filter((a) => intol.has(a));
+      const porTexto = [...intol].filter((i) => TEXTO_INTOLERANCIA[i] && TEXTO_INTOLERANCIA[i].test(texto));
+      if (al.length || porTexto.length) motivo = `intolerancia: ${[...new Set([...al, ...porTexto])].join(', ')}`;
+    }
+    if (!motivo) {
+      const e = eliminados.find((x) => eliminadoEn(texto, x));
+      if (e) motivo = `alimento eliminado: «${e}»`;
+    }
+    if (motivo) fuera.push({ clave, motivo }); else validas.push(clave);
+  }
+  return { validas, fuera };
 }
 
 /**
@@ -239,6 +269,8 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
     maxRepeticiones: opts.maxRepeticiones,
     // Paso 8: la regla de D-116 y D-117, apagada salvo opts.reglaLegumbre === true.
     reglaLegumbre: opts.reglaLegumbre === true,
+    // D-119: las legumbres de guarnición que el perfil puede comer.
+    legumbresGuarnicion: legumbresGuarnicionDelPerfil(profile).validas,
   });
 
   // Ancla de la semana (si la hay), para las notas del día.
@@ -272,9 +304,11 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
     // en p2). Cada plato se adapta al perfil por separado, antes de unirlos. La sugerencia de la
     // comida libre no lleva segundo (D-114).
     const segundo = !comida2.libre && comida2.segundo ? comida2.segundo : null;
+    // D-119: con guarnición, el plato lleva la legumbre en el hueco del hidrato (nombre, compra y receta).
+    const platoComida = !comida2.libre && comida2.guarnicion ? conGuarnicion(comida2.dish, comida2.guarnicion.legumbre) : comida2.dish;
     const comida = segundo
       ? componerComidaDoble(comida2.dish, segundo, targetKcal, { ancla: anclaDe('comida'), porPlato: (plato) => adaptarSiProcede(plato, profile) })
-      : componerPlato(comida2.dish, 'comida', targetKcal, { ancla: anclaDe('comida') });
+      : componerPlato(platoComida, 'comida', targetKcal, { ancla: anclaDe('comida') });
     const cena = componerPlato(cena2.dish, 'cena', targetKcal, { ancla: anclaDe('cena') });
     const marca = (meal, dish, momento) => {
       const c = causaDe.get(`${d2.day}|${momento}`);
@@ -292,9 +326,10 @@ export function generarPlanEngine2(profile, targetKcal, opts = {}) {
       nuevaComida = libre ? { ...libre, time: 'Comida', p2: `Si prefieres cocinar: ${comida2.dish.nombre}.`, sugerencia: marca(comida, comida2.dish, 'comida') } : null;
       memL.push('libre');
     } else {
-      nuevaComida = marca(comida, comida2.dish, 'comida');
+      nuevaComida = marca(comida, platoComida, 'comida');
       const nota = notaAncla(resumenAncla, d2.day, causaDe.get(`${d2.day}|comida`));
       if (nota) nuevaComida.slotNote = nota;
+      // Con guarnición, el nombre del plato sin ella: D-099.3 compara el plato, no la guarnición.
       platosSemana.push(comida2.dish.nombre);
       // D-116: el segundo de la comida de legumbre se come; cuenta para no repetirlo la semana
       // siguiente (D-099.3.d).

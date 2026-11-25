@@ -12,6 +12,7 @@ import { loadCatalog } from '../../dishes/loadCatalog.js';
 import { resolveDishComposition } from '../../dishes/compositionResolver.js';
 import { DAYS_ORDER } from '../../skeleton/days.js';
 import { MOMENTOS } from '../../dishes/schema.js';
+import { esCompuestoLegumbre } from '../../dishes/bases.js';
 
 const DIAS = DAYS_ORDER;
 
@@ -43,7 +44,9 @@ function anchorEverythingExcept(openSlots) {
 }
 
 const catalogReal = loadCatalog();
-const legumbresComida = catalogReal.filter((d) => d.rol === 'rotativo' && d.momento.includes('comida') && resolveDishComposition(d).proteinType === 'legumbre');
+// Paso 4 de la guarnición (D-119, la (b)): en omnívoras un compuesto de legumbre solo es plato si el hueco no tiene
+// otro candidato. Estos tests miden el paso 4 de D-024, así que usan legumbres que no son compuestos (platos redactados).
+const legumbresComida = catalogReal.filter((d) => d.rol === 'rotativo' && d.momento.includes('comida') && resolveDishComposition(d).proteinType === 'legumbre' && !esCompuestoLegumbre(d));
 const legumbre1 = legumbresComida[0];
 const legumbre2 = legumbresComida[1];
 const neutroSinVerdura = catalogReal.find((d) => d.id === '["pasta","huevo","pasta",null,null,"ajillo","revuelto"]');

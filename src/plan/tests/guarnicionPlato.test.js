@@ -78,6 +78,14 @@ describe('paso 9: el plato con guarnición', () => {
     expect(m.recipe.join(' ')).not.toMatch(/templad|caliénta|ása/);
   });
 
+  it('el edamame se compra congelado y desgranado, y se hierve o se saltea (no de bote)', () => {
+    const salmon = plato((t) => t.P === 'salmon' && t.S === 'soja_jengibre' && t.tmpl === 'caliente_clasico');
+    const m = comidaCon(conGuarnicion(salmon, 'edamame'));
+    expect(m.shopping).toContain('Edamame congelado (desgranado, 130 g)');
+    expect(m.recipe).toContain('Hierve el edamame 3-4 min en agua con sal y escúrrelo (o saltéalo 4-5 min en una sartén con un poco del aceite y sal).');
+    expect(JSON.stringify(m)).not.toMatch(/de bote/);
+  });
+
   it('los 61 platos con cada una de sus legumbres se escriben y el medidor lee la legumbre con su clave', () => {
     let n = 0;
     for (const [id, lista] of Object.entries(GUARNICION_LEGUMBRE)) {

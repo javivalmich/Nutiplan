@@ -1,5 +1,9 @@
 // Resumen de las mediciones de medirEstructura.mjs: MEDICIÓN, no cambia reglas.
 // Uso: node scripts/banco/medicion/resumenEstructura.mjs <carpeta con los .json> > tablas.md
+// Los .json no están en el repo (2026-11-25: datos en bruto; la carpeta estructura-comida/ va en .gitignore). Para
+// regenerarlos, medirEstructura.mjs con el árbol del commit de la medición (db9a2fd) y la salida en esa carpeta:
+//   node --import ./scripts/banco/resolver.mjs --import ./scripts/banco/medicion/estructuraComida.mjs \n//     scripts/banco/medicion/medirEstructura.mjs scripts/banco/medicion/estructura-comida/<nombre>.json --ec=<opciones>
+// Los comandos de cada variante están en estructura-comida.md (sección de scripts). Las tablas siguen en los .md.
 import fs from 'node:fs';
 import path from 'node:path';
 

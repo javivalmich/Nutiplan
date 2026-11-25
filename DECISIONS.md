@@ -1065,6 +1065,14 @@ Formato:
     INPUT para que Javi autorice, nunca sustituto de esa autorización explícita. Guardado como
     memoria de feedback para sesiones futuras.
 
+Ampliación — [2026-11-25] La guarnición de legumbre cuenta como legumbre (pasos 4 y 5 de la legumbre como guarnición; D-119)
+Decide: Javi (plan aprobado el 2026-11-23). Commit: `e80d3dd`, rama `motor/i0-banco-cantidades`.
+Decisión:
+- Una comida con guarnición de legumbre es consumo de legumbre para el paso 4: sube el contador semanal de legumbre y marca el día, igual que `registerConsumption` con un plato de legumbre (`decidirGuarnicion`, `src/engine2/walk/guarnicion.js`). Así, los huecos siguientes ven la semana menos corta de legumbre y el suelo de D-024 no pide además un plato de legumbre.
+- Además del suelo de D-024, la semana tiene un tope de 3 legumbres (guarniciones y platos de legumbre juntos) y un suelo de 2 que solo pone la guarnición, desde el jueves (D-119.5). El tope saca los platos de legumbre del pool cuando ya hay 3; si no queda otro candidato, no se aplica y se dice en el log.
+- Con D-116 y D-117 apagadas (D-116.12) el paso 4 vuelve a ser el de este asiento, sin el sorteo de días de D-117.
+- El recordatorio de subir la legumbre a 4 (AESAN) sigue abierto.
+
 ## D-025 — [2026-07-07] Contrato del adaptador humanScore (F4-P2c): criterio de
   satisfacción de D-020 vía medición parcial tipificada
 - Decisión. D-020 queda satisfecho midiendo lo medible hoy, sin esperar

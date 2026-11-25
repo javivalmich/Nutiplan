@@ -2323,7 +2323,7 @@ export const FREEFORM_COMBOS = [
       p1: "Pescado blanco en dados marinado en leche de tigre · boniato cocido · cancha tostada",
       p2: "Cebolla morada · ají amarillo · cilantro · lima · jengibre fresco",
       shopping: [
-        "Corvina o lubina (180g, muy fresca o ultracongelada)",
+        "Corvina o lubina (180g, congelada al menos 5 días a -20 °C, o comprada ya congelada)",
         "Boniato (150g)",
         "Cancha o maíz tostado (20g)",
         "Cebolla morada (1/2)",
@@ -2332,6 +2332,7 @@ export const FREEFORM_COMBOS = [
         "Sal", "Pimienta", "AOVE (5ml)"
       ],
       recipe: [
+        "El pescado se come crudo: tiene que estar congelado al menos 5 días a -20 °C (o comprado ya congelado), por el anisakis. Descongélalo en la nevera desde la víspera.",
         "Cocer el boniato pelado en agua con sal 25 min hasta tierno. Enfriar y cortar en rodajas.",
         "Cortar el pescado en dados de 1,5 cm.",
         "Preparar leche de tigre: triturar jugo de lima, ají, jengibre, cilantro, sal y un poco de pescado.",

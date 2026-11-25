@@ -91,6 +91,7 @@ const COLS = [
   ['cPrevia', 'COCINERO preparación previa', 11], ['cPoco', 'COCINERO tramo_poco_tiempo', 11],
   ['cDificultad', 'COCINERO dificultad', 12], ['cConfianza', 'COCINERO confianza', 11],
   ['cMotivo', 'COCINERO motivo', 60], ['cIncoherencia', 'COCINERO incoherencia', 45],
+  ['cRevisado', 'COCINERO revisado tras auditoría', 11], ['cNotaAud', 'COCINERO nota auditoría', 60],
   ['omnivora', 'En omnívora', 10], ['vegetariana', 'En vegetariana', 11], ['vegana', 'En vegana', 9],
   // Propuesta antigua (gris): solo referencia.
   ['tramo', 'ANTIGUA minutos activos (referencia)', 14], ['dificultad', 'ANTIGUA dificultad (referencia)', 13],
@@ -107,7 +108,9 @@ const DE_JAVI = ['jActivo', 'jEspera', 'jPrevia', 'jDificultad', 'jComentario'];
 const DE_JAVI_NUEVAS = ['jActivo', 'jEspera', 'jPrevia'];
 // Columnas retiradas: si una hoja antigua las trae con algo escrito, no la sobrescribo.
 const RETIRADAS = ['JAVI minutos activos'];
-const DEL_COCINERO = ['cActivo', 'cEspera', 'cTotal', 'cPrevia', 'cDificultad', 'cConfianza', 'cMotivo', 'cIncoherencia'];
+const DEL_COCINERO = ['cActivo', 'cEspera', 'cTotal', 'cPrevia', 'cDificultad', 'cConfianza', 'cMotivo', 'cIncoherencia', 'cRevisado', 'cNotaAud'];
+// Revisión tras la auditoría externa (2026-11-25): una hoja anterior puede no tenerlas.
+const DEL_COCINERO_NUEVAS = ['cRevisado', 'cNotaAud'];
 const SI_NO = ['sí', 'no'];
 const CONFIANZAS = ['alta', 'media', 'baja'];
 const TIPOS_INCOHERENCIA = ['nombre/receta', 'falta paso', 'falta en compra', 'técnica', 'seguridad', 'concordancia'];
@@ -133,7 +136,7 @@ async function leerAnotaciones() {
   const col = new Map();
   hoja.getRow(1).eachCell((c, n) => col.set(String(c.value), n));
   const nCol = (clave) => col.get(COLS.find((c) => c[0] === clave)[1]);
-  const faltan = [...DE_JAVI, ...DEL_COCINERO].filter((k) => !nCol(k) && !DE_JAVI_NUEVAS.includes(k));
+  const faltan = [...DE_JAVI, ...DEL_COCINERO].filter((k) => !nCol(k) && !DE_JAVI_NUEVAS.includes(k) && !DEL_COCINERO_NUEVAS.includes(k));
   if (faltan.length) throw new Error(`La hoja existente no tiene las columnas ${faltan.join(', ')}: no la sobrescribo.`);
   for (const titulo of RETIRADAS) {
     const n = col.get(titulo);
@@ -229,6 +232,12 @@ const n = (o) => filas.filter((f) => f.origen === o).length;
   ['Nombre: el del catálogo (scripts/phaseB2/output/dishes.json). En plantilla, la app muestra el nombre corregido (D-105, D-108).'],
   ['En omnívora / vegetariana / vegana: si el plato entra en el catálogo de esa dieta, sin intolerancias ni los platos de reserva.'],
   ['Las columnas de Javi y del cocinero, y el tipo y archivo de «Incoherencias», se conservan al regenerar la hoja.'],
+  [''],
+  ['Revisión tras la auditoría externa (2026-11-25)', true],
+  ['Una auditoría externa sin las recetas (2 raciones, con limpieza) se usó solo como aviso, no como verdad. El cocinero revisó con la'],
+  ['receta delante los platos con veredicto INCORRECTO o con más de 15 min de diferencia en activo o en sesión (sin contar el remojo),'],
+  ['para 1 ración y sin limpieza. «revisado tras auditoría» = sí en esos; la nota dice qué se mantiene o corrige y por qué.'],
+  ['El Excel de la auditoría no está en el repositorio.'],
 ].forEach(([t, negrita]) => {
   const fila = leeme.addRow([t]);
   fila.getCell(1).alignment = { wrapText: true, vertical: 'top' };
@@ -259,7 +268,7 @@ filas.forEach((f, i) => {
     vTramo: { formula: `IF(${c('vActivo')}<=15,"≤15",IF(${c('vActivo')}<=30,"15–30",IF(${c('vActivo')}<=45,"30–45",">45")))`, result: f.vTramo },
     cPoco: { formula: `IF(AND(${c('cActivo')}<=30,${c('cTotal')}<=45,${c('cPrevia')}="no"),"sí","no")`, result: f.cPoco },
   });
-  for (const k of ['nombre', 'motivo', 'jComentario', 'cMotivo', 'cIncoherencia']) fila.getCell(k).alignment = { wrapText: true, vertical: 'top' };
+  for (const k of ['nombre', 'motivo', 'jComentario', 'cMotivo', 'cIncoherencia', 'cNotaAud']) fila.getCell(k).alignment = { wrapText: true, vertical: 'top' };
   for (const k of ['vActivo', 'vEspera', 'vTotal', 'vPrevia', 'vPoco', 'vDificultad', 'vTramo']) fila.getCell(k).fill = relleno(AZUL);
   for (const k of DE_JAVI) fila.getCell(k).fill = relleno(AMARILLO);
   for (const k of [...DEL_COCINERO, 'cPoco']) fila.getCell(k).fill = relleno(VERDE);
@@ -286,6 +295,7 @@ filas.forEach((f, i) => {
   lista('cPrevia', SI_NO);
   lista('cDificultad', DIFICULTADES);
   lista('cConfianza', CONFIANZAS);
+  lista('cRevisado', SI_NO);
 });
 const ultima = filas.length + 1;
 platos.autoFilter = { from: 'A1', to: `${letra(COLS.at(-1)[0])}${ultima}` };
@@ -332,6 +342,8 @@ for (const v of SI_NO) linea(v, [['vPoco', [v]]]);
 linea('  con preparación previa', [['vPrevia', ['sí']]]);
 encabezado(resumen, ['Confianza del cocinero', ...MOMENTOS.map((m) => m[0])]);
 for (const c of CONFIANZAS) linea(c, [['cConfianza', [c]]]);
+encabezado(resumen, ['Revisado tras la auditoría externa', ...MOMENTOS.map((m) => m[0])]);
+for (const v of SI_NO) linea(v, [['cRevisado', [v]]]);
 
 for (const [nombre, dieta] of DIETAS) {
   const base = [[dieta, ['sí']]];

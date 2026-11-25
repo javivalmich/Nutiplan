@@ -17,7 +17,8 @@ const pescados = (p) => p.days.flatMap((d) => d.meals.filter((m) => !m.libre).fl
 const SEEDS = Array.from({ length: 24 }, (_, k) => `tope-pescado-${k}`);
 const CASOS = [['tope de 2', { pescadoMaxSemana: 2 }, 2], ['tope de 3', { pescadoMaxSemana: 3 }, 3], ['tope de 4', { pescadoMaxSemana: 4 }, 4], ['perfil sin el campo (vale 3)', {}, 3]];
 
-describe('tope semanal de pescado y marisco', () => {
+// Tiempo límite explícito: cada test genera 24 semanas y, con la batería completa en paralelo, pasaba de los 5 s por defecto.
+describe('tope semanal de pescado y marisco', { timeout: 30000 }, () => {
   for (const [nombre, extra, tope] of CASOS) {
     it(`${nombre}: ninguna semana pasa del tope, salvo con la causa de vuelta atrás`, () => {
       for (const s of SEEDS) {

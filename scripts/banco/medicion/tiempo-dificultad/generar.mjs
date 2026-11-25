@@ -4,8 +4,9 @@
 // Uso (desde la raíz del repo):
 //   node --import ./scripts/banco/resolver.mjs scripts/banco/medicion/tiempo-dificultad/generar.mjs
 //
-// Si la hoja ya existe, conserva lo escrito en las tres columnas de Javi
-// (por id). Si hay anotaciones de un id que ya no está en el catálogo, se para.
+// Si la hoja ya existe, conserva lo escrito en las tres columnas de Javi y en
+// las del cocinero (por id). Si hay anotaciones de un id que ya no está en el
+// catálogo, se para. «tramo_poco_tiempo» no se guarda: es una fórmula.
 
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -77,9 +78,18 @@ const COLS = [
   ['jTramo', 'JAVI minutos activos', 14], ['jDificultad', 'JAVI dificultad', 13], ['jComentario', 'JAVI comentarios', 40],
   ['vTramo', 'Vigente minutos', 11], ['vDificultad', 'Vigente dificultad', 11],
   ['omnivora', 'En omnívora', 10], ['vegetariana', 'En vegetariana', 11], ['vegana', 'En vegana', 9],
+  ['cActivo', 'COCINERO activo_min', 10], ['cEspera', 'COCINERO espera_min', 10], ['cTotal', 'COCINERO total_min', 10],
+  ['cPrevia', 'COCINERO preparación previa', 11], ['cPoco', 'COCINERO tramo_poco_tiempo', 11],
+  ['cDificultad', 'COCINERO dificultad', 12], ['cConfianza', 'COCINERO confianza', 11],
+  ['cMotivo', 'COCINERO motivo', 60], ['cIncoherencia', 'COCINERO incoherencia', 45],
 ];
-const letra = (clave) => String.fromCharCode(65 + COLS.findIndex((c) => c[0] === clave));
+const letraN = (i) => (i >= 26 ? letraN(Math.floor(i / 26) - 1) : '') + String.fromCharCode(65 + (i % 26));
+const letra = (clave) => letraN(COLS.findIndex((c) => c[0] === clave));
 const DE_JAVI = ['jTramo', 'jDificultad', 'jComentario'];
+// Del cocinero (2026-11-25). cPoco no está: es fórmula sobre activo, total y previa.
+const DEL_COCINERO = ['cActivo', 'cEspera', 'cTotal', 'cPrevia', 'cDificultad', 'cConfianza', 'cMotivo', 'cIncoherencia'];
+const SI_NO = ['sí', 'no'];
+const CONFIANZAS = ['alta', 'media', 'baja'];
 
 async function leerAnotaciones() {
   const previas = new Map();
@@ -90,15 +100,27 @@ async function leerAnotaciones() {
   if (!hoja) throw new Error('La hoja existente no tiene la pestaña «Platos»: no la sobrescribo.');
   const col = new Map();
   hoja.getRow(1).eachCell((c, n) => col.set(String(c.value), n));
-  const nCol = (clave) => {
+  const nCol = (clave, opcional = false) => {
     const n = col.get(COLS.find((c) => c[0] === clave)[1]);
-    if (!n) throw new Error(`La hoja existente no tiene la columna de «${clave}»: no la sobrescribo.`);
+    if (!n && !opcional) throw new Error(`La hoja existente no tiene la columna de «${clave}»: no la sobrescribo.`);
     return n;
+  };
+  // Las del cocinero pueden faltar en una hoja anterior a ellas; si falta solo alguna, la hoja está rota.
+  const cocinero = DEL_COCINERO.filter((k) => nCol(k, true));
+  if (cocinero.length && cocinero.length !== DEL_COCINERO.length) {
+    throw new Error(`La hoja existente tiene solo parte de las columnas del cocinero (${cocinero.join(', ')}): no la sobrescribo.`);
+  }
+  const claves = [...DE_JAVI, ...cocinero];
+  const valor = (celda) => {
+    const v = celda.value;
+    if (v && typeof v === 'object' && 'result' in v) return v.result;
+    if (v && typeof v === 'object' && 'richText' in v) return v.richText.map((t) => t.text).join('');
+    return v;
   };
   hoja.eachRow((fila, i) => {
     if (i === 1) return;
-    const v = Object.fromEntries(DE_JAVI.map((k) => [k, fila.getCell(nCol(k)).value]));
-    if (DE_JAVI.some((k) => v[k] != null && v[k] !== '')) previas.set(String(fila.getCell(nCol('id')).value), v);
+    const v = Object.fromEntries(claves.map((k) => [k, valor(fila.getCell(nCol(k)))]));
+    if (claves.some((k) => v[k] != null && v[k] !== '')) previas.set(String(fila.getCell(nCol('id')).value), v);
   });
   return previas;
 }
@@ -111,7 +133,10 @@ for (const f of filas) Object.assign(f, previas.get(f.id) || {});
 for (const f of filas) {
   f.vTramo = f.jTramo || f.tramo;
   f.vDificultad = f.jDificultad || f.dificultad;
+  f.cPoco = f.cActivo == null || f.cActivo === '' ? ''
+    : Number(f.cActivo) <= 30 && Number(f.cTotal) <= 45 && f.cPrevia === 'no' ? 'sí' : 'no';
 }
+const conCocinero = filas.filter((f) => f.cActivo != null && f.cActivo !== '').length;
 
 // ─── Libro ───────────────────────────────────────────────────────────────────
 
@@ -121,6 +146,7 @@ const relleno = (argb) => ({ type: 'pattern', pattern: 'solid', fgColor: { argb 
 const AZUL = 'FFDDEBF7';
 const AMARILLO = 'FFFFF2CC';
 const GRIS = 'FFEDEDED';
+const VERDE = 'FFE2EFDA';
 
 const leeme = wb.addWorksheet('Leeme');
 leeme.getColumn(1).width = 110;
@@ -155,6 +181,19 @@ const n = (o) => filas.filter((f) => f.origen === o).length;
   ['PROPUESTA y Motivo: míos, estimados leyendo la receta; no están medidos. En plantilla salen de una regla por componentes'],
   ['(propuestasPlantilla.mjs); en texto libre, plato a plato (propuestasLibres.mjs).'],
   ['En omnívora / vegetariana / vegana: si el plato entra en el catálogo de esa dieta, sin intolerancias ni los platos de reserva.'],
+  [''],
+  ['Columnas del cocinero (verdes)', true],
+  ['Evaluación de cada plato leyendo su receta, como lo haría en casa una persona normal, con utensilios normales, para 1-2 raciones.'],
+  ['Evalúa la opción principal de la receta (la primera que da); si la alternativa cambia mucho el resultado, lo dice el motivo.'],
+  ['activo_min: minutos con las manos ocupadas (cortar, saltear, vigilar, remover, montar). Lo que va en paralelo va en paralelo.'],
+  ['espera_min: minutos sin intervención (horno, olla, reposo, frío). total_min = activo + espera, de empezar a comer.'],
+  ['Cuenta lo que tarda en hervir el agua (8 min para pasta y arroz) y en calentarse el horno (10 min).'],
+  ['preparación previa: remojo la noche anterior, o congelar el pescado o la carne para comerlos crudos.'],
+  ['tramo_poco_tiempo (fórmula): «sí» si activo ≤ 30, total ≤ 45 y sin preparación previa.'],
+  ['dificultad: fácil (no falla aunque no sepas cocinar), media (atención o punto: sofrito y guiso, salsa, dos sartenes a la vez,'],
+  ['punto del pescado o el marisco), elaborada (técnica o precisión: masa, plegar, bechamel, risotto o paella, vuelta a la tortilla, huevo pochado).'],
+  ['Platos de lote: se evalúa el día que se cocinan; el motivo dice cuánto se tarda en recalentar.'],
+  ['Las columnas del cocinero se conservan al regenerar, igual que las de Javi. La pestaña «Resumen cocinero» las cuenta.'],
 ].forEach(([t, negrita]) => {
   const fila = leeme.addRow([t]);
   fila.getCell(1).alignment = { wrapText: true, vertical: 'top' };
@@ -162,6 +201,7 @@ const n = (o) => filas.filter((f) => f.origen === o).length;
 });
 
 const resumen = wb.addWorksheet('Resumen');
+const resumenCocinero = wb.addWorksheet('Resumen cocinero');
 
 const platos = wb.addWorksheet('Platos', { views: [{ state: 'frozen', xSplit: 2, ySplit: 1 }] });
 platos.columns = COLS.map(([key, header, width]) => ({ key, header, width }));
@@ -175,10 +215,15 @@ filas.forEach((f, i) => {
     ...f,
     vTramo: { formula: `IF(${letra('jTramo')}${r}="",${letra('tramo')}${r},${letra('jTramo')}${r})`, result: f.vTramo },
     vDificultad: { formula: `IF(${letra('jDificultad')}${r}="",${letra('dificultad')}${r},${letra('jDificultad')}${r})`, result: f.vDificultad },
+    cPoco: {
+      formula: `IF(${letra('cActivo')}${r}="","",IF(AND(${letra('cActivo')}${r}<=30,${letra('cTotal')}${r}<=45,${letra('cPrevia')}${r}="no"),"sí","no"))`,
+      result: f.cPoco,
+    },
   });
-  for (const k of ['nombre', 'motivo', 'jComentario']) fila.getCell(k).alignment = { wrapText: true, vertical: 'top' };
+  for (const k of ['nombre', 'motivo', 'jComentario', 'cMotivo', 'cIncoherencia']) fila.getCell(k).alignment = { wrapText: true, vertical: 'top' };
   for (const k of ['tramo', 'dificultad', 'motivo']) fila.getCell(k).fill = relleno(AZUL);
   for (const k of DE_JAVI) fila.getCell(k).fill = relleno(AMARILLO);
+  for (const k of [...DEL_COCINERO, 'cPoco']) fila.getCell(k).fill = relleno(VERDE);
   const lista = (k, valores) => {
     fila.getCell(k).dataValidation = {
       type: 'list', allowBlank: true, formulae: [`"${valores.join(',')}"`],
@@ -187,9 +232,12 @@ filas.forEach((f, i) => {
   };
   lista('jTramo', TRAMOS);
   lista('jDificultad', DIFICULTADES);
+  lista('cPrevia', SI_NO);
+  lista('cDificultad', DIFICULTADES);
+  lista('cConfianza', CONFIANZAS);
 });
 const ultima = filas.length + 1;
-platos.autoFilter = { from: 'A1', to: `${letra('vegana')}${ultima}` };
+platos.autoFilter = { from: 'A1', to: `${letra(COLS.at(-1)[0])}${ultima}` };
 
 // ─── Resumen ─────────────────────────────────────────────────────────────────
 
@@ -249,11 +297,65 @@ for (const [nombre, dieta] of [['omnívora', 'omnivora'], ['vegetariana', 'veget
 resumen.addRow([]);
 resumen.addRow(['El catálogo no distingue días: «entre semana» son los mismos platos. No se aplican topes ni vetos semanales.']);
 
+// ─── Resumen cocinero ────────────────────────────────────────────────────────
+
+const rc = resumenCocinero;
+rc.columns = [{ width: 46 }, ...Array.from({ length: 8 }, () => ({ width: 13 }))];
+const tituloC = (t) => { rc.addRow([t]).font = { bold: true }; };
+const encabezadoC = (celdas) => {
+  const r = rc.addRow(celdas);
+  r.font = { bold: true };
+  r.eachCell((c) => { c.fill = relleno(GRIS); });
+};
+const lineaC = (etiqueta, cond) => rc.addRow([etiqueta, ...MOMENTOS.map((m) => contar(m[1], cond))]);
+const tramoActivo = (min) => TRAMOS[min <= 15 ? 0 : min <= 30 ? 1 : min <= 45 ? 2 : 3];
+const pocoFacilAntes = (f) => TRAMOS.slice(0, 2).includes(f.tramo) && f.dificultad === 'fácil';
+const pocoFacilAhora = (f) => f.cPoco === 'sí' && f.cDificultad === 'fácil';
+
+tituloC('Evaluación del cocinero (columnas verdes de «Platos»). Se recalcula sola si cambian esas columnas.');
+rc.addRow([`Platos evaluados: ${conCocinero} de ${filas.length}. «Comida» y «Cena» incluyen los que valen para las dos.`]);
+rc.addRow([]);
+encabezadoC(['Dificultad (todas las dietas)', ...MOMENTOS.map((m) => m[0])]);
+for (const d of DIFICULTADES) lineaC(d, [['cDificultad', [d]]]);
+rc.addRow([]);
+encabezadoC(['tramo_poco_tiempo (activo ≤30, total ≤45, sin previa)', ...MOMENTOS.map((m) => m[0])]);
+for (const v of SI_NO) lineaC(v, [['cPoco', [v]]]);
+lineaC('  con preparación previa', [['cPrevia', ['sí']]]);
+rc.addRow([]);
+encabezadoC(['Confianza', ...MOMENTOS.map((m) => m[0])]);
+for (const c of CONFIANZAS) lineaC(c, [['cConfianza', [c]]]);
+
+rc.addRow([]);
+tituloC('«Poco tiempo + fácil» por dieta (sin intolerancias), comparado con la propuesta anterior');
+rc.addRow(['Antes: PROPUESTA minutos activos hasta 30 y PROPUESTA dificultad fácil (no miraba el total ni el remojo).']);
+encabezadoC(['Dieta', 'Comida antes', 'Comida ahora', 'Cena antes', 'Cena ahora', 'Platos comida', 'Platos cena']);
+for (const [nombre, dieta] of [['omnívora', 'omnivora'], ['vegetariana', 'vegetariana'], ['vegana', 'vegana']]) {
+  const base = [[dieta, ['sí']]];
+  const antes = [...base, ['tramo', TRAMOS.slice(0, 2)], ['dificultad', ['fácil']]];
+  const ahora = [...base, ['cPoco', ['sí']], ['cDificultad', ['fácil']]];
+  rc.addRow([nombre, contar('*comida*', antes), contar('*comida*', ahora), contar('*cena*', antes), contar('*cena*', ahora),
+    contar('*comida*', base), contar('*cena*', base)]);
+}
+
+rc.addRow([]);
+tituloC('Platos en los que cambia la dificultad o el tramo de minutos activos respecto a la propuesta anterior');
+rc.addRow(['Lista fija: se escribe al generar la hoja con los valores de ese momento (no se recalcula al editar).']);
+encabezadoC(['Nombre', 'id', 'Momento', 'Activos antes', 'Activos ahora', 'Dificultad antes', 'Dificultad ahora', 'Poco tiempo + fácil', 'Motivo del cocinero']);
+rc.getColumn(9).width = 60;
+const cambios = filas.filter((f) => f.cActivo != null && f.cActivo !== ''
+  && (f.cDificultad !== f.dificultad || tramoActivo(Number(f.cActivo)) !== f.tramo));
+for (const f of cambios) {
+  const pf = pocoFacilAntes(f) === pocoFacilAhora(f) ? (pocoFacilAhora(f) ? 'sí (igual)' : 'no (igual)') : pocoFacilAhora(f) ? 'entra' : 'sale';
+  const r = rc.addRow([f.nombre, f.id, f.momento, f.tramo, tramoActivo(Number(f.cActivo)), f.dificultad, f.cDificultad, pf, f.cMotivo]);
+  for (const n of [1, 9]) r.getCell(n).alignment = { wrapText: true, vertical: 'top' };
+}
+rc.addRow([`${cambios.length} platos.`]);
+
 await wb.xlsx.writeFile(SALIDA);
 
 // ─── Consola ─────────────────────────────────────────────────────────────────
 
-console.log(`${SALIDA}\n${filas.length} platos; anotaciones conservadas: ${previas.size}`);
+console.log(`${SALIDA}\n${filas.length} platos; anotaciones conservadas: ${previas.size}; con evaluación del cocinero: ${conCocinero}`);
 resumen.eachRow((r) => {
   const v = r.values.slice(1).map((x) => (x && typeof x === 'object' ? x.result : x ?? ''));
   console.log(v.slice(0, 4).join(' | '));

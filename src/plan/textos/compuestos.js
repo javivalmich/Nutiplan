@@ -92,7 +92,9 @@ for (const [clave, l] of Object.entries(LEGUMBRES_GUARNICION)) {
   hidratosGuarnicion[claveHidratoGuarnicion(clave, false)] = {
     ...base,
     receta: `Escurre y enjuaga ${l.el} de bote; caliénta${l.pron} 2-3 min en una sartén con un poco del aceite y sal.`,
-    recetaHorno: `Escurre y enjuaga ${l.el} de bote, séca${l.pron}, alíña${l.pron} con un poco del aceite y sal y ása${l.pron} en la misma bandeja los últimos 15 min.`,
+    // Al horno va después de meter la proteína (Javi, 2026-11-25): la legumbre solo pasa los últimos 15 min.
+    recetaHorno: `Cuando falten 15 min, añade a la bandeja ${l.el} de bote, ${['escurrid', 'enjuagad'].map((x) => `${x}${l.g === 'f' ? 'as' : 'os'}`).join(', ')} y secad${l.g === 'f' ? 'as' : 'os'}, con un poco del aceite y sal.`,
+    trasProteina: true,
   };
   hidratosGuarnicion[claveHidratoGuarnicion(clave, true)] = { ...base, receta: `Escurre y enjuaga ${l.el} de bote.` };
 }
@@ -389,7 +391,9 @@ export function escribirCompuesto({ tupla, nombre, momento, gramos, ancla = null
     recipe.push(pasoBase('P', pasoProteina(P, cookM, A)));
     recipe.push(`Sirve la crema con ${P.corto} encima.`);
   } else {
-    if (C) recipe.push(pasoBase('C', C.recetaHorno && cookM === 'horno' ? C.recetaHorno : C.receta));
+    // La legumbre de guarnición al horno entra en la bandeja después de la proteína (D-120).
+    const despues = C && C.trasProteina && cookM === 'horno';
+    if (C && !despues) recipe.push(pasoBase('C', C.recetaHorno && cookM === 'horno' ? C.recetaHorno : C.receta));
     if (tmpl === 'pasta' && A && A.tomate) {
       recipe.push(pasoBase('P', pasoProteina(P, cookM, null)));
       recipe.push('Añade el tomate triturado con una pizca de sal y orégano y deja 8-10 min a fuego suave.');
@@ -397,6 +401,7 @@ export function escribirCompuesto({ tupla, nombre, momento, gramos, ancla = null
       // En la ensalada el aliño es para el plato entero, no para cocinar la proteína.
       recipe.push(pasoBase('P', pasoProteina(P, cookM, tmpl === 'ensalada' ? null : A)));
     }
+    if (despues) recipe.push(C.recetaHorno);
     const crudas = tmpl === 'ensalada';
     for (const v of [V, V2].filter(Boolean)) recipe.push(crudas && v.crudo ? v.crudo : v.receta);
     if (tmpl === 'ensalada') recipe.push(`Mezcla todo${C ? ` con ${C.el}${C.escurrido || C.nota ? '' : ` ya templad${C.g === 'f' ? 'a' : 'o'}`}` : ''} y aliña con el aceite${A ? ` y ${A.el || A.texto}` : ', vinagre y sal'}.`);

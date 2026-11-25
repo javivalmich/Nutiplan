@@ -6,6 +6,7 @@ import { legumbresGuarnicionDelPerfil, metaEngine2 } from '../engine2App.js';
 import { tuplaDe } from '../textos/componer.js';
 import { leerComida } from '../medidor/leerComida.js';
 import { catalogoApp } from '../catalogo.js';
+import { conPlatosDieta } from '../platosDieta.js';
 import { aplicarAjustesD099 } from '../../engine2/dishes/ajustesD099.js';
 import { aplicarNombresD105 } from '../../engine2/dishes/alinosD105.js';
 import { familiaProteica, esCompuestoLegumbre, proteinaPrincipal } from '../../engine2/dishes/bases.js';
@@ -15,7 +16,8 @@ import { FREEFORM_POOL } from '../../data/freeformPool.js';
 import { PERFILES } from '../../../scripts/banco/perfiles.mjs';
 
 const CATALOGO = aplicarNombresD105(aplicarAjustesD099(catalogoApp()));
-const porId = new Map(CATALOGO.map((d) => [d.id, d]));
+// Con los platos propios de la dieta vegetariana y vegana (D-107), para contar también sus legumbres.
+const porId = new Map([...CATALOGO, ...conPlatosDieta(catalogoApp(), { dieta: 'vegana' }, { reserva: true }), ...conPlatosDieta(catalogoApp(), { dieta: 'vegetariana' }, { reserva: true })].map((d) => [d.id, d]));
 const clonar = (x) => JSON.parse(JSON.stringify(x));
 const perfil = (id) => PERFILES.find((x) => x.id === id);
 
@@ -43,6 +45,7 @@ const hidratoDe = (m) => (m._guarnicion ? 'legumbre' : (tuplaDe(m._dishId) || {}
 const OMNI = semanas('omni-2174', 16);
 const SIN_PESCADO = semanas('sin-pescado-2000', 12);
 const VEGETARIANA = semanas('vegetariana-2000', 8);
+const VEGANA = semanas('vegana-1400', 8);
 // SIBO: sin ninguna legumbre de guarnición posible, pero con platos de plantilla con hidrato.
 const SIBO = semanas('sibo-2000', 8);
 const TODAS = [...OMNI, ...SIN_PESCADO];
@@ -124,8 +127,17 @@ describe('paso 5: reglas de la semana', { timeout: 300000 }, () => {
     expect(vistos).toBeGreaterThan(0);
   });
 
-  it('tope de 3 legumbres por semana, guarniciones y platos de legumbre juntos', () => {
+  it('tope de 3 legumbres por semana, guarniciones y platos de legumbre juntos, solo en dietas omnívoras', () => {
     for (const p of TODAS) if (!tiene(p, 'legumbre_tope_semana_sin_aplicar')) expect(legumbresSemana(p)).toBeLessThanOrEqual(3);
+    expect(TODAS.some((p) => tiene(p, 'legumbre_tope_semana'))).toBe(true);
+  });
+
+  it('vegetariana y vegana, sin tope de legumbres', () => {
+    for (const p of [...VEGETARIANA, ...VEGANA]) {
+      expect(tiene(p, 'legumbre_tope_semana')).toBe(false);
+      expect(tiene(p, 'legumbre_tope_semana_sin_aplicar')).toBe(false);
+    }
+    expect(VEGANA.some((p) => legumbresSemana(p) > 3)).toBe(true);
   });
 
   it('guisantes y habitas, juntos, como mucho 1 vez por semana', () => {

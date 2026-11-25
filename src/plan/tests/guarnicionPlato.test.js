@@ -60,9 +60,22 @@ describe('paso 9: el plato con guarnición', () => {
     expect(m.shopping).toContain('Garbanzos cocidos de bote (130 g escurridos)');
     expect(m.shopping.some((s) => /patata/i.test(s))).toBe(false);
     expect(m.p2).toMatch(/Garbanzos cocidos de bote \(130 g escurridos\)/);
-    expect(m.recipe).toContain('Escurre y enjuaga los garbanzos de bote, sécalos, alíñalos con un poco del aceite y sal y ásalos en la misma bandeja los últimos 15 min.');
+    expect(m.recipe).toContain('Cuando falten 15 min, añade a la bandeja los garbanzos de bote, escurridos, enjuagados y secados, con un poco del aceite y sal.');
     expect(m.recipe.join(' ')).not.toMatch(/patata/i);
     expect(m._guarnicion.clave).toBe('garbanzos_cocidos');
+  });
+
+  it('al horno, el paso de la legumbre va después de meter la proteína en el horno', () => {
+    for (const [dish, clave] of [[CONEJO, 'garbanzos_cocidos'], [CONEJO, 'alubias_blancas_cocidas']]) {
+      const r = comidaCon(conGuarnicion(dish, clave)).recipe;
+      const proteina = r.findIndex((x) => /horn[eé]a/i.test(x));
+      const legumbre = r.findIndex((x) => /^Cuando falten 15 min, añade a la bandeja/.test(x));
+      expect(proteina).toBeGreaterThanOrEqual(0);
+      expect(legumbre).toBe(proteina + 1);
+    }
+    // Con la plantilla de siempre (patata al horno), el hidrato sigue yendo primero.
+    const sin = comidaCon(CONEJO).recipe;
+    expect(sin.findIndex((x) => /patata/i.test(x))).toBeLessThan(sin.findIndex((x) => /horn[eé]a/i.test(x)));
   });
 
   it('a la plancha: la receta calienta o saltea la legumbre en la sartén', () => {

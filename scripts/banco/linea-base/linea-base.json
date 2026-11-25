@@ -475,7 +475,7 @@
    "planes": [
     {
      "semana": 60,
-     "huella": "01ca5bff7f3d90cc",
+     "huella": "6f58430cd1ebfe24",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -0.9,
@@ -500,7 +500,7 @@
     },
     {
      "semana": 61,
-     "huella": "ec4df23daf7e22b9",
+     "huella": "f17e311f36fe05cc",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -0.4,
@@ -525,7 +525,7 @@
     },
     {
      "semana": 62,
-     "huella": "27e9ef7d7806f694",
+     "huella": "2deba2a82ebd92e2",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -2.6,
@@ -550,7 +550,7 @@
     },
     {
      "semana": 63,
-     "huella": "8a117927c6cc98d7",
+     "huella": "2b926555a6410ce9",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -1.7,
@@ -575,7 +575,7 @@
     },
     {
      "semana": 64,
-     "huella": "1fc59089103af3b7",
+     "huella": "f80a3f198ee8050a",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -2.3,
@@ -600,7 +600,7 @@
     },
     {
      "semana": 65,
-     "huella": "c103ad15e444c266",
+     "huella": "7747cb9188985f2e",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -2,
@@ -650,7 +650,7 @@
     },
     {
      "semana": 67,
-     "huella": "f4b576d424cc561c",
+     "huella": "4b85bf495ed1a246",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -3.3,
@@ -842,7 +842,7 @@
    "planes": [
     {
      "semana": 60,
-     "huella": "34204eb90705947d",
+     "huella": "7849a0b209b3df3d",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -0.6,
@@ -867,7 +867,7 @@
     },
     {
      "semana": 61,
-     "huella": "a6b9a60bffe6a82b",
+     "huella": "2d8554bced02d511",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": 0.2,
@@ -917,7 +917,7 @@
     },
     {
      "semana": 63,
-     "huella": "1a2089948c28a267",
+     "huella": "c7319fa1ab018fd8",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -0.8,
@@ -942,7 +942,7 @@
     },
     {
      "semana": 64,
-     "huella": "3326e4a09923aba9",
+     "huella": "fd7cd33457569e25",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -0.3,
@@ -967,7 +967,7 @@
     },
     {
      "semana": 65,
-     "huella": "347a29094b26138c",
+     "huella": "1c5cd210221fad52",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": 0.8,
@@ -992,7 +992,7 @@
     },
     {
      "semana": 66,
-     "huella": "b9596b5522c62449",
+     "huella": "c9a21f9a147f256e",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -0.6,
@@ -1017,7 +1017,7 @@
     },
     {
      "semana": 67,
-     "huella": "213e38ceb040c486",
+     "huella": "6da79bd5f3baf220",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -2.3,
@@ -1222,7 +1222,7 @@
    "planes": [
     {
      "semana": 60,
-     "huella": "a109728aee262a34",
+     "huella": "91992a4e08d4ea38",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -1.4,
@@ -1247,7 +1247,7 @@
     },
     {
      "semana": 61,
-     "huella": "db35b0cebb38e8d9",
+     "huella": "4f2fb9ea168f9e84",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -3.2,
@@ -1272,7 +1272,7 @@
     },
     {
      "semana": 62,
-     "huella": "ca041fc5eef9ffa1",
+     "huella": "360bde915968d023",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -2,
@@ -1297,7 +1297,7 @@
     },
     {
      "semana": 63,
-     "huella": "fe44762fb958980a",
+     "huella": "5dab328f7c8a06e7",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -3.1,
@@ -1322,7 +1322,7 @@
     },
     {
      "semana": 64,
-     "huella": "b678967b4874b43f",
+     "huella": "cdae96d06710927e",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -5.1,
@@ -1372,7 +1372,7 @@
     },
     {
      "semana": 66,
-     "huella": "53a8f985153cab61",
+     "huella": "09b7fc4236164130",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -1.7,
@@ -1397,7 +1397,7 @@
     },
     {
      "semana": 67,
-     "huella": "0a04ebe2aa889380",
+     "huella": "80e07982dc2101bf",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -1.9,
@@ -1626,7 +1626,7 @@
    "planes": [
     {
      "semana": 60,
-     "huella": "b790b68cdd5706da",
+     "huella": "b972198964ae7dfe",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -1.5,
@@ -1676,7 +1676,7 @@
     },
     {
      "semana": 62,
-     "huella": "b5d62f3fa7e95a2f",
+     "huella": "6e18180ea6a6779c",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -3.6,
@@ -1701,7 +1701,7 @@
     },
     {
      "semana": 63,
-     "huella": "f6237f49d0c5818a",
+     "huella": "cdd18b92720ed4b9",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -2.7,
@@ -1726,7 +1726,7 @@
     },
     {
      "semana": 64,
-     "huella": "ec15da2030c0b9ca",
+     "huella": "ddddc4d6f24a5060",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -3.6,
@@ -1751,7 +1751,7 @@
     },
     {
      "semana": 65,
-     "huella": "afcc8ee5119b14aa",
+     "huella": "12f694c73ef86872",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -3.3,
@@ -1776,7 +1776,7 @@
     },
     {
      "semana": 66,
-     "huella": "495fd9a82436d32f",
+     "huella": "ca8dcfd3a10909fa",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -3.9,
@@ -1801,7 +1801,7 @@
     },
     {
      "semana": 67,
-     "huella": "3c6d9524342e5861",
+     "huella": "4b5f1a01dc4c242e",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -1.2,
@@ -1991,7 +1991,7 @@
    "planes": [
     {
      "semana": 60,
-     "huella": "52fef01f70de5324",
+     "huella": "6b794a695d6dfcee",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -1.6,
@@ -2016,7 +2016,7 @@
     },
     {
      "semana": 61,
-     "huella": "e864a68dfca82914",
+     "huella": "a70049ed274e6e74",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -1.3,
@@ -2041,7 +2041,7 @@
     },
     {
      "semana": 62,
-     "huella": "370bb43d1383b23c",
+     "huella": "ff1aa8cc91a9fd7f",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -1.9,
@@ -2066,7 +2066,7 @@
     },
     {
      "semana": 63,
-     "huella": "2b8e23ce4758879a",
+     "huella": "15fdfe0c947e61da",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -1.2,
@@ -2091,7 +2091,7 @@
     },
     {
      "semana": 64,
-     "huella": "609c78682ff626a9",
+     "huella": "68b53165b4edfbeb",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -2,
@@ -2116,7 +2116,7 @@
     },
     {
      "semana": 65,
-     "huella": "28e42fb26c915697",
+     "huella": "b0455d157e986e1a",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -1.2,
@@ -2141,7 +2141,7 @@
     },
     {
      "semana": 66,
-     "huella": "52e3ae65e6ac13de",
+     "huella": "d5aacb3684294bc6",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -1.7,
@@ -2368,7 +2368,7 @@
    "planes": [
     {
      "semana": 60,
-     "huella": "e2543c37e03fa59d",
+     "huella": "8c3200213b66bbf4",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -0.9,
@@ -2418,7 +2418,7 @@
     },
     {
      "semana": 62,
-     "huella": "7a85bcbabb22ab76",
+     "huella": "bfdf571e686341f6",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -0.1,
@@ -2443,7 +2443,7 @@
     },
     {
      "semana": 63,
-     "huella": "f8f7ef6514335b54",
+     "huella": "b1925a3db527212b",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": 0.2,
@@ -2468,7 +2468,7 @@
     },
     {
      "semana": 64,
-     "huella": "0331e7864f383d42",
+     "huella": "b4b8294a5e3db62d",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -0.5,
@@ -2493,7 +2493,7 @@
     },
     {
      "semana": 65,
-     "huella": "374ec2ca7bd6ea99",
+     "huella": "2c4a4ab8d5132413",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -0.4,
@@ -2518,7 +2518,7 @@
     },
     {
      "semana": 66,
-     "huella": "b5bcc60a4acef3c2",
+     "huella": "d76df178772e6c2a",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -2,
@@ -2725,7 +2725,7 @@
    "planes": [
     {
      "semana": 60,
-     "huella": "13b44f4e8a83c552",
+     "huella": "f85b69ec1470f2bc",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -2.9,
@@ -2800,7 +2800,7 @@
     },
     {
      "semana": 63,
-     "huella": "ea0c855c09963550",
+     "huella": "7ca6345a6a56eca1",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -1.3,
@@ -2825,7 +2825,7 @@
     },
     {
      "semana": 64,
-     "huella": "32caa2eaebdfa72c",
+     "huella": "8e9a37bbf76ac2c4",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -0.3,
@@ -2850,7 +2850,7 @@
     },
     {
      "semana": 65,
-     "huella": "85491e10f5bb523c",
+     "huella": "a90a4aaeb1ed340a",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -1.6,
@@ -2875,7 +2875,7 @@
     },
     {
      "semana": 66,
-     "huella": "96e5602e657ff470",
+     "huella": "9f34d0231da0a311",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -2.1,
@@ -2900,7 +2900,7 @@
     },
     {
      "semana": 67,
-     "huella": "ec8890313b4f2a94",
+     "huella": "0a83e02802026d1e",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -1.2,
@@ -3663,67 +3663,67 @@
     "calculadoAusenteEnCompra": 0,
     "comidasAjustadas": 216,
     "decididoIgualQueCompra": 450,
-    "dentroDeTolerancia": 171,
+    "dentroDeTolerancia": 172,
     "dentroPorClave": {
-     "aceite_semillas": 3,
-     "aove": 135,
-     "bebida_vegetal": 33
+     "aceite_semillas": 6,
+     "aove": 134,
+     "bebida_vegetal": 32
     },
     "ejemplos": [],
-    "enTechoBase": 7,
+    "enTechoBase": 12,
     "enTechoPorClave": {
-     "tofu": 1,
+     "tofu": 6,
      "tofu_sedoso": 6
     },
-    "frutaAnadida": 0,
+    "frutaAnadida": 1,
     "fueraDeTolerancia": 0,
     "fueraPorClave": {},
     "huevosMaxComida": 0,
     "huevosMaxDia": 0,
-    "ingredientes": 621,
+    "ingredientes": 622,
     "kcalDeclaradaDistintaDeReleida": 0,
     "maximoG": {
-     "alubias_seco": 115,
-     "arroz_seco": 50,
+     "alubias_seco": 110,
+     "arroz_seco": 55,
      "boniato": 100,
-     "garbanzos_seco": 95,
+     "garbanzos_seco": 100,
      "lentejas_seco": 110,
-     "pan_integral": 50,
+     "pan_integral": 60,
      "pasta_integral_seco": 55,
      "pasta_seco": 40,
-     "patata": 260,
+     "patata": 180,
      "quinoa_seco": 40
     },
     "mayorDiferenciaG": 2.1,
-    "mayorDiferenciaKcal": 14,
+    "mayorDiferenciaKcal": 11,
     "panAnadido": 1,
     "principales": 112,
     "replicaDistinta": 0,
     "sobreTechoBase": 0,
-    "textoDistinto": 64,
+    "textoDistinto": 66,
     "textoDistintoPorClave": {
      "berenjena": 3,
      "brocoli": 4,
-     "calabacin": 2,
+     "calabacin": 1,
      "calabaza": 4,
-     "champinon": 4,
-     "espinaca": 2,
+     "champinon": 3,
+     "espinaca": 1,
      "leche_coco": 4,
      "maiz": 2,
-     "pasta_seco": 2,
-     "pimiento": 9,
+     "pasta_seco": 1,
+     "pimiento": 15,
      "salsa_soja": 4,
-     "tomate_triturado": 21,
-     "zanahoria": 3
+     "tomate_triturado": 22,
+     "zanahoria": 2
     },
-    "textoIgual": 491,
-    "textoSinCantidad": 444
+    "textoIgual": 485,
+    "textoSinCantidad": 450
    },
    "composicion": {
     "diaLegumbreSinCandidato": 0,
-    "especieDiasSeguidos": 1,
-    "especieDiasSeguidosSinAncla": 1,
-    "especieMasDeDosVeces": 19,
+    "especieDiasSeguidos": 2,
+    "especieDiasSeguidosSinAncla": 2,
+    "especieMasDeDosVeces": 15,
     "especieMismoDia": 0,
     "familiaDiasSeguidos": 50,
     "familiaDiasSeguidosPorFamilia": {
@@ -3731,44 +3731,45 @@
      "vegetal": 48
     },
     "familiaDiasSeguidosSinAncla": 50,
-    "familiaMismoDia": 20,
-    "legumbre": 23,
+    "familiaMismoDia": 19,
+    "legumbre": 26,
     "legumbreEnCena": 0,
     "legumbrePlatoUnicoPorTope": 0,
     "maximoSemanal": {
      "familiaDiasSeguidos": 7,
-     "legumbre": 3,
+     "legumbre": 4,
      "pescado": 0,
      "rachaPescado": 0
     },
     "mediaSemanal": {
-     "legumbre": 2.9,
+     "legumbre": 3.3,
      "pescado": 0
     },
     "pescado": 0,
     "platoDeSemanaAnterior": 0,
     "platoRepetidoEnSemana": 0,
     "porEspecie": {
-     "alubias": 5,
-     "garbanzos": 10,
-     "lentejas": 8,
+     "alubias": 4,
+     "alubias_negras": 1,
+     "garbanzos": 12,
+     "lentejas": 9,
      "seitan": 18,
      "soja_texturizada": 17,
-     "tempeh": 22,
+     "tempeh": 19,
      "tofu": 24
     },
     "porFamilia": {
-     "cereal": 5,
-     "legumbre": 23,
-     "vegetal": 76
+     "cereal": 3,
+     "legumbre": 26,
+     "vegetal": 75
     },
     "porFamiliaCena": {
      "vegetal": 56
     },
     "porFamiliaComida": {
-     "cereal": 5,
-     "legumbre": 23,
-     "vegetal": 20
+     "cereal": 3,
+     "legumbre": 26,
+     "vegetal": 19
     },
     "redactadosCena": 56,
     "redactadosComida": 27,
@@ -3780,8 +3781,7 @@
     "servidos": 104,
     "sugerenciaSabado": {
      "cereal": 1,
-     "legumbre": 6,
-     "vegetal": 1
+     "legumbre": 7
     }
    },
    "id": "vegana-1400",
@@ -3792,22 +3792,22 @@
    "nutricion": {
     "comidasPrincipales": 144,
     "comidasPrincipalesCortas": 0,
-    "desvioSemanaMax": 5.9,
-    "desvioSemanaMedio": 3.5,
-    "desvioSemanaMin": 0.6,
-    "diasFueraKcal": 6,
-    "diasSinProteina": 39,
-    "semanasFueraDe5": 2
+    "desvioSemanaMax": 7,
+    "desvioSemanaMedio": 4.2,
+    "desvioSemanaMin": -0.7,
+    "diasFueraKcal": 8,
+    "diasSinProteina": 41,
+    "semanasFueraDe5": 4
    },
    "planes": [
     {
      "semana": 60,
-     "huella": "904d51c243c11c99",
+     "huella": "8af4e718a723567c",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": 3.4,
+     "desvioKcal": 6.5,
      "pescado": 0,
-     "legumbre": 3,
+     "legumbre": 4,
      "platos": [
       "Lu-C [legumbre] Hamburguesa de lentejas con pan integral y ensalada",
       "Lu-N [vegetal] Ensalada templada de quinoa con tempeh y verduras asadas",
@@ -3819,185 +3819,185 @@
       "Ju-N [vegetal] Ramen de miso con tofu y verduras",
       "Vi-C [cereal] Pasta integral con boloñesa de soja texturizada",
       "Vi-N [vegetal] Seitán a la plancha con pimientos asados y patata",
-      "Sá-C* [cereal] Lasaña de verduras y soja con bechamel vegetal",
-      "Sá-N [vegetal] Curry suave de tofu con calabaza y arroz basmati",
-      "Do-C [vegetal] Fajitas de seitán con pimientos y guacamole",
-      "Do-N [vegetal] Crema de calabaza y zanahoria con tempeh crujiente"
+      "Sá-C* [legumbre] Lentejas al ajillo con calabacín",
+      "Sá-N [vegetal] Pimientos rellenos de soja texturizada y arroz",
+      "Do-C [legumbre] Burrito de alubias negras, arroz y verduras",
+      "Do-N [vegetal] Curry suave de tofu con calabaza y arroz basmati"
      ]
     },
     {
      "semana": 61,
-     "huella": "9b5bf278d8e70253",
+     "huella": "ef7d2d9b44adad06",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": 3.9,
+     "desvioKcal": 2.6,
      "pescado": 0,
      "legumbre": 3,
      "platos": [
       "Lu-C [vegetal] Ensalada de tofu, quinoa y aguacate con vinagreta de mostaza",
-      "Lu-N [vegetal] Seitán guisado con patatas y zanahoria",
-      "Ma-C [legumbre] Garbanzos con pimentón con espinacas",
+      "Lu-N [vegetal] Crema de calabaza y zanahoria con tempeh crujiente",
+      "Ma-C [legumbre] Alubias blancas al ajillo con pimientos",
       "Ma-N [vegetal] Soja texturizada a la mexicana con arroz y pimientos",
       "Mi-C [vegetal] Tofu salteado con brócoli, sésamo y arroz",
-      "Mi-N [vegetal] Tempeh marinado con boniato asado y ensalada",
+      "Mi-N [vegetal] Fajitas de seitán con pimientos y guacamole",
       "Ju-C [legumbre] Garbanzos estofados con alcachofas",
-      "Ju-N [vegetal] Seitán salteado con brócoli y cacahuetes",
-      "Vi-C [cereal] Lasaña de verduras y soja con bechamel vegetal",
+      "Ju-N [vegetal] Berenjenas rellenas de soja texturizada y tomate",
+      "Vi-C [vegetal] Seitán salteado con brócoli y cacahuetes",
       "Vi-N [vegetal] Tempeh en salsa de tomate con calabacín",
-      "Sá-C* [legumbre] Burrito de alubias negras, arroz y verduras",
-      "Sá-N [vegetal] Crema de calabacín con tofu crujiente y semillas",
+      "Sá-C* [legumbre] Falafel con tabulé de bulgur y yogur de menta",
+      "Sá-N [vegetal] Revuelto de tofu con espinacas y champiñones",
       "Do-C [legumbre] Alubias blancas al ajillo con acelgas",
-      "Do-N [vegetal] Wok de tempeh con verduras y fideos de arroz"
+      "Do-N [vegetal] Seitán guisado con patatas y zanahoria"
      ]
     },
     {
      "semana": 62,
-     "huella": "137c5cfb2302b5ea",
+     "huella": "26cd47e9c2369df5",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": 5.1,
+     "desvioKcal": 6.7,
      "pescado": 0,
-     "legumbre": 2,
+     "legumbre": 3,
      "platos": [
-      "Lu-C [vegetal] Ensalada templada de quinoa con tempeh y verduras asadas",
-      "Lu-N [vegetal] Tacos de soja texturizada con pico de gallo",
-      "Ma-C [vegetal] Curry suave de tofu con calabaza y arroz basmati",
+      "Lu-C [vegetal] Wok de tempeh con verduras y fideos de arroz",
+      "Lu-N [vegetal] Ramen de miso con tofu y verduras",
+      "Ma-C [legumbre] Garbanzos al ajillo con tomate cherry",
       "Ma-N [vegetal] Seitán a la plancha con pimientos asados y patata",
-      "Mi-C [legumbre] Lentejas con pimentón con zanahoria",
+      "Mi-C [vegetal] Curry suave de tofu con calabaza y arroz basmati",
       "Mi-N [vegetal] Tempeh teriyaki con arroz y judías verdes",
-      "Ju-C [vegetal] Poke de tofu marinado con arroz, edamame y verduras",
-      "Ju-N [vegetal] Berenjenas rellenas de soja texturizada y tomate",
-      "Vi-C [vegetal] Seitán en salsa de champiñones con arroz",
-      "Vi-N [vegetal] Crema de calabaza y zanahoria con tempeh crujiente",
+      "Ju-C [legumbre] Lentejas al ajillo con calabacín",
+      "Ju-N [vegetal] Tacos de soja texturizada con pico de gallo",
+      "Vi-C [legumbre] Falafel con tabulé de bulgur y yogur de soja natural de menta",
+      "Vi-N [vegetal] Pimientos rellenos de soja texturizada y arroz",
       "Sá-C* [legumbre] Burrito de alubias negras, arroz y verduras",
-      "Sá-N [vegetal] Revuelto de tofu con espinacas y champiñones",
-      "Do-C [legumbre] Lentejas al ajillo con calabacín",
-      "Do-N [vegetal] Pimientos rellenos de soja texturizada y arroz"
+      "Sá-N [vegetal] Ensalada templada de quinoa con tempeh y verduras asadas",
+      "Do-C [vegetal] Seitán en salsa de champiñones con arroz",
+      "Do-N [vegetal] Sopa de miso con tofu firme, setas shiitake y alga wakame"
      ]
     },
     {
      "semana": 63,
-     "huella": "f93cc8e7c22332de",
+     "huella": "e5d2719f65b7c70a",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": 1.4,
+     "desvioKcal": 2.7,
      "pescado": 0,
      "legumbre": 3,
      "platos": [
-      "Lu-C [legumbre] Alubias blancas al ajillo con pimientos",
-      "Lu-N [vegetal] Tofu crujiente con salsa de cacahuete y verduras al vapor",
-      "Ma-C [cereal] Lasaña de verduras y soja con bechamel vegetal",
-      "Ma-N [vegetal] Seitán salteado con brócoli y cacahuetes",
-      "Mi-C [vegetal] Tempeh marinado con boniato asado y ensalada",
-      "Mi-N [vegetal] Ramen de miso con tofu y verduras",
-      "Ju-C [legumbre] Alubias blancas al ajillo con acelgas",
-      "Ju-N [vegetal] Seitán guisado con patatas y zanahoria",
-      "Vi-C [cereal] Pasta integral con boloñesa de soja texturizada",
-      "Vi-N [vegetal] Wok de tempeh con verduras y fideos de arroz",
-      "Sá-C* [legumbre] Burrito de alubias negras, arroz y verduras",
-      "Sá-N [vegetal] Tofu al horno con patatas y judías verdes",
-      "Do-C [legumbre] Garbanzos estofados con alcachofas",
-      "Do-N [vegetal] Tempeh en salsa de tomate con calabacín"
+      "Lu-C [legumbre] Garbanzos con pimentón con espinacas",
+      "Lu-N [vegetal] Hamburguesa de tofu y avena con ensalada",
+      "Ma-C [vegetal] Seitán salteado con brócoli y cacahuetes",
+      "Ma-N [vegetal] Crema de calabaza y zanahoria con tempeh crujiente",
+      "Mi-C [vegetal] Tofu al horno con patatas y judías verdes",
+      "Mi-N [vegetal] Soja texturizada a la mexicana con arroz y pimientos",
+      "Ju-C [legumbre] Garbanzos estofados con alcachofas",
+      "Ju-N [vegetal] Tempeh marinado con boniato asado y ensalada",
+      "Vi-C [vegetal] Fajitas de seitán con pimientos y guacamole",
+      "Vi-N [vegetal] Berenjenas rellenas de soja texturizada y tomate",
+      "Sá-C* [legumbre] Alubias blancas al ajillo con acelgas",
+      "Sá-N [vegetal] Tempeh en salsa de tomate con calabacín",
+      "Do-C [legumbre] Hamburguesa de lentejas con pan integral y ensalada",
+      "Do-N [vegetal] Crema de calabacín con tofu crujiente y semillas"
      ]
     },
     {
      "semana": 64,
-     "huella": "1d58e0db5401cb91",
+     "huella": "4039d424dff07db2",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": 5.9,
+     "desvioKcal": 7,
      "pescado": 0,
      "legumbre": 3,
      "platos": [
-      "Lu-C [vegetal] Pimientos rellenos de soja texturizada y arroz",
+      "Lu-C [cereal] Pasta integral con boloñesa de soja texturizada",
       "Lu-N [vegetal] Tofu salteado con brócoli, sésamo y arroz",
-      "Ma-C [legumbre] Lentejas con pimentón con espinacas",
-      "Ma-N [vegetal] Crema de calabaza y zanahoria con tempeh crujiente",
-      "Mi-C [vegetal] Seitán en salsa de champiñones con arroz",
-      "Mi-N [vegetal] Curry suave de tofu con calabaza y arroz basmati",
-      "Ju-C [vegetal] Ensalada templada de quinoa con tempeh y verduras asadas",
-      "Ju-N [vegetal] Tacos de soja texturizada con pico de gallo",
-      "Vi-C [legumbre] Lentejas al ajillo con calabacín",
-      "Vi-N [vegetal] Seitán a la plancha con pimientos asados y patata",
-      "Sá-C* [legumbre] Burrito de alubias negras, arroz y verduras",
-      "Sá-N [vegetal] Ensalada de tofu, quinoa y aguacate con vinagreta de mostaza",
-      "Do-C [legumbre] Garbanzos con pimentón con zanahoria",
-      "Do-N [vegetal] Tempeh teriyaki con arroz y judías verdes"
+      "Ma-C [legumbre] Lentejas al ajillo con calabacín",
+      "Ma-N [vegetal] Seitán a la plancha con pimientos asados y patata",
+      "Mi-C [vegetal] Curry suave de tofu con calabaza y arroz basmati",
+      "Mi-N [vegetal] Ensalada templada de quinoa con tempeh y verduras asadas",
+      "Ju-C [legumbre] Garbanzos al ajillo con tomate cherry",
+      "Ju-N [vegetal] Pimientos rellenos de soja texturizada y arroz",
+      "Vi-C [vegetal] Tempeh teriyaki con arroz y judías verdes",
+      "Vi-N [vegetal] Seitán guisado con patatas y zanahoria",
+      "Sá-C* [legumbre] Falafel con tabulé de bulgur y yogur de menta",
+      "Sá-N [vegetal] Ramen de miso con tofu y verduras",
+      "Do-C [legumbre] Lentejas con pimentón con espinacas",
+      "Do-N [vegetal] Tacos de soja texturizada con pico de gallo"
      ]
     },
     {
      "semana": 65,
-     "huella": "32d62562aa91170b",
+     "huella": "385b7e619c70ea43",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": 3.8,
+     "desvioKcal": 2.9,
      "pescado": 0,
      "legumbre": 3,
      "platos": [
-      "Lu-C [vegetal] Seitán guisado con patatas y zanahoria",
-      "Lu-N [vegetal] Revuelto de tofu con espinacas y champiñones",
-      "Ma-C [legumbre] Hamburguesa de lentejas con pan integral y ensalada",
-      "Ma-N [vegetal] Tempeh marinado con boniato asado y ensalada",
-      "Mi-C [legumbre] Garbanzos al curry con brócoli",
-      "Mi-N [vegetal] Soja texturizada a la mexicana con arroz y pimientos",
-      "Ju-C [vegetal] Poke de tofu marinado con arroz, edamame y verduras",
-      "Ju-N [vegetal] Fajitas de seitán con pimientos y guacamole",
+      "Lu-C [vegetal] Ensalada de tofu, quinoa y aguacate con vinagreta de mostaza",
+      "Lu-N [vegetal] Wok de tempeh con verduras y fideos de arroz",
+      "Ma-C [vegetal] Seitán en salsa de champiñones con arroz",
+      "Ma-N [vegetal] Berenjenas rellenas de soja texturizada y tomate",
+      "Mi-C [legumbre] Garbanzos con pimentón con espinacas",
+      "Mi-N [vegetal] Tempeh en salsa de tomate con calabacín",
+      "Ju-C [vegetal] Tofu al horno con patatas y judías verdes",
+      "Ju-N [vegetal] Seitán salteado con brócoli y cacahuetes",
       "Vi-C [legumbre] Alubias blancas al ajillo con acelgas",
-      "Vi-N [vegetal] Berenjenas rellenas de soja texturizada y tomate",
-      "Sá-C* [vegetal] Wok de tempeh con verduras y fideos de arroz",
-      "Sá-N [vegetal] Ramen de miso con tofu y verduras",
-      "Do-C [cereal] Pasta integral con boloñesa de soja texturizada",
-      "Do-N [vegetal] Seitán salteado con brócoli y cacahuetes"
+      "Vi-N [vegetal] Soja texturizada a la mexicana con arroz y pimientos",
+      "Sá-C* [legumbre] Curry de garbanzos con arroz basmati",
+      "Sá-N [vegetal] Tofu crujiente con salsa de cacahuete y verduras al vapor",
+      "Do-C [legumbre] Lentejas con pimentón con zanahoria",
+      "Do-N [vegetal] Fajitas de seitán con pimientos y guacamole"
      ]
     },
     {
      "semana": 66,
-     "huella": "58a3628f4e4bd9cd",
+     "huella": "e4cfe6cfd5bef6d0",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": 4.1,
+     "desvioKcal": 5.9,
      "pescado": 0,
-     "legumbre": 3,
+     "legumbre": 4,
      "platos": [
-      "Lu-C [legumbre] Garbanzos con pimentón con zanahoria",
-      "Lu-N [vegetal] Crema de calabacín con tofu crujiente y semillas",
+      "Lu-C [legumbre] Garbanzos al ajillo con tomate cherry",
+      "Lu-N [vegetal] Revuelto de tofu con espinacas y champiñones",
       "Ma-C [vegetal] Seitán a la plancha con pimientos asados y patata",
-      "Ma-N [vegetal] Tacos de soja texturizada con pico de gallo",
-      "Mi-C [legumbre] Garbanzos con pimentón con espinacas",
+      "Ma-N [vegetal] Crema de calabaza y zanahoria con tempeh crujiente",
+      "Mi-C [legumbre] Lentejas al ajillo con calabacín",
       "Mi-N [vegetal] Curry suave de tofu con calabaza y arroz basmati",
-      "Ju-C [vegetal] Seitán en salsa de champiñones con arroz",
-      "Ju-N [vegetal] Ensalada templada de quinoa con tempeh y verduras asadas",
-      "Vi-C [vegetal] Pimientos rellenos de soja texturizada y arroz",
-      "Vi-N [vegetal] Tempeh teriyaki con arroz y judías verdes",
-      "Sá-C* [legumbre] Burrito de alubias negras, arroz y verduras",
+      "Ju-C [vegetal] Tempeh teriyaki con arroz y judías verdes",
+      "Ju-N [vegetal] Pimientos rellenos de soja texturizada y arroz",
+      "Vi-C [legumbre] Garbanzos al curry con brócoli",
+      "Vi-N [vegetal] Seitán guisado con patatas y zanahoria",
+      "Sá-C* [cereal] Lasaña de verduras y soja con bechamel vegetal",
       "Sá-N [vegetal] Tofu salteado con brócoli, sésamo y arroz",
-      "Do-C [legumbre] Lentejas al ajillo con calabacín",
-      "Do-N [vegetal] Tempeh en salsa de tomate con calabacín"
+      "Do-C [legumbre] Hamburguesa de lentejas con pan integral y ensalada",
+      "Do-N [vegetal] Tempeh marinado con boniato asado y ensalada"
      ]
     },
     {
      "semana": 67,
-     "huella": "a3623c565445e1a8",
+     "huella": "daf29351024f3189",
      "motor": "engine2",
      "aviso": null,
-     "desvioKcal": 0.6,
+     "desvioKcal": -0.7,
      "pescado": 0,
      "legumbre": 3,
      "platos": [
-      "Lu-C [vegetal] Seitán guisado con patatas y zanahoria",
-      "Lu-N [vegetal] Tempeh marinado con boniato asado y ensalada",
-      "Ma-C [legumbre] Garbanzos al curry con brócoli",
-      "Ma-N [vegetal] Revuelto de tofu con espinacas y champiñones",
-      "Mi-C [vegetal] Soja texturizada a la mexicana con arroz y pimientos",
-      "Mi-N [vegetal] Crema de calabaza y zanahoria con tempeh crujiente",
-      "Ju-C [legumbre] Alubias blancas al ajillo con acelgas",
-      "Ju-N [vegetal] Ensalada de tofu, quinoa y aguacate con vinagreta de mostaza",
-      "Vi-C [vegetal] Seitán salteado con brócoli y cacahuetes",
-      "Vi-N [vegetal] Berenjenas rellenas de soja texturizada y tomate",
-      "Sá-C* [legumbre] Curry de garbanzos con arroz basmati",
-      "Sá-N [vegetal] Tofu al horno con patatas y judías verdes",
-      "Do-C [legumbre] Lentejas con pimentón con espinacas",
-      "Do-N [vegetal] Wok de tempeh con verduras y fideos de arroz"
+      "Lu-C [cereal] Lasaña de verduras y soja con bechamel vegetal",
+      "Lu-N [vegetal] Ensalada templada de quinoa con tempeh y verduras asadas",
+      "Ma-C [legumbre] Lentejas con pimentón con zanahoria",
+      "Ma-N [vegetal] Sopa de miso con tofu firme, setas shiitake y alga wakame",
+      "Mi-C [vegetal] Seitán salteado con brócoli y cacahuetes",
+      "Mi-N [vegetal] Tempeh en salsa de tomate con calabacín",
+      "Ju-C [vegetal] Tofu al horno con patatas y judías verdes",
+      "Ju-N [vegetal] Tacos de soja texturizada con pico de gallo",
+      "Vi-C [legumbre] Garbanzos estofados con alcachofas",
+      "Vi-N [vegetal] Fajitas de seitán con pimientos y guacamole",
+      "Sá-C* [legumbre] Burrito de alubias negras, arroz y verduras",
+      "Sá-N [vegetal] Ramen de miso con tofu y verduras",
+      "Do-C [legumbre] Alubias blancas al ajillo con acelgas",
+      "Do-N [vegetal] Soja texturizada a la mexicana con arroz y pimientos"
      ]
     }
    ],
@@ -4231,7 +4231,7 @@
     },
     {
      "semana": 62,
-     "huella": "d63817b71c476566",
+     "huella": "b308e6b1522fc014",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -1.9,
@@ -4281,7 +4281,7 @@
     },
     {
      "semana": 64,
-     "huella": "d11f873d8869cbce",
+     "huella": "293760287a291ea5",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": 0.1,
@@ -4331,7 +4331,7 @@
     },
     {
      "semana": 66,
-     "huella": "b2d04a79e6e1c4d5",
+     "huella": "04db464821f8fab4",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -0.5,
@@ -4356,7 +4356,7 @@
     },
     {
      "semana": 67,
-     "huella": "8208cee3b25d2f8d",
+     "huella": "b6627bcbdeeb51ec",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -1.5,
@@ -4549,7 +4549,7 @@
    "planes": [
     {
      "semana": 60,
-     "huella": "e734f02b3990cd71",
+     "huella": "09f87b7b23bb9a9f",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -0.9,
@@ -4574,7 +4574,7 @@
     },
     {
      "semana": 61,
-     "huella": "b52b7212f157b7e4",
+     "huella": "1c4c32ca7c06c327",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -1.2,
@@ -4599,7 +4599,7 @@
     },
     {
      "semana": 62,
-     "huella": "d6d410681d502bbe",
+     "huella": "664f5637dfd788bf",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": 0.1,
@@ -4624,7 +4624,7 @@
     },
     {
      "semana": 63,
-     "huella": "397e16a6763dba2a",
+     "huella": "2d58644335959ccd",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -2.1,
@@ -4649,7 +4649,7 @@
     },
     {
      "semana": 64,
-     "huella": "54a03deda7c597a9",
+     "huella": "d04bec986eefa1e5",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -0.9,
@@ -4674,7 +4674,7 @@
     },
     {
      "semana": 65,
-     "huella": "2b93998beda6ad2f",
+     "huella": "8028d37559543ff5",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -0.8,
@@ -4699,7 +4699,7 @@
     },
     {
      "semana": 66,
-     "huella": "27959707ffe1e713",
+     "huella": "ed4bd0c6d09f85e9",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -2,
@@ -4724,7 +4724,7 @@
     },
     {
      "semana": 67,
-     "huella": "ad425da276005df7",
+     "huella": "24f3c55b59796c86",
      "motor": "engine2",
      "aviso": null,
      "desvioKcal": -2,

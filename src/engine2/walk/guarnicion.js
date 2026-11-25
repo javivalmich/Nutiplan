@@ -20,7 +20,7 @@ import { DAYS_ORDER } from '../skeleton/days.js';
 import { mulberry32, seedFromString } from '../skeleton/rng.js';
 import { legumbresGuarnicion } from '../dishes/guarnicionLegumbre.js';
 
-/** Tope de legumbres por semana: guarniciones y platos de legumbre servidos (paso 5). */
+/** Tope de legumbres por semana: guarniciones y platos de legumbre servidos (paso 5). Solo en dietas omnívoras (Javi, 2026-11-25). */
 export const TOPE_LEGUMBRES_SEMANA = 3;
 /** Suelo de legumbres por semana que pone la guarnición, desde el jueves (paso 5). */
 export const SUELO_LEGUMBRES_GUARNICION = 2;
@@ -53,6 +53,8 @@ export function crearGuarnicion({ seed, profile, legumbres = [], sinExclusionB =
     guarniciones: [],
     posibles: new Set(esVegetal(profile) ? [] : legumbres),
     conB: !sinExclusionB && !esVegetal(profile),
+    // En vegetariana y vegana la legumbre es la proteína principal: sin tope de legumbres (Javi, 2026-11-25).
+    conTope: !esVegetal(profile),
   };
 }
 
@@ -68,14 +70,14 @@ function legumbresDeLaSemana(g, slots, familiaCache) {
 
 /**
  * Filtros del pool de un hueco, con vuelta atrás (paso 5 y la (b) del paso 4):
- *   - tope de 3 legumbres en la semana: con 3, fuera los platos de legumbre;
+ *   - tope de 3 legumbres en la semana, en omnívoras: con 3, fuera los platos de legumbre;
  *   - (b), en omnívoras: un compuesto de legumbre como plato solo si el hueco no tiene otro candidato.
  */
 export function filtrarPoolGuarnicion(g, { pool, day, momento, decisionLog, esCompuestoLegumbre, slots, familiaCache }) {
   const anota = (causa, evidencia) => anotar(decisionLog, { day, momentoGuarnicion: momento, causa, evidencia });
   let out = pool;
   const total = legumbresDeLaSemana(g, slots, familiaCache);
-  if (total >= TOPE_LEGUMBRES_SEMANA) {
+  if (g.conTope && total >= TOPE_LEGUMBRES_SEMANA) {
     const sin = out.filter((d) => familiaCache(d.id) !== 'legumbre');
     if (sin.length && sin.length < out.length) {
       anota('legumbre_tope_semana', `${day}/${momento}: la semana ya lleva ${total} legumbres (tope ${TOPE_LEGUMBRES_SEMANA}): fuera ${out.length - sin.length} platos de legumbre`);

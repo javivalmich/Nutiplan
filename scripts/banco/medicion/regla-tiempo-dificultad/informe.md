@@ -184,6 +184,39 @@ Platos del catálogo de cada dieta, sin intolerancias (los de reserva no cuentan
 | vegana | comida | 38 | 10 | 10 | 19 | 33 |
 | vegana | cena | 28 | 15 | 15 | 24 | 24 |
 
+## 7. Variante «legumbre de bote, fácil» (poco+novato y normal+novato)
+
+Con `--boteFacil`, los 15 platos de legumbre de la variante bote cuentan además como fáciles (columna `bote_dificultad`; mismo criterio que las cremas: un sofrito sin punto que fallar). Se aplica siempre que el filtro mira el plato: el tramo de bote con «poco» y la dificultad de bote con «novato», también con normal+novato. «Actual» = la medición de la sección 1 (sin bote).
+
+| Dieta | Combinación | Medición | Red por hueco | Semanas rehechas sin filtro (D-099.3) | Legumbre/sem | Cortas/sem | Proteína del día | Kcal del día | Fuera de ±5 % kcal | Platos distintos/perfil | Especie >2 / mismo día / días seguidos |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| omnívora | poco+novato | actual | 1,2 % | 7 | 1,79 | 2,38 | 102,8 % | 99,7 % | 8,7 % | 155,3 | 0 / 0 / 0 |
+| omnívora | poco+novato | bote fácil | 0,9 % | 0 | 1,79 | 2,37 | 102,8 % | 99,6 % | 8,7 % | 155,4 | 0 / 0 / 0 |
+| omnívora | normal+novato | actual | 1,1 % | 0 | 1,81 | 2,37 | 103,0 % | 99,7 % | 8,8 % | 158,3 | 0 / 0 / 0 |
+| omnívora | normal+novato | bote fácil | 0,8 % | 0 | 1,80 | 2,33 | 103,0 % | 99,7 % | 8,6 % | 157,1 | 0 / 0 / 0 |
+| omnívora | normal+intermedio | control | — | — | 1,79 | 2,32 | 103,1 % | 99,7 % | 8,5 % | 175,8 | 0 / 0 / 0 |
+| vegetariana | poco+novato | actual | 0,0 % | 0 | 1,15 | 3,46 | 99,2 % | 100,0 % | 10,2 % | 63,0 | 0 / 0 / 0 |
+| vegetariana | poco+novato | bote fácil | 0,0 % | 0 | 2,87 | 4,63 | 97,6 % | 99,9 % | 7,5 % | 66,0 | 0 / 0 / 0 |
+| vegetariana | normal+novato | actual | 0,0 % | 0 | 1,05 | 3,37 | 99,5 % | 100,1 % | 9,4 % | 65,0 | 0 / 0 / 0 |
+| vegetariana | normal+novato | bote fácil | 0,0 % | 0 | 2,75 | 4,63 | 97,7 % | 100,1 % | 7,9 % | 66,0 | 0 / 0 / 0 |
+| vegetariana | normal+intermedio | control | — | — | 2,69 | 4,57 | 98,2 % | 99,9 % | 7,7 % | 74,0 | 0 / 0 / 0 |
+| vegana | poco+novato | actual | 30,2 % | 41 | 2,58 | 4,09 | 92,1 % | 105,8 % | 58,5 % | 47,0 | 407 / 2 / 2 |
+| vegana | poco+novato | bote fácil | 15,0 % | 22 | 3,90 | 5,15 | 89,3 % | 105,1 % | 53,0 % | 45,0 | 268 / 0 / 9 |
+| vegana | normal+novato | actual | 27,1 % | 18 | 2,31 | 3,98 | 92,8 % | 105,7 % | 56,5 % | 44,0 | 407 / 0 / 3 |
+| vegana | normal+novato | bote fácil | 11,7 % | 51 | 3,65 | 5,08 | 89,8 % | 105,0 % | 50,8 % | 47,0 | 295 / 0 / 30 |
+| vegana | normal+intermedio | control | — | — | 3,25 | 4,79 | 90,9 % | 105,0 % | 50,9 % | 47,0 | 349 / 11 / 37 |
+
+### «Poco tiempo + fácil» por dieta, sin bote, con bote y con bote fácil (platos del catálogo)
+
+| Dieta | Momento | Platos | Sin bote | Con bote | Con bote fácil | Fácil (cualquier tiempo), sin bote | con bote fácil |
+|---|---|---|---|---|---|---|---|
+| omnívora | comida | 149 | 80 | 80 | 95 | 88 | 103 |
+| omnívora | cena | 115 | 82 | 82 | 82 | 86 | 86 |
+| vegetariana | comida | 54 | 19 | 19 | 33 | 21 | 35 |
+| vegetariana | cena | 51 | 33 | 33 | 33 | 35 | 35 |
+| vegana | comida | 38 | 10 | 10 | 24 | 12 | 26 |
+| vegana | cena | 28 | 15 | 15 | 15 | 17 | 17 |
+
 ## 5. Tres semanas de ejemplo de poco+novato
 
 Marca: filtro = el hueco pasó el filtro; red = el filtro lo dejaba sin candidatos y va sin él; fijo = lo colocó el ancla; sin marca = fin de semana (sin filtro).

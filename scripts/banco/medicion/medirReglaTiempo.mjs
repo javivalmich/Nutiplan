@@ -6,7 +6,7 @@
 // Perfiles: los 18 de la medición de la guarnición (12 del banco, 2 de perfilesExtra.mjs y 4 sintéticos).
 // Uso (desde la raíz del repo; el hook hace falta también para el control, que no filtra):
 //   node --import ./scripts/banco/resolver.mjs --import ./scripts/banco/medicion/reglaTiempoDificultad.mjs \
-//     scripts/banco/medicion/medirReglaTiempo.mjs <salida.json> <perfil> <tiempoCocina> <experiencia> [semanas] [--bote]
+//     scripts/banco/medicion/medirReglaTiempo.mjs <salida.json> <perfil> <tiempoCocina> <experiencia> [semanas] [--bote | --boteFacil]
 import fs from 'node:fs';
 
 const [salida, perfilId, tiempoCocina, experiencia] = process.argv.slice(2);
@@ -40,7 +40,7 @@ const dieta = perfil.dieta || 'omnivora';
 const catalogo = conPlatosDieta(catalogoApp(), perfil, { reserva: true });
 const porId = new Map(catalogo.map((d) => [d.id, d]));
 const obj = objetivoDe(perfil, KCAL);
-const { vigenteDe, pocoDe, bote } = globalThis.__reglaTiempo;
+const { pocoDe, dificultadDe, bote } = globalThis.__reglaTiempo;
 const DIAS = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
 const especie = (id) => (porId.has(id) ? proteinaPrincipal(porId.get(id)) : null);
 const alHorno = (id) => {
@@ -98,7 +98,7 @@ for (let s = 60; s < 60 + SEM; s++) {
       if (k < 5) {
         lvServidos += 1;
         if (String(como).startsWith('fijo (ancla') || String(como).startsWith('fijo (sobra')) lvAncla += 1;
-        if ((tiempoCocina !== 'poco' || pocoDe(m._dishId)) && (experiencia !== 'novato' || vigenteDe(m._dishId).dificultad === 'fácil')) lvCumplen += 1;
+        if ((tiempoCocina !== 'poco' || pocoDe(m._dishId)) && (experiencia !== 'novato' || dificultadDe(m._dishId) === 'fácil')) lvCumplen += 1;
       }
     }
     menu.push(fila);

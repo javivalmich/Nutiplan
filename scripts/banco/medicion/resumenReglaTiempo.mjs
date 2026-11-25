@@ -2,7 +2,7 @@
 // Lee los JSON <perfil>__<tiempoCocina>__<experiencia>.json de una carpeta y escribe el informe en Markdown.
 // Con --bote <carpeta> y --anterior <carpeta>, añade la comparación con la variante de legumbre de bote y con la
 // medición anterior (sin la red de la semana), y los platos «poco tiempo + fácil» por dieta con y sin bote.
-// Uso: node --import ./scripts/banco/resolver.mjs scripts/banco/medicion/resumenReglaTiempo.mjs <carpeta> <informe.md> //        [--bote <carpeta>] [--anterior <carpeta>]
+// Uso: node --import ./scripts/banco/resolver.mjs scripts/banco/medicion/resumenReglaTiempo.mjs <carpeta> <informe.md> //        [--bote <carpeta>] [--anterior <carpeta>] [--boteFacil <carpeta con poco+novato y normal+novato>]
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -22,7 +22,7 @@ const dif = (x, c, dec = 2) => {
 };
 
 // ─── Carga ──────────────────────────────────────────────────────────────────────────────────────────────────────────
-function cargar(dir) {
+function cargar(dir, combos = COMBOS) {
   const m = new Map(); // perfil → combo → json
   for (const f of fs.readdirSync(dir).filter((x) => x.endsWith('.json') && x.includes('__'))) {
     const j = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
@@ -30,7 +30,7 @@ function cargar(dir) {
     if (!m.has(j.perfil)) m.set(j.perfil, {});
     m.get(j.perfil)[c] = j;
   }
-  for (const p of m.keys()) for (const [t, x] of COMBOS) if (!m.get(p)[etiqueta(t, x)]) throw new Error(`falta ${p} ${t}+${x} en ${dir}`);
+  for (const p of m.keys()) for (const [t, x] of combos) if (!m.get(p)[etiqueta(t, x)]) throw new Error(`falta ${p} ${t}+${x} en ${dir}`);
   return m;
 }
 const datos = cargar(carpeta);
@@ -203,6 +203,48 @@ if (dirBote || dirAnterior) {
   C.push('');
 }
 
+// 7. Variante «bote fácil»: solo poco+novato y normal+novato.
+const dirBoteFacil = opcion('--boteFacil');
+const comparacionFacil = [];
+if (dirBoteFacil) {
+  const NOVATO = [['poco', 'novato'], ['normal', 'novato']];
+  const facil = cargar(dirBoteFacil, NOVATO);
+  const C = comparacionFacil;
+  C.push('## 7. Variante «legumbre de bote, fácil» (poco+novato y normal+novato)', '');
+  C.push('Con `--boteFacil`, los 15 platos de legumbre de la variante bote cuentan además como fáciles (columna `bote_dificultad`; mismo criterio que las cremas: un sofrito sin punto que fallar). Se aplica siempre que el filtro mira el plato: el tramo de bote con «poco» y la dificultad de bote con «novato», también con normal+novato. «Actual» = la medición de la sección 1 (sin bote).', '');
+  C.push('| Dieta | Combinación | Medición | Red por hueco | Semanas rehechas sin filtro (D-099.3) | Legumbre/sem | Cortas/sem | Proteína del día | Kcal del día | Fuera de ±5 % kcal | Platos distintos/perfil | Especie >2 / mismo día / días seguidos |', '|---|---|---|---|---|---|---|---|---|---|---|---|');
+  for (const d of DIETAS) {
+    const ps = perfiles.filter((p) => dietaDe(p) === d);
+    const fila = (combo, nombre, ds) => {
+      const m = deDieta(d, combo, ds);
+      const dist = ps.reduce((a, p) => a + de(p, combo, ds).distintos, 0) / ps.length;
+      C.push(`| ${NOMBRE_DIETA[d]} | ${combo} | ${nombre} | ${combo === CONTROL ? '—' : pct(m.red, m.huecos)} | ${combo === CONTROL ? '—' : m.retiradas} | ${n2(m.legumbre)} | ${n2(m.cortas)} | ${n1(m.protDia)} % | ${n1(m.kcalDia)} % | ${pct(m.fueraKcal, m.principales)} | ${n1(dist)} | ${m.masDeDos} / ${m.mismoDia} / ${m.seguidos} |`);
+    };
+    for (const [t, x] of NOVATO) { fila(etiqueta(t, x), 'actual', datos); fila(etiqueta(t, x), 'bote fácil', facil); }
+    fila(CONTROL, 'control', datos);
+  }
+  C.push('');
+  const { catalogoApp } = await import('../../../src/plan/catalogo.js');
+  const { filtrarCatalogo } = await import('../../../src/plan/engine2App.js');
+  const filas = fs.readFileSync(new URL('./regla-tiempo-dificultad/vigente.csv', import.meta.url), 'utf8').trim().split('\n').slice(1)
+    .map((l) => l.split(/;(?=")/).map((x) => x.replace(/^"|"$/g, '').replace(/""/g, '"')));
+  const v = new Map(filas.map((f) => [f[0], { poco: f[6], dificultad: f[7], botePoco: f[10] || null, boteDificultad: f[11] || null }]));
+  const comun = catalogoApp();
+  C.push('### «Poco tiempo + fácil» por dieta, sin bote, con bote y con bote fácil (platos del catálogo)', '');
+  C.push('| Dieta | Momento | Platos | Sin bote | Con bote | Con bote fácil | Fácil (cualquier tiempo), sin bote | con bote fácil |', '|---|---|---|---|---|---|---|---|');
+  for (const d of ['omnivora', 'vegetariana', 'vegana']) {
+    const cat = filtrarCatalogo(comun, { dieta: d, intolerances: [], eliminatedFoods: [] }, 2000).catalogo;
+    for (const mom of ['comida', 'cena']) {
+      const ds = cat.filter((x) => x.momento.includes(mom)).map((x) => v.get(x.id));
+      const poco = (q, bote) => (bote && q.botePoco ? q.botePoco === 'sí' : q.poco === 'sí');
+      const facilDe = (q, bote) => (bote && q.boteDificultad ? q.boteDificultad : q.dificultad) === 'fácil';
+      const n = (f) => ds.filter(f).length;
+      C.push(`| ${NOMBRE_DIETA[d]} | ${mom} | ${ds.length} | ${n((q) => poco(q, false) && facilDe(q, false))} | ${n((q) => poco(q, true) && facilDe(q, false))} | ${n((q) => poco(q, true) && facilDe(q, true))} | ${n((q) => facilDe(q, false))} | ${n((q) => facilDe(q, true))} |`);
+    }
+  }
+  C.push('');
+}
+
 // 5. Ejemplos
 L.push('## 5. Tres semanas de ejemplo de poco+novato', '');
 L.push('Marca: filtro = el hueco pasó el filtro; red = el filtro lo dejaba sin candidatos y va sin él; fijo = lo colocó el ancla; sin marca = fin de semana (sin filtro).', '');
@@ -219,5 +261,5 @@ for (const [p, titulo] of [['omni-2174', 'Omnívora (omni-2174)'], ['vegana-1400
   }
 }
 const corte = L.indexOf('## 5. Tres semanas de ejemplo de poco+novato');
-fs.writeFileSync(salida, `${[...L.slice(0, corte), ...comparacion, ...L.slice(corte)].join('\n')}\n`);
+fs.writeFileSync(salida, `${[...L.slice(0, corte), ...comparacion, ...comparacionFacil, ...L.slice(corte)].join('\n')}\n`);
 console.log(`${salida}: ${perfiles.length} perfiles`);

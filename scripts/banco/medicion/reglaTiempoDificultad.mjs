@@ -23,19 +23,24 @@
 //   - Variante «bote» (argumento --bote): con tiempoCocina = «poco», los platos de legumbre que no son de poco tiempo
 //     solo por el remojo o la cocción larga cuentan con su tiempo con legumbre de bote (columnas bote_* de
 //     vigente.csv). La dificultad no cambia.
+//   - Variante «bote fácil» (argumento --boteFacil, incluye --bote): además, esos 15 platos cuentan como fáciles
+//     (columna bote_dificultad; mismo criterio que las cremas: un sofrito sin punto que fallar). Se aplica siempre que
+//     el filtro mira el plato: el tramo de bote con «poco» y la dificultad de bote con «novato» (también con
+//     normal+novato).
 //
 // Valores de cada plato: «Vigente» de la hoja de tiempo y dificultad (PR #34, rama datos/tiempo-dificultad, commit
 // 1d04de5), copiados en regla-tiempo-dificultad/vigente.csv.
 //
 // Uso (desde la raíz del repo):
 //   node --import ./scripts/banco/resolver.mjs --import ./scripts/banco/medicion/reglaTiempoDificultad.mjs \
-//     scripts/banco/medicion/medirReglaTiempo.mjs <salida.json> <perfil> <tiempoCocina> <experiencia> [semanas] [--bote]
+//     scripts/banco/medicion/medirReglaTiempo.mjs <salida.json> <perfil> <tiempoCocina> <experiencia> [semanas] [--bote | --boteFacil]
 import fs from 'node:fs';
 import { register } from 'node:module';
 
 const RAIZ = new URL('../../../', import.meta.url);
 const ENTRE_SEMANA = new Set(['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes']);
-const BOTE = process.argv.includes('--bote');
+const BOTE_FACIL = process.argv.includes('--boteFacil');
+const BOTE = BOTE_FACIL || process.argv.includes('--bote');
 
 // ─── Vigente (vigente.csv) ──────────────────────────────────────────────────────────────────────────────────────────
 function leerCsv(texto) {
@@ -57,7 +62,7 @@ function leerCsv(texto) {
 export const VIGENTE = new Map(leerCsv(fs.readFileSync(new URL('scripts/banco/medicion/regla-tiempo-dificultad/vigente.csv', RAIZ), 'utf8'))
   .map((f) => [f.id, {
     poco: f.poco, dificultad: f.dificultad, activo: Number(f.activo), total: Number(f.total), previa: f.previa,
-    botePoco: f.bote_tramo_poco_tiempo || null,
+    botePoco: f.bote_tramo_poco_tiempo || null, boteDificultad: f.bote_dificultad || null,
   }]));
 
 const vigenteDe = (id) => {
@@ -70,13 +75,19 @@ const pocoDe = (id) => {
   const v = vigenteDe(id);
   return BOTE && v.botePoco ? v.botePoco === 'sí' : v.poco === 'sí';
 };
+/** Dificultad con la que el filtro mira el plato. Con --boteFacil, la de legumbre de bote si el plato la tiene. */
+const dificultadDe = (id) => {
+  const v = vigenteDe(id);
+  return BOTE_FACIL && v.boteDificultad ? v.boteDificultad : v.dificultad;
+};
 
 // ─── La regla ───────────────────────────────────────────────────────────────────────────────────────────────────────
 const regla = {
-  bote: BOTE,
+  bote: BOTE_FACIL ? 'facil' : BOTE,
   apagada: false,
   vigenteDe,
   pocoDe,
+  dificultadDe,
   /** Filtra los candidatos de un hueco. Devuelve los candidatos con los que sigue el hueco. */
   filtrar({ candidatos, day, momento, profile, esSugerencia, pushEvent }) {
     if (regla.apagada) return candidatos;
@@ -84,8 +95,8 @@ const regla = {
     const novato = profile && profile.experiencia === 'novato';
     if (!poco && !novato) return candidatos;
     if (!ENTRE_SEMANA.has(day) || esSugerencia) return candidatos;
-    const condiciones = [poco && `tramo_poco_tiempo = sí${BOTE ? ' (legumbre de bote)' : ''}`, novato && 'dificultad fácil'].filter(Boolean).join(' y ');
-    const quedan = candidatos.filter((d) => (!poco || pocoDe(d.id)) && (!novato || vigenteDe(d.id).dificultad === 'fácil'));
+    const condiciones = [poco && `tramo_poco_tiempo = sí${BOTE ? ' (legumbre de bote)' : ''}`, novato && `dificultad fácil${BOTE_FACIL ? ' (legumbre de bote)' : ''}`].filter(Boolean).join(' y ');
+    const quedan = candidatos.filter((d) => (!poco || pocoDe(d.id)) && (!novato || dificultadDe(d.id) === 'fácil'));
     if (!quedan.length) {
       pushEvent(day, 'regla_tiempo_red', `${day}/${momento}: ${condiciones} dejaría el hueco sin candidatos (0 de ${candidatos.length}); el hueco sigue sin el filtro`, { momento, reglaTiempo: { red: true, antes: candidatos.length, quedan: 0 } });
       return candidatos;
@@ -180,4 +191,4 @@ export async function load(url, contexto, siguiente) {
   return { ...r, source: t };
 }`;
 register('data:text/javascript,' + encodeURIComponent(hooks));
-process.stderr.write(`[reglaTiempoDificultad] filtro de tiempo y experiencia entre semana, con red de hueco y de semana${BOTE ? '; variante legumbre de bote' : ''}\n`);
+process.stderr.write(`[reglaTiempoDificultad] filtro de tiempo y experiencia entre semana, con red de hueco y de semana${BOTE_FACIL ? '; variante legumbre de bote, fácil' : BOTE ? '; variante legumbre de bote' : ''}\n`);

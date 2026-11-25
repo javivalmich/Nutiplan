@@ -38,6 +38,17 @@ Perfiles: los 18 de la medición de la guarnición (12 del banco, `omni-2174-bat
    - **«Poco tiempo + fácil» del catálogo no cambia con el bote** (todas estas legumbres son «media»). Sí cambia «poco tiempo» con cualquier dificultad, en comidas: omnívora 111 → 126, vegetariana 33 → 47, vegana 19 → 33. Las cenas no cambian (estos platos son de comida).
 4. **Pescado, proteína y energía:** igual que en la medición anterior. El pescado por semana no cambia (lo fija el tope). Con «novato» sube el pescado al horno, del 42 % al 54 %. La proteína y la energía en omnívora, casi igual al control.
 
+## Variante «legumbre de bote, fácil» (sección 7 del informe)
+
+Los 15 platos de la variante bote pasan además a fáciles (columna `bote_dificultad` de `vigente.csv`; mismo criterio que las cremas: un sofrito sin punto que fallar). Solo se ha medido con poco+novato y normal+novato (`--boteFacil`), y la variante se aplica siempre que el filtro mira el plato: el tramo de bote con «poco» y la dificultad de bote con «novato» (también con normal+novato, aunque el tiempo sea normal).
+
+- **Red.** En omnívora baja poco: de 1,2 % a 0,9 % de los huecos con poco+novato, y las 7 semanas rehechas pasan a 0. En vegana baja a la mitad: de 30 % a 15 % con poco+novato y de 27 % a 12 % con normal+novato. Las semanas rehechas en vegana pasan de 41 a 22 con poco+novato, pero suben de 18 a 51 con normal+novato. Vegetariana sigue en 0.
+- **Legumbre.** Vuelve al nivel del control o por encima. Vegetariana: de 1,15 a 2,87 por semana (control 2,69). Vegana: de 2,58 a 3,90 (control 3,25). Omnívora, igual (1,79).
+- **Proteína corta.** Sube con la legumbre, porque los platos de legumbre tienen menos proteína. Vegetariana: de 3,46 a 4,63 comidas cortas por semana (control 4,57). Vegana: de 4,09 a 5,15 (control 4,79). La proteína del día de vegana baja de 92,1 % a 89,3 % (control 90,9 %).
+- **Energía.** Mejora: las comidas fuera de ±5 % de kcal bajan en vegana de 58,5 % a 53,0 % (control 50,9 %) y en vegetariana de 10,2 % a 7,5 %.
+- **Platos distintos.** Casi igual: omnívora 155, vegetariana 63 → 66, vegana 47 → 45.
+- **«Poco tiempo + fácil» del catálogo, en comidas** (las cenas no cambian, porque estos platos son de comida): omnívora 80 → 95, vegetariana 19 → 33 y vegana 10 → 24.
+
 ## Qué no cubre
 
 - El ancla de «cocinar en cantidad» no se filtra: en `omni-2174-ancla`, 390 huecos de lunes a viernes (de 2000) los coloca el ancla sin filtro.

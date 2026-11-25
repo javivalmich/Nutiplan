@@ -1,6 +1,8 @@
 # Plan: sacar de la historia los datos en bruto de `db9a2fd` (2026-11-25)
 
-Solo el plan, sin ejecutar. Decide Javi.
+**Sustituido (Javi, 2026-11-25):** no se reescribe la historia. Los 9 `.json` se borran en un commit normal (`03d1740`, con la carpeta en `.gitignore`) y el PR #28 se mergea con «Squash and merge», como en la alternativa del final. Se conserva como referencia.
+
+Solo el plan, sin ejecutar.
 
 ## Qué hay
 

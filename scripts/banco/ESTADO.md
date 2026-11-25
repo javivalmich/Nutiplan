@@ -143,7 +143,9 @@ Worktree `C:\Users\javiv\app-comida-motor`, rama `motor/i0-banco-cantidades`, cr
 | `b43ba0c` | Medición de la crema repetida y su ventana (`medicion/variantesCremaRepetida.mjs`, `resumenCremaRepetida.mjs`, `guarnicion/crema-repetida.md`), sin cambiar `src/` |
 | `7bef6a2` | D-122: la crema repetida 2 o 3 días después y escrita como la crema guardada (`walk/cremas.js`, `compuestos.js`, `leerComida.js`, alternativas); línea base regenerada (6 semanas de sibo-2000) (test `cremaVentana.test.js`) |
 | `2385b77` | `DECISIONS.md`: D-122 |
-| el siguiente a `2385b77` | `ESTADO.md` al día |
+| `ab0a058` | `ESTADO.md` al día: D-122 |
+| `03d1740`, `dc659d1` | Fuera los 9 `.json` en bruto de `medicion/estructura-comida/` y a `.gitignore`; `resumenEstructura.mjs` avisa si faltan |
+| el siguiente a `dc659d1` | `ESTADO.md` al día; `PLAN-limpieza-historia.md`, sustituido por «Squash and merge» |
 
 ## Legumbre como guarnición: dónde se para (2026-11-23)
 
@@ -174,7 +176,10 @@ Plan: `medicion/guarnicion/plan-implementacion.md`, aprobado por Javi el 2026-11
   - al horno, la legumbre después de la proteína («Cuando falten 15 min, añade a la bandeja…»).
 - **Despliegue:** Vercel, por integración con GitHub. Un push a `main` despliega Production; un push a cualquier otra rama, solo un Preview. Producción tiene `9522e92` (PR #27). El Preview de `048bef7` es https://nutiplan-ld5ikvkl4-nuti-s-projects.vercel.app.
 - **`fix/autorizacion-rpc`** (solo en local, `a398173`) cambia 2 archivos de `supabase/`, ninguno de los que cambia esta rama. Su worktree tiene además 4 `.md` sin seguimiento en `docs/`.
-- **PR borrador a `main` abierto.** Sin merge.
+- **PR #28 a `main`, listo para revisar** (ya no es borrador): se mergea con «Squash and merge». Sin merge.
+- **Ramas subidas a `origin` el 2026-11-25:** las 18 que solo estaban en local (16 ya estaban enteras en `main` o en otra rama remota; `feat/weekly-veg-count` y `util/hoja-anotacion` tenían su propio commit).
+- **Sin subir, a la espera de Javi:** `fix/autorizacion-rpc` y `docs/auditoria-integral`. El repositorio es público, y las dos describen debilidades de seguridad (la migración de autorización de las RPC y su test; la auditoría de la app) que aún no están corregidas en producción.
+- **`.gitattributes`:** propuesto, no aplicado. Con `* text=auto eol=lf` no se renormaliza ningún archivo: los 47 con CRLF o mezcla son evidencia de `docs/evidence/fase7-*`, con su propio `.gitattributes` `-text`.
 - **Crema repetida (2026-11-25, `guarnicion/crema-repetida.md`):** dos platos distintos con la misma crema (calabacín, casi siempre) coinciden por azar en alrededor del 1 % de las semanas, a cualquier distancia. La única ventana de conservación es la del ancla (`buildWeekArc.js:250`, D-099.3.b–c), que no cubre las cremas.
   - Propuesta medida en el hook: una crema repetida, solo 2 o 3 días después, y mejor solo entre cremas de plantilla. Mismas comidas cortas, legumbres, pescado y D-099.3.
   - **Implementado (D-122, `7bef6a2`), variante «solo plantillas».** El motor real da los mismos menús que el hook en las 1800 semanas. Quedan 3 repeticiones, todas a 3 días, escritas como «Haz el doble de crema y guarda la mitad…» / «Calienta la crema de … que hiciste el …».
@@ -260,8 +265,8 @@ Plan: `medicion/guarnicion/plan-implementacion.md`, aprobado por Javi el 2026-11
 3. **Implementar lo decidido en 1 y 2**, con su test previo y la línea base del banco si cambia.
 4. **Prueba a mano, en el móvil y en el panel del nutricionista:** el título largo de la comida doble, las dos partes en `p1` y `p2`, la receta con los dos platos, la compra con dos aceites, el aviso de la comida doble sin alternativa y una alternativa de una comida doble. Nadie lo ha visto todavía en pantalla.
 5. **Revisión del diff de la rama frente a `main`** (motor, app, tests y scripts de medición). Los errores de lint de `OriginalPlanApp.jsx` ya estaban en `main`; la rama solo cambia una línea de ese archivo.
-6. **Batería completa en un entorno con `.env.local`**, para que cargue la suite `src/data/__tests__/pdb.characterization.test.js` (aquí no carga) y ver el test intermitente de `scripts/fase7` (tiempo límite de 5 s). Sin tocar Supabase ni producción.
-7. **Sacar de la historia los datos en bruto de `db9a2fd`** (plan, sin ejecutar: `PLAN-limpieza-historia.md`): 9 archivos `.json` de `scripts/banco/medicion/` que suman 26,4 MB. Antes, una copia de seguridad de la rama (un `git bundle` o un clon aparte). Hay que reescribir la historia de esta rama y volver a subirla con `--force-with-lease`, solo esta rama: sin tocar la rama de seguridad (`fix/autorizacion-rpc`, worktree `C:\Users\javiv\app-comida`) ni `main`.
+6. **Hecho (2026-11-25):** con el `.env.local` del worktree principal pasan los 1618 tests, también `pdb.characterization`, sin tocar Supabase. Era: **Batería completa en un entorno con `.env.local`**, para que cargue la suite `src/data/__tests__/pdb.characterization.test.js` (aquí no carga) y ver el test intermitente de `scripts/fase7` (tiempo límite de 5 s). Sin tocar Supabase ni producción.
+7. **Hecho de otra forma (2026-11-25):** los 9 `.json` se borran en `03d1740` y el PR #28 se mergea con «Squash and merge», sin reescribir la historia. Era: **Sacar de la historia los datos en bruto de `db9a2fd`** (plan: `PLAN-limpieza-historia.md`): 9 archivos `.json` de `scripts/banco/medicion/` que suman 26,4 MB. Antes, una copia de seguridad de la rama (un `git bundle` o un clon aparte). Hay que reescribir la historia de esta rama y volver a subirla con `--force-with-lease`, solo esta rama: sin tocar la rama de seguridad (`fix/autorizacion-rpc`, worktree `C:\Users\javiv\app-comida`) ni `main`.
 8. **PR a `main` con el visto bueno de Javi.** Sin merge sin su autorización.
 9. **Coordinar el merge con la rama de seguridad y desplegar en el cambio de semana** (domingo por la noche): así los planes nuevos empiezan con la semana y nadie ve cambiar sus platos a media semana (punto 1).
 

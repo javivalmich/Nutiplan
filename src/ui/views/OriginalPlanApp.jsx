@@ -690,8 +690,9 @@ export function OriginalPlanApp({ currentUser, activePlanMeta, onLogout, onPlanU
     if (!r.ok) { alert(r.aviso); setNavOpen(false); return; }
     const newPlan=r.plan;
     setPlan(newPlan); setActiveDay(0); setActiveTab("plan");
-    saveData(currentUser.id,profile,newPlan,wk,{}); setExtras({}); setNavOpen(false);
-    saveToPDB(profile, newPlan, wk, {}, "system");
+    // Los «Extras del día» se conservan (Javi, 2026-11-25): son lo que el usuario ha añadido, no el menú.
+    saveData(currentUser.id,profile,newPlan,wk,extras); setNavOpen(false);
+    saveToPDB(profile, newPlan, wk, extras, "system");
   };
 
   const regenerateMeal=(dayIdx, mealSlot, semanticHint)=>{

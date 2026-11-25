@@ -7,26 +7,29 @@ Generado por `scripts/banco/medicion/resumenReglaTiempo.mjs`. 18 perfiles × 200
 - **Poco tiempo:** de lunes a viernes, en comida y cena, solo platos con `tramo_poco_tiempo = sí`. **Novato:** solo platos fáciles. Las dos a la vez: las dos condiciones.
 - Fin de semana sin filtro. Las opciones normal, mucho, intermedio y avanzado, sin filtro. Sin pesos.
 - El filtro va **después** de las demás reglas del hueco (no repetir plato, guarnición, cremas, tope de proteína y de pescado, separación por proteína y por familia, huevo, aliño) y **antes** de las preferencias A y B, las frecuencias y la identidad de verdura.
-- **Red:** si el filtro deja el hueco sin candidatos, ese hueco se queda sin el filtro y se cuenta.
+- **Red del hueco:** si el filtro deja el hueco sin candidatos, ese hueco se queda sin el filtro y se cuenta.
+- **Red de la semana:** si la semana filtrada incumple D-099.3, se repite entera con la misma semilla sin el filtro y se queda la repetición solo si incumple menos (como la red de D-099.3 de la guarnición). Como mucho una repetición por semana.
 - Valores de cada plato: columnas «Vigente» de la hoja de tiempo y dificultad (PR #34, commit `1d04de5`), copiadas en `regla-tiempo-dificultad/vigente.csv`. 230 de 288 platos tienen `tramo_poco_tiempo = sí`; 185 son fáciles; 171 cumplen las dos cosas.
-- Prototipo en memoria (`reglaTiempoDificultad.mjs`), sin tocar `src/`. El capricho entre semana se filtra igual. El ancla de «cocinar en cantidad» no se filtra (se cuenta aparte). La sugerencia de la comida libre no se filtra.
+- Prototipo en memoria (`reglaTiempoDificultad.mjs`), sin tocar `src/`. No hay capricho entre semana (`buildWeekArc.js:412`: el capricho es la comida libre del sábado). El ancla de «cocinar en cantidad» no se filtra (se cuenta aparte). La sugerencia de la comida libre no se filtra.
 - Control: normal+intermedio (sin filtro). Con «poco», la app ya elige desayunos rápidos (`desayunosApp.js`): eso también entra en la proteína y la energía del día.
 
 ## 1. Cuántas veces actúa la red
 
 Huecos filtrados = comidas y cenas de lunes a viernes por las que pasa el filtro (sin ancla ni sugerencia). «Cumplen» = platos servidos de lunes a viernes que cumplen la condición, contando los de la red y los del ancla.
 
-| Dieta | Combinación | Huecos filtrados | Red (huecos) | Red por hueco | Red por semana | Semanas con red | Servidos L-V que cumplen |
-|---|---|---|---|---|---|---|---|
-| omnívora | poco+novato | 31610 | 391 | 1,2 % | 0,12 | 288 de 3200 | 98,2 % |
-| omnívora | poco+intermedio | 31610 | 57 | 0,2 % | 0,02 | 57 de 3200 | 99,5 % |
-| omnívora | normal+novato | 31606 | 342 | 1,1 % | 0,11 | 238 de 3200 | 98,4 % |
-| vegetariana | poco+novato | 2000 | 0 | 0,0 % | 0,00 | 0 de 200 | 100,0 % |
-| vegetariana | poco+intermedio | 2000 | 0 | 0,0 % | 0,00 | 0 de 200 | 100,0 % |
-| vegetariana | normal+novato | 2000 | 0 | 0,0 % | 0,00 | 0 de 200 | 100,0 % |
-| vegana | poco+novato | 2000 | 708 | 35,4 % | 3,54 | 200 de 200 | 64,6 % |
-| vegana | poco+intermedio | 2000 | 144 | 7,2 % | 0,72 | 130 de 200 | 92,8 % |
-| vegana | normal+novato | 2000 | 542 | 27,1 % | 2,71 | 200 de 200 | 72,9 % |
+«Semanas sin filtro (D-099.3)» = semanas que la red de la semana rehízo sin el filtro; «sin retirar» = la semana incumplía también sin el filtro y se quedó filtrada.
+
+| Dieta | Combinación | Huecos filtrados | Red (huecos) | Red por hueco | Red por semana | Semanas con red | Semanas sin filtro (D-099.3) | Sin retirar | Servidos L-V que cumplen |
+|---|---|---|---|---|---|---|---|---|---|
+| omnívora | poco+novato | 31540 | 383 | 1,2 % | 0,12 | 283 de 3200 | 7 | 0 | 98,2 % |
+| omnívora | poco+intermedio | 31530 | 57 | 0,2 % | 0,02 | 57 de 3200 | 8 | 0 | 99,5 % |
+| omnívora | normal+novato | 31606 | 342 | 1,1 % | 0,11 | 238 de 3200 | 0 | 0 | 98,4 % |
+| vegetariana | poco+novato | 2000 | 0 | 0,0 % | 0,00 | 0 de 200 | 0 | 0 | 100,0 % |
+| vegetariana | poco+intermedio | 2000 | 0 | 0,0 % | 0,00 | 0 de 200 | 0 | 0 | 100,0 % |
+| vegetariana | normal+novato | 2000 | 0 | 0,0 % | 0,00 | 0 de 200 | 0 | 0 | 100,0 % |
+| vegana | poco+novato | 1590 | 480 | 30,2 % | 2,40 | 159 de 200 | 41 | 159 | 60,6 % |
+| vegana | poco+intermedio | 1820 | 133 | 7,3 % | 0,67 | 111 de 200 | 18 | 182 | 89,7 % |
+| vegana | normal+novato | 1820 | 494 | 27,1 % | 2,47 | 182 de 200 | 18 | 182 | 70,0 % |
 
 Por perfil (poco+novato):
 
@@ -46,9 +49,9 @@ Por perfil (poco+novato):
 | sin-garbanzos-guisantes-2000 | omnívora | 0,4 % | 0,04 | 8 | 99,6 % | 0 | Viernes/cena 8 |
 | sin-lactosa-2000 | omnívora | 0,1 % | 0,01 | 3 | 99,8 % | 0 | Viernes/cena 3 |
 | sin-legumbres-2000 | omnívora | 0,3 % | 0,04 | 7 | 99,7 % | 0 | Viernes/cena 4 · Viernes/comida 3 |
-| sin-pescado-2000 | omnívora | 3,9 % | 0,39 | 60 | 96,2 % | 0 | Viernes/cena 43 · Martes/cena 19 · Jueves/cena 15 |
+| sin-pescado-2000 | omnívora | 3,6 % | 0,34 | 55 | 95,3 % | 0 | Viernes/cena 42 · Martes/cena 15 · Jueves/cena 12 |
 | solo-pollo-2000 | omnívora | 0,3 % | 0,03 | 5 | 99,8 % | 0 | Viernes/comida 5 |
-| vegana-1400 | vegana | 35,4 % | 3,54 | 200 | 64,6 % | 0 | Jueves/cena 182 · Viernes/comida 109 · Viernes/cena 107 |
+| vegana-1400 | vegana | 30,2 % | 2,40 | 159 | 60,6 % | 0 | Jueves/cena 133 · Viernes/comida 108 · Viernes/cena 64 |
 | vegetariana-2000 | vegetariana | 0,0 % | 0,00 | 0 | 100,0 % | 0 | — |
 
 ## 2. Repetición de platos y especies frente al control
@@ -57,17 +60,17 @@ Platos distintos servidos en las 200 semanas de cada perfil (media por perfil), 
 
 | Dieta | Combinación | Platos distintos/perfil | Top 10 platos | Repetido en la semana | De la semana anterior | Especie >2 veces | Especie mismo día | Especie días seguidos | Especies distintas/sem | Especie más repetida/sem |
 |---|---|---|---|---|---|---|---|---|---|---|
-| omnívora | poco+novato | 155,0 | 23,6 % | 0 | 0 | 0 | 2 | 7 | 8,98 | 2,00 |
-| omnívora | poco+intermedio | 170,9 | 22,4 % | 0 | 0 | 0 | 1 | 6 | 8,98 | 2,00 |
+| omnívora | poco+novato | 155,3 | 23,7 % | 0 | 0 | 0 | 0 | 0 | 8,98 | 2,00 |
+| omnívora | poco+intermedio | 171,0 | 22,4 % | 0 | 0 | 0 | 0 | 0 | 8,98 | 2,00 |
 | omnívora | normal+novato | 158,3 | 23,4 % | 0 | 0 | 0 | 0 | 0 | 9,04 | 2,00 |
 | omnívora | normal+intermedio (control) | 175,8 | 21,9 % | 0 | 0 | 0 | 0 | 0 | 9,05 | 2,00 |
 | vegetariana | poco+novato | 63,0 | 35,3 % | 0 | 0 | 0 | 0 | 0 | 8,49 | 2,00 |
 | vegetariana | poco+intermedio | 72,0 | 33,2 % | 0 | 0 | 0 | 0 | 0 | 8,29 | 2,00 |
 | vegetariana | normal+novato | 65,0 | 34,2 % | 0 | 0 | 0 | 0 | 0 | 8,41 | 2,00 |
 | vegetariana | normal+intermedio (control) | 74,0 | 30,7 % | 0 | 0 | 0 | 0 | 0 | 8,63 | 2,00 |
-| vegana | poco+novato | 44,0 | 38,3 % | 0 | 0 | 409 | 13 | 55 | 6,21 | 3,48 |
-| vegana | poco+intermedio | 42,0 | 38,1 % | 0 | 0 | 435 | 1 | 23 | 5,64 | 3,71 |
-| vegana | normal+novato | 41,0 | 38,4 % | 0 | 0 | 408 | 0 | 16 | 5,94 | 3,85 |
+| vegana | poco+novato | 47,0 | 37,4 % | 0 | 0 | 407 | 2 | 2 | 6,09 | 3,44 |
+| vegana | poco+intermedio | 47,0 | 37,3 % | 0 | 0 | 428 | 1 | 3 | 5,75 | 3,66 |
+| vegana | normal+novato | 44,0 | 37,8 % | 0 | 0 | 407 | 0 | 3 | 6,04 | 3,68 |
 | vegana | normal+intermedio (control) | 47,0 | 34,2 % | 0 | 0 | 349 | 11 | 37 | 6,30 | 3,04 |
 
 ## 3. Pescado y legumbre por semana frente al control
@@ -77,16 +80,16 @@ Platos distintos servidos en las 200 semanas de cada perfil (media por perfil), 
 | Dieta | Combinación | Pescado/sem | Δ control | De ellos al horno/sem | % al horno | Legumbre/sem | Δ control |
 |---|---|---|---|---|---|---|---|
 | omnívora | poco+novato | 3,36 | +0,01 | 1,80 | 53,5 % | 1,79 | −0,00 |
-| omnívora | poco+intermedio | 3,36 | +0,01 | 1,48 | 43,9 % | 1,75 | −0,04 |
+| omnívora | poco+intermedio | 3,36 | +0,01 | 1,48 | 43,9 % | 1,75 | −0,05 |
 | omnívora | normal+novato | 3,36 | +0,00 | 1,79 | 53,2 % | 1,81 | +0,02 |
 | omnívora | normal+intermedio | 3,36 | = | 1,40 | 41,8 % | 1,79 | = |
 | vegetariana | poco+novato | 0,00 | = | 0,00 | — | 1,15 | −1,54 |
 | vegetariana | poco+intermedio | 0,00 | = | 0,00 | — | 1,12 | −1,56 |
 | vegetariana | normal+novato | 0,00 | = | 0,00 | — | 1,05 | −1,64 |
 | vegetariana | normal+intermedio | 0,00 | = | 0,00 | — | 2,69 | = |
-| vegana | poco+novato | 0,00 | = | 0,00 | — | 2,54 | −0,72 |
-| vegana | poco+intermedio | 0,00 | = | 0,00 | — | 2,12 | −1,14 |
-| vegana | normal+novato | 0,00 | = | 0,00 | — | 2,13 | −1,13 |
+| vegana | poco+novato | 0,00 | = | 0,00 | — | 2,58 | −0,67 |
+| vegana | poco+intermedio | 0,00 | = | 0,00 | — | 2,23 | −1,03 |
+| vegana | normal+novato | 0,00 | = | 0,00 | — | 2,31 | −0,95 |
 | vegana | normal+intermedio | 0,00 | = | 0,00 | — | 3,25 | = |
 
 ## 4. Proteína corta y energía frente al control
@@ -95,17 +98,17 @@ Cortas = comidas y cenas servidas por debajo del 95 % de su objetivo de proteín
 
 | Dieta | Combinación | Cortas/sem | Δ control | Proteína del día | Δ control | Kcal del día | Δ control | Fuera de ±5 % kcal |
 |---|---|---|---|---|---|---|---|---|
-| omnívora | poco+novato | 2,38 | +0,06 | 102,8 % | −0,4 | 99,7 % | −0,0 | 8,7 % |
-| omnívora | poco+intermedio | 2,37 | +0,05 | 102,7 % | −0,4 | 99,6 % | −0,0 | 8,7 % |
+| omnívora | poco+novato | 2,38 | +0,06 | 102,8 % | −0,3 | 99,7 % | −0,0 | 8,7 % |
+| omnívora | poco+intermedio | 2,36 | +0,04 | 102,7 % | −0,4 | 99,6 % | −0,0 | 8,7 % |
 | omnívora | normal+novato | 2,37 | +0,04 | 103,0 % | −0,2 | 99,7 % | −0,0 | 8,8 % |
 | omnívora | normal+intermedio | 2,32 | = | 103,1 % | = | 99,7 % | = | 8,5 % |
 | vegetariana | poco+novato | 3,46 | −1,11 | 99,2 % | +1,0 | 100,0 % | +0,1 | 10,2 % |
 | vegetariana | poco+intermedio | 3,52 | −1,05 | 99,5 % | +1,3 | 100,0 % | +0,1 | 10,4 % |
 | vegetariana | normal+novato | 3,37 | −1,21 | 99,5 % | +1,3 | 100,1 % | +0,2 | 9,4 % |
 | vegetariana | normal+intermedio | 4,57 | = | 98,2 % | = | 99,9 % | = | 7,7 % |
-| vegana | poco+novato | 4,03 | −0,76 | 92,3 % | +1,4 | 105,9 % | +0,9 | 60,3 % |
-| vegana | poco+intermedio | 3,92 | −0,87 | 91,9 % | +1,0 | 107,3 % | +2,3 | 63,8 % |
-| vegana | normal+novato | 3,87 | −0,92 | 93,1 % | +2,2 | 105,7 % | +0,8 | 59,0 % |
+| vegana | poco+novato | 4,09 | −0,70 | 92,1 % | +1,2 | 105,8 % | +0,8 | 58,5 % |
+| vegana | poco+intermedio | 3,79 | −1,00 | 92,2 % | +1,3 | 107,0 % | +2,0 | 62,9 % |
+| vegana | normal+novato | 3,98 | −0,81 | 92,8 % | +1,9 | 105,7 % | +0,7 | 56,5 % |
 | vegana | normal+intermedio | 4,79 | = | 90,9 % | = | 105,0 % | = | 50,9 % |
 
 Por perfil, poco+novato frente al control:
@@ -126,14 +129,64 @@ Por perfil, poco+novato frente al control:
 | sin-garbanzos-guisantes-2000 | 3,00 (3,00) | 1,59 (1,28) | 1,94 (1,94) | 2,20 (2,06) | 105,0 % (105,4 %) | 169 (190) |
 | sin-lactosa-2000 | 3,00 (3,00) | 1,65 (1,20) | 2,06 (2,06) | 1,83 (1,83) | 105,1 % (105,5 %) | 149 (171) |
 | sin-legumbres-2000 | 3,02 (3,01) | 1,58 (1,20) | 0,00 (0,00) | 2,29 (2,17) | 102,8 % (103,2 %) | 159 (179) |
-| sin-pescado-2000 | 0,00 (0,00) | 0,00 (0,00) | 2,23 (2,33) | 3,44 (3,12) | 101,6 % (102,5 %) | 115 (134) |
+| sin-pescado-2000 | 0,00 (0,00) | 0,00 (0,00) | 2,25 (2,33) | 3,42 (3,12) | 101,7 % (102,5 %) | 119 (134) |
 | solo-pollo-2000 | 6,62 (6,53) | 3,43 (3,02) | 2,52 (2,43) | 2,79 (2,88) | 101,5 % (101,2 %) | 119 (144) |
-| vegana-1400 | 0,00 (0,00) | 0,00 (0,00) | 2,54 (3,25) | 4,03 (4,79) | 92,3 % (90,9 %) | 44 (47) |
+| vegana-1400 | 0,00 (0,00) | 0,00 (0,00) | 2,58 (3,25) | 4,09 (4,79) | 92,1 % (90,9 %) | 47 (47) |
 | vegetariana-2000 | 0,00 (0,00) | 0,00 (0,00) | 1,15 (2,69) | 3,46 (4,57) | 99,2 % (98,2 %) | 63 (74) |
+
+## 6. Variante «legumbre de bote» y medición anterior, frente al control
+
+Con `--bote`, y solo si tiempoCocina = poco, los 15 platos de legumbre que no son de poco tiempo solo por el remojo o la cocción larga (2 de alubias, 7 de garbanzos, 5 de lentejas y la fabada) cuentan con su tiempo con legumbre de bote (columnas `bote_*` de `vigente.csv`). Todos son de dificultad media: no entran en «poco tiempo + fácil». «Anterior» = la medición del commit `4182b9d`, sin la red de la semana.
+
+| Dieta | Combinación | Medición | Red por hueco | Semanas sin filtro (D-099.3) | Legumbre/sem | Platos distintos/perfil | Especie >2 / mismo día / días seguidos | Cortas/sem | Kcal del día | Fuera de ±5 % kcal |
+|---|---|---|---|---|---|---|---|---|---|---|
+| omnívora | poco+novato | anterior (sin red de la semana) | 1,2 % | 0 | 1,79 | 155,0 | 0 / 2 / 7 | 2,38 | 99,7 % | 8,7 % |
+| omnívora | poco+novato | actual (red de la semana) | 1,2 % | 7 | 1,79 | 155,3 | 0 / 0 / 0 | 2,38 | 99,7 % | 8,7 % |
+| omnívora | poco+novato | con legumbre de bote | 1,2 % | 7 | 1,79 | 155,3 | 0 / 0 / 0 | 2,38 | 99,7 % | 8,7 % |
+| omnívora | poco+intermedio | anterior (sin red de la semana) | 0,2 % | 0 | 1,75 | 170,9 | 0 / 1 / 6 | 2,37 | 99,6 % | 8,7 % |
+| omnívora | poco+intermedio | actual (red de la semana) | 0,2 % | 8 | 1,75 | 171,0 | 0 / 0 / 0 | 2,36 | 99,6 % | 8,7 % |
+| omnívora | poco+intermedio | con legumbre de bote | 0,0 % | 2 | 1,75 | 171,3 | 0 / 0 / 0 | 2,35 | 99,6 % | 8,8 % |
+| omnívora | normal+novato | anterior (sin red de la semana) | 1,1 % | 0 | 1,81 | 158,3 | 0 / 0 / 0 | 2,37 | 99,7 % | 8,8 % |
+| omnívora | normal+novato | actual (red de la semana) | 1,1 % | 0 | 1,81 | 158,3 | 0 / 0 / 0 | 2,37 | 99,7 % | 8,8 % |
+| omnívora | normal+novato | con legumbre de bote | 1,1 % | 0 | 1,81 | 158,3 | 0 / 0 / 0 | 2,37 | 99,7 % | 8,8 % |
+| omnívora | normal+intermedio | control | — | — | 1,79 | 175,8 | 0 / 0 / 0 | 2,32 | 99,7 % | 8,5 % |
+| vegetariana | poco+novato | anterior (sin red de la semana) | 0,0 % | 0 | 1,15 | 63,0 | 0 / 0 / 0 | 3,46 | 100,0 % | 10,2 % |
+| vegetariana | poco+novato | actual (red de la semana) | 0,0 % | 0 | 1,15 | 63,0 | 0 / 0 / 0 | 3,46 | 100,0 % | 10,2 % |
+| vegetariana | poco+novato | con legumbre de bote | 0,0 % | 0 | 1,15 | 63,0 | 0 / 0 / 0 | 3,46 | 100,0 % | 10,2 % |
+| vegetariana | poco+intermedio | anterior (sin red de la semana) | 0,0 % | 0 | 1,12 | 72,0 | 0 / 0 / 0 | 3,52 | 100,0 % | 10,4 % |
+| vegetariana | poco+intermedio | actual (red de la semana) | 0,0 % | 0 | 1,12 | 72,0 | 0 / 0 / 0 | 3,52 | 100,0 % | 10,4 % |
+| vegetariana | poco+intermedio | con legumbre de bote | 0,0 % | 0 | 2,81 | 74,0 | 0 / 0 / 0 | 4,53 | 100,0 % | 8,4 % |
+| vegetariana | normal+novato | anterior (sin red de la semana) | 0,0 % | 0 | 1,05 | 65,0 | 0 / 0 / 0 | 3,37 | 100,1 % | 9,4 % |
+| vegetariana | normal+novato | actual (red de la semana) | 0,0 % | 0 | 1,05 | 65,0 | 0 / 0 / 0 | 3,37 | 100,1 % | 9,4 % |
+| vegetariana | normal+novato | con legumbre de bote | 0,0 % | 0 | 1,05 | 65,0 | 0 / 0 / 0 | 3,37 | 100,1 % | 9,4 % |
+| vegetariana | normal+intermedio | control | — | — | 2,69 | 74,0 | 0 / 0 / 0 | 4,57 | 99,9 % | 7,7 % |
+| vegana | poco+novato | anterior (sin red de la semana) | 35,4 % | 0 | 2,54 | 44,0 | 409 / 13 / 55 | 4,03 | 105,9 % | 60,3 % |
+| vegana | poco+novato | actual (red de la semana) | 30,2 % | 41 | 2,58 | 47,0 | 407 / 2 / 2 | 4,09 | 105,8 % | 58,5 % |
+| vegana | poco+novato | con legumbre de bote | 30,2 % | 41 | 2,58 | 47,0 | 407 / 2 / 2 | 4,09 | 105,8 % | 58,5 % |
+| vegana | poco+intermedio | anterior (sin red de la semana) | 7,2 % | 0 | 2,12 | 42,0 | 435 / 1 / 23 | 3,92 | 107,3 % | 63,8 % |
+| vegana | poco+intermedio | actual (red de la semana) | 7,3 % | 18 | 2,23 | 47,0 | 428 / 1 / 3 | 3,79 | 107,0 % | 62,9 % |
+| vegana | poco+intermedio | con legumbre de bote | 4,5 % | 46 | 3,39 | 47,0 | 331 / 6 / 20 | 4,86 | 105,2 % | 52,1 % |
+| vegana | normal+novato | anterior (sin red de la semana) | 27,1 % | 0 | 2,13 | 41,0 | 408 / 0 / 16 | 3,87 | 105,7 % | 59,0 % |
+| vegana | normal+novato | actual (red de la semana) | 27,1 % | 18 | 2,31 | 44,0 | 407 / 0 / 3 | 3,98 | 105,7 % | 56,5 % |
+| vegana | normal+novato | con legumbre de bote | 27,1 % | 18 | 2,31 | 44,0 | 407 / 0 / 3 | 3,98 | 105,7 % | 56,5 % |
+| vegana | normal+intermedio | control | — | — | 3,25 | 47,0 | 349 / 11 / 37 | 4,79 | 105,0 % | 50,9 % |
+
+### «Poco tiempo + fácil» por dieta, con y sin bote (platos del catálogo)
+
+Platos del catálogo de cada dieta, sin intolerancias (los de reserva no cuentan). «Comida» y «Cena» incluyen los que valen para las dos.
+
+| Dieta | Momento | Platos | Poco tiempo + fácil, sin bote | con bote | Poco tiempo (cualquier dificultad), sin bote | con bote |
+|---|---|---|---|---|---|---|
+| omnívora | comida | 149 | 80 | 80 | 111 | 126 |
+| omnívora | cena | 115 | 82 | 82 | 108 | 108 |
+| vegetariana | comida | 54 | 19 | 19 | 33 | 47 |
+| vegetariana | cena | 51 | 33 | 33 | 45 | 45 |
+| vegana | comida | 38 | 10 | 10 | 19 | 33 |
+| vegana | cena | 28 | 15 | 15 | 24 | 24 |
 
 ## 5. Tres semanas de ejemplo de poco+novato
 
-Marca: filtro = el hueco pasó el filtro; red = el filtro lo dejaba sin candidatos y va sin él; fijo = lo colocó el ancla o el capricho; sin marca = fin de semana (sin filtro).
+Marca: filtro = el hueco pasó el filtro; red = el filtro lo dejaba sin candidatos y va sin él; fijo = lo colocó el ancla; sin marca = fin de semana (sin filtro).
 
 ### Omnívora (omni-2174), semana 60
 
@@ -187,13 +240,13 @@ Marca: filtro = el hueco pasó el filtro; red = el filtro lo dejaba sin candidat
 
 | Día | Comida | Cena |
 |---|---|---|
-| Lunes | Wok de tempeh con verduras y fideos de arroz *(filtro)* | Ramen de miso con tofu y verduras *(filtro)* |
-| Martes | Garbanzos con pimentón con espinacas *(red)* | Berenjenas rellenas de soja texturizada y tomate *(red)* |
-| Miércoles | Poke de tofu marinado con arroz, edamame y verduras *(filtro)* | Tempeh teriyaki con arroz y judías verdes *(red)* |
-| Jueves | Lentejas al ajillo con calabacín *(red)* | Seitán guisado con patatas y zanahoria *(red)* |
-| Viernes | Lasaña de verduras y soja con bechamel vegetal *(red)* | Seitán a la plancha con pimientos asados y patata *(red)* |
-| Sábado | Comida libre 🎉 *(sugerencia)* | Hamburguesa de tofu y avena con ensalada |
-| Domingo | Alubias blancas al ajillo con acelgas | Tempeh en salsa de tomate con calabacín |
+| Lunes | Tempeh teriyaki con arroz y judías verdes | Calabacín relleno de tofu y verduras, gratinado |
+| Martes | Lentejas con pimentón con zanahoria | Seitán guisado con patatas y zanahoria |
+| Miércoles | Poke de tofu marinado con arroz, edamame y verduras | Berenjenas rellenas de soja texturizada y tomate |
+| Jueves | Seitán en salsa de champiñones con arroz | Wok de tempeh con verduras y fideos de arroz |
+| Viernes | Garbanzos estofados con alcachofas | Pimientos rellenos de soja texturizada y arroz |
+| Sábado | Comida libre 🎉 *(sugerencia)* | Ramen de miso con tofu y verduras |
+| Domingo | Garbanzos al curry con brócoli | Tempeh en salsa de tomate con calabacín |
 
 ### Vegana (vegana-1400), semana 62
 
@@ -203,7 +256,7 @@ Marca: filtro = el hueco pasó el filtro; red = el filtro lo dejaba sin candidat
 | Martes | Tempeh marinado con boniato asado y ensalada *(filtro)* | Tacos de soja texturizada con pico de gallo *(filtro)* |
 | Miércoles | Ensalada de tofu, quinoa y aguacate con vinagreta de mostaza *(filtro)* | Seitán salteado con brócoli y cacahuetes *(filtro)* |
 | Jueves | Burrito de alubias negras, arroz y verduras *(filtro)* | Ensalada templada de quinoa con tempeh y verduras asadas *(filtro)* |
-| Viernes | Garbanzos estofados con alcachofas *(red)* | Pimientos rellenos de soja texturizada y arroz *(red)* |
-| Sábado | Comida libre 🎉 *(sugerencia)* | Curry suave de tofu con calabaza y arroz basmati |
-| Domingo | Garbanzos con pimentón con zanahoria | Crema de calabaza y zanahoria con tempeh crujiente |
+| Viernes | Lentejas al ajillo con calabacín *(red)* | Soja texturizada a la mexicana con arroz y pimientos *(red)* |
+| Sábado | Comida libre 🎉 *(sugerencia)* | Revuelto de tofu con espinacas y champiñones |
+| Domingo | Alubias blancas al ajillo con acelgas | Crema de calabaza y zanahoria con tempeh crujiente |
 

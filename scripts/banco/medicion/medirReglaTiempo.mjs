@@ -6,11 +6,11 @@
 // Perfiles: los 18 de la medición de la guarnición (12 del banco, 2 de perfilesExtra.mjs y 4 sintéticos).
 // Uso (desde la raíz del repo; el hook hace falta también para el control, que no filtra):
 //   node --import ./scripts/banco/resolver.mjs --import ./scripts/banco/medicion/reglaTiempoDificultad.mjs \
-//     scripts/banco/medicion/medirReglaTiempo.mjs <salida.json> <perfil> <tiempoCocina> <experiencia> [semanas]
+//     scripts/banco/medicion/medirReglaTiempo.mjs <salida.json> <perfil> <tiempoCocina> <experiencia> [semanas] [--bote]
 import fs from 'node:fs';
 
-const [salida, perfilId, tiempoCocina, experiencia, semArg] = process.argv.slice(2);
-const SEM = Number(semArg || 200);
+const [salida, perfilId, tiempoCocina, experiencia] = process.argv.slice(2);
+const SEM = Number(process.argv.slice(6).find((x) => /^\d+$/.test(x)) || 200);
 const { generarPlan, platosRecientesPara } = await import('../../../src/plan/generarPlan.js');
 const { FREEFORM_POOL } = await import('../../../src/data/freeformPool.js');
 const { objetivoDe } = await import('../../../src/plan/racionesApp.js');
@@ -40,7 +40,7 @@ const dieta = perfil.dieta || 'omnivora';
 const catalogo = conPlatosDieta(catalogoApp(), perfil, { reserva: true });
 const porId = new Map(catalogo.map((d) => [d.id, d]));
 const obj = objetivoDe(perfil, KCAL);
-const { vigenteDe } = globalThis.__reglaTiempo;
+const { vigenteDe, pocoDe, bote } = globalThis.__reglaTiempo;
 const DIAS = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
 const especie = (id) => (porId.has(id) ? proteinaPrincipal(porId.get(id)) : null);
 const alHorno = (id) => {
@@ -60,10 +60,12 @@ for (let s = 60; s < 60 + SEM; s++) {
   const log = plan.decisionLog || [];
   const eventos = log.filter((e) => typeof e.causa === 'string' && e.causa.startsWith('regla_tiempo'));
   const red = eventos.filter((e) => e.causa === 'regla_tiempo_red');
-  const fijos = new Map(); // día|momento → causa de los huecos que coloca el paso 1 (ancla) o el capricho
+  const retirada = log.find((e) => e.causa === 'regla_tiempo_retirada_d099');
+  const sinRetirar = log.find((e) => e.causa === 'regla_tiempo_d099_sin_retirar');
+  const fijos = new Map(); // día|momento → causa de los huecos que coloca el paso 1 (ancla y sus sobras)
   for (const e of log) {
     const causa = e.causa || e.cause;
-    if (e.day && e.momento && /^ancla|^sobra|capricho/.test(String(causa))) fijos.set(`${e.day}|${e.momento}`, causa);
+    if (e.day && e.momento && /^ancla|^sobra/.test(String(causa))) fijos.set(`${e.day}|${e.momento}`, causa);
   }
   const menu = [];
   let cortas = 0; let principales = 0; let fueraKcal = 0; let pescado = 0; let pescadoHorno = 0; let legumbre = 0;
@@ -79,7 +81,7 @@ for (let s = 60; s < 60 + SEM; s++) {
       if (m.time !== 'Comida' && m.time !== 'Cena') continue;
       const momento = m.time === 'Comida' ? 'comida' : 'cena';
       const ids = [m._dishId, m._dishId2].filter(Boolean);
-      const ev = eventos.find((e) => e.day === dia && (e.momento === momento || e.momento === 'capricho'));
+      const ev = eventos.find((e) => e.day === dia && e.momento === momento);
       const fijo = fijos.get(`${dia}|${momento}`);
       const como = m.sugerencia ? 'sugerencia' : ev ? (ev.causa === 'regla_tiempo_red' ? 'red' : 'filtro') : fijo ? `fijo (${fijo})` : '';
       fila[momento] = { titulo: m.title, ids, como };
@@ -96,8 +98,7 @@ for (let s = 60; s < 60 + SEM; s++) {
       if (k < 5) {
         lvServidos += 1;
         if (String(como).startsWith('fijo (ancla') || String(como).startsWith('fijo (sobra')) lvAncla += 1;
-        const v = vigenteDe(m._dishId);
-        if ((tiempoCocina !== 'poco' || v.poco === 'sí') && (experiencia !== 'novato' || v.dificultad === 'fácil')) lvCumplen += 1;
+        if ((tiempoCocina !== 'poco' || pocoDe(m._dishId)) && (experiencia !== 'novato' || vigenteDe(m._dishId).dificultad === 'fácil')) lvCumplen += 1;
       }
     }
     menu.push(fila);
@@ -105,7 +106,9 @@ for (let s = 60; s < 60 + SEM; s++) {
   const especies = {};
   for (const id of servidos) { const e = especie(id); if (e) especies[e] = (especies[e] || 0) + 1; }
   semanas.push({
-    s, motor: plan.motor, red: red.length, filtros: eventos.length - red.length,
+    s, motor: plan.motor, red: red.length, filtros: eventos.filter((e) => e.causa === 'regla_tiempo_filtro').length,
+    redSemana: retirada ? { antes: retirada.reglaTiempo.antes, despues: retirada.reglaTiempo.despues } : null,
+    sinRetirar: sinRetirar ? { antes: sinRetirar.reglaTiempo.antes, despues: sinRetirar.reglaTiempo.despues } : null,
     redPor: red.map((e) => `${e.day}/${e.momento}`),
     servidos, especies, pescado, pescadoHorno, legumbre, cortas, principales, fueraKcal,
     protDia: dias ? (100 * protDia) / dias / obj.proteina : 0, kcalDia: dias ? (100 * kcalDia) / dias / KCAL : 0,
@@ -114,5 +117,5 @@ for (let s = 60; s < 60 + SEM; s++) {
     menu,
   });
 }
-fs.writeFileSync(salida, JSON.stringify({ perfil: perfilId, dieta, kcal: KCAL, tiempoCocina, experiencia, semanas }));
+fs.writeFileSync(salida, JSON.stringify({ perfil: perfilId, dieta, kcal: KCAL, tiempoCocina, experiencia, bote, semanas }));
 l(`${perfilId} ${tiempoCocina}+${experiencia}: ${semanas.length} semanas → ${salida}`);
